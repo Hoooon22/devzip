@@ -1,6 +1,9 @@
+// Main.js
+
 import React, { useState } from 'react';
 import projects from '../data/projects';
 import Pagination from '../components/Pagination';
+import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
 import "../assets/css/Main.scss";
 
 const Main = () => {
@@ -21,8 +24,7 @@ const Main = () => {
             <ul className="project-list">
                 {currentProjects.map(project => (
                     <li key={project.id} className="project-item">
-                        <h2>{project.name}</h2>
-                        <p>{project.description}</p>
+                        <ProjectBox project={project} />
                     </li>
                 ))}
             </ul>
