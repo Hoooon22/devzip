@@ -2,7 +2,11 @@ body {
     margin: 0;
     padding: 0;
     background-color: #e3f2fd; // 연한 블루 배경
-    font-family: Arial, sans-serif;
+    // font-family: "Noto Sans KR", sans-serif;
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+    font-optical-sizing: auto;
+    // font-weight: <weight>;
+    font-style: normal;
     overflow: hidden; // 전체 페이지에서 스크롤을 막음
 }
 
@@ -15,14 +19,19 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    padding: 20px;
+    // padding: 20px;
     text-align: center;
     color: #0d47a1; // 진한 블루 글자 색상
 }
 
 h1 {
-    color: #0d47a1; // 진한 블루
-    margin-bottom: 20px;
+    font-size: 3rem; // 글자 크기 확대
+    color: #1e3a8a; // 더 진한 블루 색상
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); // 그림자 효과
+    background: linear-gradient(90deg, #1e3a8a, #64b5f6); // 그라데이션 효과
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .project-list {
