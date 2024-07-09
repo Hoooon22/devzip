@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import projects from '../data/projects';
 import Pagination from '../components/Pagination';
 import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
+import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
 import "../assets/css/Main.scss";
 
 const Main = () => {
@@ -31,6 +32,7 @@ const Main = () => {
                 totalProjects={projects.length}
                 paginate={paginate}
             />
+            <Footer />
         </div>
     );
 };

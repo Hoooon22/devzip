@@ -1,0 +1,8 @@
+.footer {
+    position: fixed;
+    bottom: 10px; /* 원하는 만큼의 여백 설정 */
+    right: 10px; /* 원하는 만큼의 여백 설정 */
+    width: auto; /* 너비 자동으로 설정 */
+    padding: 10px; /* 내부 여백 추가 */
+    z-index: 1000; /* 다른 요소 위로 배치 */
+}
