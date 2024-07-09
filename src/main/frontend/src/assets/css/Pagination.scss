@@ -1,0 +1,26 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.page-item {
+    margin: 0 5px;
+}
+
+.page-link {
+    padding: 10px 15px;
+    border: 1px solid #1e88e5; // 중간 블루 테두리
+    border-radius: 4px;
+    text-decoration: none;
+    color: #fff;
+    background: #1976d2; // 중간 블루 배경
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover {
+        background: #bbdefb; // 밝은 블루 배경
+        color: #0d47a1; // 진한 블루 글자 색상
+    }
+}

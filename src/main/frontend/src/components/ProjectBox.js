@@ -1,21 +1,30 @@
-// ProjectBox.js
-
 import React from 'react';
+import PropTypes from 'prop-types';
+import "../assets/css/ProjectBox.scss";
 
 const ProjectBox = ({ project }) => {
-    const { id, name, description, link } = project;
+    const { name, description, link, active } = project;
 
-    const handleClick = () => {
+    const handleClick = (e) => {
+        e.preventDefault(); // 기본 링크 이동 방지
         window.open(link, '_blank'); // 새 탭에서 링크 열기
-        // 현재 탭에서 열기: window.location.href = link;
     };
 
     return (
-        <a href="#" className="project-box" onClick={handleClick}>
-            <h2>{name}</h2>
-            <p>{description}</p>
+        <a href={link} className={`project-box ${active ? '' : 'inactive'}`} onClick={handleClick}>
+            <h2 className={`project-title ${active ? '' : 'inactive-title'}`}>{name}</h2>
+            <p className="project-description">{description}</p>
         </a>
     );
+};
+
+ProjectBox.propTypes = {
+    project: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired,
+        link: PropTypes.string.isRequired,
+        active: PropTypes.bool.isRequired,
+    }).isRequired,
 };
 
 export default ProjectBox;

@@ -1,0 +1,40 @@
+.project-box {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 8px;
+    background: #64b5f6; // 중간 블루 배경
+    color: #fff;
+    text-align: left;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.inactive {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #0d47a1; // 진한 블루 글자 색상
+    transition: color 0.2s ease;
+}
+
+.inactive-title {
+    color: #ff1744; // 빨간색
+}
+
+.project-description {
+    font-size: 1rem;
+    color: #0d47a1; // 진한 블루 글자 색상
+}

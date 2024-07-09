@@ -1,5 +1,3 @@
-// Main.js
-
 import React, { useState } from 'react';
 import projects from '../data/projects';
 import Pagination from '../components/Pagination';
