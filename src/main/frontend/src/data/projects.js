@@ -14,7 +14,7 @@ const projects = [
         description: '타임 킬링용 게임', 
         link: 'https://www.google.com', 
         active: true,
-        startDate: '2022-10-01',
+        startDate: '2024-07-01',
         endDate: ''
     },
     { 
@@ -22,6 +22,15 @@ const projects = [
         name: 'Project 3', 
         description: '스토리 있는 로그라이크', 
         link: 'https://www.github.com', 
+        active: true,
+        startDate: '',
+        endDate: '2023-09-30'
+    },
+    { 
+        id: 4, 
+        name: '누구든지 흔적을 남기는 공간', 
+        description: '들어와서 흔적을 남기세요.', 
+        link: '/Guestbook', 
         active: true,
         startDate: '',
         endDate: '2023-09-30'

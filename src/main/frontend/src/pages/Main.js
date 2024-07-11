@@ -7,7 +7,7 @@ import "../assets/css/Main.scss";
 
 const Main = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [projectsPerPage] = useState(3);
+    const [projectsPerPage] = useState(6);
 
     // 현재 페이지에 표시할 프로젝트 계산
     const indexOfLastProject = currentPage * projectsPerPage;

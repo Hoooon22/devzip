@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import "../assets/css/Pagination.scss"; // SCSS 파일 임포트
+import '../assets/css/Pagination.scss';
 
 const Pagination = ({ projectsPerPage, totalProjects, paginate }) => {
     const pageNumbers = [];
@@ -14,7 +14,10 @@ const Pagination = ({ projectsPerPage, totalProjects, paginate }) => {
             <ul className="pagination">
                 {pageNumbers.map(number => (
                     <li key={number} className="page-item">
-                        <a onClick={() => paginate(number)} href="!#" className="page-link">
+                        <a onClick={(e) => {
+                            e.preventDefault();
+                            paginate(number);
+                        }} href="!#" className="page-link">
                             {number}
                         </a>
                     </li>
