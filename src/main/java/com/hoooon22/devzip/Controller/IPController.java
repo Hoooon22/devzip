@@ -9,17 +9,13 @@ public class IPController {
 
     @GetMapping("/api/ip")
     public String getClientIP(@RequestHeader(name = "X-Forwarded-For", required = false) String clientIP) {
-        if (clientIP != null && !clientIP.isBlank()) {
-            // X-Forwarded-For 헤더에서 IP 주소 추출
-            String[] ipParts = clientIP.split(",");
-            String firstIPAddress = ipParts[0].trim(); // 첫 번째 IP 주소 추출
-
+        if (clientIP != null) {
             // IP 주소 가공 (xxx.xx 형식으로)
-            String[] firstIPSegments = firstIPAddress.split("\\.");
-            if (firstIPSegments.length >= 2) {
-                return firstIPSegments[0] + "." + firstIPSegments[1];
+            String[] ipParts = clientIP.split("\\.");
+            if (ipParts.length >= 2) {
+                return ipParts[0] + "." + ipParts[1];
             } else {
-                return "Unknown"; // IP 주소 가공 실패 시 처리
+                return "Unknown"; // 가공할 수 없는 경우 처리
             }
         } else {
             return "Unknown"; // X-Forwarded-For 헤더가 없는 경우 처리
