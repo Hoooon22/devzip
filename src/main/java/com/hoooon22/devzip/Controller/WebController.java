@@ -11,4 +11,9 @@ public class WebController implements ErrorController {
     public String index() {
         return "index.html";
     }
+    
+    @GetMapping("/Guestbook")
+    public String guestbookPage() {
+        return "guestbook"; // guestbook.html과 같은 뷰 템플릿을 반환
+    }
 }
