@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PostForm from '../components/Guestbook/PostForm';
 import PostList from '../components/Guestbook/PostList';
 import Pagination from '../components/Guestbook/Pagination';
 import IPFetcher from '../components/Guestbook/IPFetcher'; // IPFetcher 컴포넌트 임포트
-import "../assets/css/Guestbook.scss";
+import '../assets/css/Guestbook.scss';
 
 const Guestbook = () => {
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [formattedIP, setFormattedIP] = useState("");
+    const [formattedIP, setFormattedIP] = useState('');
 
     const handleNewPost = (newPost) => {
         const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식

@@ -1,22 +1,23 @@
+// IPFetcher.jsx 파일
 import React, { useEffect } from 'react';
 import axios from 'axios';
 
 const IPFetcher = ({ onIPFetched }) => {
     useEffect(() => {
-        fetchFormattedIP();
-    }, []);
+        const fetchIP = async () => {
+            try {
+                const response = await axios.get('/api/ip'); // 서버에서 IP 주소를 가져오는 API 엔드포인트
+                const ip = response.data.ip; // 예시: 서버에서 IP 주소를 JSON 형식으로 반환하는 경우
+                onIPFetched(ip); // 가져온 IP 주소를 부모 컴포넌트로 전달
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+            }
+        };
 
-    const fetchFormattedIP = async () => {
-        try {
-            const response = await axios.get('/api/ip'); // Spring Boot 서버의 URL로 변경
-            onIPFetched(response.data);
-        } catch (error) {
-            console.error('Error fetching IP:', error);
-            onIPFetched('Unknown'); // IP를 가져올 수 없는 경우 처리
-        }
-    };
+        fetchIP();
+    }, [onIPFetched]);
 
-    return null; // IP 주소를 화면에 표시하지 않으므로 null 반환
+    return null;
 };
 
 export default IPFetcher;
