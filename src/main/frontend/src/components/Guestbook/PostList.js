@@ -1,14 +1,12 @@
-// PostList.jsx 파일
 import React from 'react';
 
 const PostList = ({ posts }) => {
     return (
         <div className="post-list">
             {posts.map(post => (
-                <div key={post.id} className="post">
+                <div key={post.id} className="post-item">
                     <p>{post.content}</p>
-                    <p>작성일: {post.date}</p>
-                    <p>작성자 IP: {post.ip}</p>
+                    <small>{post.ip}</small>
                 </div>
             ))}
         </div>

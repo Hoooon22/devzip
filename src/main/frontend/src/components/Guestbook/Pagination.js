@@ -1,4 +1,3 @@
-// Pagination.jsx 파일
 import React from 'react';
 
 const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
@@ -13,9 +12,9 @@ const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
             <ul className="pagination">
                 {pageNumbers.map(number => (
                     <li key={number} className="page-item">
-                        <button onClick={() => paginate(number)} className="page-link">
+                        <a onClick={() => paginate(number)} href="!#" className="page-link">
                             {number}
-                        </button>
+                        </a>
                     </li>
                 ))}
             </ul>
