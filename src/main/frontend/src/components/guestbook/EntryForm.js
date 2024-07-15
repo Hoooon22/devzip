@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 
 const EntryForm = ({ addEntry }) => {
-    const [newEntry, setNewEntry] = useState('');
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (newEntry.trim()) {
-            addEntry(newEntry);
-            setNewEntry('');
-        }
+        addEntry({ title, content });
+        setTitle('');
+        setContent('');
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <input 
-                type="text" 
-                value={newEntry} 
-                onChange={(e) => setNewEntry(e.target.value)} 
-                placeholder="Write a message..."
+            <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
             />
-            <button type="submit">Submit</button>
+            <textarea
+                placeholder="Content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+            />
+            <button type="submit">Add Entry</button>
         </form>
     );
 };
