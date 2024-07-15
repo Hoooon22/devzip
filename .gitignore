@@ -60,3 +60,6 @@ sketch
 src/.DS_Store
 .DS_Store
 .DS_Store
+
+# DB
+application-aws.properties
