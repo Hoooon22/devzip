@@ -33,6 +33,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
 
 }
 
