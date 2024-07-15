@@ -1,4 +1,4 @@
-package com.hoooon22.devzip.Controller;
+package com.hoooon22.devzip.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

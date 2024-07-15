@@ -1,7 +1,8 @@
-package com.hoooon22.devzip.Controller;
+package com.hoooon22.devzip.controller;
 
-import com.hoooon22.devzip.Entity.Entry;
-import com.hoooon22.devzip.Repository.EntryRepository;
+import com.hoooon22.devzip.model.Entry;
+import com.hoooon22.devzip.repository.EntryRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,20 @@ public class EntryController {
 
     @PostMapping
     public Entry addEntry(@RequestBody Entry entry, HttpServletRequest request) {
-        String clientIp = request.getRemoteAddr();
+        // Extracting client's real IP address from X-Forwarded-For header
+        String clientIp = getClientIP(request);
         entry.setIp(clientIp);
         return entryRepository.save(entry);
+    }
+
+    // Method to extract client's real IP address from X-Forwarded-For header
+    private String getClientIP(HttpServletRequest request) {
+        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
+        if (xForwardedForHeader != null && !xForwardedForHeader.isEmpty()) {
+            // The first IP in the header is the client's real IP
+            return xForwardedForHeader.split(",")[0];
+        }
+        // If X-Forwarded-For header is not present, fall back to remote address
+        return request.getRemoteAddr();
     }
 }
