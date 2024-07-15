@@ -1,11 +1,14 @@
-package com.hoooon22.devzip.model;
+package com.hoooon22.devzip.Entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@Getter
+@NoArgsConstructor
 @Entity
+@Table(name = "Entry")
 public class Entry {
 
     @Id

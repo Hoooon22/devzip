@@ -1,9 +1,9 @@
-package com.hoooon22.devzip.repository;
+package com.hoooon22.devzip.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.hoooon22.devzip.model.Entry;
+import com.hoooon22.devzip.Entity.Entry;
 
 @Repository
 public interface EntryRepository extends JpaRepository<Entry, Long> {

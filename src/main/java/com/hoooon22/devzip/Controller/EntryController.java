@@ -1,7 +1,7 @@
-package com.hoooon22.devzip.controller;
+package com.hoooon22.devzip.Controller;
 
-import com.hoooon22.devzip.model.Entry;
-import com.hoooon22.devzip.repository.EntryRepository;
+import com.hoooon22.devzip.Entity.Entry;
+import com.hoooon22.devzip.Repository.EntryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/entries")
 public class EntryController {
 
-    @Autowired
+    @Autowired(required = false)
     private EntryRepository entryRepository;
 
     @GetMapping

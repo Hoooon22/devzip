@@ -1,4 +1,4 @@
-package com.hoooon22.devzip.controller;
+package com.hoooon22.devzip.Controller;
 
 // WebController
 import org.springframework.boot.web.servlet.error.ErrorController;

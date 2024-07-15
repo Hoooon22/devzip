@@ -1,4 +1,4 @@
-package com.hoooon22.devzip.controller;
+package com.hoooon22.devzip.Controller;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
