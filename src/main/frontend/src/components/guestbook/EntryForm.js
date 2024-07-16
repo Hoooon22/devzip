@@ -1,3 +1,4 @@
+// EntryForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -13,6 +14,7 @@ const EntryForm = ({ addEntry }) => {
             addEntry(response.data);
             setTitle('');
             setContent('');
+            console.log('Entry added:', response.data);
         } catch (error) {
             console.error('Error adding entry:', error);
         }

@@ -1,3 +1,4 @@
+// Entry.java
 package com.hoooon22.devzip.Model;
 
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ public class Entry {
 
     private String ip;
 
-    // getters and setters (Lombok이 자동으로 생성)
+    // getters and setters (Lombok 등을 사용해 자동 생성)
 
     public Long getId() {
         return id;
@@ -54,4 +55,3 @@ public class Entry {
         this.ip = ip;
     }
 }
-

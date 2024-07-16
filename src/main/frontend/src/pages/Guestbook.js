@@ -1,3 +1,4 @@
+// Guestbook.js
 import React, { useState, useEffect } from 'react';
 import EntryForm from '../components/guestbook/EntryForm';
 import EntryList from '../components/guestbook/EntryList';
@@ -10,6 +11,7 @@ const Guestbook = () => {
         try {
             const response = await axios.get('/api/v1/entries');
             setEntries(response.data);
+            console.log('Fetched entries:', response.data);
         } catch (error) {
             console.error('Error fetching entries:', error);
         }
@@ -19,6 +21,7 @@ const Guestbook = () => {
         try {
             const response = await axios.post('/api/v1/entries', newEntry);
             setEntries([response.data, ...entries]);
+            console.log('Added new entry:', response.data);
         } catch (error) {
             console.error('Error adding entry:', error);
         }
