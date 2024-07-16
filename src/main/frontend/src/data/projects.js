@@ -35,6 +35,24 @@ const projects = [
         startDate: '',
         endDate: '2023-09-30'
     },
+    { 
+        id: 5, 
+        name: '플레이어의 피드백을 직접 소통받으면서 실시간 업데이트를 진행하는 게임', 
+        description: '??', 
+        link: '/Guestbook', 
+        active: true,
+        startDate: '',
+        endDate: '2023-09-30'
+    },
+    { 
+        id: 6, 
+        name: '치료 목적 게임', 
+        description: '??', 
+        link: '/Guestbook', 
+        active: true,
+        startDate: '',
+        endDate: '2023-09-30'
+    },
     // 추가 프로젝트들...
 ];
 
