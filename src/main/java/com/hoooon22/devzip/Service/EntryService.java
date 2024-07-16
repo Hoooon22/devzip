@@ -1,23 +1,18 @@
 package com.hoooon22.devzip.Service;
 
-import java.util.List;
-
+import com.hoooon22.devzip.Model.Entry;
+import com.hoooon22.devzip.Repository.EntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hoooon22.devzip.Model.Entry;
-import com.hoooon22.devzip.Repository.EntryRepository;
+import java.util.List;
 
 @Service
 public class EntryService {
 
-    private final EntryRepository entryRepository;
-
     @Autowired
-    public EntryService(EntryRepository entryRepository) {
-        this.entryRepository = entryRepository;
-    }
+    private EntryRepository entryRepository;
 
     @Transactional(readOnly = true)
     public List<Entry> getAllEntries() {
@@ -26,6 +21,9 @@ public class EntryService {
 
     @Transactional
     public Entry addEntry(Entry entry) {
+        // 여기서 IP를 설정해줍니다. 예제에서는 임의의 값으로 설정하겠습니다.
+        entry.setIp("127.0.0.1");
+
         return entryRepository.save(entry);
     }
 }

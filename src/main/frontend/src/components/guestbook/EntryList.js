@@ -3,8 +3,8 @@ import React from 'react';
 const EntryList = ({ entries }) => {
     return (
         <ul>
-            {entries.map((entry, index) => (
-                <li key={index}>
+            {entries.map((entry) => (
+                <li key={entry.id}>
                     {entry.ip}: {entry.content}
                 </li>
             ))}

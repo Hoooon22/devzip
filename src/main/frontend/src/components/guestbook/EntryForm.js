@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const EntryForm = ({ addEntry }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        addEntry({ title, content });
-        setTitle('');
-        setContent('');
+        
+        try {
+            const response = await axios.post('/api/v1/entries', { title, content });
+            addEntry(response.data);
+            setTitle('');
+            setContent('');
+        } catch (error) {
+            console.error('Error adding entry:', error);
+        }
     };
 
     return (
