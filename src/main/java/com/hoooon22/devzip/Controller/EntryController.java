@@ -1,4 +1,3 @@
-// EntryController.java
 package com.hoooon22.devzip.Controller;
 
 import java.util.List;

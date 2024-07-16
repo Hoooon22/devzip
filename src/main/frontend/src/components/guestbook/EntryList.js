@@ -1,4 +1,3 @@
-// EntryList.js
 import React from 'react';
 
 const EntryList = ({ entries }) => {

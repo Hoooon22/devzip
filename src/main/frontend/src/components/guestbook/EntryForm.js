@@ -1,4 +1,3 @@
-// EntryForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -11,10 +10,10 @@ const EntryForm = ({ addEntry }) => {
         
         try {
             const response = await axios.post('/api/v1/entries', { title, content });
-            addEntry(response.data);
+            console.log('Entry added:', response.data);
+            addEntry(response.data); // 새 항목을 Guestbook 컴포넌트의 상태에 추가
             setTitle('');
             setContent('');
-            console.log('Entry added:', response.data);
         } catch (error) {
             console.error('Error adding entry:', error);
         }
