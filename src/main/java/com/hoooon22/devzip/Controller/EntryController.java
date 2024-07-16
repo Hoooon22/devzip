@@ -17,12 +17,8 @@ import com.hoooon22.devzip.Service.EntryService;
 @RequestMapping("/api/v1/entries")
 public class EntryController {
 
-    private final EntryService entryService;
-
     @Autowired
-    public EntryController(EntryService entryService) {
-        this.entryService = entryService;
-    }
+    private EntryService entryService;
 
     @GetMapping
     public ResponseEntity<List<Entry>> getAllEntries() {

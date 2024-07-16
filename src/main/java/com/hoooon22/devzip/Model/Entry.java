@@ -5,13 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "Entry")
-@Getter
-@Setter
 public class Entry {
 
     @Id
@@ -24,9 +20,38 @@ public class Entry {
 
     private String ip;
 
-    // No need to explicitly define getters and setters, Lombok generates them
+    // getters and setters (Lombok이 자동으로 생성)
 
-    // No need to define constructors, Lombok provides a default no-args constructor
+    public Long getId() {
+        return id;
+    }
 
-    // You can add additional methods as needed
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 }
+
