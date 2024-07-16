@@ -1,4 +1,3 @@
-// EntryService.java
 package com.hoooon22.devzip.Service;
 
 import java.util.List;
@@ -35,7 +34,8 @@ public class EntryService {
     @Transactional
     public Entry addEntry(Entry entry) {
         String clientIp = getClientIp();
-        entry.setIp(clientIp);
+        String maskedIp = maskIp(clientIp);
+        entry.setIp(maskedIp);
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);
@@ -51,5 +51,10 @@ public class EntryService {
         } else {
             return request.getRemoteAddr();
         }
+    }
+
+    private String maskIp(String ip) {
+        String[] ipSegments = ip.split("\\.");
+        return ipSegments[0] + "." + ipSegments[1] + ".xxx.xxx";
     }
 }
