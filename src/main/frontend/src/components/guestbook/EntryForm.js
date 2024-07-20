@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../assets/css/EntryForm.scss';
+import '../../assets/css/EntryForm.scss';
 
 const EntryForm = ({ addEntry }) => {
     const [name, setName] = useState('');

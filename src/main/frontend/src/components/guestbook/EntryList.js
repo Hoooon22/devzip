@@ -1,5 +1,5 @@
 import React from 'react';
-import '../assets/css/EntryList.scss';
+import '../../assets/css/EntryList.scss';
 
 const EntryList = ({ entries }) => {
     return (
