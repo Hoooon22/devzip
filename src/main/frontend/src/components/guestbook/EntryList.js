@@ -14,9 +14,12 @@ const formatDate = (dateString) => {
 };
 
 const EntryList = ({ entries }) => {
+    // 최신순으로 정렬
+    const sortedEntries = entries.slice().sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
     return (
         <ul className="post-list">
-            {entries.map(entry => (
+            {sortedEntries.map(entry => (
                 <li key={entry.id} className="post-item">
                     <span className="name" style={{ color: entry.color }}>{entry.name}</span>
                     <p className="createDate">{formatDate(entry.createDate)}</p>
