@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../assets/css/EntryForm.scss';
 
 const EntryForm = ({ addEntry }) => {
     const [name, setName] = useState('');
@@ -20,19 +21,21 @@ const EntryForm = ({ addEntry }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="entry-form" onSubmit={handleSubmit}>
             <input
                 type="text"
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="entry-form-input"
             />
             <textarea
                 placeholder="Content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                className="entry-form-textarea"
             />
-            <button type="submit">Add Entry</button>
+            <button type="submit" className="entry-form-button">Add Entry</button>
         </form>
     );
 };
