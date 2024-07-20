@@ -1,26 +1,21 @@
+// Entry.java
 package com.hoooon22.devzip.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Entry")
 public class Entry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String title;
-
+    
+    private String name;
     private String content;
-
-    private String ip;
-
-    private String color;  // 색상 필드 추가
+    private String color; // IP에 따라 설정될 색상
 
     // getters and setters
 
@@ -32,12 +27,12 @@ public class Entry {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getContent() {
@@ -46,14 +41,6 @@ public class Entry {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
     }
 
     public String getColor() {
