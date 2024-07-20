@@ -2,7 +2,9 @@
 package com.hoooon22.devzip.Model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class Entry {
 
     private String color;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     // getters and setters (Lombok 등을 사용해 자동 생성)
@@ -73,7 +76,8 @@ public class Entry {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public String getFormattedCreateDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return createDate.format(formatter);
     }
 }
