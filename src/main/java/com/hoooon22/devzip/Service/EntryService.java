@@ -34,8 +34,7 @@ public class EntryService {
     @Transactional
     public Entry addEntry(Entry entry) {
         String clientIp = getClientIp();
-        String maskedIp = maskIp(clientIp);
-        entry.setIp(maskedIp);
+        entry.setIp(clientIp);
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);
@@ -51,10 +50,5 @@ public class EntryService {
         } else {
             return request.getRemoteAddr();
         }
-    }
-
-    private String maskIp(String ip) {
-        String[] ipSegments = ip.split("\\.");
-        return ipSegments[0] + "." + ipSegments[1] + ".xxx.xxx";
     }
 }

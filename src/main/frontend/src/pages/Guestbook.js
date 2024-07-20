@@ -16,14 +16,8 @@ const Guestbook = () => {
         }
     };
 
-    const addEntry = async (newEntry) => {
-        try {
-            const response = await axios.post('/api/v1/entries', newEntry);
-            console.log('Added new entry:', response.data);
-            setEntries([...entries, response.data]); // 새 항목을 기존 목록에 추가
-        } catch (error) {
-            console.error('Error adding entry:', error);
-        }
+    const addEntry = (newEntry) => {
+        setEntries([...entries, newEntry]); // 새 항목을 기존 목록에 추가
     };
 
     useEffect(() => {
