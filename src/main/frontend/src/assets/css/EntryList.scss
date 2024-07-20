@@ -30,6 +30,10 @@
     text-align: left;
 }
 
-.createDate {
-    font-size: 0.5em;
+/* 새로 추가할 CSS 스타일 */
+.entry-createDate {
+    font-size: 0.8em; /* 기본 폰트 크기의 80%로 설정 */
+    color: #999; /* 색상 설정 (선택 사항) */
+    margin-bottom: 10px;
+    text-align: center; /* 날짜를 가운데 정렬 (선택 사항) */
 }
