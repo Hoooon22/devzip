@@ -25,7 +25,7 @@ public class Entry {
 
     private String color;
 
-    private LocalDateTime createdDate;
+    private LocalDateTime createDate;
 
     // getters and setters (Lombok 등을 사용해 자동 생성)
 
@@ -69,11 +69,11 @@ public class Entry {
         this.color = color;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
-    
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 }

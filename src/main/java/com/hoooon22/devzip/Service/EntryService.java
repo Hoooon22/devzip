@@ -1,8 +1,5 @@
 package com.hoooon22.devzip.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hoooon22.devzip.Model.Entry;
 import com.hoooon22.devzip.Repository.EntryRepository;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EntryService {
@@ -23,7 +21,7 @@ public class EntryService {
     @Autowired
     private EntryRepository entryRepository;
 
-    @Resource
+    @Autowired
     private HttpServletRequest request;
 
     @Transactional(readOnly = true)
@@ -47,7 +45,7 @@ public class EntryService {
         entry.setColor(color);
         
         // 현재 날짜와 시간 설정
-        entry.setCreatedDate(LocalDateTime.now());
+        entry.setCreateDate(LocalDateTime.now());
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);
