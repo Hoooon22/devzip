@@ -29,10 +29,9 @@ public class EntryService {
     public List<Entry> getAllEntries() {
         logger.debug("Fetching all entries from the database");
         List<Entry> entries = entryRepository.findAll();
+        // IP를 기반으로 색상 설정
         for (Entry entry : entries) {
-            // IP에 따른 색상 설정
-            String clientIp = entry.getIp();
-            String color = generateColorFromIp(clientIp);
+            String color = getColorFromIp(entry.getIp());
             entry.setColor(color);
         }
         return entries;
@@ -42,7 +41,9 @@ public class EntryService {
     public Entry addEntry(Entry entry) {
         String clientIp = getClientIp();
         entry.setIp(clientIp);
-        entry.setColor(generateColorFromIp(clientIp)); // IP에 따른 색상 설정
+        // IP를 기반으로 색상 설정
+        String color = getColorFromIp(clientIp);
+        entry.setColor(color);
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);
@@ -60,9 +61,12 @@ public class EntryService {
         }
     }
 
-    private String generateColorFromIp(String ip) {
-        // IP를 해시값으로 변환하여 색상 생성
+    private String getColorFromIp(String ip) {
+        // IP를 해시하여 색상 생성
         int hash = ip.hashCode();
-        return String.format("#%06X", (hash & 0xFFFFFF));
+        int red = (hash & 0xFF0000) >> 16;
+        int green = (hash & 0x00FF00) >> 8;
+        int blue = hash & 0x0000FF;
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
 }
