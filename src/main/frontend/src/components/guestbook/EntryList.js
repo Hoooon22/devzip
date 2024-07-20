@@ -1,17 +1,25 @@
 import React from 'react';
-import '../../assets/css/EntryList.scss';
+import PropTypes from 'prop-types';
 
 const EntryList = ({ entries }) => {
     return (
-        <div className="entry-list-container">
+        <ul className="post-list">
             {entries.map(entry => (
-                <div key={entry.id} className="entry-item">
-                    <h3 className="entry-name">{entry.name}</h3>
-                    <p className="entry-content">{entry.content}</p>
-                </div>
+                <li
+                    key={entry.id}
+                    className="post-item"
+                    style={{ backgroundColor: entry.color }} // 색상 적용
+                >
+                    <strong style={{ color: entry.color }}>{entry.title}</strong>
+                    <p>{entry.content}</p>
+                </li>
             ))}
-        </div>
+        </ul>
     );
+};
+
+EntryList.propTypes = {
+    entries: PropTypes.array.isRequired
 };
 
 export default EntryList;

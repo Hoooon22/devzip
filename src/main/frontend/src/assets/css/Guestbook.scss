@@ -1,26 +1,17 @@
 .guestbook {
     text-align: center;
     margin: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .post-form {
     margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.post-form input, .post-form textarea {
-    width: 100%;
-    max-width: 500px;
+.post-form input {
     margin: 5px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box;
 }
 
 .post-form button {
@@ -30,27 +21,19 @@
     background-color: #007bff;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.post-form button:hover {
-    background-color: #0056b3;
 }
 
 .post-list {
     list-style-type: none;
     padding: 0;
-    width: 100%;
-    max-width: 600px;
+    text-align: center;
 }
 
 .post-item {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     margin: 5px 0;
-    background-color: #f9f9f9;
     border-radius: 4px;
-    text-align: left;
 }
 
 .pagination {
@@ -74,9 +57,4 @@
     border-radius: 4px;
     cursor: pointer;
     background-color: #f8f9fa;
-    transition: background-color 0.3s ease;
-}
-
-.pagination-link:hover {
-    background-color: #e2e6ea;
 }

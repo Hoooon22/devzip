@@ -28,13 +28,21 @@ public class EntryService {
     @Transactional(readOnly = true)
     public List<Entry> getAllEntries() {
         logger.debug("Fetching all entries from the database");
-        return entryRepository.findAll();
+        List<Entry> entries = entryRepository.findAll();
+        for (Entry entry : entries) {
+            // IP에 따른 색상 설정
+            String clientIp = entry.getIp();
+            String color = generateColorFromIp(clientIp);
+            entry.setColor(color);
+        }
+        return entries;
     }
 
     @Transactional
     public Entry addEntry(Entry entry) {
         String clientIp = getClientIp();
         entry.setIp(clientIp);
+        entry.setColor(generateColorFromIp(clientIp)); // IP에 따른 색상 설정
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);
@@ -50,5 +58,11 @@ public class EntryService {
         } else {
             return request.getRemoteAddr();
         }
+    }
+
+    private String generateColorFromIp(String ip) {
+        // IP를 해시값으로 변환하여 색상 생성
+        int hash = ip.hashCode();
+        return String.format("#%06X", (hash & 0xFFFFFF));
     }
 }
