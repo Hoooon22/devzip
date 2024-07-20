@@ -1,5 +1,6 @@
 package com.hoooon22.devzip.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class EntryService {
         // IP를 기반으로 색상 설정
         String color = getColorFromIp(clientIp);
         entry.setColor(color);
+        
+        // 현재 날짜와 시간 설정
+        entry.setCreatedDate(LocalDateTime.now());
 
         logger.debug("Adding new entry: {}", entry);
         Entry savedEntry = entryRepository.save(entry);

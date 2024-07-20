@@ -1,6 +1,8 @@
 // Entry.java
 package com.hoooon22.devzip.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,8 @@ public class Entry {
     private String ip;
 
     private String color;
+
+    private LocalDateTime createdDate;
 
     // getters and setters (Lombok 등을 사용해 자동 생성)
 
@@ -63,5 +67,13 @@ public class Entry {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+    
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }
