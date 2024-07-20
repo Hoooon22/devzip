@@ -468,7 +468,7 @@ node_modules/
 *.ctxt
 
 # Package Files
-*.jar
+# *.jar
 *.war
 *.nar
 *.ear
