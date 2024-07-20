@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../assets/css/EntryList.scss';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
