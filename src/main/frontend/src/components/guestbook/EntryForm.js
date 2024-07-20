@@ -35,7 +35,7 @@ const EntryForm = ({ addEntry }) => {
                 onChange={(e) => setContent(e.target.value)}
                 className="entry-form-textarea"
             />
-            <button type="submit" className="entry-form-button">Add Entry</button>
+            <button type="submit" className="entry-form-button">Submit</button>
         </form>
     );
 };
