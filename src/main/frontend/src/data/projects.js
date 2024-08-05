@@ -17,6 +17,15 @@ const projects = [
         startDate: '2024-07-10',
         endDate: ''
     },
+    { 
+        id: 3, 
+        name: 'AI in Server', 
+        description: 'By Spring AI', 
+        link: '/', 
+        active: false,
+        startDate: '2024-08-05',
+        endDate: ''
+    },
     // { 
     //     id: 3, 
     //     name: '타임 킬링용 게임', 
