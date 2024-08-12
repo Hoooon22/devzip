@@ -1,14 +1,11 @@
-// components/game/ChatWindow.js
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import '../../assets/css/ChatWindow.scss';
-import ChatBubble from './ChatBubble'; // ChatBubble 컴포넌트 import
+import '../../assets/css/ChatWindow.scss'
 
-const ChatWindow = ({ onNewMessage }) => {
+const ChatWindow = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
-  const [bubbles, setBubbles] = useState([]); // ChatBubble 상태 추가
   const messagesEndRef = useRef(null);
 
   // WebSocket 연결 설정 및 재연결 로직
@@ -21,13 +18,20 @@ const ChatWindow = ({ onNewMessage }) => {
     };
 
     socket.onmessage = (event) => {
-      const newMessage = event.data;
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setBubbles((prevBubbles) => [...prevBubbles, newMessage]); // 새로운 버블 추가
+      setMessages((prevMessages) => [...prevMessages, event.data]);
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('WebSocket error:', error);  // 전체 error 객체 출력
+      if (error.message) {
+        console.error('Error message:', error.message);
+      }
+      if (error.code) {
+        console.error('Error code:', error.code);
+      }
+      if (error.reason) {
+        console.error('Error reason:', error.reason);
+      }
     };
 
     socket.onclose = (event) => {
@@ -55,7 +59,7 @@ const ChatWindow = ({ onNewMessage }) => {
         ws.close();
       }
     };
-  }, [initializeWebSocket, ws]);
+  }, [initializeWebSocket]);
 
   const sendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
@@ -72,8 +76,8 @@ const ChatWindow = ({ onNewMessage }) => {
   }, [messages]);
 
   return (
-    <div className="chat-window">
-      <div className="chat-messages">
+    <div>
+      <div style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
           <div key={index}>{msg}</div>
         ))}
@@ -91,13 +95,6 @@ const ChatWindow = ({ onNewMessage }) => {
       />
       <button onClick={sendMessage} disabled={!connected}>Send</button>
       {!connected && <p>Disconnected. Reconnecting...</p>}
-
-      {/* 캐릭터 위에 표시되는 채팅 버블 */}
-      <div className="chat-bubbles">
-        {bubbles.map((bubble, index) => (
-          <ChatBubble key={index} message={bubble} />
-        ))}
-      </div>
     </div>
   );
 };
