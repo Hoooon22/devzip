@@ -21,7 +21,16 @@ const ChatWindow = () => {
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error: ', error);
+      console.error('WebSocket error: ', error.message);
+      if (error.message) {
+        console.error('Error message:', error.message);
+      }
+      if (error.code) {
+        console.error('Error code:', error.code);
+      }
+      if (error.reason) {
+        console.error('Error reason:', error.reason);
+      }
     };
 
     socket.onclose = (event) => {
