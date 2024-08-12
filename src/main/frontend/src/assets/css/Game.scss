@@ -1,41 +1,23 @@
-/* 전체 페이지에 대한 스타일 */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* 스크롤바 제거 */
-  }
-  
-  /* 게임 컨테이너 스타일 */
-  .game-container {
-    display: flex;
-    height: 100vh; /* 브라우저 뷰포트 높이에 맞춤 */
-    width: 100vw;  /* 브라우저 뷰포트 너비에 맞춤 */
-  }
-  
-  /* 게임 콘텐츠 영역 스타일 */
-  .game-content {
-    display: flex;
-    flex: 1; /* 공간을 채우기 위해 flex-grow 설정 */
-  }
-  
-  /* 캐릭터 영역 스타일 */
-  .character-area {
-    position: relative;
-    flex: 1; /* flex-grow 설정으로 나머지 공간을 채우기 위해 */
-    background-color: #eee; /* 배경색 (디버깅 용도) */
-    overflow: hidden; /* 캐릭터가 부모 영역을 넘지 않도록 설정 */
-  }
-  
-  /* 채팅창 스타일 */
-  .chat-window {
-    flex: 0 0 300px; /* 채팅창 너비 고정 */
+/* assets/css/Game.scss */
+.game-container {
     display: flex;
     flex-direction: column;
-    border-left: 1px solid #ccc;
-    padding: 10px;
-    background-color: #f9f9f9;
-    overflow-y: auto;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
   }
   
+  .game-content {
+    display: flex;
+    flex: 1;
+    position: relative; /* 캐릭터 및 채팅창을 포함한 게임 콘텐츠 */
+  }
+  
+  .chat-window {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border-top: 1px solid #ccc;
+  }

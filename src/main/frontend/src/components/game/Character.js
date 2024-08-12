@@ -1,9 +1,10 @@
+// components/game/Character.js
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
+import ChatBubble from '../game/ChatBubble'; // ChatBubble 컴포넌트 import
 
-const Character = ({ messages }) => {
+const Character = ({ onInteraction, messages }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [activeMessage, setActiveMessage] = useState(null);
   const characterAreaRef = useRef(null);
 
   const moveCharacter = (direction) => {
@@ -67,15 +68,14 @@ const Character = ({ messages }) => {
   }, []);
 
   useEffect(() => {
-    if (messages.length > 0) {
-      setActiveMessage(messages[messages.length - 1]);
-      const timer = setTimeout(() => {
-        setActiveMessage(null);
-      }, 10000); // 10초 후 사라지게
+    const checkForInteractions = () => {
+      if (onInteraction) {
+        onInteraction(position);
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
-  }, [messages]);
+    checkForInteractions();
+  }, [position, onInteraction]);
 
   return (
     <div className="character-area" ref={characterAreaRef}>
@@ -85,15 +85,12 @@ const Character = ({ messages }) => {
           top: `${position.top}px`,
           left: `${position.left}px`,
         }}
-      ></div>
-      {activeMessage && (
-        <div className="character-message" style={{
-          top: `${position.top - 60}px`,
-          left: `${position.left}px`,
-        }}>
-          {activeMessage}
-        </div>
-      )}
+      >
+        {/* 캐릭터 위에 표시되는 채팅 버블 */}
+        {messages.slice(-1).map((msg, index) => (
+          <ChatBubble key={index} message={msg} />
+        ))}
+      </div>
     </div>
   );
 };
