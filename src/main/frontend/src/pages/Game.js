@@ -1,13 +1,13 @@
 import React from 'react';
-import WebSocketClient from '../components/game/WebSocketClient';
+import Character from '../components/game/Character';
 
-const GamePage = () => {
-    return (
-        <div>
-            <h1>Game Page</h1>
-            <WebSocketClient />
-        </div>
-    );
+const Game = () => {
+  return (
+    <div>
+      <h1>Game Page</h1>
+      <Character />
+    </div>
+  );
 };
 
-export default GamePage;
+export default Game;
