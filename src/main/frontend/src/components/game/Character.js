@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 
 const Character = () => {
@@ -38,6 +38,33 @@ const Character = () => {
     });
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      switch (event.key) {
+        case 'ArrowUp':
+          moveCharacter('up');
+          break;
+        case 'ArrowDown':
+          moveCharacter('down');
+          break;
+        case 'ArrowLeft':
+          moveCharacter('left');
+          break;
+        case 'ArrowRight':
+          moveCharacter('right');
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <div className="character-area" ref={characterAreaRef}>
       <div
@@ -47,12 +74,6 @@ const Character = () => {
           left: `${position.left}px`,
         }}
       ></div>
-      <div className="controls">
-        <button onClick={() => moveCharacter('up')}>Up</button>
-        <button onClick={() => moveCharacter('down')}>Down</button>
-        <button onClick={() => moveCharacter('left')}>Left</button>
-        <button onClick={() => moveCharacter('right')}>Right</button>
-      </div>
     </div>
   );
 };
