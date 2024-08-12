@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import '../../assets/css/ChatWindow.scss'
+import '../../assets/css/ChatWindow.scss';
 
 const ChatWindow = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
@@ -24,7 +24,7 @@ const ChatWindow = ({ onNewMessage }) => {
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);  // 전체 error 객체 출력
+      console.error('WebSocket error:', error);
     };
 
     socket.onclose = (event) => {
