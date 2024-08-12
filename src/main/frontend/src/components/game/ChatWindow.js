@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 const ChatWindow = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
+  const messagesEndRef = useRef(null);
 
   // WebSocket 연결 설정 및 재연결 로직
   const initializeWebSocket = useCallback(() => {
@@ -59,12 +60,18 @@ const ChatWindow = () => {
     }
   };
 
+  // Scroll to bottom of the chat
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   return (
     <div>
       <div style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
           <div key={index}>{msg}</div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <input
         value={message}
