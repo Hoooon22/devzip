@@ -1,10 +1,10 @@
 package com.hoooon22.devzip.Config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import com.hoooon22.devzip.Handler.ChatHandler;
 
@@ -14,8 +14,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new ChatHandler(), "/chat")
-                .setAllowedOrigins("*")
-                .addInterceptors(new HttpSessionHandshakeInterceptor());
+        registry.addHandler(chatHandler(), "/chatting");
+    }
+
+    // WebSocketHandler bean 정의
+    @Bean
+    public ChatHandler chatHandler() {
+        return new ChatHandler();
     }
 }
