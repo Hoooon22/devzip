@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../assets/css/ChatWindow.scss'
 
-const ChatWindow = () => {
+const ChatWindow = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
@@ -18,20 +18,13 @@ const ChatWindow = () => {
     };
 
     socket.onmessage = (event) => {
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+      const newMessage = event.data;
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (onNewMessage) onNewMessage(newMessage); // New message event
     };
 
     socket.onerror = (error) => {
       console.error('WebSocket error:', error);  // 전체 error 객체 출력
-      if (error.message) {
-        console.error('Error message:', error.message);
-      }
-      if (error.code) {
-        console.error('Error code:', error.code);
-      }
-      if (error.reason) {
-        console.error('Error reason:', error.reason);
-      }
     };
 
     socket.onclose = (event) => {
@@ -47,7 +40,7 @@ const ChatWindow = () => {
         socket.close();
       }
     };
-  }, []);
+  }, [onNewMessage]);
 
   useEffect(() => {
     // WebSocket 초기화
@@ -59,7 +52,7 @@ const ChatWindow = () => {
         ws.close();
       }
     };
-  }, [initializeWebSocket]);
+  }, [initializeWebSocket, ws]);
 
   const sendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
@@ -76,8 +69,8 @@ const ChatWindow = () => {
   }, [messages]);
 
   return (
-    <div>
-      <div style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
+    <div className="chat-window">
+      <div className="chat-messages">
         {messages.map((msg, index) => (
           <div key={index}>{msg}</div>
         ))}

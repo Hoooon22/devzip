@@ -11,3 +11,12 @@
   height: 50px;
   background-color: red; /* 캐릭터의 색상 */
 }
+
+.character-message {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+}

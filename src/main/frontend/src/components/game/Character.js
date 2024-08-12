@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 
-const Character = ({ onInteraction }) => {
+const Character = ({ messages }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [activeMessage, setActiveMessage] = useState(null);
   const characterAreaRef = useRef(null);
 
   const moveCharacter = (direction) => {
@@ -66,14 +67,15 @@ const Character = ({ onInteraction }) => {
   }, []);
 
   useEffect(() => {
-    const checkForInteractions = () => {
-      if (onInteraction) {
-        onInteraction(position);
-      }
-    };
+    if (messages.length > 0) {
+      setActiveMessage(messages[messages.length - 1]);
+      const timer = setTimeout(() => {
+        setActiveMessage(null);
+      }, 10000); // 10초 후 사라지게
 
-    checkForInteractions();
-  }, [position, onInteraction]);
+      return () => clearTimeout(timer);
+    }
+  }, [messages]);
 
   return (
     <div className="character-area" ref={characterAreaRef}>
@@ -84,6 +86,14 @@ const Character = ({ onInteraction }) => {
           left: `${position.left}px`,
         }}
       ></div>
+      {activeMessage && (
+        <div className="character-message" style={{
+          top: `${position.top - 60}px`,
+          left: `${position.left}px`,
+        }}>
+          {activeMessage}
+        </div>
+      )}
     </div>
   );
 };
