@@ -9,7 +9,7 @@ const WebSocketClient = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/game-websocket');
+        const socket = new SockJS('https://localhost:8080/game-websocket');
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
