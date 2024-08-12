@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../../assets/css/Character.scss';
 
 const Character = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -24,19 +25,18 @@ const Character = () => {
   return (
     <div>
       <div
+        className="character"
         style={{
-          position: 'absolute',
           top: `${position.top}px`,
           left: `${position.left}px`,
-          width: '50px',
-          height: '50px',
-          backgroundColor: 'red',
         }}
       ></div>
-      <button onClick={() => moveCharacter('up')}>Up</button>
-      <button onClick={() => moveCharacter('down')}>Down</button>
-      <button onClick={() => moveCharacter('left')}>Left</button>
-      <button onClick={() => moveCharacter('right')}>Right</button>
+      <div className="controls">
+        <button onClick={() => moveCharacter('up')}>Up</button>
+        <button onClick={() => moveCharacter('down')}>Down</button>
+        <button onClick={() => moveCharacter('left')}>Left</button>
+        <button onClick={() => moveCharacter('right')}>Right</button>
+      </div>
     </div>
   );
 };
