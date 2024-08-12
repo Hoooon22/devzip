@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import '../../assets/css/ChatWindow.scss'
 
 const ChatWindow = () => {
   const [message, setMessage] = useState('');
