@@ -5,10 +5,11 @@
     border-left: 1px solid #ccc;
     background-color: #f9f9f9;
     overflow-y: auto;
+    height: 100%; /* 채팅창 높이 100%로 설정 */
   }
   
   .chat-messages {
-    flex: 1;
+    flex: 1; /* 메시지 영역이 남은 공간을 차지하도록 설정 */
     overflow-y: auto;
     margin-bottom: 10px;
   }

@@ -2,7 +2,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 70%;
+    height: 100%;
     width: 100%;
     overflow: hidden; /* 스크롤바 제거 */
   }
@@ -32,7 +32,7 @@ html, body {
   
   /* 채팅창 스타일 */
   .chat-window {
-    flex: 1; /* flex-grow 설정으로 나머지 공간을 채우기 위해 */
+    flex: 0 0 300px; /* 채팅창 너비 고정 */
     display: flex;
     flex-direction: column;
     border-left: 1px solid #ccc;

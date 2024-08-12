@@ -1,13 +1,13 @@
 .character-area {
   position: relative;
-  width: 100vw; // 화면 전체 너비
-  height: 100vh; // 화면 전체 높이
-  background-color: #eee; // 배경색 (디버깅 용도)
+  flex: 1; /* flex-grow 설정으로 나머지 공간을 채우기 위해 */
+  background-color: #eee; /* 배경색 (디버깅 용도) */
+  overflow: hidden; /* 캐릭터가 부모 영역을 넘지 않도록 설정 */
 }
 
 .character {
   position: absolute;
   width: 50px;
   height: 50px;
-  background-color: red; // 캐릭터의 색상
+  background-color: red; /* 캐릭터의 색상 */
 }
