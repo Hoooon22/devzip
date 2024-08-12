@@ -1,7 +1,7 @@
 import './App.css';
 import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
-import WebSocketClient from "./pages/WebSocketClient";
+import Game from "./pages/Game";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
         <Route path="/Guestbook" element={<Guestbook />} />
 
         {/* 게임 페이지 */}
-        <Route path="/WebSocketClient" element={<WebSocketClient />} />
+        <Route path="/Game" element={<Game />} />
       </Routes>
     </BrowserRouter>
   );
