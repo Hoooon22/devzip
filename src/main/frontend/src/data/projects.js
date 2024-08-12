@@ -19,8 +19,8 @@ const projects = [
     },
     { 
         id: 3, 
-        name: 'AI in Server', 
-        description: 'By Spring AI', 
+        name: 'The Map', 
+        description: '유저끼리 상호작용이 가능한 공간', 
         link: '/', 
         active: false,
         startDate: '2024-08-05',

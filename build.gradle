@@ -32,10 +32,12 @@ dependencies {
 	implementation 'com.h2database:h2'
 	implementation 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 repositories {
 	mavenCentral()
+    maven {url 'https://repo.spring.io/snapshot'} // 스냅샷 저장소 추가
 }
 
 tasks.named('test') {
