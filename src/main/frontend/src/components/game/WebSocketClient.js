@@ -1,42 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+// stompjs 대신 @stomp/stompjs
+import { Client } from '@stomp/stompjs';
 
 const WebSocketClient = () => {
     const [stompClient, setStompClient] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [message, setMessage] = useState([]);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const socket = new SockJS('http://localhost:8080/game-websocket');
-        const client = Stomp.over(socket);
-
-        client.connect({}, () => {
-            client.subscribe('/topic/game', (msg) => {
-                const newMessage = JSON.parse(msg.body);
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            });
+        const client = new Client({
+            webSocketFactory: () => socket,
+            onConnect: () => {
+                client.subscribe('/topic/game', (msg) => {
+                    const newMessage = JSON.parse(msg.body);
+                    setMessages((prevMessages) => [...prevMessages, newMessage]);
+                });
+            },
         });
 
+        client.activate();
         setStompClient(client);
 
         return () => {
             if (stompClient) {
-                stompClient.disconnect();
+                stompClient.deactivate();
             }
         };
     }, []);
 
     const sendMessage = () => {
         if (stompClient && stompClient.connected) {
-            stompClient.send('/app/message', {}, JSON.stringify({ contect: message }));
+            stompClient.publish({ destination: '/app/message', body: JSON.stringify({ content: message }) });
             setMessage('');
         }
-    }
+    };
 
     return (
         <div>
-            <h1>Game Chat</h1>
+            <h1>RPG Game Chat</h1>
             <div>
                 {messages.map((msg, index) => (
                     <div key={index}>{msg.content}</div>
@@ -50,4 +53,6 @@ const WebSocketClient = () => {
             <button onClick={sendMessage}>Send</button>
         </div>
     );
-}
+};
+
+export default WebSocketClient;
