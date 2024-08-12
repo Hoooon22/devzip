@@ -1,4 +1,5 @@
 // components/game/Character.js
+
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; // ChatBubble 컴포넌트 import
@@ -82,6 +83,10 @@ const Character = ({ onInteraction, messages }) => {
       <div
         className="character"
         style={{
+          position: 'absolute', // 캐릭터 위치 설정
+          width: '50px', // 캐릭터 크기
+          height: '50px',
+          backgroundColor: 'lightgray', // 예시로 배경색 지정
           top: `${position.top}px`,
           left: `${position.left}px`,
         }}

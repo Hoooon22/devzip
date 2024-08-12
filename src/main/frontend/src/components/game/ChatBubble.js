@@ -1,26 +1,23 @@
 // components/game/ChatBubble.js
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import '../../assets/css/ChatBubble.scss';
 
-const ChatBubble = ({ message, duration = 10000 }) => {
+const ChatBubble = ({ message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // 주어진 시간 후 메시지를 숨기도록 설정
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, duration);
-
-    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
+    // 메시지를 받은 후 10초 동안 표시하고 사라짐
+    const timer = setTimeout(() => setVisible(false), 10000);
     return () => clearTimeout(timer);
-  }, [duration]);
+  }, [message]);
+
+  if (!visible) return null;
 
   return (
-    visible && (
-      <div className="chat-bubble">
-        {message}
-      </div>
-    )
+    <div className="chat-bubble">
+      {message}
+    </div>
   );
 };
 
