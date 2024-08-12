@@ -1,13 +1,14 @@
 // components/game/ChatWindow.js
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../assets/css/ChatWindow.scss';
-import ChatBubble from '../game/ChatBubble'; // ChatBubble 컴포넌트 import
+import ChatBubble from './ChatBubble'; // ChatBubble 컴포넌트 import
 
 const ChatWindow = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
+  const [bubbles, setBubbles] = useState([]); // ChatBubble 상태 추가
   const messagesEndRef = useRef(null);
 
   // WebSocket 연결 설정 및 재연결 로직
@@ -22,7 +23,7 @@ const ChatWindow = ({ onNewMessage }) => {
     socket.onmessage = (event) => {
       const newMessage = event.data;
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-      onNewMessage(newMessage); // 새 메시지를 부모에게 전달
+      setBubbles((prevBubbles) => [...prevBubbles, newMessage]); // 새로운 버블 추가
     };
 
     socket.onerror = (error) => {
@@ -42,7 +43,7 @@ const ChatWindow = ({ onNewMessage }) => {
         socket.close();
       }
     };
-  }, [onNewMessage]);
+  }, []);
 
   useEffect(() => {
     // WebSocket 초기화
@@ -59,7 +60,6 @@ const ChatWindow = ({ onNewMessage }) => {
   const sendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
       ws.send(message);
-      onNewMessage(message); // 메시지를 보낼 때도 콜백 호출
       setMessage('');
     } else {
       console.error('WebSocket is not open or message is empty');
@@ -91,6 +91,13 @@ const ChatWindow = ({ onNewMessage }) => {
       />
       <button onClick={sendMessage} disabled={!connected}>Send</button>
       {!connected && <p>Disconnected. Reconnecting...</p>}
+
+      {/* 캐릭터 위에 표시되는 채팅 버블 */}
+      <div className="chat-bubbles">
+        {bubbles.map((bubble, index) => (
+          <ChatBubble key={index} message={bubble} />
+        ))}
+      </div>
     </div>
   );
 };
