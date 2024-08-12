@@ -34,7 +34,7 @@ dependencies {
 	implementation 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 repositories {
