@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
-import '../assets/css/Game.scss';
+import '../assets/css/Game.scss'; // SCSS 파일을 임포트
 
 const Game = () => {
-  const [characterPosition, setCharacterPosition] = useState({ top: 0, left: 0 });
-
   const handleCharacterInteraction = (position) => {
     // 예: 상호작용 범위 안에 들어온 다른 캐릭터와 상호작용
     console.log('Character position:', position);
@@ -13,8 +11,7 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      <h1>Game Page</h1>
-      <div className="game-area">
+      <div className="game-content">
         <Character onInteraction={handleCharacterInteraction} />
         <ChatWindow />
       </div>
