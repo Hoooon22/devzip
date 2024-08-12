@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(chatHandler(), "/game-chatting")
-                .setAllowedOrigins("https://devzip.site"); // CORS 설정
+                .setAllowedOrigins("*"); // CORS 설정 (필요에 따라 변경)
     }
 
     @Bean
