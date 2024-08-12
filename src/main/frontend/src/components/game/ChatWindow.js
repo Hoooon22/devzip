@@ -8,7 +8,7 @@ const ChatWindow = () => {
 
   // WebSocket 연결 설정 및 재연결 로직
   const initializeWebSocket = useCallback(() => {
-    const socket = new WebSocket('ws://devzip.com:8080/game-chatting');
+    const socket = new WebSocket('wss://devzip.com:8080/game-chatting');
 
     socket.onopen = () => {
       console.log('WebSocket connection opened');
