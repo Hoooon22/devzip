@@ -14,7 +14,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatHandler(), "/chatting");
+        registry.addHandler(chatHandler(), "/game-chatting");
     }
 
     // WebSocketHandler bean 정의
