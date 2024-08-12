@@ -1,7 +1,9 @@
+// Character.js의 수정된 부분
+
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 
-const Character = () => {
+const Character = ({ onInteraction }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const characterAreaRef = useRef(null);
 
@@ -64,6 +66,17 @@ const Character = () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
+
+  // Check for interaction with other characters
+  useEffect(() => {
+    const checkForInteractions = () => {
+      if (onInteraction) {
+        onInteraction(position);
+      }
+    };
+
+    checkForInteractions();
+  }, [position, onInteraction]);
 
   return (
     <div className="character-area" ref={characterAreaRef}>
