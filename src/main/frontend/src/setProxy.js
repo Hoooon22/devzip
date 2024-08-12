@@ -15,7 +15,7 @@ module.exports = function(app) {
   app.use(
     '/game-chatting',
     createProxyMiddleware({
-      target: 'ws://localhost:8080',  // WebSocket 서버 URL
+      target: 'wss://localhost:8080',  // WebSocket 서버 URL
       ws: true,  // WebSocket 연결을 프록시하도록 설정
       changeOrigin: true,
     })
