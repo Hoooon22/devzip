@@ -1,5 +1,3 @@
-// Character.js의 수정된 부분
-
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 
@@ -67,7 +65,6 @@ const Character = ({ onInteraction }) => {
     };
   }, []);
 
-  // Check for interaction with other characters
   useEffect(() => {
     const checkForInteractions = () => {
       if (onInteraction) {
