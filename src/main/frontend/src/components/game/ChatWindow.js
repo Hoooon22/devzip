@@ -6,9 +6,8 @@ const ChatWindow = () => {
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
 
-  // WebSocket 연결 설정 및 재연결 로직
   const initializeWebSocket = useCallback(() => {
-    const socket = new WebSocket('wss://devzip.site:8080/game-chatting');
+    const socket = new WebSocket('wss://devzip.site/game-chatting'); // 포트 제거
 
     socket.onopen = () => {
       console.log('WebSocket connection opened');
@@ -26,6 +25,7 @@ const ChatWindow = () => {
     socket.onclose = (event) => {
       console.log('WebSocket connection closed', event.reason);
       setConnected(false);
+      setWs(null);
       setTimeout(initializeWebSocket, 5000); // 5초 후 재연결 시도
     };
 
@@ -39,16 +39,13 @@ const ChatWindow = () => {
   }, []);
 
   useEffect(() => {
-    // WebSocket 초기화
     initializeWebSocket();
-
-    // 컴포넌트 언마운트 시 연결 종료
     return () => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
       }
     };
-  }, [initializeWebSocket]);
+  }, [initializeWebSocket, ws]);
 
   const sendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {

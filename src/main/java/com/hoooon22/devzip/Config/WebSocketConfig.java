@@ -14,10 +14,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatHandler(), "/game-chatting");
+        registry.addHandler(chatHandler(), "/game-chatting")
+                .setAllowedOrigins("https://devzip.site"); // CORS 설정
     }
 
-    // WebSocketHandler bean 정의
     @Bean
     public ChatHandler chatHandler() {
         return new ChatHandler();
