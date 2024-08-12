@@ -6,7 +6,7 @@ const ChatWindow = () => {
   const [ws, setWs] = useState(null);
 
   useEffect(() => {
-    const socket = new WebSocket('wss://localhost:8080/chat');
+    const socket = new WebSocket('https://localhost:8080/chat');
     socket.onmessage = (event) => {
       setMessages((prevMessages) => [...prevMessages, event.data]);
     };
