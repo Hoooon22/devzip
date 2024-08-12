@@ -7,12 +7,16 @@ const ChatBubble = ({ message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // 메시지를 받은 후 10초 동안 표시하고 사라짐
-    const timer = setTimeout(() => setVisible(false), 10000);
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 10000); // 10초 후에 메시지를 숨깁니다.
+
     return () => clearTimeout(timer);
   }, [message]);
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <div className="chat-bubble">

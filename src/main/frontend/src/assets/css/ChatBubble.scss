@@ -1,16 +1,13 @@
-// assets/css/ChatBubble.scss
-
+/* ChatBubble.scss */
 .chat-bubble {
     position: absolute;
-    bottom: 100%; /* 캐릭터 바로 위에 위치 */
+    top: -30px; /* 캐릭터 위에 위치하도록 설정 */
     left: 50%;
     transform: translateX(-50%);
     background-color: white;
     padding: 5px 10px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
-    pointer-events: none; /* 클릭 불가 */
     z-index: 10;
   }
-  

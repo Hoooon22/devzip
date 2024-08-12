@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import '../../assets/css/ChatWindow.scss'
+// components/game/ChatWindow.js
 
-const ChatWindow = () => {
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import '../../assets/css/ChatWindow.scss';
+
+const ChatWindow = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
@@ -19,6 +21,9 @@ const ChatWindow = () => {
 
     socket.onmessage = (event) => {
       setMessages((prevMessages) => [...prevMessages, event.data]);
+      if (onNewMessage) {
+        onNewMessage(event.data);
+      }
     };
 
     socket.onerror = (error) => {
@@ -47,7 +52,7 @@ const ChatWindow = () => {
         socket.close();
       }
     };
-  }, []);
+  }, [onNewMessage]);
 
   useEffect(() => {
     // WebSocket 초기화
@@ -76,14 +81,15 @@ const ChatWindow = () => {
   }, [messages]);
 
   return (
-    <div>
-      <div style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
+    <div className="chat-window">
+      <div className="chat-messages" style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
           <div key={index}>{msg}</div>
         ))}
         <div ref={messagesEndRef} />
       </div>
       <input
+        className="chat-input"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => {
@@ -93,8 +99,8 @@ const ChatWindow = () => {
         }}
         disabled={!connected}
       />
-      <button onClick={sendMessage} disabled={!connected}>Send</button>
-      {!connected && <p>Disconnected. Reconnecting...</p>}
+      <button className="chat-send-button" onClick={sendMessage} disabled={!connected}>Send</button>
+      {!connected && <p className="chat-disconnected-message">Disconnected. Reconnecting...</p>}
     </div>
   );
 };
