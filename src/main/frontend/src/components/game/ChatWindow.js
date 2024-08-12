@@ -21,7 +21,7 @@ const ChatWindow = () => {
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error: ', error.message);
+      console.error('WebSocket error:', error);  // 전체 error 객체 출력
       if (error.message) {
         console.error('Error message:', error.message);
       }
