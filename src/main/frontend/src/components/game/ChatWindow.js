@@ -1,5 +1,3 @@
-// components/game/ChatWindow.js
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../assets/css/ChatWindow.scss';
 
@@ -9,6 +7,7 @@ const ChatWindow = ({ onNewMessage }) => {
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
   const messagesEndRef = useRef(null);
+  const isSending = useRef(false); // 메시지 전송 중인지 여부를 추적
 
   // WebSocket 연결 설정 및 재연결 로직
   const initializeWebSocket = useCallback(() => {
@@ -27,16 +26,7 @@ const ChatWindow = ({ onNewMessage }) => {
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);  // 전체 error 객체 출력
-      if (error.message) {
-        console.error('Error message:', error.message);
-      }
-      if (error.code) {
-        console.error('Error code:', error.code);
-      }
-      if (error.reason) {
-        console.error('Error reason:', error.reason);
-      }
+      console.error('WebSocket error:', error);
     };
 
     socket.onclose = (event) => {
@@ -67,9 +57,15 @@ const ChatWindow = ({ onNewMessage }) => {
   }, [initializeWebSocket]);
 
   const sendMessage = () => {
+    if (isSending.current) return; // 이미 메시지를 보내는 중이면 return
+
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
+      isSending.current = true; // 메시지 전송 시작
       ws.send(message);
       setMessage('');
+      setTimeout(() => {
+        isSending.current = false; // 전송 후에 상태 초기화
+      }, 100); // 적절한 딜레이 설정
     } else {
       console.error('WebSocket is not open or message is empty');
     }
