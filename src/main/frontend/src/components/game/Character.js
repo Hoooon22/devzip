@@ -1,29 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import '../../assets/css/Character.scss';
 
 const Character = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const characterAreaRef = useRef(null);
 
   const moveCharacter = (direction) => {
     setPosition((prevPosition) => {
       const step = 10;
+      const characterArea = characterAreaRef.current;
+      const characterAreaRect = characterArea.getBoundingClientRect();
+
+      // 캐릭터의 크기
+      const characterSize = 50;
+
+      let newTop = prevPosition.top;
+      let newLeft = prevPosition.left;
+
       switch (direction) {
         case 'up':
-          return { ...prevPosition, top: prevPosition.top - step };
+          newTop = Math.max(prevPosition.top - step, 0);
+          break;
         case 'down':
-          return { ...prevPosition, top: prevPosition.top + step };
+          newTop = Math.min(prevPosition.top + step, characterAreaRect.height - characterSize);
+          break;
         case 'left':
-          return { ...prevPosition, left: prevPosition.left - step };
+          newLeft = Math.max(prevPosition.left - step, 0);
+          break;
         case 'right':
-          return { ...prevPosition, left: prevPosition.left + step };
+          newLeft = Math.min(prevPosition.left + step, characterAreaRect.width - characterSize);
+          break;
         default:
-          return prevPosition;
+          break;
       }
+
+      return { top: newTop, left: newLeft };
     });
   };
 
   return (
-    <div>
+    <div className="character-area" ref={characterAreaRef}>
       <div
         className="character"
         style={{

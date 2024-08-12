@@ -1,17 +1,19 @@
-/* Character.css */
+/* Character.scss */
+.character-area {
+  position: relative;
+  width: 500px; /* 캐릭터 영역의 너비 */
+  height: 300px; /* 캐릭터 영역의 높이 */
+  border: 2px solid black;
+  overflow: hidden; /* 캐릭터가 영역을 넘어가지 않도록 */
+}
 
 .character {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: red;
-  }
-  
-  .controls {
-    margin-top: 20px;
-  }
-  
-  .controls button {
-    margin: 5px;
-  }
-  
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: red;
+}
+
+.controls {
+  margin-top: 10px;
+}
