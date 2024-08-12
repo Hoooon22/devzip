@@ -1,20 +1,37 @@
+/* ChatWindow.scss */
 .chat-window {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-left: 1px solid #ccc;
-    background-color: #f9f9f9;
-    overflow-y: auto;
-    height: 100%; /* 채팅창 높이 100%로 설정 */
+    width: 300px;
+    margin: 10px;
+    font-family: Arial, sans-serif;
   }
   
   .chat-messages {
-    flex: 1; /* 메시지 영역이 남은 공간을 차지하도록 설정 */
-    overflow-y: auto;
-    margin-bottom: 10px;
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: #f9f9f9;
   }
   
-  input, button {
-    margin: 5px 0;
+  .chat-input {
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .chat-send-button {
+    margin-top: 5px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .chat-disconnected-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
   }
   
