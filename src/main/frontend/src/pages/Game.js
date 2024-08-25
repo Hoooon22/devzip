@@ -10,7 +10,7 @@ const Game = () => {
 
   useEffect(() => {
     // WebSocket 연결 설정
-    ws = new WebSocket('wss://your-backend-url/game-chatting');
+    ws = new WebSocket('wss://devzip.site/game-chatting');
 
     ws.onopen = () => {
       console.log('WebSocket connection opened');
