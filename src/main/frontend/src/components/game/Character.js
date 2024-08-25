@@ -51,8 +51,8 @@ const Character = ({ id, position, onMove }) => {
       className="character"
       style={{
         position: 'absolute',
-        top: `${position.y || 0}px`,
-        left: `${position.x || 0}px`,
+        top: `${position.y}px`,
+        left: `${position.x}px`,
         backgroundColor: position.color || 'lightgray',
         width: '50px',
         height: '50px',
@@ -62,7 +62,8 @@ const Character = ({ id, position, onMove }) => {
         textAlign: 'center',
         fontSize: '12px',
         color: 'white',
-        borderRadius: '5px'
+        borderRadius: '5px',
+        transition: 'top 0.1s, left 0.1s' // 부드러운 이동 효과
       }}
     >
       {position.message && <ChatBubble message={position.message} />}
