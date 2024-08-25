@@ -8,7 +8,7 @@ import '../assets/css/Game.scss';
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
-  const ws = useRef(null); // useRef로 ws 저장
+  const ws = useRef(null);
 
   useEffect(() => {
     // WebSocket 연결 설정
@@ -25,7 +25,12 @@ const Game = () => {
       if (receivedData.characterId) {
         setCharacters((prevCharacters) => ({
           ...prevCharacters,
-          [receivedData.characterId]: receivedData
+          [receivedData.characterId]: {
+            x: receivedData.x || 0,
+            y: receivedData.y || 0,
+            color: receivedData.color || 'lightgray',
+            message: receivedData.message || ''
+          }
         }));
       } else {
         // 메시지가 들어온 경우
@@ -54,8 +59,6 @@ const Game = () => {
   const handleNewMessage = (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
-
-  console.log('Characters:', characters); // Characters 상태 확인
 
   return (
     <div className="game-container">

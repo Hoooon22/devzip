@@ -4,12 +4,14 @@ import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; 
 
-const Character = ({ id, position = {}, onMove }) => {
+const Character = ({ id, position, onMove }) => {
   useEffect(() => {
-    console.log('Character position:', position); // 캐릭터 위치 확인
+    console.log(`Character ${id} position:`, position); // 위치 확인
   }, [position]);
 
   const handleKeyDown = (event) => {
+    if (!position) return;
+
     let { x = 0, y = 0 } = position;
 
     switch (event.key) {
@@ -40,7 +42,7 @@ const Character = ({ id, position = {}, onMove }) => {
     };
   }, [position]);
 
-  if (!position || Object.keys(position).length === 0) {
+  if (!position) {
     return null;
   }
 
