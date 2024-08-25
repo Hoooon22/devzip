@@ -1,7 +1,8 @@
-/* assets/css/Game.scss */
+// assets/css/Game.scss
+
 .game-container {
   position: relative;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
 }
 
@@ -9,5 +10,4 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid #ddd; /* 디버깅을 위한 경계선 */
 }

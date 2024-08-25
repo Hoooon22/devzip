@@ -1,7 +1,8 @@
 // components/game/Character.js
+
 import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
-import ChatBubble from '../game/ChatBubble';
+import ChatBubble from '../game/ChatBubble'; 
 
 const Character = ({ id, position, onMove }) => {
   const handleKeyDown = (event) => {
@@ -39,12 +40,22 @@ const Character = ({ id, position, onMove }) => {
     <div
       className="character"
       style={{
+        position: 'absolute',
         top: `${position.y}px`,
         left: `${position.x}px`,
-        backgroundColor: position.color || 'gray', // Default color if not provided
+        backgroundColor: position.color || 'lightgray', // 기본 색상 지정
+        width: '50px',
+        height: '50px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        fontSize: '12px',
+        color: 'white',
+        borderRadius: '5px'
       }}
     >
-      <ChatBubble message="Hello!" />
+      {position.message && <ChatBubble message={position.message} />}
     </div>
   );
 };
