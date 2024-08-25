@@ -2,17 +2,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
-import ChatBubble from '../game/ChatBubble'; // ChatBubble 컴포넌트 import
+import ChatBubble from '../game/ChatBubble'; 
 
-const Character = ({ id, onInteraction, messages }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const characterAreaRef = useRef(null);
+const Character = ({ id, initialPosition, onInteraction, messages }) => {
+  const [position, setPosition] = useState(initialPosition);
+  const characterRef = useRef(null);
 
   const moveCharacter = (direction) => {
     setPosition((prevPosition) => {
       const step = 10;
-      const characterArea = characterAreaRef.current;
-      const characterAreaRect = characterArea.getBoundingClientRect();
+      const characterArea = characterRef.current?.parentElement;
+      const characterAreaRect = characterArea?.getBoundingClientRect();
 
       // 캐릭터의 크기
       const characterSize = 50;
@@ -79,25 +79,23 @@ const Character = ({ id, onInteraction, messages }) => {
   }, [position, onInteraction]);
 
   return (
-    <div className="character-area" ref={characterAreaRef}>
-      <div
-        className="character"
-        style={{
-          position: 'absolute', // 캐릭터 위치 설정
-          width: '50px', // 캐릭터 크기
-          height: '50px',
-          backgroundColor: 'lightgray', // 예시로 배경색 지정
-          top: `${position.top}px`,
-          left: `${position.left}px`,
-        }}
-      >
-        {/* 캐릭터 위에 표시되는 채팅 버블 */}
-        {messages
-          .slice(-1) // 마지막 메시지만 표시
-          .map((msg, index) => (
-            <ChatBubble key={index} message={msg.text} />
-          ))}
-      </div>
+    <div
+      ref={characterRef}
+      className="character"
+      style={{
+        position: 'absolute',
+        width: '50px',
+        height: '50px',
+        backgroundColor: 'lightgray',
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+      }}
+    >
+      {messages
+        .slice(-1) // 마지막 메시지만 표시
+        .map((msg, index) => (
+          <ChatBubble key={index} message={msg.text} />
+        ))}
     </div>
   );
 };

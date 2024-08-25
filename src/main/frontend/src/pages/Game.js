@@ -9,8 +9,8 @@ const Game = () => {
   const [messages, setMessages] = useState({});
 
   const characters = [
-    { id: 'char1', position: { top: 50, left: 100 } },
-    { id: 'char2', position: { top: 150, left: 200 } },
+    { id: 'char1', initialPosition: { top: 50, left: 100 } },
+    { id: 'char2', initialPosition: { top: 150, left: 200 } },
     // 필요한 만큼 캐릭터 추가
   ];
 
@@ -23,22 +23,21 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      <div className="game-content">
+      <div className="character-area">
         {characters.map((char) => (
-          <div key={char.id} className="character-with-chat">
-            <Character
-              id={char.id}
-              position={char.position}
-              messages={messages[char.id] || []}
-              onInteraction={() => {}}
-            />
-            <ChatWindow
-              characterId={char.id}
-              onNewMessage={(message) => handleNewMessage(char.id, message)}
-            />
-          </div>
+          <Character
+            key={char.id}
+            id={char.id}
+            initialPosition={char.initialPosition}
+            messages={messages[char.id] || []}
+            onInteraction={() => {}}
+          />
         ))}
       </div>
+      <ChatWindow
+        characterId={characters[0].id} // 첫 번째 캐릭터의 ID로 채팅 창을 연결
+        onNewMessage={(message) => handleNewMessage(characters[0].id, message)}
+      />
     </div>
   );
 };
