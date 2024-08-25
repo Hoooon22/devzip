@@ -1,5 +1,4 @@
 // components/game/Character.js
-
 import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; 
@@ -40,12 +39,9 @@ const Character = ({ id, position, onMove }) => {
     <div
       className="character"
       style={{
-        position: 'absolute',
         top: `${position.y}px`,
         left: `${position.x}px`,
-        backgroundColor: position.color,
-        width: '50px',
-        height: '50px'
+        backgroundColor: position.color || 'gray', // Default color if not provided
       }}
     >
       <ChatBubble message="Hello!" />
