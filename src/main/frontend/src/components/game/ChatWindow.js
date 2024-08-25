@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../assets/css/ChatWindow.scss';
 
-const ChatWindow = ({ onNewMessage, characterId }) => {
+const ChatWindow = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
@@ -22,12 +22,9 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
     };
 
     socket.onmessage = (event) => {
-      const receivedMessage = JSON.parse(event.data);
-      if (receivedMessage.characterId === characterId) {
-        setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-        if (onNewMessage) {
-          onNewMessage(receivedMessage);
-        }
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+      if (onNewMessage) {
+        onNewMessage(event.data);
       }
     };
 
@@ -42,7 +39,7 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
     };
 
     setWs(socket);
-  }, [ws, onNewMessage, characterId]);
+  }, [ws, onNewMessage]);
 
   useEffect(() => {
     initializeWebSocket();
@@ -59,11 +56,7 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
 
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
       isSending.current = true;
-      const messageObject = {
-        characterId,
-        text: message,
-      };
-      ws.send(JSON.stringify(messageObject));
+      ws.send(message);
       setMessage('');
       setTimeout(() => {
         isSending.current = false;
@@ -81,25 +74,24 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
     <div className="chat-window">
       <div className="chat-messages" style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
-          <div key={index}>{msg.text}</div>
+          <div key={index}>{msg}</div>
         ))}
         <div ref={messagesEndRef} />
       </div>
       <input
-        className="chat-input"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            sendMessage();
-          }
-        }}
-        disabled={!connected}
-      />
-      <button className="chat-send-button" onClick={sendMessage} disabled={!connected}>Send</button>
-      {!connected && <p className="chat-disconnected-message">Disconnected. Reconnecting...</p>}
-    </div>
-  );
-};
+    className="chat-input"
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    }}
+    disabled={!connected}
+  />
+  <button className="chat-send-button" onClick={sendMessage} disabled={!connected}>Send</button>
+  {!connected && <p className="chat-disconnected-message">Disconnected. Reconnecting...</p>}
+</div>
+); };
 
 export default ChatWindow;
