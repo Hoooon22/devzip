@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Character from '../components/game/Character';
-import ChatWindow from './components/game/ChatWindow';
+import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
 
 const Game = () => {
