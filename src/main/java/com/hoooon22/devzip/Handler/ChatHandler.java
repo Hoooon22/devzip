@@ -24,11 +24,12 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.put(session.getId(), session);
+        System.out.println("Connection established with session id: " + session.getId()); // 로그 추가
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
+        System.out.println("Connection closed with session id: " + session.getId()); // 로그 추가
     }
 }
-
