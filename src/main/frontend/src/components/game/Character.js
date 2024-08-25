@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; // ChatBubble 컴포넌트 import
 
-const Character = ({ onInteraction, messages }) => {
+const Character = ({ id, onInteraction, messages }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const characterAreaRef = useRef(null);
 
@@ -92,9 +92,12 @@ const Character = ({ onInteraction, messages }) => {
         }}
       >
         {/* 캐릭터 위에 표시되는 채팅 버블 */}
-        {messages.slice(-1).map((msg, index) => (
-          <ChatBubble key={index} message={msg} />
-        ))}
+        {messages
+          .filter((msg) => msg.characterId === id) // 해당 캐릭터의 메시지 필터링
+          .slice(-1) // 마지막 메시지만 표시
+          .map((msg, index) => (
+            <ChatBubble key={index} message={msg.text} />
+          ))}
       </div>
     </div>
   );

@@ -1,7 +1,9 @@
+// components/game/ChatWindow.js
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../assets/css/ChatWindow.scss';
 
-const ChatWindow = ({ onNewMessage }) => {
+const ChatWindow = ({ onNewMessage, characterId }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
@@ -20,9 +22,10 @@ const ChatWindow = ({ onNewMessage }) => {
     };
 
     socket.onmessage = (event) => {
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+      const receivedMessage = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, receivedMessage]);
       if (onNewMessage) {
-        onNewMessage(event.data);
+        onNewMessage(receivedMessage);
       }
     };
 
@@ -54,7 +57,11 @@ const ChatWindow = ({ onNewMessage }) => {
 
     if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
       isSending.current = true;
-      ws.send(message);
+      const messageObject = {
+        characterId,
+        text: message,
+      };
+      ws.send(JSON.stringify(messageObject));
       setMessage('');
       setTimeout(() => {
         isSending.current = false;
@@ -72,7 +79,7 @@ const ChatWindow = ({ onNewMessage }) => {
     <div className="chat-window">
       <div className="chat-messages" style={{ border: '1px solid #ccc', padding: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
-          <div key={index}>{msg}</div>
+          <div key={index}>{msg.text}</div>
         ))}
         <div ref={messagesEndRef} />
       </div>
