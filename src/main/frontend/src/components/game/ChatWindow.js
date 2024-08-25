@@ -23,9 +23,11 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
 
     socket.onmessage = (event) => {
       const receivedMessage = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-      if (onNewMessage) {
-        onNewMessage(receivedMessage);
+      if (receivedMessage.characterId === characterId) {
+        setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        if (onNewMessage) {
+          onNewMessage(receivedMessage);
+        }
       }
     };
 
@@ -40,7 +42,7 @@ const ChatWindow = ({ onNewMessage, characterId }) => {
     };
 
     setWs(socket);
-  }, [ws, onNewMessage]);
+  }, [ws, onNewMessage, characterId]);
 
   useEffect(() => {
     initializeWebSocket();

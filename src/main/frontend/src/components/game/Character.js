@@ -93,7 +93,6 @@ const Character = ({ id, onInteraction, messages }) => {
       >
         {/* 캐릭터 위에 표시되는 채팅 버블 */}
         {messages
-          .filter((msg) => msg.characterId === id) // 해당 캐릭터의 메시지 필터링
           .slice(-1) // 마지막 메시지만 표시
           .map((msg, index) => (
             <ChatBubble key={index} message={msg.text} />

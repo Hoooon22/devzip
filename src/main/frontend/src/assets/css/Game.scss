@@ -1,23 +1,28 @@
-/* assets/css/Game.scss */
+// assets/css/Game.scss
+
 .game-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-  }
-  
-  .game-content {
-    display: flex;
-    flex: 1;
-    position: relative; /* 캐릭터 및 채팅창을 포함한 게임 콘텐츠 */
-  }
-  
-  .chat-window {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: white;
-    border-top: 1px solid #ccc;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-content {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+}
+
+.character-with-chat {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.character {
+  position: absolute;
+}
+
+.chat-window {
+  margin-top: 10px;
+}
