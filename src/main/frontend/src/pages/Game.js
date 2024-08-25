@@ -1,6 +1,6 @@
 // components/game/Game.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
@@ -8,18 +8,17 @@ import '../assets/css/Game.scss';
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
-
-  let ws = null;
+  const ws = useRef(null); // useRef로 ws 저장
 
   useEffect(() => {
     // WebSocket 연결 설정
-    ws = new WebSocket('wss://devzip.site/game-chatting');
+    ws.current = new WebSocket('wss://devzip.site/game-chatting');
 
-    ws.onopen = () => {
+    ws.current.onopen = () => {
       console.log('WebSocket connection opened');
     };
 
-    ws.onmessage = (event) => {
+    ws.current.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
       if (receivedData.characterId) {
         setCharacters((prevCharacters) => ({
@@ -32,20 +31,22 @@ const Game = () => {
       }
     };
 
-    ws.onclose = () => {
+    ws.current.onclose = () => {
       console.log('WebSocket connection closed');
     };
 
     return () => {
-      if (ws) {
-        ws.close();
+      if (ws.current) {
+        ws.current.close();
       }
     };
   }, []);
 
   const handleCharacterMove = (characterId, x, y) => {
-    const message = JSON.stringify({ characterId, x, y });
-    ws.send(message);
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const message = JSON.stringify({ characterId, x, y });
+      ws.current.send(message);
+    }
   };
 
   const handleNewMessage = (message) => {

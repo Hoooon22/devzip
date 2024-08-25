@@ -1,7 +1,7 @@
 // components/game/Character.js
 import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
-import ChatBubble from '../game/ChatBubble'; 
+import ChatBubble from '../game/ChatBubble';
 
 const Character = ({ id, position, onMove }) => {
   const handleKeyDown = (event) => {
