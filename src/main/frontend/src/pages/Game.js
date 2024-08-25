@@ -21,6 +21,7 @@ const Game = () => {
     ws.current.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
       console.log('Received data:', receivedData); // 데이터 확인
+
       if (receivedData.characterId) {
         setCharacters((prevCharacters) => ({
           ...prevCharacters,

@@ -4,13 +4,13 @@ import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; 
 
-const Character = ({ id, position, onMove }) => {
+const Character = ({ id, position = {}, onMove }) => {
   useEffect(() => {
     console.log('Character position:', position); // 캐릭터 위치 확인
   }, [position]);
 
   const handleKeyDown = (event) => {
-    let { x, y } = position;
+    let { x = 0, y = 0 } = position;
 
     switch (event.key) {
       case 'ArrowUp':
@@ -40,7 +40,7 @@ const Character = ({ id, position, onMove }) => {
     };
   }, [position]);
 
-  if (!position) {
+  if (!position || Object.keys(position).length === 0) {
     return null;
   }
 
@@ -49,8 +49,8 @@ const Character = ({ id, position, onMove }) => {
       className="character"
       style={{
         position: 'absolute',
-        top: `${position.y}px`,
-        left: `${position.x}px`,
+        top: `${position.y || 0}px`,
+        left: `${position.x || 0}px`,
         backgroundColor: position.color || 'lightgray',
         width: '50px',
         height: '50px',
