@@ -38,6 +38,26 @@ const Game = () => {
       }
     };
 
+    ws.current.onmessage = (event) => {
+      try {
+        const receivedData = JSON.parse(event.data);
+        console.log('Received data:', receivedData);
+    
+        if (receivedData.characterId) {
+          console.log('Updating character:', receivedData);
+          setCharacters((prevCharacters) => ({
+            ...prevCharacters,
+            [receivedData.characterId]: receivedData
+          }));
+        } else {
+          setMessages((prevMessages) => [...prevMessages, receivedData]);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+        console.log('Received data:', event.data);
+      }
+    };    
+
     ws.current.onclose = () => {
       console.log('WebSocket connection closed');
     };

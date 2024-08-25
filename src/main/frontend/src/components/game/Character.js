@@ -6,6 +6,8 @@ import ChatBubble from '../game/ChatBubble';
 
 const Character = ({ id, position, onMove }) => {
   useEffect(() => {
+    console.log('Character position:', position);
+
     const handleKeyDown = (event) => {
       let { x, y } = position;
 
@@ -41,9 +43,9 @@ const Character = ({ id, position, onMove }) => {
       className="character"
       style={{
         position: 'absolute',
-        top: `${position?.y}px`,
-        left: `${position?.x}px`,
-        backgroundColor: position?.color || 'gray', // 기본 색상 설정
+        top: `${position?.y || 0}px`,
+        left: `${position?.x || 0}px`,
+        backgroundColor: position?.color || 'gray',
         width: '50px',
         height: '50px'
       }}
