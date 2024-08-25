@@ -5,6 +5,10 @@ import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble'; 
 
 const Character = ({ id, position, onMove }) => {
+  useEffect(() => {
+    console.log('Character position:', position); // 캐릭터 위치 확인
+  }, [position]);
+
   const handleKeyDown = (event) => {
     let { x, y } = position;
 
@@ -36,6 +40,10 @@ const Character = ({ id, position, onMove }) => {
     };
   }, [position]);
 
+  if (!position) {
+    return null;
+  }
+
   return (
     <div
       className="character"
@@ -43,7 +51,7 @@ const Character = ({ id, position, onMove }) => {
         position: 'absolute',
         top: `${position.y}px`,
         left: `${position.x}px`,
-        backgroundColor: position.color || 'lightgray', // 기본 색상 지정
+        backgroundColor: position.color || 'lightgray',
         width: '50px',
         height: '50px',
         display: 'flex',

@@ -20,6 +20,7 @@ const Game = () => {
 
     ws.current.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
+      console.log('Received data:', receivedData); // 데이터 확인
       if (receivedData.characterId) {
         setCharacters((prevCharacters) => ({
           ...prevCharacters,
@@ -52,6 +53,8 @@ const Game = () => {
   const handleNewMessage = (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
+
+  console.log('Characters:', characters); // Characters 상태 확인
 
   return (
     <div className="game-container">
