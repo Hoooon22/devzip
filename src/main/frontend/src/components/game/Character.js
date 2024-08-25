@@ -1,12 +1,10 @@
-// components/game/Character.js
-
 import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
-import ChatBubble from '../game/ChatBubble';
+import ChatBubble from '../game/ChatBubble'; 
 
-const Character = ({ id, position, onMove }) => {
+const Character = ({ id, position = { x: 100, y: 100, color: 'blue', message: 'Hello!' }, onMove }) => {
   useEffect(() => {
-    console.log('Character position:', position);
+    console.log('Character position:', position); // position 객체 로그
 
     const handleKeyDown = (event) => {
       let { x, y } = position;
@@ -43,14 +41,14 @@ const Character = ({ id, position, onMove }) => {
       className="character"
       style={{
         position: 'absolute',
-        top: `${position?.y || 0}px`,
-        left: `${position?.x || 0}px`,
-        backgroundColor: position?.color || 'gray',
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        backgroundColor: position.color,
         width: '50px',
         height: '50px'
       }}
     >
-      <ChatBubble message={position?.message || 'Hello!'} />
+      <ChatBubble message={position.message} />
     </div>
   );
 };
