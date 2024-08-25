@@ -1,6 +1,6 @@
 // components/game/Game.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
@@ -8,17 +8,19 @@ import '../assets/css/Game.scss';
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
-  
-  useEffect(() => {
-    const ws = new WebSocket('wss://devzip.site/game-chatting');
+  const ws = useRef(null);
 
-    ws.onopen = () => {
+  useEffect(() => {
+    ws.current = new WebSocket('wss://devzip.site/game-chatting');
+
+    ws.current.onopen = () => {
       console.log('WebSocket connection opened');
     };
 
-    ws.onmessage = (event) => {
+    ws.current.onmessage = (event) => {
       try {
         const receivedData = JSON.parse(event.data);
+        console.log('Received data:', receivedData); // 수신된 데이터 로그
 
         if (receivedData.characterId) {
           // 캐릭터 위치 업데이트
@@ -36,22 +38,22 @@ const Game = () => {
       }
     };
 
-    ws.onclose = () => {
+    ws.current.onclose = () => {
       console.log('WebSocket connection closed');
     };
 
     return () => {
-      if (ws) {
-        ws.close();
+      if (ws.current) {
+        ws.current.close();
       }
     };
   }, []);
 
   const handleCharacterMove = (characterId, x, y) => {
     const message = JSON.stringify({ characterId, x, y });
-    // WebSocket 인스턴스를 useEffect 내에서 정의했기 때문에
-    // WebSocket 인스턴스를 useEffect 외부에서 접근할 수 없습니다.
-    // 따라서 handleCharacterMove 함수는 웹소켓을 내부에서 참조할 수 있도록 구조를 변경해야 합니다.
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(message);
+    }
   };
 
   const handleNewMessage = (message) => {
