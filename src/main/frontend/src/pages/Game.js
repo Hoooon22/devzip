@@ -1,8 +1,8 @@
 // components/game/Game.js
 
 import React, { useState } from 'react';
-import Character from './Character';
-import ChatWindow from './ChatWindow';
+import Character from '../components/game/Character';
+import ChatWindow from './components/game/ChatWindow';
 import '../assets/css/Game.scss';
 
 const Game = () => {
