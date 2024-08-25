@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Character from '../components/game/Character';
+import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
 
 const Game = () => {
   const [characters, setCharacters] = useState({});
+  const [messages, setMessages] = useState([]);
+
   let ws = null;
 
   useEffect(() => {
@@ -18,10 +21,15 @@ const Game = () => {
 
     ws.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
-      setCharacters((prevCharacters) => ({
-        ...prevCharacters,
-        [receivedData.characterId]: receivedData
-      }));
+      if (receivedData.characterId) {
+        setCharacters((prevCharacters) => ({
+          ...prevCharacters,
+          [receivedData.characterId]: receivedData
+        }));
+      } else {
+        // 메시지가 들어온 경우
+        setMessages((prevMessages) => [...prevMessages, receivedData]);
+      }
     };
 
     ws.onclose = () => {
@@ -40,6 +48,10 @@ const Game = () => {
     ws.send(message);
   };
 
+  const handleNewMessage = (message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
   return (
     <div className="game-container">
       <div className="character-area">
@@ -52,6 +64,7 @@ const Game = () => {
           />
         ))}
       </div>
+      <ChatWindow onNewMessage={handleNewMessage} />
     </div>
   );
 };
