@@ -1,7 +1,7 @@
 // components/game/Game.js
 
 import React, { useState, useEffect } from 'react';
-import Character from '../components/gmae/Character';
+import Character from '../components/game/Character';
 import '../assets/css/Game.scss';
 
 const Game = () => {
