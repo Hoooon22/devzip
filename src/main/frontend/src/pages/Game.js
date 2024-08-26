@@ -69,7 +69,7 @@ const Game = () => {
       <div className="character-area">
         {Object.keys(characters).map((characterId) => (
           <Character
-            key={characterId}
+            key={1}
             id={characterId}
             position={characters[characterId]}
             onMove={(x, y) => handleCharacterMove(characterId, x, y)}
