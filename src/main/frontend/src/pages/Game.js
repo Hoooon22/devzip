@@ -1,63 +1,68 @@
-import React, { useState, useEffect, useRef } from 'react';
+// components/game/Game.js
+import React, { useState, useEffect } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
 
 const Game = () => {
   const [characters, setCharacters] = useState({});
-  const ws = useRef(null);
+  const [messages, setMessages] = useState([]);
+
+  let ws = null;
 
   useEffect(() => {
-    ws.current = new WebSocket('wss://devzip.site/game-chatting');
+    // WebSocket 연결 설정
+    ws = new WebSocket('wss://devzip.site/game-chatting');
 
-    ws.current.onopen = () => {
+    ws.onopen = () => {
       console.log('WebSocket connection opened');
     };
 
-    ws.current.onmessage = (event) => {
+    ws.onmessage = (event) => {
+      console.log('Received data from WebSocket:', event.data);
+
       try {
         const receivedData = JSON.parse(event.data);
-        console.log('Received data from WebSocket:', receivedData);
 
-        if (receivedData.characterId && receivedData.x !== undefined && receivedData.y !== undefined) {
+        if (receivedData.characterId) {
           setCharacters((prevCharacters) => ({
             ...prevCharacters,
-            [receivedData.characterId]: {
-              x: receivedData.x,
-              y: receivedData.y,
-              color: receivedData.color || '#000',  // 기본 색상 설정
-            },
+            [receivedData.characterId]: receivedData
           }));
         } else {
-          console.warn('Invalid data received:', receivedData);
+          // 메시지가 들어온 경우
+          setMessages((prevMessages) => [...prevMessages, receivedData]);
         }
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error, event.data);
+        console.error('Error parsing WebSocket message:', error);
+        console.log('Invalid data received:', event.data);
       }
     };
 
-    ws.current.onclose = () => {
+    ws.onclose = () => {
       console.log('WebSocket connection closed');
     };
 
     return () => {
-      if (ws.current) {
-        ws.current.close();
+      if (ws) {
+        ws.close();
       }
     };
   }, []);
 
-  // Game.js의 handleCharacterMove 함수
   const handleCharacterMove = (characterId, x, y) => {
     const message = JSON.stringify({ 
-        type: "move", // 메시지의 종류를 명시
-        characterId: characterId, 
-        x: x, 
-        y: y 
+      type: "move",
+      characterId: characterId, 
+      x: x, 
+      y: y 
     });
     ws.send(message);
   };
 
+  const handleNewMessage = (message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
 
   return (
     <div className="game-container">
@@ -71,7 +76,7 @@ const Game = () => {
           />
         ))}
       </div>
-      <ChatWindow onNewMessage={(message) => console.log('New message:', message)} />
+      <ChatWindow onNewMessage={handleNewMessage} />
     </div>
   );
 };
