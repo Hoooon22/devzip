@@ -19,24 +19,27 @@ public class ChatHandler extends TextWebSocketHandler {
     // 메시지를 처리하는 메서드
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // 클라이언트로부터 받은 메시지를 JSON 형식으로 변환
-        Map<String, Object> receivedMessage = objectMapper.readValue(message.getPayload(), Map.class);
+        String payload = message.getPayload();
         
-        // 예시: 서버에서 특정 데이터를 JSON 형식으로 클라이언트에게 전송
-        Map<String, Object> responseMessage = Map.of(
-            "characterId", "character1",
-            "x", 100,
-            "y", 150,
-            "color", "#ff0000"
-        );
-        
-        String jsonResponse = objectMapper.writeValueAsString(responseMessage);
-        
-        // 메시지 수신 시 모든 클라이언트에게 브로드캐스트
-        for (WebSocketSession s : sessions.values()) {
-            s.sendMessage(new TextMessage(jsonResponse));
+        try {
+            // 수신한 메시지를 파싱하기 전에 JSON인지 확인합니다.
+            if (payload.trim().startsWith("{")) {
+                // JSON 형식인 경우에만 처리
+                Map<String, Object> receivedMessage = objectMapper.readValue(payload, Map.class);
+
+                // 처리 로직 (예: 클라이언트로 응답 전송)
+                // ...
+
+            } else {
+                // JSON이 아닌 데이터의 경우 처리
+                System.out.println("Received non-JSON data: " + payload);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse message: " + payload);
+            e.printStackTrace();
         }
     }
+
 
     // 새로운 클라이언트가 연결될 때 호출되는 메서드
     @Override
