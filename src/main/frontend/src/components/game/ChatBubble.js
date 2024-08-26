@@ -1,5 +1,3 @@
-// components/game/ChatBubble.js
-
 import React, { useEffect, useState } from 'react';
 import '../../assets/css/ChatBubble.scss';
 
@@ -9,12 +7,12 @@ const ChatBubble = ({ message }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 10000); // 10초 후에 메시지를 숨깁니다.
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, [message]);
 
-  if (!visible) {
+  if (!visible || !message) {
     return null;
   }
 
