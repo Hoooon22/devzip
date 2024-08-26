@@ -57,7 +57,7 @@ const Game = () => {
     });
     if (ws.current) {
       ws.current.send(message);
-      console.log(message);
+      console.log(JSON.stringify(message));
     } else {
       console.log('ws cant send');
     }
