@@ -5,8 +5,7 @@ import '../assets/css/Game.scss';
 
 const Game = () => {
   const [characters, setCharacters] = useState({});
-  const [messages, setMessages] = useState([]);
-  const ws = useRef(null);  // WebSocket을 useRef로 선언
+  const ws = useRef(null);
 
   useEffect(() => {
     ws.current = new WebSocket('wss://devzip.site/game-chatting');
@@ -20,14 +19,17 @@ const Game = () => {
         const receivedData = JSON.parse(event.data);
         console.log('Received data from WebSocket:', receivedData);
 
-        if (receivedData.characterId) {
+        if (receivedData.characterId && receivedData.x !== undefined && receivedData.y !== undefined) {
           setCharacters((prevCharacters) => ({
             ...prevCharacters,
-            [receivedData.characterId]: receivedData,
+            [receivedData.characterId]: {
+              x: receivedData.x,
+              y: receivedData.y,
+              color: receivedData.color || '#000',  // 기본 색상 설정
+            },
           }));
         } else {
-          // 메시지가 들어온 경우
-          setMessages((prevMessages) => [...prevMessages, receivedData]);
+          console.warn('Invalid data received:', receivedData);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error, event.data);
@@ -64,7 +66,7 @@ const Game = () => {
           />
         ))}
       </div>
-      <ChatWindow onNewMessage={(message) => setMessages((prevMessages) => [...prevMessages, message])} />
+      <ChatWindow onNewMessage={(message) => console.log('New message:', message)} />
     </div>
   );
 };

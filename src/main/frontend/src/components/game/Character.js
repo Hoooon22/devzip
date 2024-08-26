@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import '../../assets/css/Character.scss';
-import ChatBubble from '../game/ChatBubble'; 
 
-const Character = ({ id, position = { x: 100, y: 100, color: 'blue', message: 'Hello!' }, onMove }) => {
+const Character = ({ id, position, onMove }) => {
   useEffect(() => {
-    console.log('Character position:', position); // position 객체 로그
+    console.log('Character position:', position);  // position 확인
 
     const handleKeyDown = (event) => {
       let { x, y } = position;
@@ -26,7 +25,7 @@ const Character = ({ id, position = { x: 100, y: 100, color: 'blue', message: 'H
           return;
       }
 
-      onMove(x, y);
+      onMove(id, x, y);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -34,7 +33,7 @@ const Character = ({ id, position = { x: 100, y: 100, color: 'blue', message: 'H
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [position, onMove]);
+  }, [position, onMove, id]);
 
   return (
     <div
@@ -45,10 +44,10 @@ const Character = ({ id, position = { x: 100, y: 100, color: 'blue', message: 'H
         left: `${position.x}px`,
         backgroundColor: position.color,
         width: '50px',
-        height: '50px'
+        height: '50px',
       }}
     >
-      <ChatBubble message={position.message} />
+      {id}
     </div>
   );
 };
