@@ -22,7 +22,7 @@ public class ChatHandler extends TextWebSocketHandler {
         
         String characterId = session.getId();
         characters.put(characterId, new CharacterData(characterId, color, 0, 0));
-        System.out.println(characterId);
+        System.out.println(characters);
 
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(session.getId(), session);
