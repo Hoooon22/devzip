@@ -1,5 +1,6 @@
 // components/game/Game.js
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
 import '../assets/css/Game.scss';
@@ -7,18 +8,16 @@ import '../assets/css/Game.scss';
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
-
-  let ws = null;
+  const ws = useRef(null);  // WebSocket을 useRef로 관리
 
   useEffect(() => {
-    // WebSocket 연결 설정
-    ws = new WebSocket('wss://devzip.site/game-chatting');
+    ws.current = new WebSocket('wss://devzip.site/game-chatting');
 
-    ws.onopen = () => {
+    ws.current.onopen = () => {
       console.log('WebSocket connection opened');
     };
 
-    ws.onmessage = (event) => {
+    ws.current.onmessage = (event) => {
       console.log('Received data from WebSocket:', event.data);
 
       try {
@@ -30,7 +29,6 @@ const Game = () => {
             [receivedData.characterId]: receivedData
           }));
         } else {
-          // 메시지가 들어온 경우
           setMessages((prevMessages) => [...prevMessages, receivedData]);
         }
       } catch (error) {
@@ -39,13 +37,13 @@ const Game = () => {
       }
     };
 
-    ws.onclose = () => {
+    ws.current.onclose = () => {
       console.log('WebSocket connection closed');
     };
 
     return () => {
-      if (ws) {
-        ws.close();
+      if (ws.current) {
+        ws.current.close();
       }
     };
   }, []);
@@ -57,7 +55,9 @@ const Game = () => {
       x: x, 
       y: y 
     });
-    ws.send(message);
+    if (ws.current) {
+      ws.current.send(message);
+    }
   };
 
   const handleNewMessage = (message) => {
