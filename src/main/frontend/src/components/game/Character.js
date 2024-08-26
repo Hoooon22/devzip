@@ -1,51 +1,39 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import '../../assets/css/Character.scss';
 
-const Character = ({ id, position, onMove }) => {
-  useEffect(() => {
-    console.log('Character position:', position);  // position 확인
+const Character = ({ id, color, position, onMove }) => {
+  const [dragging, setDragging] = useState(false);
+  const [localPosition, setLocalPosition] = useState(position);
 
-    const handleKeyDown = (event) => {
-      let { x, y } = position;
+  const handleMouseDown = (e) => {
+    setDragging(true);
+  };
 
-      switch (event.key) {
-        case 'ArrowUp':
-          y -= 10;
-          break;
-        case 'ArrowDown':
-          y += 10;
-          break;
-        case 'ArrowLeft':
-          x -= 10;
-          break;
-        case 'ArrowRight':
-          x += 10;
-          break;
-        default:
-          return;
-      }
+  const handleMouseUp = (e) => {
+    setDragging(false);
+  };
 
-      onMove(id, x, y);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [position, onMove, id]);
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      const newX = e.clientX;
+      const newY = e.clientY;
+      setLocalPosition({ x: newX, y: newY });
+      onMove(newX, newY);
+    }
+  };
 
   return (
     <div
       className="character"
       style={{
+        backgroundColor: color,
+        left: `${localPosition.x}px`,
+        top: `${localPosition.y}px`,
         position: 'absolute',
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        backgroundColor: position.color,
-        width: '50px',
-        height: '50px',
       }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
     >
       {id}
     </div>

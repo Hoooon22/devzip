@@ -8,7 +8,7 @@ import '../assets/css/Game.scss';
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
-  const ws = useRef(null);  // WebSocket을 useRef로 관리
+  const ws = useRef(null);
 
   useEffect(() => {
     ws.current = new WebSocket('wss://devzip.site/game-chatting');
@@ -23,13 +23,16 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (receivedData.characterId) {
-          setCharacters((prevCharacters) => ({
-            ...prevCharacters,
-            [receivedData.characterId]: receivedData
-          }));
-        } else {
-          setMessages((prevMessages) => [...prevMessages, receivedData]);
+        if (Array.isArray(receivedData)) {
+          // Received character data
+          const characterData = receivedData.reduce((acc, item) => {
+            acc[item.id] = item;
+            return acc;
+          }, {});
+          setCharacters(characterData);
+        } else if (receivedData.message) {
+          // Received chat message
+          setMessages((prevMessages) => [...prevMessages, receivedData.message]);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -49,22 +52,17 @@ const Game = () => {
   }, []);
 
   const handleCharacterMove = (characterId, x, y) => {
-    const message = JSON.stringify({ 
-      type: "move",
-      characterId: characterId, 
-      x: x, 
-      y: y 
-    });
+    const message = JSON.stringify({ characterId, x, y });
     if (ws.current) {
       ws.current.send(message);
-      console.log(JSON.stringify(message));
-    } else {
-      console.log('ws cant send');
     }
   };
 
   const handleNewMessage = (message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
+    const messageObject = { message };
+    if (ws.current) {
+      ws.current.send(JSON.stringify(messageObject));
+    }
   };
 
   return (
@@ -74,12 +72,13 @@ const Game = () => {
           <Character
             key={characterId}
             id={characterId}
-            position={characters[characterId]}
+            color={characters[characterId]?.color}
+            position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
             onMove={(x, y) => handleCharacterMove(characterId, x, y)}
           />
         ))}
       </div>
-      <ChatWindow onNewMessage={handleNewMessage} />
+      <ChatWindow onNewMessage={handleNewMessage} messages={messages} />
     </div>
   );
 };
