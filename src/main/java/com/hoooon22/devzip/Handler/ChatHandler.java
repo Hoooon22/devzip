@@ -36,6 +36,7 @@ public class ChatHandler extends TextWebSocketHandler {
             String characterId = (String) data.get("characterId");
             int x = (int) data.get("x");
             int y = (int) data.get("y");
+            System.out.println(characterId);
 
             // 캐릭터 위치 업데이트
             CharacterData character = characters.get(characterId);
