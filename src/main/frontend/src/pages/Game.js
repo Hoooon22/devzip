@@ -23,13 +23,12 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (Array.isArray(receivedData)) {
+        if (typeof receivedData === 'object' && !Array.isArray(receivedData)) {
           // Received character data
-          const characterData = receivedData.reduce((acc, item) => {
-            acc[item.id] = item;
-            return acc;
-          }, {});
-          setCharacters(characterData);
+          setCharacters(receivedData);
+        } else if (Array.isArray(receivedData)) {
+          // Received chat messages
+          setMessages((prevMessages) => [...prevMessages, receivedData]);
         } else if (receivedData.message) {
           // Received chat message
           setMessages((prevMessages) => [...prevMessages, receivedData.message]);
@@ -38,6 +37,12 @@ const Game = () => {
         console.error('Error parsing WebSocket message:', error);
         console.log('Invalid data received:', event.data);
       }
+    };
+
+    // debug data
+    ws.current.onmessage = (event) => {
+      console.log('Received data from WebSocket:', event.data);
+      console.log('Received data type:', typeof event.data);
     };
 
     ws.current.onclose = () => {

@@ -20,10 +20,11 @@ public class ChatHandler extends TextWebSocketHandler {
         String clientIp = getClientIp(session);
         String color = getColorFromIp(clientIp);
         
-        String characterId = session.getId();
-        characters.put(characterId, new CharacterData(characterId, color, 0, 0));
-        System.out.println(characters);
+        String characterId = session.getId(); // Use session ID as character ID
+        CharacterData character = new CharacterData(characterId, color, 0, 0);
+        characters.put(characterId, character);
 
+        // Send current characters to the new client
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(session.getId(), session);
     }
@@ -32,30 +33,26 @@ public class ChatHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Map<String, Object> data = objectMapper.readValue(message.getPayload(), Map.class);
 
-        // 처리된 데이터가 캐릭터 위치 변경일 경우
         if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
             String characterId = (String) data.get("characterId");
             int x = (int) data.get("x");
             int y = (int) data.get("y");
 
-            // 캐릭터 위치 업데이트
             CharacterData character = characters.get(characterId);
             if (character != null) {
                 character.setX(x);
                 character.setY(y);
-                // 모든 클라이언트에게 업데이트된 캐릭터 정보 전송
-                broadcastCharacters();
+                broadcastCharacters(); // Notify all clients of the updated character positions
             }
         } else if (data.containsKey("message")) {
-            // 처리된 데이터가 채팅 메시지일 경우
-            broadcastMessage(data);
+            broadcastMessage(data); // Broadcast chat messages to all clients
         }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
-        characters.remove(session.getId());
+        characters.remove(session.getId()); // Remove character data when client disconnects
     }
 
     private void broadcastCharacters() throws Exception {
