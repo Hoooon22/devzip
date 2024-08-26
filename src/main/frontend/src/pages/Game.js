@@ -47,12 +47,17 @@ const Game = () => {
     };
   }, []);
 
+  // Game.js의 handleCharacterMove 함수
   const handleCharacterMove = (characterId, x, y) => {
-    if (!ws.current) return;
-
-    const message = JSON.stringify({ characterId, x, y });
-    ws.current.send(message);
+    const message = JSON.stringify({ 
+        type: "move", // 메시지의 종류를 명시
+        characterId: characterId, 
+        x: x, 
+        y: y 
+    });
+    ws.send(message);
   };
+
 
   return (
     <div className="game-container">
