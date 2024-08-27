@@ -20,7 +20,7 @@ const projects = [
     { 
         id: 3, 
         name: 'The Map', 
-        description: '유저끼리 상호작용이 가능한 공간', 
+        description: '실시간 소통 게임', 
         link: '/Game', 
         active: true,
         startDate: '2024-08-05',
