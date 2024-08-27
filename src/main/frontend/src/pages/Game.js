@@ -8,6 +8,7 @@ const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
   const ws = useRef(null);
 
   useEffect(() => {
@@ -26,7 +27,11 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (receivedData.characterId) {
+        if (receivedData.error) {
+          // Handle error message from server
+          setError(receivedData.error);
+          ws.current.close(); // Close the connection on error
+        } else if (receivedData.characterId) {
           // Handle character updates
           const { characterId, message } = receivedData;
           setCharacters((prevCharacters) => ({
@@ -76,10 +81,14 @@ const Game = () => {
 
   const handleNameSubmit = (name) => {
     setUsername(name);
+    if (ws.current) {
+      ws.current.send(JSON.stringify({ username: name }));
+    }
   };
 
   return (
     <div className="game-container">
+      {error && <div className="error-message">{error}</div>}
       {!username ? (
         <NameInput onSubmit={handleNameSubmit} />
       ) : (

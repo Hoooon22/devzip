@@ -13,12 +13,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChatHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final Map<String, CharacterData> characters = new ConcurrentHashMap<>();
+    private final Map<String, String> ipToSessionMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        String clientIp = getClientIp(session);
         String characterId = session.getId();
-        characters.put(characterId, new CharacterData(characterId, "#000000", 0, 0)); // Default color
+
+        if (ipToSessionMap.containsKey(clientIp)) {
+            // IP 이미 존재 - 새 접속 거부
+            session.sendMessage(new TextMessage("{\"message\": \"You are already connected from this IP address.\"}"));
+            session.close();
+            return;
+        }
+
+        String color = getColorFromIp(clientIp);
+        characters.put(characterId, new CharacterData(characterId, color, 0, 0));
+        ipToSessionMap.put(clientIp, characterId);
+
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(characterId, session);
     }
@@ -56,8 +69,12 @@ public class ChatHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session.getId());
-        characters.remove(session.getId());
+        String characterId = session.getId();
+        String clientIp = getClientIp(session);
+
+        sessions.remove(characterId);
+        characters.remove(characterId);
+        ipToSessionMap.remove(clientIp); // Remove IP mapping
         broadcastCharacters(); // Update remaining clients
     }
 
@@ -73,6 +90,23 @@ public class ChatHandler extends TextWebSocketHandler {
         for (WebSocketSession s : sessions.values()) {
             s.sendMessage(new TextMessage(messageJson));
         }
+    }
+
+    private String getClientIp(WebSocketSession session) {
+        String xForwardedForHeader = session.getHandshakeHeaders().getFirst("X-Forwarded-For");
+        if (xForwardedForHeader != null && !xForwardedForHeader.isEmpty()) {
+            return xForwardedForHeader.split(",")[0].trim();
+        } else {
+            return session.getRemoteAddress().getAddress().getHostAddress();
+        }
+    }
+
+    private String getColorFromIp(String ip) {
+        int hash = ip.hashCode();
+        int red = (hash & 0xFF0000) >> 16;
+        int green = (hash & 0x00FF00) >> 8;
+        int blue = hash & 0x0000FF;
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
 
     private static class CharacterData {
@@ -102,4 +136,3 @@ public class ChatHandler extends TextWebSocketHandler {
         public void setName(String name) { this.name = name; }
     }
 }
-
