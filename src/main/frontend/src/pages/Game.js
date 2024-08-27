@@ -68,6 +68,7 @@ const Game = () => {
   return (
     <div className="game-container">
       <div className="character-area">
+        ㅇㅇ
         {Object.keys(characters).map((characterId) => (
           <Character
             key={characterId}

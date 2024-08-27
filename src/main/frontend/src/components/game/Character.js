@@ -1,38 +1,41 @@
-// components/game/Character.js
-import React from 'react';
+import React, { useState } from 'react';
 import '../../assets/css/Character.scss';
 
 const Character = ({ id, color, position, onMove }) => {
-  const characterStyle = {
-    backgroundColor: color,
-    left: `${position.x}px`,
-    top: `${position.y}px`,
-    position: 'absolute',
-    width: '50px', // 캐릭터 크기 조정
-    height: '50px',
+  const [dragging, setDragging] = useState(false);
+  const [localPosition, setLocalPosition] = useState(position);
+
+  const handleMouseDown = (e) => {
+    setDragging(true);
   };
 
-  const handleKeyDown = (event) => {
-    let newX = position.x;
-    let newY = position.y;
+  const handleMouseUp = (e) => {
+    setDragging(false);
+  };
 
-    if (event.key === 'ArrowUp') newY -= 10;
-    if (event.key === 'ArrowDown') newY += 10;
-    if (event.key === 'ArrowLeft') newX -= 10;
-    if (event.key === 'ArrowRight') newX += 10;
-
-    onMove(newX, newY);
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      const newX = e.clientX;
+      const newY = e.clientY;
+      setLocalPosition({ x: newX, y: newY });
+      onMove(newX, newY);
+    }
   };
 
   return (
     <div
       className="character"
-      style={characterStyle}
-      tabIndex="0"
-      onKeyDown={handleKeyDown}
+      style={{
+        backgroundColor: color,
+        left: `${localPosition.x}px`,
+        top: `${localPosition.y}px`,
+        position: 'absolute',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
     >
-      {/* 캐릭터를 식별할 수 있는 내용 추가 */}
-      <span>{id}</span>
+      {id}
     </div>
   );
 };
