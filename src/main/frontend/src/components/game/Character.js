@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble';
 
-const Character = ({ id, color, position, onMove, chatMessage }) => {
+const Character = ({ id, name, color, position, onMove, chatMessage }) => {
   const [dragging, setDragging] = useState(false);
   const [localPosition, setLocalPosition] = useState(position);
   const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
@@ -89,7 +89,7 @@ const Character = ({ id, color, position, onMove, chatMessage }) => {
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className="character-id">{id}</div>
+      <div className="character-name">{name || id}</div>
       {chatMessage && (
         <ChatBubble message={chatMessage} />
       )}
