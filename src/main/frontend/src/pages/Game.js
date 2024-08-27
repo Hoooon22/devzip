@@ -21,13 +21,14 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (typeof receivedData === 'object' && !Array.isArray(receivedData)) {
-          // Received character data as an object, directly setting it to state
-          console.log('Character data processed as object:', receivedData);
-          setCharacters(receivedData);
-        } else if (receivedData.message) {
-          // Received chat message
-          setMessages((prevMessages) => [...prevMessages, receivedData.message]);
+        if (receivedData && typeof receivedData === 'object') {
+          if (receivedData.message) {
+            // Received chat message
+            setMessages((prevMessages) => [...prevMessages, receivedData.message]);
+          } else {
+            // Received character data
+            setCharacters(receivedData);
+          }
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -46,22 +47,21 @@ const Game = () => {
     };
   }, []);
 
-  // Log the characters state whenever it changes
-  useEffect(() => {
-    console.log('Characters state:', characters);
-  }, [characters]);  // This effect will run every time the `characters` state changes
-
   const handleCharacterMove = (characterId, x, y) => {
-    const message = JSON.stringify({ characterId, x, y });
-    if (ws.current) {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const message = JSON.stringify({ characterId, x, y });
       ws.current.send(message);
+    } else {
+      console.error('WebSocket is not open. Cannot send move data.');
     }
   };
 
   const handleNewMessage = (message) => {
-    const messageObject = { message };
-    if (ws.current) {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const messageObject = { message };
       ws.current.send(JSON.stringify(messageObject));
+    } else {
+      console.error('WebSocket is not open. Cannot send message.');
     }
   };
 
@@ -75,6 +75,7 @@ const Game = () => {
             color={characters[characterId]?.color}
             position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
             onMove={(x, y) => handleCharacterMove(characterId, x, y)}
+            message={characters[characterId]?.message} // Pass message to character
           />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../assets/css/Character.scss';
 import ChatBubble from '../game/ChatBubble';
 
@@ -62,7 +62,6 @@ const Character = ({ id, color, position, onMove, message }) => {
     };
   }, [localPosition]);
 
-  // `window`에 마우스 이동 이벤트를 바인딩
   useEffect(() => {
     if (dragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -90,7 +89,7 @@ const Character = ({ id, color, position, onMove, message }) => {
       onMouseDown={handleMouseDown}
     >
       {id}
-      {message && <ChatBubble message={message} />} {/* 메시지가 있을 때만 ChatBubble 표시 */}
+      {message && <ChatBubble message={message} />}
     </div>
   );
 };
