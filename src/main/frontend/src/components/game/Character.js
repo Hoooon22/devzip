@@ -1,6 +1,6 @@
 // components/game/Character.js
 import React from 'react';
-import '../assets/css/Character.scss';
+import '../../assets/css/Character.scss';
 
 const Character = ({ id, color, position, onMove }) => {
   const characterStyle = {
