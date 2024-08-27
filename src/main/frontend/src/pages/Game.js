@@ -88,7 +88,11 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
       {!username ? (
         <NameInput onSubmit={handleNameSubmit} />
       ) : (

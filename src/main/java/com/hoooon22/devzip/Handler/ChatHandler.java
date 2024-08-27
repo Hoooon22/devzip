@@ -13,25 +13,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChatHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final Map<String, CharacterData> characters = new ConcurrentHashMap<>();
-    private final Map<String, String> ipToSessionMap = new ConcurrentHashMap<>();
+    private final Map<String, String> ipToSessionId = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String clientIp = getClientIp(session);
         String characterId = session.getId();
-
-        if (ipToSessionMap.containsKey(clientIp)) {
-            // IP 이미 존재 - 새 접속 거부
-            session.sendMessage(new TextMessage("{\"message\": \"You are already connected from this IP address.\"}"));
-            session.close();
+        
+        if (ipToSessionId.containsKey(clientIp)) {
+            WebSocketSession existingSession = sessions.get(ipToSessionId.get(clientIp));
+            if (existingSession != null) {
+                existingSession.sendMessage(new TextMessage("{\"error\": \"Another session is already active from your IP.\"}"));
+            }
+            session.close(CloseStatus.POLICY_VIOLATION);
             return;
         }
 
-        String color = getColorFromIp(clientIp);
-        characters.put(characterId, new CharacterData(characterId, color, 0, 0));
-        ipToSessionMap.put(clientIp, characterId);
-
+        ipToSessionId.put(clientIp, characterId);
+        characters.put(characterId, new CharacterData(characterId, getColorFromIp(clientIp), 0, 0));
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(characterId, session);
     }
@@ -41,7 +41,6 @@ public class ChatHandler extends TextWebSocketHandler {
         Map<String, Object> data = objectMapper.readValue(message.getPayload(), Map.class);
 
         if (data.containsKey("username")) {
-            // Handle username
             String characterId = session.getId();
             String username = (String) data.get("username");
             CharacterData character = characters.get(characterId);
@@ -50,7 +49,6 @@ public class ChatHandler extends TextWebSocketHandler {
                 broadcastCharacters();
             }
         } else if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
-            // Handle character movement
             String characterId = (String) data.get("characterId");
             int x = (int) data.get("x");
             int y = (int) data.get("y");
@@ -62,7 +60,6 @@ public class ChatHandler extends TextWebSocketHandler {
                 broadcastCharacters();
             }
         } else if (data.containsKey("message")) {
-            // Handle chat message
             broadcastMessage(data);
         }
     }
@@ -74,8 +71,8 @@ public class ChatHandler extends TextWebSocketHandler {
 
         sessions.remove(characterId);
         characters.remove(characterId);
-        ipToSessionMap.remove(clientIp); // Remove IP mapping
-        broadcastCharacters(); // Update remaining clients
+        ipToSessionId.remove(clientIp);
+        broadcastCharacters();
     }
 
     private void broadcastCharacters() throws Exception {
