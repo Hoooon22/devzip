@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
+import NameInput from '../components/game/NameInput';
 import '../assets/css/Game.scss';
 
 const Game = () => {
   const [characters, setCharacters] = useState({});
   const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('');
   const ws = useRef(null);
 
   useEffect(() => {
@@ -13,6 +15,9 @@ const Game = () => {
 
     ws.current.onopen = () => {
       console.log('WebSocket connection opened');
+      if (username) {
+        ws.current.send(JSON.stringify({ username }));
+      }
     };
 
     ws.current.onmessage = (event) => {
@@ -21,9 +26,8 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        // Check if received data is for character updates or chat messages
         if (receivedData.characterId) {
-          // Handle chat message
+          // Handle character updates
           const { characterId, message } = receivedData;
           setCharacters((prevCharacters) => ({
             ...prevCharacters,
@@ -54,7 +58,7 @@ const Game = () => {
         ws.current.close();
       }
     };
-  }, []);
+  }, [username]);
 
   const handleCharacterMove = (characterId, x, y) => {
     const message = JSON.stringify({ characterId, x, y });
@@ -70,21 +74,32 @@ const Game = () => {
     }
   };
 
+  const handleNameSubmit = (name) => {
+    setUsername(name);
+  };
+
   return (
     <div className="game-container">
-      <div className="character-area">
-        {Object.keys(characters).map((characterId) => (
-          <Character
-            key={characterId}
-            id={characterId}
-            color={characters[characterId]?.color}
-            position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
-            onMove={(x, y) => handleCharacterMove(characterId, x, y)}
-            chatMessage={characters[characterId]?.message} // Pass the chat message
-          />
-        ))}
-      </div>
-      <ChatWindow onNewMessage={handleNewMessage} messages={messages} />
+      {!username ? (
+        <NameInput onSubmit={handleNameSubmit} />
+      ) : (
+        <>
+          <div className="character-area">
+            {Object.keys(characters).map((characterId) => (
+              <Character
+                key={characterId}
+                id={characterId}
+                name={characters[characterId]?.name}
+                color={characters[characterId]?.color}
+                position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
+                onMove={(x, y) => handleCharacterMove(characterId, x, y)}
+                chatMessage={characters[characterId]?.message}
+              />
+            ))}
+          </div>
+          <ChatWindow onNewMessage={handleNewMessage} messages={messages} />
+        </>
+      )}
     </div>
   );
 };

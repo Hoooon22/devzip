@@ -1,4 +1,3 @@
-// components/game/NameInput.js
 import React, { useState } from 'react';
 import '../../assets/css/NameInput.scss';
 
