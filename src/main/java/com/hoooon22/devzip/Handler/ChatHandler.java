@@ -21,7 +21,9 @@ public class ChatHandler extends TextWebSocketHandler {
         String color = getColorFromIp(clientIp);
         
         String characterId = session.getId();
-        characters.put(characterId, new CharacterData(characterId, color, 0, 0, "Unnamed"));
+        characters.put(characterId, new CharacterData(characterId, color, 0, 0));
+        // System.out.println(characters);
+
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(session.getId(), session);
     }
@@ -30,26 +32,22 @@ public class ChatHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Map<String, Object> data = objectMapper.readValue(message.getPayload(), Map.class);
 
-        if (data.containsKey("username")) {
-            String characterId = session.getId();
-            String username = (String) data.get("username");
-            CharacterData character = characters.get(characterId);
-            if (character != null) {
-                character.setName(username);
-                broadcastCharacters();
-            }
-        } else if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
+        // 처리된 데이터가 캐릭터 위치 변경일 경우
+        if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
             String characterId = (String) data.get("characterId");
             int x = (int) data.get("x");
             int y = (int) data.get("y");
 
+            // 캐릭터 위치 업데이트
             CharacterData character = characters.get(characterId);
             if (character != null) {
                 character.setX(x);
                 character.setY(y);
+                // 모든 클라이언트에게 업데이트된 캐릭터 정보 전송
                 broadcastCharacters();
             }
         } else if (data.containsKey("message")) {
+            // 처리된 데이터가 채팅 메시지일 경우
             broadcastMessage(data);
         }
     }
@@ -96,14 +94,12 @@ public class ChatHandler extends TextWebSocketHandler {
         private String color;
         private int x;
         private int y;
-        private String name;
 
-        public CharacterData(String id, String color, int x, int y, String name) {
+        public CharacterData(String id, String color, int x, int y) {
             this.id = id;
             this.color = color;
             this.x = x;
             this.y = y;
-            this.name = name;
         }
 
         // Getters and setters
@@ -115,7 +111,5 @@ public class ChatHandler extends TextWebSocketHandler {
         public void setX(int x) { this.x = x; }
         public int getY() { return y; }
         public void setY(int y) { this.y = y; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
     }
 }
