@@ -45,6 +45,8 @@ const Game = () => {
     };
 
     return () => {
+      console.log('Characters state:', characters);
+
       if (ws.current) {
         ws.current.close();
       }
@@ -68,7 +70,6 @@ const Game = () => {
   return (
     <div className="game-container">
       <div className="character-area">
-        ㅇㅇ
         {Object.keys(characters).map((characterId) => (
           <Character
             key={characterId}
