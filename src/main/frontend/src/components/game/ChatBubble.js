@@ -5,11 +5,15 @@ const ChatBubble = ({ message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 10000);
+    if (message) {
+      setVisible(true);
 
-    return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, 10000); // Show for 10 seconds
+
+      return () => clearTimeout(timer);
+    }
   }, [message]);
 
   if (!visible || !message) {

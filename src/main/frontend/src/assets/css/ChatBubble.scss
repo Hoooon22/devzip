@@ -1,6 +1,9 @@
 /* ChatBubble.scss */
 .chat-bubble {
-  position: absolute;
+  position: absolute; /* Positioned relative to the parent (character) */
+  bottom: 100%; /* Positioned above the character */
+  left: 50%; /* Center horizontally relative to the character */
+  transform: translateX(-50%); /* Center alignment */
   background-color: #f1f1f1;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -8,11 +11,15 @@
   max-width: 200px;
   word-wrap: break-word;
   font-size: 12px;
-  z-index: 10; /* Ensure bubble is on top of other elements */
+  z-index: 10; /* Ensure it is on top of other elements */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s; /* Smooth transition for appearance */
 }
 
-/* To position the bubble relative to the character */
-.character .chat-bubble {
-  top: -20px; /* Adjust based on your layout */
-  left: 0;
+.chat-bubble-enter {
+  opacity: 1; /* Fade in */
+}
+
+.chat-bubble-exit {
+  opacity: 0; /* Fade out */
 }
