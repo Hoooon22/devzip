@@ -1,6 +1,6 @@
 /* assets/css/Character.scss */
 .character {
-  position: absolute;
+  position: relative; /* Ensure chat bubble positions relative to character */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,4 +10,26 @@
   text-align: center;
   background-color: #ccc; /* 기본 배경 색상 */
   z-index: 10;
+}
+
+.character-id {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5; /* Ensure the character ID is above other elements */
+}
+
+.chat-bubble {
+  position: absolute;
+  bottom: 100%; /* Position above the character */
+  left: 50%; /* Center align horizontally */
+  transform: translateX(-50%); /* Center alignment */
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  max-width: 200px;
+  word-wrap: break-word;
+  font-size: 12px;
+  z-index: 10; /* Ensure bubble is on top of other elements */
 }
