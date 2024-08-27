@@ -21,14 +21,12 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (receivedData && typeof receivedData === 'object') {
-          if (receivedData.message) {
-            // Received chat message
-            setMessages((prevMessages) => [...prevMessages, receivedData.message]);
-          } else {
-            // Received character data
-            setCharacters(receivedData);
-          }
+        if (receivedData.message) {
+          // Handle chat message
+          setMessages((prevMessages) => [...prevMessages, receivedData.message]);
+        } else {
+          // Handle character data
+          setCharacters(receivedData);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -48,20 +46,16 @@ const Game = () => {
   }, []);
 
   const handleCharacterMove = (characterId, x, y) => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({ characterId, x, y });
+    const message = JSON.stringify({ characterId, x, y });
+    if (ws.current) {
       ws.current.send(message);
-    } else {
-      console.error('WebSocket is not open. Cannot send move data.');
     }
   };
 
   const handleNewMessage = (message) => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      const messageObject = { message };
+    const messageObject = { message };
+    if (ws.current) {
       ws.current.send(JSON.stringify(messageObject));
-    } else {
-      console.error('WebSocket is not open. Cannot send message.');
     }
   };
 
@@ -75,7 +69,7 @@ const Game = () => {
             color={characters[characterId]?.color}
             position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
             onMove={(x, y) => handleCharacterMove(characterId, x, y)}
-            message={characters[characterId]?.message} // Pass message to character
+            chatMessage={characters[characterId]?.message} // Pass the chat message
           />
         ))}
       </div>
