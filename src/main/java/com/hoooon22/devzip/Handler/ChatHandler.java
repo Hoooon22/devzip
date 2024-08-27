@@ -31,7 +31,7 @@ public class ChatHandler extends TextWebSocketHandler {
         }
 
         ipToSessionId.put(clientIp, characterId);
-        characters.put(characterId, new CharacterData(characterId, getColorFromIp(clientIp), 0, 0));
+        characters.put(characterId, new CharacterData(characterId, getColorFromIp(clientIp), 10, 10));
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
         sessions.put(characterId, session);
     }
