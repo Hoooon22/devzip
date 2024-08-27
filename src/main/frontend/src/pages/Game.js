@@ -1,5 +1,3 @@
-// components/game/Game.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import Character from '../components/game/Character';
 import ChatWindow from '../components/game/ChatWindow';
@@ -23,13 +21,10 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (Array.isArray(receivedData)) {
-          // Received character data
-          const characterData = receivedData.reduce((acc, item) => {
-            acc[item.id] = item;
-            return acc;
-          }, {});
-          setCharacters(characterData);
+        if (typeof receivedData === 'object' && !Array.isArray(receivedData)) {
+          // Received character data as an object, directly setting it to state
+          console.log('Character data processed as object:', receivedData);
+          setCharacters(receivedData);
         } else if (receivedData.message) {
           // Received chat message
           setMessages((prevMessages) => [...prevMessages, receivedData.message]);
