@@ -90,7 +90,9 @@ const Character = ({ id, color, position, onMove, chatMessage }) => {
       onMouseDown={handleMouseDown}
     >
       <div className="character-id">{id}</div>
-      <ChatBubble message={chatMessage} />
+      {chatMessage && (
+        <ChatBubble message={chatMessage} />
+      )}
     </div>
   );
 };
