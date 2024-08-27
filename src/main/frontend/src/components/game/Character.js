@@ -85,11 +85,14 @@ const Character = ({ id, color, position, onMove, message }) => {
         left: `${localPosition.x}px`,
         top: `${localPosition.y}px`,
         position: 'absolute',
+        display: 'inline-block',
       }}
       onMouseDown={handleMouseDown}
     >
       {id}
-      {message && <ChatBubble message={message} />}
+      {message && (
+        <ChatBubble message={message} />
+      )}
     </div>
   );
 };

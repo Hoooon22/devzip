@@ -1,12 +1,18 @@
+/* ChatBubble.scss */
 .chat-bubble {
   position: absolute;
-  bottom: 100%; /* 캐릭터의 위에 위치시키기 위해 bottom을 사용 */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: white;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   padding: 5px 10px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
-  z-index: 1000; /* 필요 시 조정 */
+  max-width: 200px;
+  word-wrap: break-word;
+  font-size: 12px;
+  z-index: 10; /* Ensure bubble is on top of other elements */
+}
+
+/* To position the bubble relative to the character */
+.character .chat-bubble {
+  top: -20px; /* Adjust based on your layout */
+  left: 0;
 }
