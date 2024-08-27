@@ -17,37 +17,39 @@ public class ChatHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String clientIp = getClientIp(session);
-        String color = getColorFromIp(clientIp);
-        
         String characterId = session.getId();
-        characters.put(characterId, new CharacterData(characterId, color, 0, 0));
-        // System.out.println(characters);
-
+        characters.put(characterId, new CharacterData(characterId, "#000000", 0, 0)); // Default color
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(characters)));
-        sessions.put(session.getId(), session);
+        sessions.put(characterId, session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Map<String, Object> data = objectMapper.readValue(message.getPayload(), Map.class);
 
-        // 처리된 데이터가 캐릭터 위치 변경일 경우
-        if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
+        if (data.containsKey("username")) {
+            // Handle username
+            String characterId = session.getId();
+            String username = (String) data.get("username");
+            CharacterData character = characters.get(characterId);
+            if (character != null) {
+                character.setName(username);
+                broadcastCharacters();
+            }
+        } else if (data.containsKey("characterId") && data.containsKey("x") && data.containsKey("y")) {
+            // Handle character movement
             String characterId = (String) data.get("characterId");
             int x = (int) data.get("x");
             int y = (int) data.get("y");
 
-            // 캐릭터 위치 업데이트
             CharacterData character = characters.get(characterId);
             if (character != null) {
                 character.setX(x);
                 character.setY(y);
-                // 모든 클라이언트에게 업데이트된 캐릭터 정보 전송
                 broadcastCharacters();
             }
         } else if (data.containsKey("message")) {
-            // 처리된 데이터가 채팅 메시지일 경우
+            // Handle chat message
             broadcastMessage(data);
         }
     }
@@ -56,6 +58,7 @@ public class ChatHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
         characters.remove(session.getId());
+        broadcastCharacters(); // Update remaining clients
     }
 
     private void broadcastCharacters() throws Exception {
@@ -72,28 +75,12 @@ public class ChatHandler extends TextWebSocketHandler {
         }
     }
 
-    private String getClientIp(WebSocketSession session) {
-        String xForwardedForHeader = session.getHandshakeHeaders().getFirst("X-Forwarded-For");
-        if (xForwardedForHeader != null && !xForwardedForHeader.isEmpty()) {
-            return xForwardedForHeader.split(",")[0].trim();
-        } else {
-            return session.getRemoteAddress().getAddress().getHostAddress();
-        }
-    }
-
-    private String getColorFromIp(String ip) {
-        int hash = ip.hashCode();
-        int red = (hash & 0xFF0000) >> 16;
-        int green = (hash & 0x00FF00) >> 8;
-        int blue = hash & 0x0000FF;
-        return String.format("#%02x%02x%02x", red, green, blue);
-    }
-
     private static class CharacterData {
         private String id;
         private String color;
         private int x;
         private int y;
+        private String name;
 
         public CharacterData(String id, String color, int x, int y) {
             this.id = id;
@@ -111,5 +98,8 @@ public class ChatHandler extends TextWebSocketHandler {
         public void setX(int x) { this.x = x; }
         public int getY() { return y; }
         public void setY(int y) { this.y = y; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
     }
 }
+
