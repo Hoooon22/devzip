@@ -1,13 +1,13 @@
+/* assets/css/Character.scss */
 .character {
-  width: 40px;  // Size of the character
-  height: 40px;
   position: absolute;
-  border-radius: 50%;
-  cursor: pointer;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  border-radius: 50%;
   color: white;
-  font-size: 12px;
   font-weight: bold;
+  text-align: center;
+  background-color: #ccc; /* 기본 배경 색상 */
+  z-index: 10;
 }
