@@ -21,12 +21,19 @@ const Game = () => {
       try {
         const receivedData = JSON.parse(event.data);
 
-        if (receivedData.message) {
-          // Handle chat message
-          setMessages((prevMessages) => [...prevMessages, receivedData.message]);
-        } else {
-          // Handle character data
-          setCharacters(receivedData);
+        if (receivedData.id) {
+          // Update character position
+          setCharacters((prevCharacters) => ({
+            ...prevCharacters,
+            [receivedData.id]: {
+              ...prevCharacters[receivedData.id],
+              x: receivedData.x,
+              y: receivedData.y,
+            },
+          }));
+        } else if (receivedData.message) {
+          // Received chat message
+          setMessages((prevMessages) => [...prevMessages, receivedData]);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -46,7 +53,7 @@ const Game = () => {
   }, []);
 
   const handleCharacterMove = (characterId, x, y) => {
-    const message = JSON.stringify({ characterId, x, y });
+    const message = JSON.stringify({ id: characterId, x, y });
     if (ws.current) {
       ws.current.send(message);
     }
@@ -59,6 +66,12 @@ const Game = () => {
     }
   };
 
+  // Map messages to characters
+  const messagesByCharacter = messages.reduce((acc, msg) => {
+    acc[msg.characterId] = msg.message;
+    return acc;
+  }, {});
+
   return (
     <div className="game-container">
       <div className="character-area">
@@ -69,7 +82,7 @@ const Game = () => {
             color={characters[characterId]?.color}
             position={{ x: characters[characterId]?.x, y: characters[characterId]?.y }}
             onMove={(x, y) => handleCharacterMove(characterId, x, y)}
-            chatMessage={characters[characterId]?.message} // Pass the chat message
+            chatMessage={messagesByCharacter[characterId]}
           />
         ))}
       </div>
