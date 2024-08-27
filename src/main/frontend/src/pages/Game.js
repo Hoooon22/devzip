@@ -45,13 +45,16 @@ const Game = () => {
     };
 
     return () => {
-      console.log('Characters state:', characters);
-
       if (ws.current) {
         ws.current.close();
       }
     };
   }, []);
+
+  // Log the characters state whenever it changes
+  useEffect(() => {
+    console.log('Characters state:', characters);
+  }, [characters]);  // This effect will run every time the `characters` state changes
 
   const handleCharacterMove = (characterId, x, y) => {
     const message = JSON.stringify({ characterId, x, y });
