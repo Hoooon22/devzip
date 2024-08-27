@@ -15,6 +15,7 @@
 .character-id {
   position: absolute;
   color: black;
+  border-style: solid;
   top: 0;
   left: 0;
   z-index: 5; /* Ensure the character ID is above other elements */
