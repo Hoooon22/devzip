@@ -81,7 +81,7 @@ const Character = ({ id, color, position, onMove, chatMessage, name }) => {
     <div
       className="character"
       style={{
-        backgroundColor: color,
+        color: color,
         left: `${localPosition.x}px`,
         top: `${localPosition.y}px`,
         position: 'absolute',
