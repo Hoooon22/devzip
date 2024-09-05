@@ -34,6 +34,7 @@ function Joke() {
             ) : (
                 joke && <RandomJoke joke={joke} />
             )}
+            {/* 버튼이 항상 보이도록 함 */}
             <button className="joke-button" onClick={fetchJoke}>New Joke</button>
         </div>
     );
