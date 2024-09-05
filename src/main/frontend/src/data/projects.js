@@ -19,11 +19,11 @@ const projects = [
     },
     { 
         id: 3, 
-        name: 'The Map', 
-        description: '실시간 소통 게임', 
-        link: '/Game', 
-        active: false,
-        startDate: '2024-08-05',
+        name: '코딩 농담 사전', 
+        description: 'Jokes API를 이용한 코딩 Joke 번역', 
+        link: '/Joke', 
+        active: true,
+        startDate: '2024-09-05',
         endDate: ''
     },
     // { 

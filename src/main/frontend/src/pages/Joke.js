@@ -1,5 +1,6 @@
 // src/pages/Joke.js
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import RandomJoke from '../components/Joke/RandomJoke';
 import '../assets/css/Joke.scss';  // CSS 파일 추가
 
@@ -7,18 +8,18 @@ function Joke() {
     const [joke, setJoke] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const fetchJoke = () => {
+    // 농담을 가져오는 함수
+    const fetchJoke = async () => {
         setLoading(true);
-        fetch('http://localhost:8080/api/joke')  // Spring Boot API 주소
-            .then(response => response.json())
-            .then(data => {
-                setJoke(data);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error("Error fetching the joke:", error);
-                setLoading(false);
-            });
+        try {
+            const response = await axios.get('http://localhost:8080/api/joke'); // Spring Boot API 주소
+            setJoke(response.data);
+            console.log('Fetched joke:', response.data);
+        } catch (error) {
+            console.error('Error fetching joke:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
