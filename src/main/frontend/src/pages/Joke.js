@@ -12,7 +12,7 @@ function Joke() {
     const fetchJoke = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://devzip.site/api/joke'); // Spring Boot API 주소
+            const response = await axios.get('https://devzip.site/api/joke'); // Spring Boot API 주소
             setJoke(response.data);
             console.log('Fetched joke:', response.data);
         } catch (error) {
