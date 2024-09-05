@@ -1,6 +1,7 @@
 import './App.css';
 import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
+import Joke from "./pages/Joke";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -12,6 +13,9 @@ function App() {
 
         {/* 방명록 페이지 */}
         <Route path="/Guestbook" element={<Guestbook />} />
+
+        {/* 농담 페이지 */}
+        <Route path="/Joke" element={<Joke />} />
 
       </Routes>
     </BrowserRouter>
