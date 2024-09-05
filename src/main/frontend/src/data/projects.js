@@ -22,7 +22,7 @@ const projects = [
         name: 'The Map', 
         description: '실시간 소통 게임', 
         link: '/Game', 
-        active: true,
+        active: false,
         startDate: '2024-08-05',
         endDate: ''
     },
