@@ -1,5 +1,6 @@
 package com.hoooon22.devzip.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -8,6 +9,7 @@ public class JokeService {
 
     private final RestTemplate restTemplate;
 
+    @Autowired
     public JokeService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }

@@ -1,13 +1,11 @@
 package com.hoooon22.devzip.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoooon22.devzip.Service.JokeService;
 
 @RestController
-@RequestMapping("/api/Joke")
 public class JokeController {
 
     private final JokeService jokeService;
