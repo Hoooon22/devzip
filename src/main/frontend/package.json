@@ -27,10 +27,10 @@
     "ws": "^8.18.0"
   },
   "scripts": {
-    "start": "node --max-old-space-size=4096 node_modules/.bin/react-scripts start",
-    "build": "node --max-old-space-size=4096 node_modules/.bin/react-scripts build",
-    "test": "node --max-old-space-size=4096 node_modules/.bin/react-scripts test",
-    "eject": "node --max-old-space-size=4096 node_modules/.bin/react-scripts eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
