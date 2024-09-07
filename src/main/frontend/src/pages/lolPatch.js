@@ -8,7 +8,7 @@ function LolPatch() {
     // 함수
     const fetchLolPatch = async () => {
         try {
-            const response = await axios.get('https://devzip.site/api/lolPatch');
+            const response = await axios.get('https://devzip.site/api/lolpatch');
             setLolPatch(response.data);
             console.log('Fetched patch:', response.data);
         } catch (error) {
