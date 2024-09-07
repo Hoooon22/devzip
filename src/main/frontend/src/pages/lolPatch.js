@@ -30,9 +30,7 @@ function LolPatch() {
     return (
         <div className="lolPatch-container">
             <h1 className="title">LoL Patch xxx</h1>
-            <div className="patchBody">
-                {lolPatch ? lolPatch : 'Loading...'}
-            </div>
+                <div className="patchBody" dangerouslySetInnerHTML={{ __html: lolPatch }} />
         </div>
     );
 }
