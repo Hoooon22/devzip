@@ -10,12 +10,8 @@ import org.springframework.stereotype.Service;
 public class LolpatchService {
 
     public String getHTML() throws IOException {
-		
-		String patchURL = "https://www.leagueoflegends.com/ko-kr/news/game-updates/patch-14-17-notes";
-        
-		//URL로부터 HTML 문서 가져오기
-		Document doc = Jsoup.connect(patchURL).get();
-
-		return doc.toString();       
+        String patchURL = "https://www.leagueoflegends.com/ko-kr/news/game-updates/patch-14-17-notes";
+        Document doc = Jsoup.connect(patchURL).get();
+        return doc.toString();
     }
 }

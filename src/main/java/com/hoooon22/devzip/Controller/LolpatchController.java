@@ -16,7 +16,7 @@ public class LolpatchController {
         this.lolpatchService = lolpatchService;
     }
 
-    @GetMapping("/api/lolpatch")
+    @GetMapping("/api/lolPatch")
     public String getLolPatch() throws IOException {
         return lolpatchService.getHTML();
     }
