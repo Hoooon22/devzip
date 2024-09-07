@@ -1,13 +1,33 @@
 // src/pages/LolPatch.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-function lolPatch() {
+function LolPatch() {
+    const [lolPatch, setLolPatch] = useState(null);
+
+    // 함수
+    const fetchLolPatch = async () => {
+        try {
+            const response = await axios.get('https://devzip.site/api/lolPatch');
+            setLolPatch(response.data);
+            console.log('Fetched joke:', response.data);
+        } catch (error) {
+            console.error('Error fetching joke:', error);
+        } 
+    }
+
+    useEffect(() => {
+        fetchLolPatch();
+    }, []);
 
     return (
         <div className="lolPatch-container">
-            
+            <h1 className="title">LoL Patch xxx</h1>
+            <div className="patchBody">
+                {lolPatch}
+            </div>
         </div>
     );
 }
 
-export default lolPatch;
+export default LolPatch;
