@@ -24,7 +24,7 @@ const projects = [
         link: '/Joke', 
         active: true,
         startDate: '2024-09-05',
-        endDate: ''
+        endDate: '2024-09-06'
     },
     // { 
     //     id: 3, 
