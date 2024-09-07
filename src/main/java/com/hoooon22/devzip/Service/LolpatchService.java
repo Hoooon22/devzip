@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LolpatchService {
 
     public String getHTML() throws IOException {
