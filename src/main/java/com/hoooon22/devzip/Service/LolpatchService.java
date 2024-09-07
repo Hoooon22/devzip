@@ -16,6 +16,8 @@ public class LolpatchService {
 		//URL로부터 HTML 문서 가져오기
 		Document doc = Jsoup.connect(patchURL).get();
         
+		System.out.println(doc.toString());
+
 		return doc.toString();       
     }
 }
