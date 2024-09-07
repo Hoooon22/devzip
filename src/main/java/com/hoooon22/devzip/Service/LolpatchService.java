@@ -11,7 +11,7 @@ public class LolpatchService {
 		
 		String patchURL = "https://www.leagueoflegends.com/ko-kr/news/game-updates/patch-14-17-notes/";
         
-		//WeatherURL로부터 HTML 문서 가져오기
+		//URL로부터 HTML 문서 가져오기
 		Document doc = Jsoup.connect(patchURL).get();
         
 		return doc.toString();       
