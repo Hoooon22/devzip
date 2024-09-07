@@ -28,7 +28,7 @@ function Lolpatch() {
     }, []);
 
     return (
-        <div className="lolPatch-container">
+        <div className="lolpatch-container">
             <h1 className="title">LoL Patch xxx</h1>
             <div className="patchBody">
                 {lolPatch ? <div dangerouslySetInnerHTML={{ __html: lolPatch }} /> : 'Loading...'}
