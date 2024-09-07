@@ -23,6 +23,7 @@ function LolPatch() {
     }
 
     useEffect(() => {
+        console.log('useEffect triggered');
         fetchLolPatch();
     }, []);
 
