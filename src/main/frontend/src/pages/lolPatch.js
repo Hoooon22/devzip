@@ -10,11 +10,18 @@ function LolPatch() {
         try {
             const response = await axios.get('https://devzip.site/api/lolPatch');
             setLolPatch(response.data);
-            console.log('Fetched joke:', response.data);
+            console.log('Fetched patch:', response.data);
         } catch (error) {
-            console.error('Error fetching joke:', error);
+            console.error('Error fetching patch:', error);
+            if (error.response) {
+                console.error('Error Response:', error.response);
+            }
+            if (error.request) {
+                console.error('Error Request:', error.request);
+            }
+            console.error('Error Message:', error.message);
         } 
-    }
+    }    
 
     useEffect(() => {
         fetchLolPatch();
