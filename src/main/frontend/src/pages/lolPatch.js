@@ -31,7 +31,7 @@ function LolPatch() {
         <div className="lolPatch-container">
             <h1 className="title">LoL Patch xxx</h1>
             <div className="patchBody">
-                {lolPatch}
+                {lolPatch ? lolPatch : 'Loading...'}
             </div>
         </div>
     );
