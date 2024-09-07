@@ -2,7 +2,7 @@ import './App.css';
 import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
 import Joke from "./pages/Joke";
-import LolPatch from "./pages/LolPatch";
+import Lolpatch from "./pages/Lolpatch";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
         <Route path="/Joke" element={<Joke />} />
 
         {/* 롤 패치노트 페이지 */}
-        <Route path="/LolPatch" element={<LolPatch />} />
+        <Route path="/Lolpatch" element={<Lolpatch />} />
 
       </Routes>
     </BrowserRouter>

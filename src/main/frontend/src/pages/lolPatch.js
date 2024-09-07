@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function LolPatch() {
+function Lolpatch() {
     const [lolPatch, setLolPatch] = useState(null);
 
     const fetchLolPatch = async () => {
@@ -37,4 +37,4 @@ function LolPatch() {
     );
 }
 
-export default LolPatch;
+export default Lolpatch;
