@@ -26,6 +26,15 @@ const projects = [
         startDate: '2024-09-05',
         endDate: '2024-09-06'
     },
+    { 
+        id: 4, 
+        name: '리그오브레전드 패치노트', 
+        description: '패치노트를 보다 간편하고 빠르게!', 
+        link: '/lolPatch', 
+        active: true,
+        startDate: '2024-09-07',
+        endDate: ''
+    },
     // { 
     //     id: 3, 
     //     name: '타임 킬링용 게임', 
