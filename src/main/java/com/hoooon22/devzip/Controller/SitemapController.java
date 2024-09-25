@@ -22,14 +22,21 @@ public class SitemapController {
 
     @GetMapping(value = "/sitemap.xml", produces = "application/xml")
     public void getSitemap(HttpServletRequest request, HttpServletResponse response) {
-        String sitemapXml = genSitemapXml();
         response.setContentType("application/xml");
         try {
+            String sitemapXml = genSitemapXml();
             response.getWriter().write(sitemapXml);
         } catch (Exception e) {
             e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 상태 코드 설정
+            try {
+                response.getWriter().write("Error generating sitemap");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
+    
 
     private String genSitemapXml() {
         String host = "https://www.devzip.site"; // 사이트 URL
