@@ -44,14 +44,17 @@ public class SitemapController {
         // 모든 핸들러 메소드에서 URL 수집
         var handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
         for (var entry : handlerMethods.entrySet()) {
-            entry.getKey().getPatternsCondition().getPatterns().forEach(url -> {
-                sb.append("  <url>\n");
-                sb.append("    <loc>").append(host).append(url).append("</loc>\n");
-                sb.append("    <lastmod>").append(formattedDateTime).append("</lastmod>\n");
-                sb.append("    <changefreq>monthly</changefreq>\n"); // 변경 빈도 추가
-                sb.append("    <priority>0.5</priority>\n"); // 우선순위 추가
-                sb.append("  </url>\n");
-            });
+            var patternsCondition = entry.getKey().getPatternsCondition();
+            if (patternsCondition != null) {
+                patternsCondition.getPatterns().forEach(url -> {
+                    sb.append("  <url>\n");
+                    sb.append("    <loc>").append(host).append(url).append("</loc>\n");
+                    sb.append("    <lastmod>").append(formattedDateTime).append("</lastmod>\n");
+                    sb.append("    <changefreq>monthly</changefreq>\n"); // 변경 빈도 추가
+                    sb.append("    <priority>0.5</priority>\n"); // 우선순위 추가
+                    sb.append("  </url>\n");
+                });
+            }
         }
 
         sb.append("</urlset>");
