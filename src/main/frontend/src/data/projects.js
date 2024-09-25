@@ -29,10 +29,19 @@ const projects = [
     { 
         id: 4, 
         name: '리그오브레전드 패치노트', 
-        description: '패치노트를 보다 간편하고 빠르게!', 
+        description: '패치노트를 보다 간편하고 빠르게! (개발 일시정지)', 
         link: '/lolPatch', 
         active: true,
         startDate: '2024-09-07',
+        endDate: ''
+    },
+    { 
+        id: 5, 
+        name: '서버 성능 지표기', 
+        description: '패치노트를 보다 간편하고 빠르게! (개발 일시정지)', 
+        link: '/serverMonit', 
+        active: true,
+        startDate: '2024-09-25',
         endDate: ''
     },
     // { 
