@@ -1,70 +1,35 @@
 package com.hoooon22.devzip.Controller;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class SitemapController {
 
-    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
+    @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
+    public String getSitemap() {
+        StringBuilder sitemap = new StringBuilder();
+        sitemap.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        sitemap.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
 
-    public SitemapController(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-    }
+        // 메인 페이지 추가
+        addUrl(sitemap, "https://devzip.site", "1.0");
 
-    @GetMapping(value = "/sitemap.xml", produces = "application/xml")
-    public void getSitemap(HttpServletRequest request, HttpServletResponse response) {
-        response.setContentType("application/xml");
-        try {
-            String sitemapXml = genSitemapXml();
-            response.getWriter().write(sitemapXml);
-        } catch (Exception e) {
-            e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 상태 코드 설정
-            try {
-                response.getWriter().write("Error generating sitemap");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-
-    private String genSitemapXml() {
-        String host = "https://www.devzip.site"; // 사이트 URL
-        StringBuilder sb = new StringBuilder();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        sb.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
-
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-        String formattedDateTime = now.atOffset(ZoneOffset.UTC).format(formatter);
-
-        // 모든 핸들러 메소드에서 URL 수집
-        var handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
-        for (var entry : handlerMethods.entrySet()) {
-            var patternsCondition = entry.getKey().getPatternsCondition();
-            if (patternsCondition != null) {
-                patternsCondition.getPatterns().forEach(url -> {
-                    sb.append("  <url>\n");
-                    sb.append("    <loc>").append(host).append(url).append("</loc>\n");
-                    sb.append("    <lastmod>").append(formattedDateTime).append("</lastmod>\n");
-                    sb.append("    <changefreq>monthly</changefreq>\n"); // 변경 빈도 추가
-                    sb.append("    <priority>0.5</priority>\n"); // 우선순위 추가
-                    sb.append("  </url>\n");
-                });
-            }
+        // 하위 디렉토리 자동 추가
+        String[] subDirectories = {"blog", "projects", "about", "contact"};
+        for (String dir : subDirectories) {
+            addUrl(sitemap, "https://devzip.site/" + dir, "0.8");
         }
 
-        sb.append("</urlset>");
-        return sb.toString();
+        sitemap.append("</urlset>");
+        return sitemap.toString();
+    }
+
+    private void addUrl(StringBuilder sitemap, String loc, String priority) {
+        sitemap.append("  <url>\n");
+        sitemap.append("    <loc>").append(loc).append("</loc>\n");
+        sitemap.append("    <priority>").append(priority).append("</priority>\n");
+        sitemap.append("  </url>\n");
     }
 }
