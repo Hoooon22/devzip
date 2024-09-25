@@ -17,7 +17,7 @@ public class SitemapController {
         addUrl(sitemap, "https://devzip.site", "1.0");
 
         // 하위 디렉토리 자동 추가
-        String[] subDirectories = {"/", "/Guestbook", "/Joke", "/lolPatch", "/error"};
+        String[] subDirectories = {"/", "/Guestbook", "/Joke", "/lolPatch", "/error", "/serverMonit"};
         for (String dir : subDirectories) {
             addUrl(sitemap, "https://devzip.site" + dir, "0.8");
         }
