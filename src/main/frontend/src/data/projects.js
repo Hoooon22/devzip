@@ -38,7 +38,7 @@ const projects = [
     { 
         id: 5, 
         name: '서버 성능 지표기', 
-        description: '실시간 서버 성능 지표기 <br> 다른 웹사이트도 가능', 
+        description: '실시간 서버 성능 지표기&nbsp;다른 웹사이트도 가능', 
         link: '/serverMonit', 
         active: true,
         startDate: '2024-09-25',
