@@ -26,6 +26,15 @@ const projects = [
         startDate: '2024-09-05',
         endDate: '2024-09-06'
     },
+    { 
+        id: 4, 
+        name: '타임캡슐 프로젝터', 
+        description: '사진이나 동영상을 올려서, 모두와 함께 열어봐요!', 
+        link: '/timecapsule', 
+        active: true,
+        startDate: '2024-10-01',
+        endDate: ''
+    },
     // { 
     //     id: 4, 
     //     name: '리그오브레전드 패치노트', 
