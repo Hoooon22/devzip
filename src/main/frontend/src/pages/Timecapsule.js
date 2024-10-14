@@ -4,7 +4,7 @@ function Timecapsule() {
 
     return (
         <div className="Timecapsule-container">
-            Timecapsule
+            Timecapsule   
         </div>
     );
 }
