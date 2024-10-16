@@ -1,4 +1,3 @@
-# dev.yml
 name: dev branch auto ci process script
 
 on: # 아래 job을 실행시킬 상황
@@ -20,5 +19,6 @@ jobs:
           port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트
           script: | # 실행할 스크립트
             cd /var/project/devzip/
+            sudo su
             fuser -k 8080/tcp
             git pull origin master && ./gradlew clean build && pm2 start server.json
