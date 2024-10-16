@@ -20,4 +20,4 @@ jobs:
           script: | # 실행할 스크립트
             cd /var/project/devzip/
             fuser -k 8080/tcp
-            git pull origin master && ./gradlew clean build && pm2 start server.json 
+            git pull origin master && ./gradlew clean build && pm2 start server.json
