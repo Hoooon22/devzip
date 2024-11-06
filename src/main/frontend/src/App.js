@@ -11,7 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* 메인 페이지 */}
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Main />} /> 
 
         {/* 방명록 페이지 */}
         <Route path="/Guestbook" element={<Guestbook />} />
