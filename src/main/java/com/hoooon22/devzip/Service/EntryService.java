@@ -1,5 +1,8 @@
 package com.hoooon22.devzip.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,6 @@ import com.hoooon22.devzip.Model.Entry;
 import com.hoooon22.devzip.Repository.EntryRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class EntryService {
@@ -28,6 +29,14 @@ public class EntryService {
     public List<Entry> getAllEntries() {
         logger.debug("Fetching all entries from the database");
         List<Entry> entries = entryRepository.findAll();
+
+        // isEmpty?
+        if (entries.isEmpty()) {
+            logger.debug("No entries found");
+        } else {
+            logger.debug("Found {} entries", entries.size());
+        }
+
         // IP를 기반으로 색상 설정
         for (Entry entry : entries) {
             String color = getColorFromIp(entry.getIp());
