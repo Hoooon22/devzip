@@ -19,7 +19,9 @@ const Guestbook = () => {
 
     const addEntry = async (newEntry) => {
         try {
-            const response = await axios.post('/api/v1/entries', newEntry);
+            const response = await axios.post('/api/v1/entries', newEntry, {
+                withCredentials: true, // 자격 증명 포함하여 요청 보내기
+            });
             console.log('Added new entry:', response.data);
             setEntries([...entries, response.data]); // 새 항목을 기존 목록에 추가
         } catch (error) {
