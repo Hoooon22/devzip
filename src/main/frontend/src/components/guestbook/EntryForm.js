@@ -10,11 +10,22 @@ const EntryForm = ({ addEntry }) => {
         e.preventDefault();
         
         try {
-            const response = await axios.post('/api/v1/entries', { name, content });
+            // 필요한 경우 Authorization 헤더를 추가
+            const response = await axios.post('/api/v1/entries', 
+                { name, content }, 
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 예시로 Authorization 헤더 추가 (JWT 토큰을 사용하는 경우)
+                        // 'Authorization': `Bearer ${yourToken}`,
+                    },
+                    withCredentials: true, // CORS 문제를 해결하기 위해 쿠키와 함께 인증 정보를 보낼 경우
+                }
+            );
             console.log('Entry added:', response.data);
             addEntry(response.data); // 새 항목을 Guestbook 컴포넌트의 상태에 추가
-            setName('1');
-            setContent('1');
+            setName('');
+            setContent('');
         } catch (error) {
             console.error('Error adding entry:', error);
         }
