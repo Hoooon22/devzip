@@ -7,6 +7,12 @@ const EntryForm = ({ addEntry }) => {
     const [content, setContent] = useState('');
     const [error, setError] = useState(null); // 에러 메시지 상태 추가
 
+    // CSRF 토큰 가져오는 함수 (쿠키에서)
+    const getCSRFToken = () => {
+        const match = document.cookie.match(/(^|;) ?X-CSRF-Token=([^;]*)(;|$)/);
+        return match ? match[2] : null; // CSRF 토큰 반환, 없으면 null
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -19,6 +25,11 @@ const EntryForm = ({ addEntry }) => {
             const response = await axios.post(
                 '/api/v1/entries',
                 { name, content }, // 요청 본문에 데이터를 포함
+                {
+                    headers: {
+                        'X-CSRF-Token': getCSRFToken(), // CSRF 토큰 추가
+                    }
+                }
             );
             console.log('Entry added:', response.data);
             addEntry(response.data); // Guestbook 상태에 추가
