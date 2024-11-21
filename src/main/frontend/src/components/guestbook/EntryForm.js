@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../../assets/css/EntryForm.scss';
 
+// Axios 기본 설정
+axios.defaults.withXSRFToken = true; // 새로운 옵션 설정
+
 const EntryForm = ({ addEntry }) => {
     const [name, setName] = useState('');
     const [content, setContent] = useState('');
@@ -17,10 +20,12 @@ const EntryForm = ({ addEntry }) => {
 
         try {
             const response = await axios.post(
-                '/api/v1/entries', 
+                '/api/v1/entries',
                 { name, content }, // 요청 본문에 데이터를 포함
                 {
-                    withCredentials: true, // 쿠키 기반 인증 사용 시 필요
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(), // CSRF 토큰 헤더 추가
+                    },
                 }
             );
             console.log('Entry added:', response.data);
@@ -32,6 +37,14 @@ const EntryForm = ({ addEntry }) => {
             console.error('Error adding entry:', error);
             setError('Failed to add entry. Please try again.'); // 에러 메시지 설정
         }
+    };
+
+    // CSRF 토큰을 가져오는 함수
+    const getCSRFToken = () => {
+        const csrfCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='));
+        return csrfCookie ? csrfCookie.split('=')[1] : null;
     };
 
     return (
