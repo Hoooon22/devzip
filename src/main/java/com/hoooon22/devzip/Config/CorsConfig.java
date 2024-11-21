@@ -9,7 +9,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/v1/**")  // 특정 엔드포인트 패턴에 대해 CORS 설정 적용
+        registry.addMapping("/**")  // 특정 엔드포인트 패턴에 대해 CORS 설정 적용
                 .allowedOrigins(
                     "https://devzip.site",  // 프로덕션 출처
                     "http://localhost:3000"  // 개발 환경 출처
