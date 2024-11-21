@@ -13,8 +13,8 @@ const EntryForm = ({ addEntry }) => {
             const response = await axios.post('/api/v1/entries', { name, content });
             console.log('Entry added:', response.data);
             addEntry(response.data); // 새 항목을 Guestbook 컴포넌트의 상태에 추가
-            setName('');
-            setContent('');
+            setName('1');
+            setContent('1');
         } catch (error) {
             console.error('Error adding entry:', error);
         }
