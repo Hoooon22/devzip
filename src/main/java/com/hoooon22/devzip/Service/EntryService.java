@@ -32,9 +32,9 @@ public class EntryService {
 
         // isEmpty?
         if (entries.isEmpty()) {
-            logger.debug("No entries found");
+            logger.info("No entries found");
         } else {
-            logger.debug("Found {} entries", entries.size());
+            logger.info("Found {} entries", entries.size());
         }
 
         // IP를 기반으로 색상 설정
