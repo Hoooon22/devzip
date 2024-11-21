@@ -12,7 +12,7 @@ const EntryForm = ({ addEntry }) => {
         try {
             // 필요한 경우 Authorization 헤더를 추가
             const response = await axios.post('/api/v1/entries', 
-                { name, content }, 
+                '', 
                 {
                     withCredentials: true, // CORS 문제를 해결하기 위해 쿠키와 함께 인증 정보를 보낼 경우
                 }
