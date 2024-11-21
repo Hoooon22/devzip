@@ -13,6 +13,6 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("https://devzip.site")  // 허용할 출처
                 .allowedMethods("GET", "POST", "PUT", "DELETE")  // 허용할 HTTP 메서드
                 .allowedHeaders("Authorization", "Content-Type")
-                .allowCredentials(false);  // 자격 증명(쿠키, 인증 헤더 등) 허용
+                .allowCredentials(true);  // 자격 증명(쿠키, 인증 헤더 등) 허용
     }
 }
