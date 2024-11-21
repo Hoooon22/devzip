@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../../utils/axiosConfig'; // axiosConfig에서 설정된 axios 사용
 import '../../assets/css/EntryForm.scss';
-
-// Axios 기본 설정
-axios.defaults.withXSRFToken = true; // 새로운 옵션 설정
 
 const EntryForm = ({ addEntry }) => {
     const [name, setName] = useState('');
@@ -12,7 +9,7 @@ const EntryForm = ({ addEntry }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!name || !content) {
             setError('Name and Content are required!');
             return;
@@ -22,11 +19,6 @@ const EntryForm = ({ addEntry }) => {
             const response = await axios.post(
                 '/api/v1/entries',
                 { name, content }, // 요청 본문에 데이터를 포함
-                {
-                    headers: {
-                        'X-CSRFToken': getCSRFToken(), // CSRF 토큰 헤더 추가
-                    },
-                }
             );
             console.log('Entry added:', response.data);
             addEntry(response.data); // Guestbook 상태에 추가
@@ -37,14 +29,6 @@ const EntryForm = ({ addEntry }) => {
             console.error('Error adding entry:', error);
             setError('Failed to add entry. Please try again.'); // 에러 메시지 설정
         }
-    };
-
-    // CSRF 토큰을 가져오는 함수
-    const getCSRFToken = () => {
-        const csrfCookie = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='));
-        return csrfCookie ? csrfCookie.split('=')[1] : null;
     };
 
     return (
