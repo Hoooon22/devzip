@@ -14,11 +14,6 @@ const EntryForm = ({ addEntry }) => {
             const response = await axios.post('/api/v1/entries', 
                 { name, content }, 
                 {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 예시로 Authorization 헤더 추가 (JWT 토큰을 사용하는 경우)
-                        // 'Authorization': `Bearer ${yourToken}`,
-                    },
                     withCredentials: true, // CORS 문제를 해결하기 위해 쿠키와 함께 인증 정보를 보낼 경우
                 }
             );
