@@ -11,15 +11,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/api/v1/**") // API에 대해서만 CSRF 보호 비활성화
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/**").permitAll()  // /api/v1/** 경로는 모두 허용
+                .requestMatchers("/", "/error").permitAll()  // 루트 및 에러 페이지는 인증 불필요
+                .requestMatchers("/api/v1/**").permitAll()  // API 경로 인증 없이 허용
                 .anyRequest().authenticated()  // 나머지 경로는 인증 필요
             )
             .build();
+
+        return http.build();
     }
 }
