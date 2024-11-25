@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -12,14 +11,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
+            .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/**").permitAll() // Lambda DSL에서는 requestMatchers 사용
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/error", "/api/v1/**").permitAll() // 허용 경로 설정
+                .anyRequest().authenticated() // 나머지는 인증 필요
             )
             .build();
     }
+    
 }
 
