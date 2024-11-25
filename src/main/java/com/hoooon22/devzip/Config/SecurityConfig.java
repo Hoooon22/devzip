@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -12,16 +11,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
+            .csrf().disable() // CSRF 비활성화
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/error").permitAll()  // 루트 및 에러 페이지는 인증 불필요
-                .requestMatchers("/api/v1/**").permitAll()  // API 경로 인증 없이 허용
-                .anyRequest().authenticated()  // 나머지 경로는 인증 필요
+                .anyRequest().permitAll() // 모든 요청 허용
             )
-            .build();
-
+            .formLogin().disable() // 기본 로그인 폼 비활성화
+            .httpBasic().disable(); // HTTP Basic 인증 비활성화
         return http.build();
     }
 }
