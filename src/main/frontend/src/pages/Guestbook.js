@@ -13,10 +13,15 @@ const Guestbook = () => {
         return match ? decodeURIComponent(match[2]) : null; // CSRF 토큰 반환, 없으면 null
     };
 
-    // API에서 guestbook 엔트리 목록을 가져오는 함수
+    // API에서 guestbook 엔트리 목록을 가져오는 함수 (GET)
     const fetchEntries = async () => {
         try {
-            const response = await axios.get('/api/v1/entries');
+            const csrfToken = getCSRFToken();
+            const response = await axios.get('/api/v1/entries', {
+                headers: {
+                    'X-CSRF-Token': csrfToken, // CSRF 토큰 포함
+                },
+            });
             setEntries(response.data);
             console.log('Fetched entries:', response.data);
         } catch (error) {
@@ -24,7 +29,7 @@ const Guestbook = () => {
         }
     };
 
-    // 새로운 엔트리를 추가하는 함수
+    // 새로운 엔트리를 추가하는 함수 (POST)
     const addEntry = async (newEntry) => {
         try {
             const csrfToken = getCSRFToken();
