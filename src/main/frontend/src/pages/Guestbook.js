@@ -16,12 +16,7 @@ const Guestbook = () => {
     // API에서 guestbook 엔트리 목록을 가져오는 함수 (GET)
     const fetchEntries = async () => {
         try {
-            const csrfToken = getCSRFToken();
-            const response = await axios.get('/api/v1/entries', {
-                headers: {
-                    'X-CSRF-Token': csrfToken, // CSRF 토큰 포함
-                },
-            });
+            const response = await axios.get('/api/v1/entries');
             setEntries(response.data);
             console.log('Fetched entries:', response.data);
         } catch (error) {
