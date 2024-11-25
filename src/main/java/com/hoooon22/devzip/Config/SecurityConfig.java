@@ -21,12 +21,5 @@ public class SecurityConfig {
             )
             .build();
     }
-    
-    // @Bean
-    // protected SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
-    
-    //     //CSRF 토큰
-    //     http.csrf((csrf) -> csrf.disable());
-    //     return http.build();
-    // }
 }
+
