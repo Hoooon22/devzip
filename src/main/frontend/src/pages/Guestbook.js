@@ -7,12 +7,6 @@ import '../assets/css/Guestbook.scss';
 const Guestbook = () => {
     const [entries, setEntries] = useState([]);
 
-    // CSRF 토큰을 쿠키에서 가져오는 함수
-    const getCSRFToken = () => {
-        const match = document.cookie.match(/(^|;) ?XSRF-TOKEN=([^;]*)(;|$)/);
-        return match ? decodeURIComponent(match[2]) : null; // CSRF 토큰 반환, 없으면 null
-    };
-
     // API에서 guestbook 엔트리 목록을 가져오는 함수 (GET)
     const fetchEntries = async () => {
         try {
@@ -27,20 +21,7 @@ const Guestbook = () => {
     // 새로운 엔트리를 추가하는 함수 (POST)
     const addEntry = async (newEntry) => {
         try {
-            const csrfToken = getCSRFToken();
-            if (!csrfToken) {
-                throw new Error('CSRF token not found');
-            }
-
-            const response = await axios.post(
-                '/api/v1/entries',
-                newEntry,
-                {
-                    headers: {
-                        'X-CSRF-Token': csrfToken, // CSRF 토큰 포함
-                    },
-                }
-            );
+            const response = await axios.post('/api/v1/entries', newEntry);
             console.log('Added new entry:', response.data);
             setEntries((prevEntries) => [...prevEntries, response.data]); // 새 항목을 기존 목록에 추가
         } catch (error) {
