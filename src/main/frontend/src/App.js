@@ -4,6 +4,7 @@ import Guestbook from "./pages/Guestbook";
 import Joke from "./pages/Joke";
 import Lolpatch from "./pages/Lolpatch";
 import ApiPage from './pages/ApiPage';
+import Dashboard from './pages/Dashboard';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -21,6 +22,9 @@ function App() {
 
         {/* api 모음 페이지 */}
         <Route path="/apiPage" element={<ApiPage />} />
+
+        {/* Dashboard 모음 페이지 */}
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}

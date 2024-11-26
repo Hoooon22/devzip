@@ -35,6 +35,15 @@ const projects = [
         startDate: '2024-10-14',
         endDate: ''
     },
+    { 
+        id: 5, 
+        name: 'devzip 서버 대시보드', 
+        description: '서버의 정보를 표시하는 대시보드', 
+        link: '/dashboard', 
+        active: true,
+        startDate: '2024-11-26',
+        endDate: ''
+    },
     // { 
     //     id: 4, 
     //     name: '리그오브레전드 패치노트', 
