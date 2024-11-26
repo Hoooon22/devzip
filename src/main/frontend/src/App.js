@@ -2,7 +2,7 @@ import './App.css';
 import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
 import Joke from "./pages/Joke";
-import Lolpatch from "./pages/Lolpatch";
+// import Lolpatch from "./pages/Lolpatch";
 import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
 import { Routes, Route, BrowserRouter } from "react-router-dom";

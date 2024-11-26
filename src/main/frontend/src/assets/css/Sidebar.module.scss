@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    width: 20%;
+    height: 100vh;
+    
+
+    // background-color: red;
+    border: solid;
+    border-color: black;
+}
+
+.logo {
+    width: 100%;
+}
+.logo > img {
+    width: 100%;
+}
