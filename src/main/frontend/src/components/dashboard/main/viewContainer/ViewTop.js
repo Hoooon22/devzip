@@ -10,6 +10,7 @@ const ViewTop = () => {
             const response = await axios.get('/api/v1/serverstarts/recent');
             setServerStart(response.data);
             console.log('Fetched Recent ServerStart:', response.data);
+            console.log(response.data)
         } catch (error) {
             console.error('Error fetching ServerStart:', error);
         }
