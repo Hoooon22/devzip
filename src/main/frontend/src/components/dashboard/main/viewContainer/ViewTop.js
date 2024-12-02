@@ -3,7 +3,7 @@ import styles from "../../../../assets/css/ViewTop.module.scss";
 import axios from "../../../../utils/axiosConfig";
 
 const ViewTop = () => {
-    const [serverStart, setServerStart] = useState(null); // 초기값을 null로 변경
+    const [serverStart, setServerStart] = useState([]);
     
     const getRecentServerStart = async () => {
         try {
