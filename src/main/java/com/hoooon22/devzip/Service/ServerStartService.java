@@ -34,6 +34,20 @@ public class ServerStartService {
         return serverStarts;
     }
 
+    @Transactional(readOnly = true)
+    public List<ServerStart> getRecentServerStarts() {
+        List<ServerStart> serverStarts = serverStartRepository.findTopByOrderByDateDesc();
+
+        // isEmpty?
+        if (serverStarts.isEmpty()) {
+            logger.info("No ServerStarts found");
+        } else {
+            logger.info("Found {} ServerStarts", serverStarts.size());
+        }
+
+        return serverStarts;
+    }
+
     @Transactional
     public ServerStart addServerStart(ServerStart serverStart) {
         

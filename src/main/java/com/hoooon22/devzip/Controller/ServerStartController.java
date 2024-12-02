@@ -27,6 +27,12 @@ public class ServerStartController {
         List<ServerStart> serverStarts = serverStartService.getAllServerStarts();
         return ResponseEntity.ok(serverStarts);
     }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<ServerStart>> getRecentServerStarts() {
+        List<ServerStart> serverStarts = serverStartService.getRecentServerStarts();
+        return ResponseEntity.ok(serverStarts);
+    }
     
     @PostMapping
     public ResponseEntity<ServerStart> addServerStart(@RequestBody ServerStart serverStart) {

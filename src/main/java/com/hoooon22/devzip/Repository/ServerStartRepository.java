@@ -1,5 +1,7 @@
 package com.hoooon22.devzip.Repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +12,6 @@ import com.hoooon22.devzip.Model.ServerStart;
  */
 @Repository
 public interface ServerStartRepository extends JpaRepository<ServerStart, Long> {
-    // 추가적인 메서드 정의 가능
+    // 최신 날짜 기준으로 정렬 후 첫 번째 데이터 가져오기
+    List<ServerStart> findTopByOrderByDateDesc();
 }
