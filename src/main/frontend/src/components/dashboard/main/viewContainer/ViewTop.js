@@ -26,7 +26,7 @@ const ViewTop = () => {
                 <div>
                     <h3>최근 서버 시작 정보</h3>
                     <p><strong>서버 ID:</strong> {serverStart.id}</p>
-                    <p><strong>날짜:</strong> {serverStart.date}</p>
+                    <p><strong>날짜:</strong> {new Date(serverStart.date).toLocaleString()}</p>
                 </div>
             ) : (
                 <p>로딩 중...</p> // 데이터를 불러오는 중일 때 표시
