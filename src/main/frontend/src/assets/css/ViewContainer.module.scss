@@ -4,37 +4,23 @@
     flex-wrap: wrap; /* 여러 컴포넌트가 여러 줄에 배치되도록 */
     justify-content: center; /* 가로로 중앙 정렬 */
     gap: 20px; /* 컴포넌트 간 간격 */
-    border: solid;
-    border-color: red;
 }
 
 .container div {
-    width: 300px; /* 각 컴포넌트의 너비 */
-    height: 168px;
+    width: 300px; 
+    height: 220px; /* 높이를 늘려서 공간 확보 */
     padding: 20px;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     text-align: center;
-    margin-bottom: 20px; /* 컴포넌트 간 세로 간격 */
+    margin-bottom: 20px;
 
     display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center; /* 자식 요소를 세로(수직) 기준으로 가운데 정렬시킴 */
-}
-
-/* 자식 div의 특정 내부 요소 스타일 */
-.container div > div h4 {
-    font-size: 1.25rem;
-    color: #343a40;
-    margin-bottom: 8px;
-}
-
-.container div > div p {
-    font-size: 1rem;
-    color: #495057;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
 }
 
 h3 {

@@ -1,2 +1,2 @@
 export { default as ViewTop } from "./ViewTop";
-export { default as PCSpecs } from "./PCSpecs";
+export { default as CPUUsage } from "./CPUUsage";
