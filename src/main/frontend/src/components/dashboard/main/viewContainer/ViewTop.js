@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../../../assets/css/ViewTop.module.scss";
+import styles from "../../../../assets/css/ViewContainer.module.scss";
 import axios from "../../../../utils/axiosConfig";
 
 const ViewTop = () => {

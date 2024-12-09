@@ -1,6 +1,9 @@
 .container {
     width: 100%;
-
     border: solid;
     border-color: red;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
