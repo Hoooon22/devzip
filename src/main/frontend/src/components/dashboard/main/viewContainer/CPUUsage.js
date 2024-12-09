@@ -38,7 +38,8 @@ const CPUUsage = () => {
     const fetchCPUUsage = async () => {
         try {
             const response = await axios.get('/actuator/metrics/system.cpu.usage');
-            const value = response.data.measurements[0]?.value;
+            const rawValue = response.data.measurements[0]?.value; 
+            const value = rawValue !== undefined ? Math.ceil(rawValue * 100) : 0; // 백분율로 변환 후 올림
             setCpuUsage(value);
             console.log('CPU 사용량 업데이트:', value);
         } catch (error) {
