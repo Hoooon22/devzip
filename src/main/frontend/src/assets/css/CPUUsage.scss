@@ -1,0 +1,27 @@
+.usage-box {
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; /* 전체적으로 수직 중앙 정렬 */
+    align-items: center; 
+    gap: 10px; /* 도넛과 퍼센트 사이의 간격 */
+}
+
+.chart-container {
+    width: 120px; 
+    height: 120px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.percentage-container {
+    font-size: 1.75rem; 
+    font-weight: bold; 
+    color: #212529; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    margin-top: -10px; /* 💡 차트와의 간격을 미세하게 조절 */
+}
