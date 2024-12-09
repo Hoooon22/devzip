@@ -8,6 +8,7 @@ const PCSpecs = () => {
         <div className={styles.container}>
             <div>
                 <h3>두 번째 컴포넌트</h3>
+                
                 <p>다른 내용이 들어갑니다.</p>
             </div>
         </div>
