@@ -92,3 +92,7 @@ task copyReactBuildFiles(type: Copy) {
 	from "$frontendDir/build"
 	into "$projectDir/src/main/resources/static"
 }
+
+tasks.jar {
+    exclude 'static/js/*.map'  // JS 소스맵 파일 제외
+}
