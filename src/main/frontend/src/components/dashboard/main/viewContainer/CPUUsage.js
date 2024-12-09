@@ -38,9 +38,9 @@ const CPUUsage = () => {
     const fetchCPUUsage = async () => {
         try {
             const response = await axios.get('/actuator/metrics/system.cpu.usage');
-            const usage = response.data.usage; 
-            setCpuUsage(usage);
-            console.log('CPU 사용량 업데이트:', usage);
+            const value = response.data.value; 
+            setCpuUsage(value);
+            console.log('CPU 사용량 업데이트:', value);
         } catch (error) {
             console.error('CPU 사용량 가져오기 실패:', error);
         }
