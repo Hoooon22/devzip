@@ -28,11 +28,10 @@ const NetworkTraffic = () => {
      */
     const fetchNetworkTraffic = async () => {
         try {
-            // 각각의 API 호출을 병렬로 수행
-            const [sentResponse, receivedResponse] = await Promise.all([
-                axios.get('/actuator/metrics/network.traffic.sent'),
-                axios.get('/actuator/metrics/network.traffic.received')
-            ]);
+            // 각각의 API 호출
+            const sentResponse = await axios.get('/actuator/metrics/network.traffic.sent');
+            const receivedResponse = await axios.get('/actuator/metrics/network.traffic.received');
+
 
             // 송신 데이터 추출
             const sentValue = sentResponse.data.measurements.find(m => m.statistic === 'VALUE')?.value ?? 0;
