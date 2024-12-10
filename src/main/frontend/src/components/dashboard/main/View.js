@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../../../assets/css/View.module.scss";
-import { ViewTop, CPUUsage, MemoryUsage } from "./viewContainer";
+import { ViewTop, CPUUsage, MemoryUsage, NetworkTraffic } from "./viewContainer";
 
 const View = () => {
     
@@ -9,6 +9,7 @@ const View = () => {
             <ViewTop />
             <CPUUsage />
             <MemoryUsage />
+            <NetworkTraffic />
         </div>
     );
 };
