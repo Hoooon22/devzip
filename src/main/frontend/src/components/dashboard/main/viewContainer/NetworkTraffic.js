@@ -23,18 +23,28 @@ const NetworkTraffic = () => {
         received: Array(12).fill(0)      // 수신 데이터
     });
 
+    /**
+     * 네트워크 트래픽을 가져와서 state를 업데이트합니다.
+     */
     const fetchNetworkTraffic = async () => {
         try {
-            const response = await axios.get('/actuator/metrics/system.network.io'); // 네트워크 메트릭
-            const sent = response.data.measurements.find(m => m.statistic === 'TOTAL_SENT')?.value ?? 0;
-            const received = response.data.measurements.find(m => m.statistic === 'TOTAL_RECEIVED')?.value ?? 0;
+            // 각각의 API 호출을 병렬로 수행
+            const [sentResponse, receivedResponse] = await Promise.all([
+                axios.get('/actuator/metrics/network.traffic.sent'),
+                axios.get('/actuator/metrics/network.traffic.received')
+            ]);
 
-            const sentKB = (sent / 1024).toFixed(2); // Byte -> KB
-            const receivedKB = (received / 1024).toFixed(2); // Byte -> KB
+            // 송신 데이터 추출
+            const sentValue = sentResponse.data.measurements.find(m => m.statistic === 'VALUE')?.value ?? 0;
+            const sentKB = (sentValue / 1024).toFixed(2); // Byte -> KB
+
+            // 수신 데이터 추출
+            const receivedValue = receivedResponse.data.measurements.find(m => m.statistic === 'VALUE')?.value ?? 0;
+            const receivedKB = (receivedValue / 1024).toFixed(2); // Byte -> KB
 
             // 기존 데이터에 새 값 추가
             setTrafficData((prevData) => {
-                const newTimestamps = [...prevData.timestamps.slice(1), `${new Date().getSeconds()}s`]; // 현재 시간
+                const newTimestamps = [...prevData.timestamps.slice(1), `${new Date().getSeconds()}s`]; // 현재 초 추가
                 const newSentData = [...prevData.sent.slice(1), sentKB];
                 const newReceivedData = [...prevData.received.slice(1), receivedKB];
 
@@ -51,18 +61,24 @@ const NetworkTraffic = () => {
         }
     };
 
+    /**
+     * 컴포넌트가 마운트되었을 때 네트워크 트래픽을 주기적으로 가져옵니다.
+     */
     useEffect(() => {
         fetchNetworkTraffic();
         const interval = setInterval(fetchNetworkTraffic, 5000); // 5초마다 데이터 갱신
         return () => clearInterval(interval);
     }, []);
 
+    /**
+     * Chart.js에 전달할 차트 데이터와 옵션
+     */
     const chartData = {
-        labels: trafficData.timestamps,
+        labels: trafficData.timestamps, // x축에 시간 정보
         datasets: [
             {
                 label: '송신 (KB)',
-                data: trafficData.sent,
+                data: trafficData.sent, // y축 데이터 (송신)
                 borderColor: 'red',
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 tension: 0.4, // 곡선 효과
@@ -70,7 +86,7 @@ const NetworkTraffic = () => {
             },
             {
                 label: '수신 (KB)',
-                data: trafficData.received,
+                data: trafficData.received, // y축 데이터 (수신)
                 borderColor: 'blue',
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 tension: 0.4, // 곡선 효과
