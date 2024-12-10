@@ -63,11 +63,9 @@ const MemoryUsage = () => {
         <div className={styles.container}>
             <div className="usage-box">
                 <h3>실시간 메모리 사용량</h3>
-                <div className="chart-container">
-                    <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
-                    <div className="percentage-text">
-                        {memoryUsage}%
-                    </div>
+                <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
+                <div className="percentage-container">
+                    {memoryUsage}%
                 </div>
             </div>
         </div>
