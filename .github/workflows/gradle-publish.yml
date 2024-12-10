@@ -20,13 +20,15 @@ jobs:
           script: | # 실행할 스크립트
             cd /var/project/devzip/
             ./gradlew --stop
-            rm -rf ~/.gradle/caches/
-            rm -rf ~/.gradle/daemon/
-            rm -rf .gradle/
-            rm -rf build/
-            sudo rm -rf /var/log/*
-            sudo rm -rf /var/project/devzip/.gradle/8.8/executionHistory
-            sudo rm -rf /var/project/devzip/.gradle/caches/
-            sudo yum clean all
             fuser -k 8080/tcp
+
+            # Gradle 캐시 전체 삭제
+            sudo rm -rf ~/.gradle/caches/
+            sudo rm -rf .gradle/
+
+            # 빌드 폴더 삭제
+            sudo rm -rf build/
+
+            sudo rm -rf .gradle/8.8/executionHistory
+            sudo yum clean all
             git pull origin master && ./gradlew clean build --no-daemon && pm2 restart server.json
