@@ -19,6 +19,7 @@ jobs:
           port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트
           script: | # 실행할 스크립트
             cd /var/project/devzip/
+            ./gradlew --stop
             rm -rf ~/.gradle/caches/
             rm -rf build/
             sudo rm -rf /var/log/*
