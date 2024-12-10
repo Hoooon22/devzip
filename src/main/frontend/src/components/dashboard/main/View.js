@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../../../assets/css/View.module.scss";
-import { ViewTop, CPUUsage } from "./viewContainer";
+import { ViewTop, CPUUsage, MemoryUsage } from "./viewContainer";
 
 const View = () => {
     
@@ -8,6 +8,7 @@ const View = () => {
         <div className={styles.container}>
             <ViewTop />
             <CPUUsage />
+            <MemoryUsage />
         </div>
     );
 };
