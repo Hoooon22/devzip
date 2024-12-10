@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.jsoup:jsoup:1.15.3' // 크롤링
     implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.fusesource:sigar:1.6.4'
 }
 
 repositories {
