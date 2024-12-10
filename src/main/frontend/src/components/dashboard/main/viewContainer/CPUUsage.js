@@ -28,6 +28,8 @@ const CPUUsage = () => {
 
     const chartOptions = {
         cutout: '70%', 
+        responsive: false, 
+        maintainAspectRatio: false, 
         plugins: {
             legend: {
                 display: false 
@@ -39,7 +41,7 @@ const CPUUsage = () => {
         try {
             const response = await axios.get('/actuator/metrics/system.cpu.usage');
             const rawValue = response.data.measurements[0]?.value; 
-            const value = rawValue !== undefined ? Math.ceil(rawValue * 100) : 0; // 백분율로 변환 후 올림
+            const value = rawValue !== undefined ? Math.ceil(rawValue * 100) : 0; 
             setCpuUsage(value);
             console.log('CPU 사용량 업데이트:', value);
         } catch (error) {
@@ -49,17 +51,15 @@ const CPUUsage = () => {
 
     useEffect(() => {
         fetchCPUUsage(); 
-        const interval = setInterval(fetchCPUUsage, 5000); 
+        const interval = setInterval(fetchCPUUsage, 1000); 
         return () => clearInterval(interval); 
     }, []);
 
     return (
         <div className={styles.container}>
             <div className="usage-box">
-                <div className="chart-container">
-                    <Doughnut data={chartData} options={chartOptions} />
-                </div>
-
+                <h3>실시간 CPU 사용량</h3>
+                <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
                 <div className="percentage-container">
                     {cpuUsage}%
                 </div>
