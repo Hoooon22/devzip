@@ -21,14 +21,11 @@ jobs:
             cd /var/project/devzip/
             ./gradlew --stop
             fuser -k 8080/tcp
-
-            # Gradle 캐시 전체 삭제
-            sudo rm -rf ~/.gradle/caches/
-            sudo rm -rf .gradle/
-
-            # 빌드 폴더 삭제
+            # Gradle 캐시 삭제 제거
+            # sudo rm -rf ~/.gradle/caches/
+            # sudo rm -rf .gradle/
+            # 빌드 폴더만 삭제
             sudo rm -rf build/
-
-            sudo rm -rf .gradle/8.8/executionHistory
             sudo yum clean all
-            git pull origin master && ./gradlew clean build --no-daemon && pm2 restart server.json
+            git pull origin master 
+            ./gradlew clean build --no-daemon --parallel --configure-on-demand && pm2 restart server.json
