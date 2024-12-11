@@ -36,7 +36,7 @@ const ViewTop = () => {
         if (serverStart.date) {
             const interval = setInterval(() => {
                 calculateUptime(); // 5초마다 구동 시간 갱신
-            }, 5000); // 5초마다 갱신
+            }, 1000); // 5초마다 갱신
 
             return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
         }
