@@ -21,6 +21,7 @@ jobs:
             cd /var/project/devzip/
             ./gradlew --stop
             fuser -k 8080/tcp
+            pm2 stop 0
             # Gradle 캐시 삭제 제거
             # sudo rm -rf ~/.gradle/caches/
             # sudo rm -rf .gradle/
