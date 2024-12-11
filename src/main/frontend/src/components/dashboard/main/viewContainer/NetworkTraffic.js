@@ -19,8 +19,8 @@ ChartJS.register(LineElement, PointElement, LinearScale, Title, Tooltip, Legend,
 const NetworkTraffic = () => {
     const [trafficData, setTrafficData] = useState({
         timestamps: Array(12).fill('0s'), // x축 시간 (최대 12개, 5초마다 1분간)
-        sent: Array(12).fill(0),         // 송신 데이터
-        received: Array(12).fill(0)      // 수신 데이터
+        sent: Array(12).fill(0),         // 송신 데이터 (KB)
+        received: Array(12).fill(0)      // 수신 데이터 (KB)
     });
 
     /**
@@ -32,19 +32,19 @@ const NetworkTraffic = () => {
             const sentResponse = await axios.get('/metrics/network.traffic.sent');
             const receivedResponse = await axios.get('/metrics/network.traffic.received');
 
-            // 송신 데이터 추출
+            // 송신 데이터 추출 (Byte -> KB로 변환)
             const sentValue = sentResponse.data.sent ?? 0;
             const sentKB = (sentValue / 1024).toFixed(2); // Byte -> KB
 
-            // 수신 데이터 추출
+            // 수신 데이터 추출 (Byte -> KB로 변환)
             const receivedValue = receivedResponse.data.received ?? 0;
             const receivedKB = (receivedValue / 1024).toFixed(2); // Byte -> KB
 
             // 기존 데이터에 새 값 추가
             setTrafficData((prevData) => {
                 const newTimestamps = [...prevData.timestamps.slice(1), `${new Date().getSeconds()}s`]; // 현재 초 추가
-                const newSentData = [...prevData.sent.slice(1), sentKB];
-                const newReceivedData = [...prevData.received.slice(1), receivedKB];
+                const newSentData = [...prevData.sent.slice(1), parseFloat(sentKB)];
+                const newReceivedData = [...prevData.received.slice(1), parseFloat(receivedKB)];
 
                 return {
                     timestamps: newTimestamps,
