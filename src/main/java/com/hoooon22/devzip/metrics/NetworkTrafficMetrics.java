@@ -1,65 +1,49 @@
 package com.hoooon22.devzip.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import io.micrometer.core.instrument.MeterRegistry;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Component
 public class NetworkTrafficMetrics {
 
-    @Value("${network.interface}")
-    private String networkInterface;
+    @Value("${network.metrics.sent.url}")
+    private String sentUrl;
 
-    @Bean
-    public ApplicationRunner networkTrafficMetric(MeterRegistry meterRegistry) {
-        return args -> {
-            // 네트워크 트래픽 메트릭 등록
-            meterRegistry.gauge("network.traffic.sent", this, n -> getSentNetworkBytes());
-            meterRegistry.gauge("network.traffic.received", this, n -> getReceivedNetworkBytes());
-        };
+    @Value("${network.metrics.received.url}")
+    private String receivedUrl;
+
+    private double sentBytes = 0;
+    private double receivedBytes = 0;
+
+    public Map<String, Double> getTrafficData() {
+        Map<String, Double> trafficData = new HashMap<>();
+        trafficData.put("sent", sentBytes);
+        trafficData.put("received", receivedBytes);
+        return trafficData;
     }
 
-    /**
-     * 송신 트래픽 바이트 수 (단위: Byte)
-     */
-    private double getSentNetworkBytes() {
-        try {
-            String command = "cat /proc/net/dev | grep " + networkInterface;  // 리눅스에서 네트워크 인터페이스의 송수신 바이트 정보 읽기
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            if (line != null) {
-                // 결과에서 송신 바이트 수 추출
-                String[] parts = line.split("\\s+");
-                return Double.parseDouble(parts[9]); // 송신 바이트는 10번째 필드에 위치
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0; // 오류 발생 시 0 반환
-    }
+    @RestController
+    public static class NetworkTrafficController {
 
-    /**
-     * 수신 트래픽 바이트 수 (단위: Byte)
-     */
-    private double getReceivedNetworkBytes() {
-        try {
-            String command = "cat /proc/net/dev | grep " + networkInterface;  // 리눅스에서 네트워크 인터페이스의 송수신 바이트 정보 읽기
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            if (line != null) {
-                // 결과에서 수신 바이트 수 추출
-                String[] parts = line.split("\\s+");
-                return Double.parseDouble(parts[1]); // 수신 바이트는 2번째 필드에 위치
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        private final NetworkTrafficMetrics networkTrafficMetrics;
+
+        public NetworkTrafficController(NetworkTrafficMetrics networkTrafficMetrics) {
+            this.networkTrafficMetrics = networkTrafficMetrics;
         }
-        return 0; // 오류 발생 시 0 반환
+
+        @GetMapping("/actuator/metrics/network.traffic.sent")
+        public Map<String, Double> getSentTraffic() {
+            return networkTrafficMetrics.getTrafficData();
+        }
+
+        @GetMapping("/actuator/metrics/network.traffic.received")
+        public Map<String, Double> getReceivedTraffic() {
+            return networkTrafficMetrics.getTrafficData();
+        }
     }
 }

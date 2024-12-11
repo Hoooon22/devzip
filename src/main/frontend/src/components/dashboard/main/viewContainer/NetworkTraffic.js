@@ -32,13 +32,12 @@ const NetworkTraffic = () => {
             const sentResponse = await axios.get('/actuator/metrics/network.traffic.sent');
             const receivedResponse = await axios.get('/actuator/metrics/network.traffic.received');
 
-
             // 송신 데이터 추출
-            const sentValue = sentResponse.data.measurements.find(m => m.statistic === 'VALUE')?.value ?? 0;
+            const sentValue = sentResponse.data.sent ?? 0;
             const sentKB = (sentValue / 1024).toFixed(2); // Byte -> KB
 
             // 수신 데이터 추출
-            const receivedValue = receivedResponse.data.measurements.find(m => m.statistic === 'VALUE')?.value ?? 0;
+            const receivedValue = receivedResponse.data.received ?? 0;
             const receivedKB = (receivedValue / 1024).toFixed(2); // Byte -> KB
 
             // 기존 데이터에 새 값 추가
