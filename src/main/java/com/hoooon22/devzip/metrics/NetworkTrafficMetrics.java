@@ -3,44 +3,17 @@ package com.hoooon22.devzip.metrics;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class NetworkTrafficMetrics {
 
-    @Value("${network.metrics.sent.url}")
-    private String sentUrl;
-
-    @Value("${network.metrics.received.url}")
-    private String receivedUrl;
-
     private double sentBytes = 0;
     private double receivedBytes = 0;
 
-    private final RestTemplate restTemplate;
-
-    public NetworkTrafficMetrics(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public void updateTrafficData() {
-        try {
-            // 송신 데이터 가져오기 (실제 API 호출 필요)
-            sentBytes = restTemplate.getForObject(sentUrl, Double.class); // API 호출 및 응답 처리
-
-            // 수신 데이터 가져오기 (실제 API 호출 필요)
-            receivedBytes = restTemplate.getForObject(receivedUrl, Double.class); // API 호출 및 응답 처리
-        } catch (Exception e) {
-            // API 호출 실패 시 기본값 사용
-            sentBytes = 0;
-            receivedBytes = 0;
-        }
-    }
-
+    // 네트워크 트래픽 데이터를 반환하는 메소드
     public Map<String, Double> getTrafficData() {
         Map<String, Double> trafficData = new HashMap<>();
         trafficData.put("sent", sentBytes);
@@ -48,26 +21,32 @@ public class NetworkTrafficMetrics {
         return trafficData;
     }
 
+    // 네트워크 트래픽 데이터 갱신을 위한 메소드 (예: HTTP 요청으로부터 실제 트래픽 데이터 받아오는 로직 추가 가능)
+    public void updateTrafficData(double sent, double received) {
+        this.sentBytes = sent;
+        this.receivedBytes = received;
+    }
+
+    // @RestController 클래스를 내부에 두어 API 요청을 처리하도록 구성
     @RestController
     public static class NetworkTrafficController {
 
         private final NetworkTrafficMetrics networkTrafficMetrics;
 
+        // NetworkTrafficMetrics를 생성자 주입 방식으로 의존성 주입
         public NetworkTrafficController(NetworkTrafficMetrics networkTrafficMetrics) {
             this.networkTrafficMetrics = networkTrafficMetrics;
         }
 
-        // 송신 트래픽 정보
+        // 'GET /actuator/metrics/network.traffic.sent'로 보내는 요청에 대한 응답
         @GetMapping("/actuator/metrics/network.traffic.sent")
         public Map<String, Double> getSentTraffic() {
-            networkTrafficMetrics.updateTrafficData(); // 데이터 갱신
             return networkTrafficMetrics.getTrafficData();
         }
 
-        // 수신 트래픽 정보
+        // 'GET /actuator/metrics/network.traffic.received'로 보내는 요청에 대한 응답
         @GetMapping("/actuator/metrics/network.traffic.received")
         public Map<String, Double> getReceivedTraffic() {
-            networkTrafficMetrics.updateTrafficData(); // 데이터 갱신
             return networkTrafficMetrics.getTrafficData();
         }
     }
