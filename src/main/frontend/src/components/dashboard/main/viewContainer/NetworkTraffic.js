@@ -121,7 +121,7 @@ const NetworkTraffic = () => {
     return (
         <div className={styles.container}>
             <div style={{ width: '100%', height: '300px' }}>
-                <h3>네트워크 트래픽 (1분간의 송신/수신)</h3>
+                <h3>실시간 네트워크 트래픽</h3>
                 <Line data={chartData} options={chartOptions} />
             </div>
         </div>
