@@ -33,11 +33,11 @@ const NetworkTraffic = () => {
             const receivedResponse = await axios.get('/metrics/network.traffic.received');
 
             // 송신 데이터 추출 (Byte -> KB로 변환)
-            const sentValue = sentResponse.data.sent ?? 0;
+            const sentValue = sentResponse.data ?? 0;
             const sentKB = (sentValue / 1024).toFixed(2); // Byte -> KB
 
             // 수신 데이터 추출 (Byte -> KB로 변환)
-            const receivedValue = receivedResponse.data.received ?? 0;
+            const receivedValue = receivedResponse.data ?? 0;
             const receivedKB = (receivedValue / 1024).toFixed(2); // Byte -> KB
 
             // 기존 데이터에 새 값 추가
