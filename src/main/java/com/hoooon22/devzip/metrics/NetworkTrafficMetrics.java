@@ -39,13 +39,13 @@ public class NetworkTrafficMetrics {
         }
 
         // 'GET /actuator/metrics/network.traffic.sent'로 보내는 요청에 대한 응답
-        @GetMapping("/actuator/metrics/network.traffic.sent")
+        @GetMapping("/metrics/network.traffic.sent")
         public Map<String, Double> getSentTraffic() {
             return networkTrafficMetrics.getTrafficData();
         }
 
         // 'GET /actuator/metrics/network.traffic.received'로 보내는 요청에 대한 응답
-        @GetMapping("/actuator/metrics/network.traffic.received")
+        @GetMapping("/metrics/network.traffic.received")
         public Map<String, Double> getReceivedTraffic() {
             return networkTrafficMetrics.getTrafficData();
         }
