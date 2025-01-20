@@ -15,7 +15,7 @@ const projects = [
         link: '/Guestbook', 
         active: true,
         startDate: '2024-07-10',
-        endDate: ''
+        endDate: '2024-12-30'
     },
     { 
         id: 3, 
