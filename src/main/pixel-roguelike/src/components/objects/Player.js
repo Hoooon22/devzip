@@ -51,7 +51,5 @@ export const movePlayer = (dungeon, playerPosition, direction) => {
         }
     }
 
-    console.log(`Player moved to: ${playerPosition}`);
-
     return playerPosition;
 };

@@ -1,38 +1,52 @@
-.App {
-  text-align: center;
-}
+/* App.css */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* 전체 컨테이너 설정 */
+.app-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  height: 100vh; /* 화면 전체 높이 */
+  width: 100vw;  /* 화면 전체 너비 */
+  background-color: #f0f0f0;
+  overflow: hidden;
 }
 
-.App-link {
-  color: #61dafb;
+.container {
+  display: flex;
+  flex-direction: row; /* 좌우로 배치 */
+  justify-content: space-between;
+  width: 90vw; /* 화면의 90%를 사용 */
+  height: 90vh; /* 화면의 90%를 사용 */
+  max-width: 1600px; /* 최대 너비 설정 */
+  max-height: 900px; /* 최대 높이 설정 */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.game-page,
+.console {
+  flex: 1; /* 동일한 크기로 분할 */
+  margin: 10px; /* 여백 설정 */
+}
+
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* 부모 div의 높이에 맞추기 */
+  width: 100%;  /* 부모 div의 너비에 맞추기 */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
 }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../components/store/gameStore';
 import { movePlayer } from '../components/objects/Player';
+import '../assets/css/Gamepage.css';
 
-const GamePage = () => {
+const GamePage = ({ setMessages }) => {
   const dungeon = useGameStore((state) => state.dungeon);
   const regenerateDungeon = useGameStore((state) => state.regenerateDungeon);
   const [playerPosition, setPlayerPosition] = useState(null);
@@ -31,16 +32,18 @@ const GamePage = () => {
       if (playerPosition) {
         const newPosition = movePlayer(dungeon, playerPosition, e.key);
         setPlayerPosition(newPosition);
+
+        // 플레이어 이동 시 메시지를 추가
+        setMessages((prevMessages) => [...prevMessages, '플레이어가 이동했습니다.']);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [playerPosition, dungeon]);
-
+  }, [playerPosition, dungeon, setMessages]);
 
   return (
-    <div>
+    <div className='game-container'>
       <button onClick={regenerateDungeon}>Generate New Dungeon</button>
       <div style={{ display: 'grid', gap: '2px', gridTemplateColumns: `repeat(${dungeon[0].length}, 20px)` }}>
         {dungeon.flatMap((row, rowIndex) =>
