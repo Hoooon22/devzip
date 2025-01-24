@@ -1,96 +1,103 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
-	id 'io.spring.dependency-management' version '1.1.5'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'com.hoooon22'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.25'
-	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
-	implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
-	implementation 'com.h2database:h2'
-	implementation 'com.mysql:mysql-connector-j'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    implementation 'com.h2database:h2'
+    implementation 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.jsoup:jsoup:1.15.3' // 크롤링
+    implementation 'org.jsoup:jsoup:1.15.3' // 크롤링
     implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
     maven {url 'https://repo.spring.io/snapshot'} // 스냅샷 저장소 추가
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 // springboot + react 동시 빌드
 def frontendDir = "$projectDir/src/main/frontend"
+def pixelRoguelikeDir = "$projectDir/src/main/pixel-roguelike"
 
-sourceSets {
-	main {
-		resources {
-			srcDirs = ["$projectDir/src/main/resources"]
-		}
-	}
+// React 빌드 작업
+task installFrontendReact(type: Exec) {
+    workingDir "$frontendDir"
+    inputs.dir "$frontendDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm", "install"
 }
 
+task buildFrontendReact(type: Exec) {
+    dependsOn "installFrontendReact"
+    workingDir "$frontendDir"
+    inputs.dir "$frontendDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm", "run-script", "build"
+}
+
+task copyFrontendBuildFiles(type: Copy) {
+    dependsOn "buildFrontendReact"
+    from "$frontendDir/build"
+    into "$projectDir/src/main/resources/static"
+}
+
+// pixel-roguelike 빌드 작업
+task installPixelRoguelikeReact(type: Exec) {
+    workingDir "$pixelRoguelikeDir"
+    inputs.dir "$pixelRoguelikeDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm", "install"
+}
+
+task buildPixelRoguelikeReact(type: Exec) {
+    dependsOn "installPixelRoguelikeReact"
+    workingDir "$pixelRoguelikeDir"
+    inputs.dir "$pixelRoguelikeDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm", "run-script", "build"
+}
+
+task copyPixelRoguelikeBuildFiles(type: Copy) {
+    dependsOn "buildPixelRoguelikeReact"
+    from "$pixelRoguelikeDir/build"
+    into "$projectDir/src/main/resources/static/pixel-roguelike"
+}
+
+// 리소스 복사 작업
 processResources {
-	dependsOn "copyReactBuildFiles"
-}
-
-task installReact(type: Exec) {
-	workingDir "$frontendDir"
-	inputs.dir "$frontendDir"
-	group = BasePlugin.BUILD_GROUP
-	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-		commandLine "npm.cmd", "audit", "fix"
-		commandLine 'npm.cmd', 'install'
-	} else {
-		commandLine "npm", "audit", "fix"
-		commandLine 'npm', 'install'
-	}
-}
-
-task buildReact(type: Exec) {
-	dependsOn "installReact"
-	workingDir "$frontendDir"
-	inputs.dir "$frontendDir"
-	group = BasePlugin.BUILD_GROUP
-	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-		commandLine "npm.cmd", "run-script", "build"
-	} else {
-		commandLine "npm", "run-script", "build"
-	}
-}
-
-task copyReactBuildFiles(type: Copy) {
-	dependsOn "buildReact"
-	from "$frontendDir/build"
-	into "$projectDir/src/main/resources/static"
+    dependsOn "copyFrontendBuildFiles", "copyPixelRoguelikeBuildFiles"
 }
 
 tasks.jar {
