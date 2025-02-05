@@ -11,7 +11,7 @@ public class DeveloperController {
     
     @GetMapping("/emotion")
     public String getMethodName() {
-        return new String("Not Bad :/");
+        return "Not Bad :/";
     }
     
 }
