@@ -6,7 +6,7 @@ try:
     # 현재 파일이 위치한 경로 얻기
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # pytrends 초기화 및 트렌드 검색
+    # pytrends 초기화 및 한국 트렌드 검색
     pytrends = TrendReq(hl='ko', tz=540)
     kw_list = [""]
     pytrends.build_payload(kw_list, geo='KR', timeframe='now 1-d')
