@@ -8,6 +8,7 @@ public class TrendingKeywords {
     
     @JsonProperty("updated_at")
     private String updatedAt;
+
     @JsonProperty("top_keywords")
     private List<String> topKeywords;
 
@@ -19,11 +20,11 @@ public class TrendingKeywords {
         return updatedAt;
     }
 
-    public void getUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public List<String> getKeywords() {
+    public List<String> getTopKeywords() {
         return topKeywords;
     }
 
