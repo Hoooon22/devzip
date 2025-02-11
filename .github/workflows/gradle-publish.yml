@@ -29,4 +29,7 @@ jobs:
             sudo rm -rf build/
             sudo yum clean all
             git pull origin master 
+            # 실행
             ./gradlew clean build --no-daemon --parallel --configure-on-demand && pm2 restart server.json
+            # 파이썬 2시간마다 실행
+            pm2 start python3 --name "python-script" -- cron "0 */2 * * *" -- src/main/python/trends.py
