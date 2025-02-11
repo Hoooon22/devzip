@@ -44,6 +44,15 @@ const projects = [
         startDate: '2024-11-26',
         endDate: ''
     },
+    { 
+        id: 6, 
+        name: '실시간 트렌드 검색어 채팅', 
+        description: '실시간 인기 검색어에 대한 소통을 위한!', 
+        link: '/trendchat', 
+        active: true,
+        startDate: '2025-02-11',
+        endDate: ''
+    },
     // { 
     //     id: 4, 
     //     name: '리그오브레전드 패치노트', 
