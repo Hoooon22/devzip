@@ -501,4 +501,4 @@ Icon
 src/main/resources/static/
 
 # Python data files
-src/main/python/trending_keywords.json
+src/main/resources/trending_keywords.json

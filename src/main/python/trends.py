@@ -4,8 +4,15 @@ from pytrends.request import TrendReq
 from datetime import datetime
 
 try:
-    # 현재 파일이 위치한 경로 얻기
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 현재 작업 디렉토리 경로 얻기 (프로젝트 루트 기준으로 변경)
+    project_root = os.path.abspath(os.path.join(os.getcwd()))  # 프로젝트 루트 경로 찾기
+
+    # src/main/resources 경로 지정
+    resources_dir = os.path.join(project_root, 'src', 'main', 'resources')
+
+    # 만약 src/main/resources가 없다면 디렉토리 생성
+    if not os.path.exists(resources_dir):
+        os.makedirs(resources_dir)
 
     # pytrends 초기화 및 한국 트렌드 검색
     pytrends = TrendReq(hl='ko', tz=540)
@@ -20,8 +27,8 @@ try:
         "top_keywords": top_keywords
     }
 
-    # 현재 파일이 있는 경로에 JSON 파일로 저장
-    json_file_path = os.path.join(script_dir, 'trending_keywords.json')
+    # src/main/resources에 JSON 파일 저장
+    json_file_path = os.path.join(resources_dir, 'trending_keywords.json')  # src/main/resources 경로에 저장
     with open(json_file_path, 'w', encoding='utf-8') as json_file:
         json.dump(result, json_file, ensure_ascii=False, indent=2)
 
