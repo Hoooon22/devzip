@@ -13,5 +13,4 @@ public class DeveloperController {
     public String getMethodName() {
         return "Not Bad :/";
     }
-    
 }

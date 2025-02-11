@@ -5,6 +5,7 @@ import Joke from "./pages/Joke";
 // import Lolpatch from "./pages/Lolpatch";
 import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
+import TrendChat from './pages/TrendChat';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
 
         {/* Dashboard 모음 페이지 */}
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* Trend 채팅 페이지 */}
+        <Route path="/trendchat" element={<TrendChat />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
