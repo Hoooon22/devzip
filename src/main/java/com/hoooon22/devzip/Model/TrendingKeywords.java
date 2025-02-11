@@ -2,9 +2,13 @@ package com.hoooon22.devzip.Model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TrendingKeywords {
     
+    @JsonProperty("updated_at")
     private String updatedAt;
+    @JsonProperty("top_keywords")
     private List<String> topKeywords;
 
     // 기본 생성자
@@ -22,7 +26,7 @@ public class TrendingKeywords {
     public List<String> getKeywords() {
         return topKeywords;
     }
-    
+
     public void setTopKeywords(List<String> topKeywords) {
         this.topKeywords = topKeywords;
     }
