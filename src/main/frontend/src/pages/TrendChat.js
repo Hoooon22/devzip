@@ -35,7 +35,7 @@ const TrendChat = () => {
       <BubbleChart width={600} height={400}>
         {keywords.map((keyword, index) => (
           <Bubble key={index} cx={Math.random() * 600} cy={Math.random() * 400} r={keyword.value} fill="#82ca9d">
-            <title>{keyword.name}</title>
+            <title>{keyword.name}</title> 
           </Bubble>
         ))}
       </BubbleChart>
