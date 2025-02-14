@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
 
 const TrendChat = () => {
   const [keywords, setKeywords] = useState([]);
@@ -12,10 +12,10 @@ const TrendChat = () => {
       const keywordsData = await keywordsRes.json();
 
       const formattedData = keywordsData.map((keyword, index) => ({
-        name: keyword,
-        x: Math.random() * 100, // X축 랜덤 위치
-        y: Math.random() * 100, // Y축 랜덤 위치
-        z: 100 - index * 5, // 순위가 높을수록 원이 큼
+        name: keyword,       // 키워드 텍스트
+        x: Math.random() * 100,  // X축 랜덤 위치
+        y: Math.random() * 100,  // Y축 랜덤 위치
+        z: 200 - index * 10,  // 크기 조정 (최대 200, 최소 10)
       }));
 
       setKeywords(formattedData);
@@ -38,22 +38,10 @@ const TrendChat = () => {
         <ScatterChart>
           <XAxis type="number" dataKey="x" hide />
           <YAxis type="number" dataKey="y" hide />
-          <ZAxis type="number" dataKey="z" range={[20, 200]} />
+          <ZAxis type="number" dataKey="z" range={[50, 400]} /> {/* 크기 조절 */}
           <Tooltip cursor={{ strokeDasharray: "3 3" }} />
           <Scatter name="Trends" data={keywords} fill="#82ca9d">
-            {keywords.map((keyword, index) => (
-              <text
-                key={index}
-                x={keyword.x}
-                y={keyword.y}
-                dy={-10}
-                textAnchor="middle"
-                fill="black"
-                fontSize="14"
-              >
-                {keyword.name}
-              </text>
-            ))}
+            <LabelList dataKey="name" position="top" style={{ fontSize: 16, fontWeight: "bold", fill: "black" }} />
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
