@@ -30,6 +30,6 @@ jobs:
             sudo yum clean all
             git pull origin master 
             # 실행
-            ./gradlew clean build --no-daemon --parallel --configure-on-demand && pm2 restart server.json
+            ./gradlew clean build --no-daemon --parallel --configure-on-demand || pm2 restart server.json
             # 파이썬 2시간마다 실행
             pm2 start src/main/python/trends.py --cron "0 */2 * * *" --no-autorestart
