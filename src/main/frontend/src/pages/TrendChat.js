@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
-import * as d3 from "d3-force"; // d3-force를 이용한 위치 조정
+import * as d3 from "d3-force";
+import { scaleLinear } from "d3-scale";
 
 const TrendChat = () => {
   const [keywords, setKeywords] = useState([]);
@@ -12,23 +13,28 @@ const TrendChat = () => {
       const timestamp = await timestampRes.text();
       const keywordsData = await keywordsRes.json();
 
+      // d3-scale: 상위 순위는 1600, 후순위는 400의 값을 할당 (면적에 가까운 값)
+      const sizeScale = scaleLinear()
+        .domain([0, keywordsData.length - 1])
+        .range([3600, 400]);
+
       let formattedData = keywordsData.map((keyword, index) => ({
         name: keyword,
-        x: Math.random() * 100,  // 초기 랜덤 위치 (d3-force로 조정될 예정)
+        x: Math.random() * 100,  // 초기 랜덤 위치
         y: Math.random() * 100,
-        z: 400 - index * 20,  // 크기 조정 (최대 400, 최소 20)
+        z: sizeScale(index),
       }));
 
-      // D3 Force Simulation을 사용하여 원이 겹치지 않게 배치
+      // d3-force: 원들 간의 충돌을 방지하며 위치 조정
       const simulation = d3.forceSimulation(formattedData)
         .force("x", d3.forceX(50).strength(0.05))
         .force("y", d3.forceY(50).strength(0.05))
-        .force("collision", d3.forceCollide(d => d.z / 2 + 5)) // 원 크기 반영하여 충돌 방지
+        .force("collision", d3.forceCollide(d => d.z / 2 + 5))
         .stop();
 
-      for (let i = 0; i < 100; i++) simulation.tick(); // 충분한 반복으로 충돌 해결
+      for (let i = 0; i < 100; i++) simulation.tick();
 
-      setKeywords([...formattedData]); // 새로운 위치 반영
+      setKeywords([...formattedData]);
     } catch (error) {
       console.error("Error fetching trends:", error);
     }
@@ -36,7 +42,7 @@ const TrendChat = () => {
 
   useEffect(() => {
     fetchTrends();
-    const interval = setInterval(fetchTrends, 10 * 60 * 1000); // 10분마다 갱신
+    const interval = setInterval(fetchTrends, 10 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -48,10 +54,15 @@ const TrendChat = () => {
         <ScatterChart>
           <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
           <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
-          <ZAxis type="number" dataKey="z" range={[100, 500]} /> {/* 크기 확대 */}
+          {/* ZAxis의 range를 내부 z 값의 범위에 맞게 조정 */}
+          <ZAxis type="number" dataKey="z" range={[200, 800]} />
           <Tooltip cursor={{ strokeDasharray: "3 3" }} />
           <Scatter name="Trends" data={keywords} fill="#82ca9d">
-            <LabelList dataKey="name" position="center" style={{ fontSize: 18, fontWeight: "bold", fill: "white" }} />
+            <LabelList 
+              dataKey="name" 
+              position="center" 
+              style={{ fontSize: 22, fontWeight: "bold", fill: "black" }} 
+            />
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
