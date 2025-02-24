@@ -1,34 +1,54 @@
 name: dev branch auto ci process script
 
-on: # 아래 job을 실행시킬 상황
+on:
   push:
     branches: [ master ]
 
 jobs:
   deploy:
     name: deploy
-    runs-on: ubuntu-latest # 실행될 인스턴스 OS와 버전
+    runs-on: ubuntu-latest
 
     steps:
-      - name: excuting remote ssh commands
-        uses: appleboy/ssh-action@v0.1.6 # ssh 접속하는 오픈소스
+      - name: 🚀 Connect to EC2 via SSH and deploy
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.REMOTE_IP }} # 인스턴스 IP
-          username: ${{ secrets.REMOTE_USER }} # 우분투 아이디
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }} # ec2 instance pem key
-          port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트
-          script: | # 실행할 스크립트
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_SSH_PORT }}
+          script: |
+            echo "::group::🔗 Change directory to project"
             cd /var/project/devzip/
+            echo "✅ Directory changed"
+            echo "::endgroup::"
+
+            echo "::group::🛑 Stop running services"
             ./gradlew --stop
-            fuser -k 8080/tcp
-            pm2 stop all
-            pm2 delete all
-            # 빌드 폴더 삭제 및 캐시 정리
+            fuser -k 8080/tcp || echo "⚠️ No process running on port 8080"
+            pm2 stop all || echo "⚠️ No PM2 processes running"
+            pm2 delete all || echo "⚠️ No PM2 processes to delete"
+            echo "✅ Services stopped"
+            echo "::endgroup::"
+
+            echo "::group::🧹 Clean build folder and cache"
             sudo rm -rf build/
             sudo yum clean all
-            git pull origin master 
-            # 빌드 실행 (실패 시 스크립트 종료)
-            ./gradlew clean build --no-daemon --parallel --configure-on-demand
-            # 서버 및 파이썬 프로세스 재시작
-            pm2 start server.json
-            pm2 start src/main/python/trends.py --cron "0 */2 * * *" --no-autorestart
+            echo "✅ Build folder cleaned"
+            echo "::endgroup::"
+
+            echo "::group::📥 Pull latest code from master"
+            git pull origin master || { echo "❌ Git pull failed"; exit 1; }
+            echo "✅ Code pulled successfully"
+            echo "::endgroup::"
+
+            echo "::group::🏗️ Build project with Gradle"
+            ./gradlew clean build --no-daemon --parallel --configure-on-demand || { echo "❌ Build failed"; exit 1; }
+            echo "✅ Build completed"
+            echo "::endgroup::"
+
+            echo "::group::🚀 Restart PM2 processes"
+            pm2 start server.json || { echo "❌ Failed to start server"; exit 1; }
+            pm2 start src/main/python/trends.py --cron "0 */2 * * *" --no-autorestart || { echo "❌ Failed to start Python process"; exit 1; }
+            echo "✅ PM2 processes restarted"
+            echo "::endgroup::"
