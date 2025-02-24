@@ -26,7 +26,7 @@ const TrendChat = () => {
 
       let formattedData = keywordsData.map((keyword, index) => ({
         name: keyword,
-        x: Math.random() * 100,  // 초기 랜덤 위치
+        x: Math.random() * 100,  // 초기 위치 설정 랜덤
         y: Math.random() * 100,
         z: sizeScale(index),
         fill: getColorByIndex(index)  // 순위에 따른 색상 할당
