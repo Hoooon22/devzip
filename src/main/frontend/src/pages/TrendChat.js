@@ -62,7 +62,7 @@ const TrendChat = () => {
           <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
           <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
           {/* ZAxis의 range는 내부 z 값을 화면상의 원 면적으로 매핑 */}
-          <ZAxis type="number" dataKey="z" range={[2000, 16000]} />
+          <ZAxis type="number" dataKey="z" range={[1000, 32000]} />
           <Tooltip cursor={{ strokeDasharray: "3 3" }} />
           {/* Scatter 컴포넌트에서 각 데이터의 fill 속성이 사용되도록 전역 fill 속성 제거 */}
           <Scatter name="Trends" data={keywords}>
