@@ -22,14 +22,13 @@ jobs:
             ./gradlew --stop
             fuser -k 8080/tcp
             pm2 stop all
-            # Gradle 캐시 삭제 제거
-            # sudo rm -rf ~/.gradle/caches/
-            # sudo rm -rf .gradle/
-            # 빌드 폴더만 삭제
+            pm2 delete all
+            # 빌드 폴더 삭제 및 캐시 정리
             sudo rm -rf build/
             sudo yum clean all
             git pull origin master 
-            # 실행
-            ./gradlew clean build --no-daemon --parallel --configure-on-demand || pm2 restart server.json
-            # 파이썬 2시간마다 실행
+            # 빌드 실행 (실패 시 스크립트 종료)
+            ./gradlew clean build --no-daemon --parallel --configure-on-demand
+            # 서버 및 파이썬 프로세스 재시작
+            pm2 start server.json
             pm2 start src/main/python/trends.py --cron "0 */2 * * *" --no-autorestart
