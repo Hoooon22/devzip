@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
 import * as d3 from "d3-force";
 import { scaleLinear } from "d3-scale";
+import "../assets/css/TrendChat.scss";
 
 const TrendChat = () => {
   const [keywords, setKeywords] = useState([]);

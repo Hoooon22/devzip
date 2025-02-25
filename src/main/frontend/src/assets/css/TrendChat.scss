@@ -1,0 +1,22 @@
+/* TrendChat.css */
+.trendchat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa; /* 밝은 배경색 */
+  }
+  
+  .trendchat-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .trendchat-subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 40px;
+  }
+  
