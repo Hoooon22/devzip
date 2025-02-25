@@ -3,6 +3,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContaine
 import * as d3 from "d3-force";
 import { scaleLinear } from "d3-scale";
 import "../assets/css/TrendChat.scss";
+import CustomBubble from "../components/trendchat/CustomBubble";
 
 const TrendChat = () => {
   const [keywords, setKeywords] = useState([]);
@@ -66,7 +67,7 @@ const TrendChat = () => {
           <ZAxis type="number" dataKey="z" range={[1000, 32000]} />
           <Tooltip cursor={{ strokeDasharray: "3 3" }} />
           {/* Scatter 컴포넌트에서 각 데이터의 fill 속성이 사용되도록 전역 fill 속성 제거 */}
-          <Scatter name="Trends" data={keywords}>
+          <Scatter name="Trends" data={keywords} shape={<CustomBubble />}>
             <LabelList 
               dataKey="name" 
               position="center" 
