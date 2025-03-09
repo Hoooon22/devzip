@@ -6,7 +6,10 @@ import java.time.format.DateTimeFormatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,33 +17,44 @@ import jakarta.persistence.Table;
 public class ChatRoom {
     
     @Id
-    @GeneratedValue(generator = "GenerationType.IDENTITY")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 검색어 기반 채팅방 구분, 중복 x
+    // 검색어 기반 채팅방 구분, 중복 방지
     @Column(nullable = false, unique = true)
     private String keyword;
 
-    // 채팅방 생성 일시
-    @Column(nullable = false)
+    // 채팅방 생성 일시 (null이 되지 않도록 설정)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     // 채팅방 업데이트 일시
     private LocalDateTime updatedDate;
 
-    // 채팅방 상태
+    // 채팅방 상태 (예: "ACTIVE", "ARCHIVED")
     @Column(nullable = false)
     private String status;
 
-    // 기본 생성자
+    // 기본 생성자 (JPA 용)
     public ChatRoom() {}
 
-    // 생성자: 새 채팅방 생성 시 keyword만 받아 초기화
+    // 생성자: 새 채팅방 생성 시 keyword만 전달받음
     public ChatRoom(String keyword) {
         this.keyword = keyword;
+    }
+    
+    @PrePersist
+    public void prePersist() {
         this.createDate = LocalDateTime.now();
-        this.status = "ACTIVE";
         this.updatedDate = this.createDate;
+        if (this.status == null) {
+            this.status = "ACTIVE";
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
     }
     
     // Getters and Setters
