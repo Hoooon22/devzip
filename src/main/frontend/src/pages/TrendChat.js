@@ -69,13 +69,22 @@ const TrendChat = () => {
   const openChatRoom = async (keyword) => {
     try {
       const response = await fetch(`/api/chatrooms?keyword=${encodeURIComponent(keyword)}`);
-      const room = await response.json();
-      // 예: 채팅방 id를 받아서 /chat/{room.id} 경로로 이동
+      if (!response.ok) {
+        // 응답 상태가 200이 아니라면 오류 처리
+        const errorText = await response.text();
+        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+      }
+      // 응답 본문이 비어 있으면 기본값으로 빈 객체를 사용하거나, 별도 오류 처리를 할 수 있습니다.
+      const text = await response.text();
+      if (!text) {
+        throw new Error("빈 응답입니다.");
+      }
+      const room = JSON.parse(text);
       navigate(`/chat/${room.id}`);
     } catch (error) {
       console.error("채팅방 열기 실패:", error);
     }
-  };
+  };  
 
   return (
     <div className="trendchat-container">
