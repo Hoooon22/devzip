@@ -22,13 +22,13 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoom getOrCreateChatRoom(String keyword) {
-        // keyword로 채팅창 조회
+        // keyword로 채팅방 조회
         Optional<ChatRoom> chatRoom = chatRoomRepository.findByKeyword(keyword);
         if (chatRoom.isPresent()) {
             return chatRoom.get();
         }
 
-        // 채팅방이 없으면 새로 생성
+        // 채팅방이 없으면 새로 생성 (keyword 설정)
         ChatRoom newRoom = new ChatRoom(keyword);
         return chatRoomRepository.save(newRoom);
     }
