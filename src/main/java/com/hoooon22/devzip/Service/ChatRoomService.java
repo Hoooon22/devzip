@@ -29,7 +29,7 @@ public class ChatRoomService {
         }
 
         // 채팅방이 없으면 새로 생성
-        ChatRoom newRoom = new ChatRoom();
+        ChatRoom newRoom = new ChatRoom(keyword);
         return chatRoomRepository.save(newRoom);
     }
 }
