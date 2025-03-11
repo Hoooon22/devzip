@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 import "../assets/css/ChatRoomPage.scss";
 
 const ChatRoomPage = () => {
-  const { roomId } = useParams(); // URL에서 채팅방 ID 읽기
+  const { roomId } = useParams();
   const [room, setRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const stompClient = useRef(null);
 
-  // 채팅방 정보를 API로부터 가져오기
+  // 채팅방 정보 API 호출
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        // 채팅방 조회 API (예: GET /api/chatrooms/{roomId})
         const res = await fetch(`/api/chatrooms/${roomId}`);
         const data = await res.json();
         setRoom(data);
@@ -24,47 +26,49 @@ const ChatRoomPage = () => {
     fetchRoomDetails();
   }, [roomId]);
 
-  // 채팅 메시지를 주기적으로 불러오기 (예: 5초마다)
+  // WebSocket 연결 설정
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        // 채팅 메시지 조회 API (예: GET /api/chatmessages/{roomId})
-        const res = await fetch(`/api/chatmessages/${roomId}`);
-        const data = await res.json();
-        setMessages(data);
-      } catch (error) {
-        console.error("메시지 가져오기 실패:", error);
+    // SockJS를 사용하여 엔드포인트 연결
+    const socket = new SockJS("https://devzip.site/ws");
+    stompClient.current = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      onConnect: () => {
+        console.log("WebSocket 연결 성공");
+        // 채팅방 구독 (room.id가 필요하므로 room 정보가 로드된 후 구독)
+        if (room) {
+          stompClient.current.subscribe(`/topic/chat/${room.id}`, (message) => {
+            const msg = JSON.parse(message.body);
+            setMessages((prev) => [...prev, msg]);
+          });
+        }
+      },
+      onStompError: (frame) => {
+        console.error("WebSocket 오류:", frame);
+      },
+    });
+    stompClient.current.activate();
+
+    return () => {
+      if (stompClient.current) {
+        stompClient.current.deactivate();
       }
     };
+  }, [room]);
 
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
-  }, [roomId]);
-
-  // 메시지 전송 핸들러 (POST /api/chatmessages)
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    try {
-      const params = new URLSearchParams();
-      // 채팅방 API에서는 키워드로 채팅방을 구분하므로, room.keyword를 같이 보냅니다.
-      params.append("keyword", room.keyword);
-      params.append("sender", "익명"); // 임시 익명 닉네임
-      params.append("content", input);
-
-      const res = await fetch("/api/chatmessages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: params.toString(),
-      });
-      const newMsg = await res.json();
-      setMessages((prev) => [...prev, newMsg]);
-      setInput("");
-    } catch (error) {
-      console.error("메시지 전송 실패:", error);
-    }
+  // 메시지 전송 함수 (WebSocket을 통해 전송)
+  const sendMessage = () => {
+    if (!input.trim() || !room) return;
+    const message = {
+      sender: "익명", // 임시 닉네임, 필요하면 사용자 정보 사용
+      content: input,
+    };
+    // 채팅 메시지는 "/app/chat/{keyword}"로 전송합니다.
+    stompClient.current.publish({
+      destination: `/app/chat/${room.keyword}`,
+      body: JSON.stringify(message),
+    });
+    setInput("");
   };
 
   return (
@@ -80,7 +84,7 @@ const ChatRoomPage = () => {
       )}
 
       <div className="chat-messages">
-        {messages && messages.length > 0 ? (
+        {messages.length > 0 ? (
           messages.map((msg) => (
             <div key={msg.id} className="chat-message">
               <strong>{msg.sender}</strong>: {msg.content}

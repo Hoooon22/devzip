@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ChatMessageService {
-    
+
     private final ChatMessageRepository chatMessageRepository;
 
     @Autowired
@@ -22,12 +22,12 @@ public class ChatMessageService {
     }
 
     @Transactional
-    public ChatMessage sendMessage(ChatRoom room, String sender, String content) {
+    public ChatMessage saveMessage(ChatRoom room, String sender, String content) {
         ChatMessage message = new ChatMessage(room, sender, content);
         return chatMessageRepository.save(message);
     }
 
-    public List<ChatMessage> getMessagesByRoomID(Long roomId) {
+    public List<ChatMessage> getMessagesByRoomId(Long roomId) {
         return chatMessageRepository.findByChatRoomId(roomId);
     }
 }
