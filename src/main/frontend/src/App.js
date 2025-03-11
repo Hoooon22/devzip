@@ -6,6 +6,7 @@ import Joke from "./pages/Joke";
 import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
+import ChatRoomPage from "./pages/ChatRoomPage";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
 
         {/* Trend 채팅 페이지 */}
         <Route path="/trendchat" element={<TrendChat />} />
+        <Route path="/chat/:roomId" element={<ChatRoomPage />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
