@@ -28,14 +28,12 @@ const ChatRoomPage = () => {
 
   // WebSocket 연결 설정
   useEffect(() => {
-    // SockJS를 사용하여 엔드포인트 연결
     const socket = new SockJS("https://devzip.site/ws");
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: () => {
         console.log("WebSocket 연결 성공");
-        // 채팅방 구독 (room.id가 필요하므로 room 정보가 로드된 후 구독)
         if (room) {
           stompClient.current.subscribe(`/topic/chat/${room.id}`, (message) => {
             const msg = JSON.parse(message.body);
@@ -60,10 +58,9 @@ const ChatRoomPage = () => {
   const sendMessage = () => {
     if (!input.trim() || !room) return;
     const message = {
-      sender: "익명", // 임시 닉네임, 필요하면 사용자 정보 사용
+      sender: "익명", // 임시 닉네임
       content: input,
     };
-    // 채팅 메시지는 "/app/chat/{keyword}"로 전송합니다.
     stompClient.current.publish({
       destination: `/app/chat/${room.keyword}`,
       body: JSON.stringify(message),
@@ -87,8 +84,14 @@ const ChatRoomPage = () => {
         {messages.length > 0 ? (
           messages.map((msg) => (
             <div key={msg.id} className="chat-message">
-              <strong>{msg.sender}</strong>: {msg.content}
-              <span className="timestamp">{msg.formattedSentAt || msg.sentAt}</span>
+              {/* 메시지 작성자의 이름에 msg.color를 적용 */}
+              <strong style={{ color: msg.color || "#007bff" }}>
+                {msg.sender}
+              </strong>
+              : {msg.content}
+              <span className="timestamp">
+                {msg.formattedSentAt || msg.sentAt}
+              </span>
             </div>
           ))
         ) : (
