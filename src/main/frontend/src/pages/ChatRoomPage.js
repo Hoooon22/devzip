@@ -26,7 +26,7 @@ const ChatRoomPage = () => {
     fetchRoomDetails();
   }, [roomId]);
 
-  // WebSocket 연결 설정
+  // WebSocket 연결 설정 및 debug 토픽 구독
   useEffect(() => {
     const socket = new SockJS("https://devzip.site/ws");
     stompClient.current = new Client({
@@ -34,12 +34,17 @@ const ChatRoomPage = () => {
       reconnectDelay: 5000,
       onConnect: () => {
         console.log("WebSocket 연결 성공");
+        // 채팅방 구독 (room 정보가 로드된 후 구독)
         if (room) {
           stompClient.current.subscribe(`/topic/chat/${room.id}`, (message) => {
             const msg = JSON.parse(message.body);
             setMessages((prev) => [...prev, msg]);
           });
         }
+        // 디버그 토픽 구독하여 브라우저 콘솔에 출력
+        stompClient.current.subscribe("/topic/debug", (message) => {
+          console.log("DEBUG:", message.body);
+        });
       },
       onStompError: (frame) => {
         console.error("WebSocket 오류:", frame);
@@ -84,7 +89,6 @@ const ChatRoomPage = () => {
         {messages.length > 0 ? (
           messages.map((msg) => (
             <div key={msg.id} className="chat-message">
-              {/* 메시지 작성자의 이름에 msg.color를 적용 */}
               <strong style={{ color: msg.color || "#007bff" }}>
                 {msg.sender}
               </strong>
