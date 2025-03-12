@@ -27,9 +27,12 @@ public class ChatRoomService {
         if (chatRoom.isPresent()) {
             return chatRoom.get();
         }
-
         // 채팅방이 없으면 새로 생성 (keyword 설정)
         ChatRoom newRoom = new ChatRoom(keyword);
         return chatRoomRepository.save(newRoom);
+    }
+    
+    public Optional<ChatRoom> getChatRoomById(Long id) {
+        return chatRoomRepository.findById(id);
     }
 }
