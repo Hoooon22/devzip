@@ -11,7 +11,7 @@ const ChatRoomPage = () => {
   const [input, setInput] = useState("");
   const stompClient = useRef(null);
 
-  // 채팅방 정보 API 호출
+  // 채팅방 정보 API 호출 (GET /api/chatrooms/{roomId})
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
@@ -26,7 +26,26 @@ const ChatRoomPage = () => {
     fetchRoomDetails();
   }, [roomId]);
 
-  // WebSocket 연결 설정 및 debug 토픽 구독
+  // 기존 메시지 불러오기 (GET /api/chatmessages/{roomId}) 및 폴링
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/chatmessages/${roomId}`);
+        const data = await res.json();
+        setMessages(data);
+      } catch (error) {
+        console.error("메시지 가져오기 실패:", error);
+      }
+    };
+
+    // 입장 시 즉시 기존 메시지 로드
+    fetchMessages();
+    // 이후 5초마다 폴링
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [roomId]);
+
+  // WebSocket 연결 설정 (실시간 메시지 수신)
   useEffect(() => {
     const socket = new SockJS("https://devzip.site/ws");
     stompClient.current = new Client({
@@ -34,7 +53,6 @@ const ChatRoomPage = () => {
       reconnectDelay: 5000,
       onConnect: () => {
         console.log("WebSocket 연결 성공");
-        // 채팅방 구독 (room 정보가 로드된 후 구독)
         if (room) {
           stompClient.current.subscribe(`/topic/chat/${room.id}`, (message) => {
             const msg = JSON.parse(message.body);
@@ -59,7 +77,7 @@ const ChatRoomPage = () => {
   const sendMessage = () => {
     if (!input.trim() || !room) return;
     const message = {
-      sender: "익명", // 임시 닉네임
+      sender: "익명", // 임시 닉네임; 필요에 따라 사용자 정보를 활용
       content: input,
     };
     stompClient.current.publish({
