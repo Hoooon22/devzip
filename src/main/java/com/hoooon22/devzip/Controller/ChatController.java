@@ -52,21 +52,15 @@ public class ChatController {
     @MessageMapping("/chat/{keyword}")
     public void sendMessage(@DestinationVariable String keyword, @Payload ChatMessage incomingMessage) {
         try {
-            // 클라이언트 IP 기반 색상 생성
-            String ip = getClientIp();
-            String color = getColorFromIp(ip);
-            incomingMessage.setColor(color);
-
-            // 해당 키워드의 채팅방 조회 또는 생성
+            // 테스트: IP 기반 색상 설정 없이 기본 색상 적용
+            incomingMessage.setColor("#007bff");
+            
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
-
-            // 메시지 저장 (채팅방, sender, content, color)
-            ChatMessage savedMessage = chatMessageService.saveMessage(room, incomingMessage.getSender(), incomingMessage.getContent(), color);
-
-            // 구독자에게 메시지 전송 (채팅방 id를 사용하여 브로드캐스트)
+            ChatMessage savedMessage = chatMessageService.saveMessage(room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
 }
