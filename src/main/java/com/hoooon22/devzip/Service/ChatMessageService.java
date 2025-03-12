@@ -22,8 +22,9 @@ public class ChatMessageService {
     }
 
     @Transactional
-    public ChatMessage saveMessage(ChatRoom room, String sender, String content) {
+    public ChatMessage saveMessage(ChatRoom room, String sender, String content, String color) {
         ChatMessage message = new ChatMessage(room, sender, content);
+        message.setColor(color);
         return chatMessageRepository.save(message);
     }
 
