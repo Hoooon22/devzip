@@ -2,6 +2,7 @@ package com.hoooon22.devzip.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -33,8 +34,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public ChatHandler chatHandler() {
         return new ChatHandler();
     }
-    
-    // SimpMessagingTemplate 빈을 명시적으로 등록
+
+    // custom SimpMessagingTemplate 빈에 @Primary를 추가하여 우선순위를 높입니다.
+    @Primary
     @Bean
     public SimpMessagingTemplate simpMessagingTemplate(MessageChannel clientOutboundChannel) {
         return new SimpMessagingTemplate(clientOutboundChannel);
