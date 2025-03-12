@@ -12,62 +12,39 @@ import com.hoooon22.devzip.Model.ChatRoom;
 import com.hoooon22.devzip.Service.ChatMessageService;
 import com.hoooon22.devzip.Service.ChatRoomService;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Controller
 public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final HttpServletRequest request;
 
     public ChatController(ChatRoomService chatRoomService,
                           ChatMessageService chatMessageService,
-                          SimpMessagingTemplate messagingTemplate,
-                          HttpServletRequest request) {
+                          SimpMessagingTemplate messagingTemplate) {
         this.chatRoomService = chatRoomService;
         this.chatMessageService = chatMessageService;
         this.messagingTemplate = messagingTemplate;
-        this.request = request;
     }
-
-    // IP 정보를 가져오는 메서드 (간단한 예시)
-    private String getClientIp() {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isEmpty()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
-
-    // IP를 기반으로 색상을 생성하는 메서드 (EntryService의 로직 참고)
-    private String getColorFromIp(String ip) {
-        // 해시값이 음수일 수 있으므로 절대값을 취합니다.
-        int hash = Math.abs(ip.hashCode());
-        // 오른쪽 시프트 후 0xFF와 AND 연산하여 각 색상 값을 추출합니다.
-        int red = (hash >> 16) & 0xFF;
-        int green = (hash >> 8) & 0xFF;
-        int blue = hash & 0xFF;
-        return String.format("#%02x%02x%02x", red, green, blue);
-    }
-    
 
     @MessageMapping("/chat/{keyword}")
     public void sendMessage(@DestinationVariable String keyword,
                             @Payload ChatMessage incomingMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // 세션에서 클라이언트 색상 가져오기
+            // WebSocket 세션 속성에서 클라이언트의 고유 색상을 가져옵니다.
             String clientColor = (String) headerAccessor.getSessionAttributes().get("clientColor");
             if (clientColor == null || clientColor.isEmpty()) {
                 clientColor = "#007bff"; // 기본값
             }
+            // 이 색상을 메시지에 설정합니다.
             incomingMessage.setColor(clientColor);
-    
+            
+            // 해당 키워드의 채팅방 조회 또는 생성
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
             ChatMessage savedMessage = chatMessageService.saveMessage(
                     room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
+            // 메시지를 채팅방의 구독자에게 전송
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
         } catch (Exception e) {
             e.printStackTrace();
