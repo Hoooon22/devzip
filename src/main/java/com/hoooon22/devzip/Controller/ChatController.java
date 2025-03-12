@@ -34,11 +34,9 @@ public class ChatController {
                             @Payload ChatMessage incomingMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // 세션 속성에서 클라이언트 고유 색상을 가져옵니다.
+            // WebSocket 세션 속성에서 클라이언트 고유 색상을 가져옵니다.
             Map<String, Object> sessionAttrs = headerAccessor.getSessionAttributes();
-            System.out.println("Session attributes: " + sessionAttrs);
             String clientColor = sessionAttrs != null ? (String) sessionAttrs.get("clientColor") : null;
-            System.out.println("clientColor: " + clientColor);
             if (clientColor == null || clientColor.isEmpty()) {
                 clientColor = "#007bff"; // 기본값
             }
@@ -48,11 +46,6 @@ public class ChatController {
             ChatMessage savedMessage = chatMessageService.saveMessage(
                     room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
-            
-            // 디버그 정보를 문자열로 만들어 별도의 토픽으로 전송 (브라우저에서 구독)
-            String debugMessage = "Session attributes: " + sessionAttrs + ", clientColor: " + clientColor;
-            messagingTemplate.convertAndSend("/topic/debug", debugMessage);
-            
         } catch (Exception e) {
             e.printStackTrace();
         }

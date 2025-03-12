@@ -41,10 +41,6 @@ const ChatRoomPage = () => {
             setMessages((prev) => [...prev, msg]);
           });
         }
-        // 디버그 토픽 구독하여 브라우저 콘솔에 출력
-        stompClient.current.subscribe("/topic/debug", (message) => {
-          console.log("DEBUG:", message.body);
-        });
       },
       onStompError: (frame) => {
         console.error("WebSocket 오류:", frame);
