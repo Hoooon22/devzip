@@ -58,14 +58,13 @@ public class ChatController {
                             @Payload ChatMessage incomingMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // WebSocket 세션 속성에서 IP 가져오기
-            String ip = (String) headerAccessor.getSessionAttributes().get("clientIp");
-            if (ip == null || ip.isEmpty()) {
-                ip = "0.0.0.0"; // 기본값 설정
+            // 세션에서 클라이언트 색상 가져오기
+            String clientColor = (String) headerAccessor.getSessionAttributes().get("clientColor");
+            if (clientColor == null || clientColor.isEmpty()) {
+                clientColor = "#007bff"; // 기본값
             }
-            String color = getColorFromIp(ip);
-            incomingMessage.setColor(color);
-            
+            incomingMessage.setColor(clientColor);
+    
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
             ChatMessage savedMessage = chatMessageService.saveMessage(
                     room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
