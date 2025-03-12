@@ -34,15 +34,14 @@ public class ChatController {
                             @Payload ChatMessage incomingMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // 세션 속성에서 클라이언트 고유 색상을 가져옵니다.
+            // 세션 속성 확인 로그 추가
             Map<String, Object> sessionAttrs = headerAccessor.getSessionAttributes();
             System.out.println("Session attributes: " + sessionAttrs);
             String clientColor = sessionAttrs != null ? (String) sessionAttrs.get("clientColor") : null;
-            if (clientColor == null || clientColor.isEmpty()) {
-                // fallback: 기본 색상 대신 랜덤 색상 생성 또는 null로 두면 클라이언트 측에서 다른 처리를 할 수 있음
-                clientColor = "#007bff";  
-            }
             System.out.println("clientColor: " + clientColor);
+            if (clientColor == null || clientColor.isEmpty()) {
+                clientColor = "#007bff"; // 기본값
+            }
             incomingMessage.setColor(clientColor);
             
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
@@ -53,5 +52,4 @@ public class ChatController {
             e.printStackTrace();
         }
     }
-    
 }
