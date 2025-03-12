@@ -20,7 +20,7 @@ public class ColorHandshakeInterceptor implements HandshakeInterceptor {
                 ip = servletRequest.getRemoteAddr();
             }
             attributes.put("clientIp", ip);
-            // 무작위 색상 생성 (각 클라이언트 고유)
+            // 무작위 색상 생성
             int red = (int)(Math.random() * 256);
             int green = (int)(Math.random() * 256);
             int blue = (int)(Math.random() * 256);

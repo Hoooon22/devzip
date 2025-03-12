@@ -32,19 +32,16 @@ public class ChatController {
                             @Payload ChatMessage incomingMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // WebSocket 세션 속성에서 클라이언트의 고유 색상을 가져옵니다.
+            // 세션에서 클라이언트 고유 색상 가져오기
             String clientColor = (String) headerAccessor.getSessionAttributes().get("clientColor");
             if (clientColor == null || clientColor.isEmpty()) {
                 clientColor = "#007bff"; // 기본값
             }
-            // 이 색상을 메시지에 설정합니다.
             incomingMessage.setColor(clientColor);
-            
-            // 해당 키워드의 채팅방 조회 또는 생성
+
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
             ChatMessage savedMessage = chatMessageService.saveMessage(
                     room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
-            // 메시지를 채팅방의 구독자에게 전송
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
         } catch (Exception e) {
             e.printStackTrace();
