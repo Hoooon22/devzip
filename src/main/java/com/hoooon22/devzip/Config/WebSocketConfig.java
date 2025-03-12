@@ -2,15 +2,12 @@ package com.hoooon22.devzip.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-
-import com.hoooon22.devzip.Handler.ChatHandler;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -29,14 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // 클라이언트가 메시지를 보낼 때 사용하는 접두사
         registry.setApplicationDestinationPrefixes("/app");
     }
-
-    @Bean
-    public ChatHandler chatHandler() {
-        return new ChatHandler();
-    }
-
-    // custom SimpMessagingTemplate 빈에 @Primary를 추가하여 우선순위를 높입니다.
-    @Primary
+    
+    // SimpMessagingTemplate 빈을 명시적으로 등록
     @Bean
     public SimpMessagingTemplate simpMessagingTemplate(MessageChannel clientOutboundChannel) {
         return new SimpMessagingTemplate(clientOutboundChannel);
