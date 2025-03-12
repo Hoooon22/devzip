@@ -42,25 +42,32 @@ public class ChatController {
 
     // IP를 기반으로 색상을 생성하는 메서드 (EntryService의 로직 참고)
     private String getColorFromIp(String ip) {
-        int hash = ip.hashCode();
-        int red = (hash & 0xFF0000) >> 16;
-        int green = (hash & 0x00FF00) >> 8;
-        int blue = hash & 0x0000FF;
+        // 해시값이 음수일 수 있으므로 절대값을 취합니다.
+        int hash = Math.abs(ip.hashCode());
+        // 오른쪽 시프트 후 0xFF와 AND 연산하여 각 색상 값을 추출합니다.
+        int red = (hash >> 16) & 0xFF;
+        int green = (hash >> 8) & 0xFF;
+        int blue = hash & 0xFF;
         return String.format("#%02x%02x%02x", red, green, blue);
     }
+    
 
     @MessageMapping("/chat/{keyword}")
     public void sendMessage(@DestinationVariable String keyword, @Payload ChatMessage incomingMessage) {
         try {
-            // 테스트: IP 기반 색상 설정 없이 기본 색상 적용
-            incomingMessage.setColor("#007bff");
+            // 클라이언트 IP와 이를 기반으로 한 색상 설정
+            String ip = getClientIp();
+            String color = getColorFromIp(ip);
+            incomingMessage.setColor(color);
             
+            // 해당 키워드의 채팅방 조회 또는 생성
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
+            // 메시지 저장 (sender, content, color 포함)
             ChatMessage savedMessage = chatMessageService.saveMessage(room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
+            // 구독자에게 메시지 전송 (채팅방 id를 사용)
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
 }
