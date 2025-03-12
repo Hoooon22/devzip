@@ -3,6 +3,7 @@ package com.hoooon22.devzip.Controller;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -53,18 +54,21 @@ public class ChatController {
     
 
     @MessageMapping("/chat/{keyword}")
-    public void sendMessage(@DestinationVariable String keyword, @Payload ChatMessage incomingMessage) {
+    public void sendMessage(@DestinationVariable String keyword,
+                            @Payload ChatMessage incomingMessage,
+                            SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // 클라이언트 IP와 이를 기반으로 한 색상 설정
-            String ip = getClientIp();
+            // WebSocket 세션 속성에서 IP 가져오기
+            String ip = (String) headerAccessor.getSessionAttributes().get("clientIp");
+            if (ip == null || ip.isEmpty()) {
+                ip = "0.0.0.0"; // 기본값 설정
+            }
             String color = getColorFromIp(ip);
             incomingMessage.setColor(color);
             
-            // 해당 키워드의 채팅방 조회 또는 생성
             ChatRoom room = chatRoomService.getOrCreateChatRoom(keyword);
-            // 메시지 저장 (sender, content, color 포함)
-            ChatMessage savedMessage = chatMessageService.saveMessage(room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
-            // 구독자에게 메시지 전송 (채팅방 id를 사용)
+            ChatMessage savedMessage = chatMessageService.saveMessage(
+                    room, incomingMessage.getSender(), incomingMessage.getContent(), incomingMessage.getColor());
             messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), savedMessage);
         } catch (Exception e) {
             e.printStackTrace();
