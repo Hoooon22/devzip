@@ -104,7 +104,7 @@ const TodoList = () => {
           data={todos}
           renderItem={({ item }) => (
             <TodoItem
-              item={item}
+              todo={item}
               onToggle={() => toggleTodo(item.id)}
               onDelete={() => deleteTodo(item.id)}
             />
