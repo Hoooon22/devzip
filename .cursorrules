@@ -1,0 +1,107 @@
+# 커서룰 - 코드 작성 및 수정 가이드라인
+
+## 반응형 스타일링 규칙
+모든 새로운 스타일 파일은 반응형으로 작성되어야 합니다.
+- 기본 모바일 뷰포트 설정 필요
+- 미디어 쿼리를 사용한 브레이크포인트 설정 필요
+- 모바일 우선 접근법 사용
+
+## 접근성 규칙
+모든 UI 컴포넌트는 접근성 지침을 준수해야 합니다.
+- 적절한 ARIA 속성 사용
+- 키보드 내비게이션 지원
+- 충분한 색상 대비
+
+## 터치 인터페이스 최적화
+모든 상호작용 요소는 터치 기기에 최적화되어야 합니다.
+- 최소 44x44px 터치 타겟 크기
+- 터치 이벤트 처리
+- 제스처 인식 지원
+
+## 성능 최적화
+모든 컴포넌트는 성능을 고려하여 작성되어야 합니다.
+- 이미지 지연 로딩 사용
+- 불필요한 리렌더링 방지
+- 코드 스플리팅 및 지연 로딩 활용
+
+## 브레이크포인트 기준
+- 모바일: 0px
+- 태블릿: 768px
+- 데스크톱: 1024px
+- 대형 화면: 1440px
+
+## 뷰포트 설정
+- 뷰포트 단위(vh, vw) 사용
+- 미디어 쿼리 활용
+- 다크 모드 지원
+
+## React Native 코드 스타일 및 구조
+
+### 코드 작성 규칙
+- 함수형 컴포넌트와 훅 사용 (클래스 컴포넌트 대신)
+- 화살표 함수로 컴포넌트 생성, 적절한 타입 사용
+- 모듈화, 재사용성, 유지보수성 고려
+- 기능별 파일 구성, 관련 컴포넌트/훅/스타일 그룹화
+- 객체 가능한 한 구조 분해
+- 컴포넌트 코드와 스타일 분리
+
+### 명명 규칙
+- 변수 및 함수: camelCase
+- 컴포넌트: PascalCase
+- 디렉토리: lowercase-hyphenated
+
+### TypeScript 사용
+- 엄격한 타입 적용
+- any 타입 사용 지양
+- 인터페이스 사용 권장
+- 함수형 컴포넌트에 타입 명시
+
+### 스타일링
+- StyleSheet.create() 사용
+- 인라인 스타일 지양
+- 반응형 디자인 적용
+
+### 디렉토리 구조
+- components/{component-name}/[index.tsx, styles.ts, types.ts]
+- app/{screen-name}/[index.tsx, styles.ts, _layout.tsx?, types.ts?]
+- services/[apis, constants, types]
+
+## Java Spring Boot 애플리케이션 로직 설계
+
+### 기본 원칙
+- 모든 요청 및 응답 처리는 RestController에서만 수행
+- 모든 데이터베이스 작업 로직은 ServiceImpl 클래스에서 수행
+- RestController는 Repository를 직접 @Autowired 할 수 없음 (절대적으로 필요한 경우 제외)
+- ServiceImpl 클래스는 직접 데이터베이스를 쿼리할 수 없음 (절대적으로 필요한 경우 제외)
+- 데이터는 DTO를 통해서만 주고 받음
+- Entity 클래스는 데이터베이스 쿼리 결과를 전달하는 용도로만 사용
+- SOLID, DRY, KISS, YAGNI 원칙 준수
+- OWASP 모범 사례 준수
+
+### 엔티티
+- @Entity 어노테이션 사용
+- @Data (Lombok) 어노테이션 사용
+- ID에 @Id 및 @GeneratedValue 어노테이션 사용
+- 관계에 FetchType.LAZY 사용
+
+### 레포지토리
+- 인터페이스로 구현
+- JpaRepository<Entity, ID> 상속
+- JPQL 쿼리 사용
+- N+1 문제 방지를 위한 @EntityGraph 사용
+
+### 서비스
+- 인터페이스와 구현 클래스 분리
+- ServiceImpl 클래스에 @Service 어노테이션 사용
+- 반환 타입으로 Entity 대신 DTO 사용
+- 다중 DB 작업 시 @Transactional 사용
+
+### DTO
+- record 타입으로 정의
+- 컴팩트 캐노니컬 생성자로 입력 값 검증
+
+### RestController
+- @RestController 어노테이션 사용
+- @RequestMapping으로 API 경로 지정
+- 반환 타입은 ResponseEntity<ApiResponse<T>>
+- try-catch 블록과 GlobalExceptionHandler로 오류 처리 
