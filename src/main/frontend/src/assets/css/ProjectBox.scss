@@ -4,35 +4,60 @@
     width: 100%;
     max-width: 350px;
     padding: 20px;
-    margin: 20px auto; // 가운데 정렬
-    border-radius: 8px;
-    background: #64b5f6;
+    margin: 0 auto; // 가운데 정렬
+    border-radius: 12px; // 더 둥글게
+    background: linear-gradient(145deg, #64b5f6, #2196f3); // 그라데이션 배경
     color: #fff;
     text-align: left;
     text-decoration: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); // 부드러운 트랜지션
+    height: 100%; // 높이 확장
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; // 내용물이 박스를 넘치지 않도록
 
-    &:hover {
+    &:hover, &:focus, &:active {
         transform: translateY(-5px);
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 
         .project-address {
             opacity: 1;
         }
     }
 
+    // 터치 디바이스 최적화
+    @media (hover: none) {
+        .project-address {
+            opacity: 0.8; // 터치 기기에서는 항상 주소 표시
+            position: static; // 절대 위치 대신
+            display: block;
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: none;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px;
+        }
+    }
+
     .project-title {
-        font-size: 1.5rem;
+        font-size: clamp(1.25rem, 4vw, 1.5rem); // 반응형 글자 크기
         margin-top: 10px; // 상단 여백 추가
-        color: #0d47a1;
+        color: #fff;
+        font-weight: 600;
         transition: color 0.2s ease;
+        word-break: break-word; // 긴 제목 처리
     }
 
     .project-description {
-        font-size: 1rem;
+        font-size: clamp(0.875rem, 3vw, 1rem); // 반응형 글자 크기
         margin-bottom: 15px; // 설명과 날짜 간격 조정
-        color: #0d47a1;
+        color: rgba(255, 255, 255, 0.9);
+        flex-grow: 1; // 가용 공간 확장
+        word-break: break-word; // 긴 설명 처리
     }
 
     .project-address {
@@ -46,37 +71,51 @@
         border-radius: 5px;
         opacity: 0;
         transition: opacity 0.3s ease;
+        font-size: 0.85rem;
+        max-width: 90%; // 너무 길지 않게
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        z-index: 1;
     }
 
     .project-duration {
         font-size: 0.8rem;
-        color: #444; // 진한 회색으로 변경
+        color: rgba(255, 255, 255, 0.7);
         margin-top: 10px; // 날짜와 inactive 아이콘 간격 조정
+        align-self: flex-end; // 하단 우측 정렬
+    }
+
+    .permission-icon, .inactive-icon {
+        position: absolute;
+        top: 15px; // 상단 여백 추가
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
     }
 
     .permission-icon {
-        position: absolute;
-        top: 15px; // 상단 여백 추가
-        right: 10px;
-        width: 20px;
-        height: 20px;
-        background: url('../imgs/permission_icon.png') no-repeat center center / contain;
+        background-image: url('../imgs/permission_icon.png');
     }
 
     .inactive-icon {
-        position: absolute;
-        top: 15px; // 상단 여백 추가
-        right: 10px;
-        width: 20px;
-        height: 20px;
-        background: url('../imgs/denied_icon.png') no-repeat center center / contain;
+        background-image: url('../imgs/denied_icon.png');
     }
 
     &.inactive {
-        opacity: 0.6;
+        opacity: 0.7;
+        background: linear-gradient(145deg, #9e9e9e, #757575);
 
         .project-title {
             text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .project-description {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .inactive-icon {
@@ -85,6 +124,22 @@
 
         .permission-icon {
             display: none; // inactive일 때 permission 아이콘 숨김
+        }
+    }
+}
+
+// 다크 모드 지원
+@media (prefers-color-scheme: dark) {
+    .project-box {
+        background: linear-gradient(145deg, #1976d2, #0d47a1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+        &:hover, &:focus, &:active {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        &.inactive {
+            background: linear-gradient(145deg, #424242, #212121);
         }
     }
 }
