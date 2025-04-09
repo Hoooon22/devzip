@@ -19,7 +19,7 @@ const Main = () => {
 
     return (
         <div className="container">
-            <h1>Hoooon22's DevZip</h1>
+            <h1>Hoooon22&apos;s DevZip</h1>
             <ul className="project-list">
                 {currentProjects.map(project => (
                     <li key={project.id} className="project-item">

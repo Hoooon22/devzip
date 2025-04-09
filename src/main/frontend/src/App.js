@@ -8,6 +8,7 @@ import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
 import ChatRoomPage from "./pages/ChatRoomPage";
+import TraceBoard from './pages/traceboard';
 import ViewportMeta from './components/ViewportMeta';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
@@ -34,7 +35,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         
         {/* TraceBoard 로그 대시보드 페이지 */}
-        <Route path="/traceboard" element={<Dashboard />} />
+        <Route path="/traceboard" element={<TraceBoard />} />
 
         {/* Trend 채팅 페이지 */}
         <Route path="/trendchat" element={<TrendChat />} />
