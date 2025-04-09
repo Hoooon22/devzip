@@ -8,7 +8,7 @@ import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
 import ChatRoomPage from "./pages/ChatRoomPage";
-import TraceBoard from './pages/traceboard';
+import TraceBoard from './pages/traceboard/index.js';
 import ViewportMeta from './components/ViewportMeta';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
