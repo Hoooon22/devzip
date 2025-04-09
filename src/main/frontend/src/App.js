@@ -32,6 +32,9 @@ function App() {
 
         {/* Dashboard 모음 페이지 */}
         <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* TraceBoard 로그 대시보드 페이지 */}
+        <Route path="/traceboard" element={<Dashboard />} />
 
         {/* Trend 채팅 페이지 */}
         <Route path="/trendchat" element={<TrendChat />} />

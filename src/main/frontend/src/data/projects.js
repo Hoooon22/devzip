@@ -53,6 +53,15 @@ const projects = [
         startDate: '2025-02-11',
         endDate: ''
     },
+    { 
+        id: 7, 
+        name: 'TraceBoard', 
+        description: '웹사이트 사용자 행동을 시각화하는 로그 대시보드', 
+        link: '/traceboard', 
+        active: true,
+        startDate: '2025-04-09',
+        endDate: ''
+    },
     // { 
     //     id: 4, 
     //     name: '리그오브레전드 패치노트', 
