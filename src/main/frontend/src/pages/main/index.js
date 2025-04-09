@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import projects from '../../data/projects';
-import Pagination from '../../components/Pagination';
+import Pagination from '../../components/pagination';
 import ProjectBox from '../../components/project-box';
 import Footer from '../../components/footer';
 import { styles } from './styles';
@@ -59,9 +59,9 @@ const Main = () => {
         style={styles.srOnly}
       ></div>
       
-      <h1 style={styles.title}>Hoooon22's DevZip</h1>
+      <h1 style={styles.title}>Hoooon22&apos;s DevZip</h1>
       
-      <ul style={styles.projectList} role="list" aria-label="프로젝트 목록">
+      <ul style={styles.projectList} aria-label="프로젝트 목록">
         {currentProjects.map(project => (
           <li key={project.id} style={styles.projectItem}>
             <ProjectBox project={project} />

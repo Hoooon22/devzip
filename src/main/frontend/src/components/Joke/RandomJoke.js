@@ -1,5 +1,6 @@
 // src/components/RandomJoke.js
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function RandomJoke({ joke }) {
     return (
@@ -9,5 +10,12 @@ function RandomJoke({ joke }) {
         </div>
     );
 }
+
+RandomJoke.propTypes = {
+    joke: PropTypes.shape({
+        setup: PropTypes.string.isRequired,
+        punchline: PropTypes.string.isRequired
+    }).isRequired
+};
 
 export default RandomJoke;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from '../../utils/axiosConfig'; // axiosConfig에서 설정된 axios 사용
 import '../../assets/css/EntryForm.scss';
 
@@ -61,6 +62,10 @@ const EntryForm = ({ addEntry }) => {
             <button type="submit" className="entry-form-button">Submit</button>
         </form>
     );
+};
+
+EntryForm.propTypes = {
+    addEntry: PropTypes.func.isRequired
 };
 
 export default EntryForm;

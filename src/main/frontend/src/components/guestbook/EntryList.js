@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../assets/css/EntryList.scss';
 
 const formatDate = (dateString) => {
@@ -29,6 +30,18 @@ const EntryList = ({ entries }) => {
             ))}
         </ul>
     );
+};
+
+EntryList.propTypes = {
+    entries: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            name: PropTypes.string.isRequired,
+            content: PropTypes.string.isRequired,
+            createDate: PropTypes.string.isRequired,
+            color: PropTypes.string
+        })
+    ).isRequired
 };
 
 export default EntryList;

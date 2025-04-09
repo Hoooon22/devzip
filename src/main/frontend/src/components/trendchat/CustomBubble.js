@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const CustomBubble = (props) => {
   const { cx, cy, payload, size, onBubbleClick } = props;
@@ -17,6 +18,17 @@ const CustomBubble = (props) => {
       onClick={() => onBubbleClick(payload.name)}
     />
   );
+};
+
+CustomBubble.propTypes = {
+  cx: PropTypes.number.isRequired,
+  cy: PropTypes.number.isRequired,
+  size: PropTypes.number.isRequired,
+  payload: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    fill: PropTypes.string.isRequired
+  }).isRequired,
+  onBubbleClick: PropTypes.func.isRequired
 };
 
 export default CustomBubble;

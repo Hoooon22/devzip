@@ -34,7 +34,6 @@ const ProjectBox = ({ project }) => {
         ...(active ? {} : styles.inactiveBox)
       }}
       aria-label={`${name}: ${description}. ${projectStatus}. 기간: ${projectDates}`}
-      role="article"
     >
       <h2 
         className={`project-title ${active ? '' : 'inactive-title'}`}

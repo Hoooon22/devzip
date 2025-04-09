@@ -13,7 +13,6 @@ const Footer = () => {
           className="footer-link"
           style={styles.footerLink}
           aria-label="GitHub 블로그로 이동"
-          role="link"
         >
           <img 
             src={blogImage} 
@@ -27,7 +26,6 @@ const Footer = () => {
           className="footer-link"
           style={styles.footerLink}
           aria-label="GitHub 프로필로 이동"
-          role="link"
         >
           <img 
             src={githubImage} 
@@ -41,7 +39,6 @@ const Footer = () => {
           className="footer-link"
           style={styles.footerLink}
           aria-label="이메일 보내기"
-          role="link"
         >
           <img 
             src={gmailImage} 
