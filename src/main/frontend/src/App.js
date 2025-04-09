@@ -7,11 +7,15 @@ import ApiPage from './pages/ApiPage';
 import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
 import ChatRoomPage from "./pages/ChatRoomPage";
+import ViewportMeta from './components/ViewportMeta';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
     <BrowserRouter>
+      {/* 반응형 뷰포트 설정 컴포넌트 */}
+      <ViewportMeta />
+      
       <Routes>
         {/* 메인 페이지 */}
         <Route path="/" element={<Main />} /> 
