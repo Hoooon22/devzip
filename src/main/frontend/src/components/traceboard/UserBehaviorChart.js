@@ -117,6 +117,52 @@ const formatTime = (dateString) => {
   return `${date.getHours()}:00`;
 };
 
+// 툴팁 커스터마이징
+const CustomTooltip = ({ active, payload, label, chartType }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{ 
+        backgroundColor: 'white', 
+        padding: '8px', 
+        border: '1px solid #e2e8f0',
+        borderRadius: '4px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+      }}>
+        <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ margin: '2px 0', color: entry.color }}>
+            {chartType === 'eventType' 
+              ? entry.name === 'pageView' ? '페이지 뷰' 
+                : entry.name === 'click' ? '클릭' 
+                : entry.name === 'scroll' ? '스크롤' 
+                : entry.name === 'formSubmit' ? '폼 제출' 
+                : entry.name
+              : entry.name === 'mobile' ? '모바일'
+                : entry.name === 'tablet' ? '태블릿'
+                : entry.name === 'desktop' ? '데스크톱'
+                : entry.name
+            }: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+      color: PropTypes.string
+    })
+  ),
+  label: PropTypes.string,
+  chartType: PropTypes.string
+};
+
 const UserBehaviorChart = ({ eventLogs }) => {
   const [timeRange, setTimeRange] = useState('week');
   const [chartType, setChartType] = useState('eventType');
@@ -176,39 +222,6 @@ const UserBehaviorChart = ({ eventLogs }) => {
     }
   }, [filteredLogs, chartType, timeRange]);
   
-  // 툴크 커스터마이징
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '8px', 
-          border: '1px solid #e2e8f0',
-          borderRadius: '4px',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-        }}>
-          <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '2px 0', color: entry.color }}>
-              {chartType === 'eventType' 
-                ? entry.name === 'pageView' ? '페이지 뷰' 
-                  : entry.name === 'click' ? '클릭' 
-                  : entry.name === 'scroll' ? '스크롤' 
-                  : entry.name === 'formSubmit' ? '폼 제출' 
-                  : entry.name
-                : entry.name === 'mobile' ? '모바일'
-                  : entry.name === 'tablet' ? '태블릿'
-                  : entry.name === 'desktop' ? '데스크톱'
-                  : entry.name
-              }: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-  
   return (
     <ChartContainer>
       <Title>사용자 행동 분석</Title>
@@ -263,7 +276,7 @@ const UserBehaviorChart = ({ eventLogs }) => {
               tickMargin={15}
             />
             <YAxis />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip chartType={chartType} />} />
             <Legend />
             
             {chartType === 'eventType' ? (
