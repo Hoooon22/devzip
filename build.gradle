@@ -52,10 +52,8 @@ def frontendDir = "$projectDir/src/main/frontend"
 
 // React 빌드 작업
 task installFrontendReact(type: Exec) {
-    workingDir "$frontendDir"
-    inputs.dir "$frontendDir"
-    group = BasePlugin.BUILD_GROUP
-    commandLine "npm", "install"
+    workingDir "${rootDir}/src/main/frontend"
+    commandLine 'npm', 'install', '--legacy-peer-deps'
 }
 
 task buildFrontendReact(type: Exec) {
