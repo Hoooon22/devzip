@@ -5,6 +5,7 @@
     align-items: center;
     padding: 20px;
     background-color: #f8f9fa;
+    min-height: 100vh;
   }
   
   .trendchat-title {
@@ -12,18 +13,21 @@
     font-weight: bold;
     margin-bottom: 10px;
     color: #333;
+    text-align: center;
   }
   
   .trendchat-subtitle {
     font-size: 1.25rem;
     color: #666;
     margin-bottom: 20px;
+    text-align: center;
   }
   
   .trendchat-timestamp {
     font-size: 1rem;
     color: #999;
     margin-bottom: 20px;
+    text-align: center;
   }
   
   .trendchat-error {
@@ -40,6 +44,7 @@
     flex-direction: column;
     gap: 10px;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
   .error-retry-btn {
@@ -51,6 +56,7 @@
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.2s;
+    min-width: 100px;
   }
   
   .error-retry-btn:hover {
@@ -67,10 +73,26 @@
     width: 200px;
     text-align: center;
     font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* 버블 차트 컨테이너에 대한 스타일 */
+  .recharts-wrapper {
+    margin: 0 auto;
+  }
+  
+  /* 라벨 텍스트가 잘 보이도록 함 */
+  .recharts-label-list text {
+    font-family: 'Noto Sans KR', sans-serif;
+    text-shadow: 0px 1px 3px rgba(0,0,0,0.5);
   }
   
   /* 모바일 반응형 */
   @media (max-width: 768px) {
+    .trendchat-container {
+      padding: 15px;
+    }
+    
     .trendchat-title {
       font-size: 2rem;
     }
@@ -82,6 +104,25 @@
     .trendchat-error {
       width: 90%;
       padding: 10px;
+    }
+    
+    .recharts-wrapper {
+      max-height: 500px;
+    }
+  }
+  
+  /* 작은 화면 */
+  @media (max-width: 480px) {
+    .trendchat-title {
+      font-size: 1.5rem;
+    }
+    
+    .trendchat-container {
+      padding: 10px;
+    }
+    
+    .recharts-wrapper {
+      max-height: 400px;
     }
   }
   

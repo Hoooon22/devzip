@@ -1,58 +1,53 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// Recharts의 Shape 렌더링 컴포넌트로 작동하는 CustomBubble
 const CustomBubble = (props) => {
-  const { cx, cy, payload, size, fill, onBubbleClick } = props;
-  // size 값을 면적으로 간주하여 반지름 계산 (Recharts 기본 처리와 동일)
-  const radius = Math.sqrt(Math.abs(size || 400));
-  
-  const bubbleId = `bubble-${payload.name.replace(/\s+/g, '-').toLowerCase()}`;
+  const { cx, cy, r, payload, fill, onBubbleClick } = props;
   
   if (!cx || !cy || !payload || !payload.name) {
     console.error("필수 props 누락:", { cx, cy, payload });
     return null;
   }
   
+  // 안전하게 반지름 계산 - r이 있으면 사용, 없으면 payload.z에서 계산
+  const radius = r || (payload.z ? Math.sqrt(Math.abs(payload.z) / Math.PI) / 2 : 20);
+  
   return (
-    <g>
-      <circle
-        cx={cx}
-        cy={cy}
-        r={radius}
-        fill={payload.fill || fill || "#8884d8"}
-        stroke="white"
-        strokeWidth="2"
-        style={{ cursor: 'pointer' }}
-        onClick={() => onBubbleClick(payload.name)}
-      />
-      {/* 접근성을 위한 요소들 */}
-      <title id={bubbleId}>{`${payload.name} 관련 정보를 확인하려면 클릭하세요`}</title>
-    </g>
+    <circle
+      cx={cx}
+      cy={cy}
+      r={radius}
+      fill={payload.fill || fill || "#8884d8"}
+      stroke="white"
+      strokeWidth="2"
+      style={{ cursor: 'pointer' }}
+      onClick={() => {
+        console.log("버블 클릭됨:", payload.name);
+        if (onBubbleClick) onBubbleClick(payload.name);
+      }}
+    />
   );
 };
 
 CustomBubble.propTypes = {
   cx: PropTypes.number,
   cy: PropTypes.number,
-  size: PropTypes.number,
+  r: PropTypes.number,
   fill: PropTypes.string,
   payload: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    fill: PropTypes.string
+    fill: PropTypes.string,
+    z: PropTypes.number
   }),
-  onBubbleClick: PropTypes.func.isRequired
+  onBubbleClick: PropTypes.func
 };
 
-// 기본값 설정
 CustomBubble.defaultProps = {
   cx: 0,
   cy: 0,
-  size: 400,
-  fill: "#8884d8",
-  payload: {
-    name: "키워드",
-    fill: "#8884d8"
-  }
+  r: 20,
+  fill: "#8884d8"
 };
 
 export default CustomBubble;

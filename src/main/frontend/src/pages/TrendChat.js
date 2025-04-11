@@ -13,9 +13,13 @@ const TrendChat = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // API 호출 함수 개선
   const fetchTrends = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log("트렌드 데이터 가져오기 시작...");
       
       // 트렌드 데이터 가져오기
       const timestampRes = await fetch("/api/trend/timestamp");
@@ -29,10 +33,24 @@ const TrendChat = () => {
       }
       
       const ts = await timestampRes.text();
-      const keywordsData = await keywordsRes.json();
+      let keywordsData;
+      
+      try {
+        const keywordsText = await keywordsRes.text();
+        console.log("원본 키워드 응답:", keywordsText);
+        keywordsData = JSON.parse(keywordsText);
+      } catch (e) {
+        console.error("키워드 파싱 오류:", e);
+        throw new Error(`키워드 데이터 파싱 실패: ${e.message}`);
+      }
       
       if (!keywordsData || !Array.isArray(keywordsData) || keywordsData.length === 0) {
-        throw new Error("키워드 데이터가 비어 있습니다");
+        console.warn("키워드 데이터가 비어 있거나 배열이 아닙니다. 더미 데이터를 사용합니다.");
+        // 더미 데이터 사용
+        keywordsData = [
+          "인공지능", "블록체인", "메타버스", "빅데이터", "클라우드",
+          "NFT", "IoT", "디지털 트윈", "로보틱스", "자율주행"
+        ];
       }
       
       setTimestamp(ts);
@@ -41,7 +59,7 @@ const TrendChat = () => {
       // d3-scale: 상위 순위는 1600, 후순위는 400의 값을 할당 (면적값)
       const sizeScale = scaleLinear()
         .domain([0, keywordsData.length - 1])
-        .range([1600, 400]);
+        .range([2000, 500]);
 
       // 순위 기반 색상 생성 함수: golden angle 방식을 활용
       const getColorByIndex = (index) => {
@@ -63,22 +81,24 @@ const TrendChat = () => {
       const simulation = d3.forceSimulation(formattedData)
         .force("x", d3.forceX(50).strength(0.05))
         .force("y", d3.forceY(50).strength(0.05))
-        .force("collision", d3.forceCollide(d => Math.sqrt(d.z) + 5))
+        .force("collision", d3.forceCollide(d => Math.sqrt(d.z / Math.PI) / 2 + 10))
         .stop();
 
       // 시뮬레이션 실행
-      for (let i = 0; i < 120; i++) simulation.tick();
+      for (let i = 0; i < 150; i++) simulation.tick();
 
       console.log("포맷된 데이터:", formattedData);
       setKeywords([...formattedData]);
-      setError(null);
     } catch (error) {
       console.error("Error fetching trends:", error);
       setError(`트렌드 데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`);
-      // 만약 데이터가 없을 경우 더미 데이터를 사용
+      // 오류 발생 시 더미 데이터
       setKeywords([
-        { name: "더미 키워드 1", x: 30, y: 30, z: 1000, fill: "#ff5722" },
-        { name: "더미 키워드 2", x: 70, y: 70, z: 800, fill: "#2196f3" }
+        { name: "인공지능", x: 30, y: 30, z: 2000, fill: "#ff5722" },
+        { name: "블록체인", x: 70, y: 70, z: 1800, fill: "#2196f3" },
+        { name: "메타버스", x: 40, y: 60, z: 1600, fill: "#4caf50" },
+        { name: "빅데이터", x: 60, y: 40, z: 1400, fill: "#9c27b0" },
+        { name: "클라우드", x: 20, y: 20, z: 1200, fill: "#ff9800" }
       ]);
     } finally {
       setLoading(false);
@@ -87,7 +107,8 @@ const TrendChat = () => {
 
   useEffect(() => {
     fetchTrends();
-    const interval = setInterval(fetchTrends, 10 * 60 * 1000);
+    // 5분마다 새로고침
+    const interval = setInterval(fetchTrends, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -102,7 +123,7 @@ const TrendChat = () => {
       setLoading(true);
       setError(null);
       
-      console.log(`채팅방 열기: ${keyword}`);
+      console.log(`채팅방 열기 시도: ${keyword}`);
       
       const response = await fetch(`/api/chatrooms?keyword=${encodeURIComponent(keyword)}`);
       
@@ -111,6 +132,7 @@ const TrendChat = () => {
       }
       
       const text = await response.text();
+      console.log("채팅방 API 응답:", text);
       
       if (!text || text.trim() === '') {
         throw new Error("서버에서 빈 응답이 반환되었습니다.");
@@ -118,7 +140,7 @@ const TrendChat = () => {
       
       try {
         const room = JSON.parse(text);
-        console.log("받은 채팅방 정보:", room);
+        console.log("파싱된 채팅방 정보:", room);
         
         if (!room || !room.id) {
           throw new Error("채팅방 정보가 올바르지 않습니다.");
@@ -137,6 +159,11 @@ const TrendChat = () => {
     }
   };  
 
+  const handleRetry = () => {
+    setError(null);
+    fetchTrends();
+  };
+
   return (
     <div className="trendchat-container">
       <h1 className="trendchat-title">🔥 Trend Chat 🔥</h1>
@@ -149,7 +176,7 @@ const TrendChat = () => {
         <div className="trendchat-error">
           {error}
           <button 
-            onClick={() => error.includes("트렌드 데이터") ? fetchTrends() : setError(null)}
+            onClick={handleRetry}
             className="error-retry-btn"
           >
             다시 시도
@@ -161,22 +188,10 @@ const TrendChat = () => {
       
       <ResponsiveContainer width="100%" height={700}>
         <ScatterChart margin={{ top: 70, right: 70, bottom: 70, left: 70 }}>
-          <defs>
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="2" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.5)" />
-            </filter>
-          </defs>
           <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
           <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
-          <ZAxis type="number" dataKey="z" range={[50, 8000]} />
-          <Tooltip 
-            cursor={{ strokeDasharray: "3 3" }}
-            formatter={(value, name) => [name === 'z' ? null : value, null]}
-            labelFormatter={(label) => null}
-            contentStyle={{ display: 'none' }}
-          />
+          <ZAxis type="number" dataKey="z" range={[100, 6000]} />
           <Scatter 
-            name="Trends" 
             data={keywords} 
             shape={<CustomBubble onBubbleClick={openChatRoom} />}
           >
@@ -184,9 +199,10 @@ const TrendChat = () => {
               dataKey="name" 
               position="center" 
               style={{ 
-                fontSize: 16, 
+                fontSize: 14, 
                 fontWeight: "bold", 
-                fill: "black",
+                fill: "white",
+                textShadow: "0px 1px 2px rgba(0,0,0,0.8)",
                 pointerEvents: "none" 
               }} 
             />
