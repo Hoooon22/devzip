@@ -76,6 +76,35 @@ jobs:
           script: |
             echo "🚀 Deploying application"
             cd /var/project/devzip/
+            
+            # 스크립트 실행 권한 부여
+            chmod +x src/main/resources/update_trends.sh
+            
+            # 로그 디렉토리 생성
+            mkdir -p logs
+            
+            # 서버 시작 시 바로 트렌드 데이터 업데이트 수행
+            echo "🔄 Initial trend data update"
+            src/main/resources/update_trends.sh >> logs/trend_update.log 2>&1 || echo "⚠️ Trend data update failed but continuing"
+            
+            # 서버 시작
+            echo "🚀 Starting main server"
             pm2 start server.json || { echo "❌ Failed to start server"; exit 1; }
-            pm2 start src/main/python/trends.py --cron "0 */2 * * *" --no-autorestart || { echo "❌ Failed to start Python process"; exit 1; }
+            
+            # PM2로 2시간마다 트렌드 데이터 업데이트 스크립트 실행 설정
+            echo "⏱️ Setting up scheduled trend updates"
+            pm2 start --name "trend-updater" --cron "0 */2 * * *" src/main/resources/update_trends.sh || { echo "⚠️ Failed to schedule trend updates but continuing"; }
+            
+            # 가상 환경 설정 및 Python 패키지 설치
+            echo "🐍 Setting up Python environment"
+            python3 -m venv venv || echo "⚠️ Virtual environment creation failed but continuing"
+            source venv/bin/activate
+            pip install --no-cache-dir pytrends || echo "⚠️ Failed to install Python packages but continuing"
+            deactivate
+            
+            # PM2 프로세스 목록 확인
+            echo "📋 Current PM2 processes:"
+            pm2 list
+            
             echo "✅ Deployment and service restart completed"
+            echo "🔗 서비스 URL: https://devzip.site"
