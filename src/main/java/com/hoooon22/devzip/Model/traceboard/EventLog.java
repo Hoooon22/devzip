@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventLog {
+public class EventLog extends BaseTimeEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +36,17 @@ public class EventLog {
     @Column(nullable = false)
     private String userId; // 익명화된 사용자 ID
     
+    @Column
+    private String sessionId; // 세션 ID
+    
     @Column(nullable = false)
     private String deviceType; // mobile, tablet, desktop 등
     
     @Column(nullable = false)
     private String browser; // Chrome, Firefox, Safari 등
+    
+    @Column
+    private String os; // 운영체제 정보
     
     @Column
     private String referrer; // 유입 경로
@@ -51,10 +57,20 @@ public class EventLog {
     @Column
     private String userAgent; // 브라우저 및 OS 정보
     
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String eventData; // 추가 이벤트 데이터 (JSON)
     
+    @Column
+    private LocalDateTime occurredAt; // 이벤트 실제 발생 시간
+    
+    // 위치 정보 (선택적)
+    @Column
+    private Double latitude;
+    
+    @Column
+    private Double longitude;
+    
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime timestamp; // 이벤트 발생 시간
+    @Column(name = "timestamp", nullable = false, updatable = false)
+    private LocalDateTime timestamp; // 서버에 기록된 시간
 } 
