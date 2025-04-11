@@ -2,59 +2,57 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const CustomBubble = (props) => {
-  const { cx, cy, payload, size, onBubbleClick } = props;
+  const { cx, cy, payload, size, fill, onBubbleClick } = props;
   // size 값을 면적으로 간주하여 반지름 계산 (Recharts 기본 처리와 동일)
-  const radius = Math.sqrt(size);
+  const radius = Math.sqrt(Math.abs(size || 400));
   
   const bubbleId = `bubble-${payload.name.replace(/\s+/g, '-').toLowerCase()}`;
   
+  if (!cx || !cy || !payload || !payload.name) {
+    console.error("필수 props 누락:", { cx, cy, payload });
+    return null;
+  }
+  
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`${payload.name} 버블`}
-      aria-describedby={bubbleId}
-      onClick={() => onBubbleClick(payload.name)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          onBubbleClick(payload.name);
-        }
-      }}
-      style={{
-        cursor: 'pointer',
-        minWidth: '44px',
-        minHeight: '44px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <span id={bubbleId} style={{ display: 'none' }}>
-        {`${payload.name} 관련 정보를 확인하려면 클릭하세요`}
-      </span>
-      <svg width={radius * 2 + 4} height={radius * 2 + 4}>
-        <circle
-          cx={radius + 2}
-          cy={radius + 2}
-          r={radius}
-          fill={payload.fill}
-          stroke="white"
-          strokeWidth="2"
-        />
-      </svg>
-    </div>
+    <g>
+      <circle
+        cx={cx}
+        cy={cy}
+        r={radius}
+        fill={payload.fill || fill || "#8884d8"}
+        stroke="white"
+        strokeWidth="2"
+        style={{ cursor: 'pointer' }}
+        onClick={() => onBubbleClick(payload.name)}
+      />
+      {/* 접근성을 위한 요소들 */}
+      <title id={bubbleId}>{`${payload.name} 관련 정보를 확인하려면 클릭하세요`}</title>
+    </g>
   );
 };
 
 CustomBubble.propTypes = {
-  cx: PropTypes.number.isRequired,
-  cy: PropTypes.number.isRequired,
-  size: PropTypes.number.isRequired,
+  cx: PropTypes.number,
+  cy: PropTypes.number,
+  size: PropTypes.number,
+  fill: PropTypes.string,
   payload: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    fill: PropTypes.string.isRequired
-  }).isRequired,
+    fill: PropTypes.string
+  }),
   onBubbleClick: PropTypes.func.isRequired
+};
+
+// 기본값 설정
+CustomBubble.defaultProps = {
+  cx: 0,
+  cy: 0,
+  size: 400,
+  fill: "#8884d8",
+  payload: {
+    name: "키워드",
+    fill: "#8884d8"
+  }
 };
 
 export default CustomBubble;

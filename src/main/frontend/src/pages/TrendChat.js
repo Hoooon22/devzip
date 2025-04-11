@@ -15,12 +15,28 @@ const TrendChat = () => {
 
   const fetchTrends = async () => {
     try {
+      setLoading(true);
+      
+      // 트렌드 데이터 가져오기
       const timestampRes = await fetch("/api/trend/timestamp");
+      if (!timestampRes.ok) {
+        throw new Error(`타임스탬프 가져오기 실패: ${timestampRes.status}`);
+      }
+      
       const keywordsRes = await fetch("/api/trend/keywords");
+      if (!keywordsRes.ok) {
+        throw new Error(`키워드 가져오기 실패: ${keywordsRes.status}`);
+      }
+      
       const ts = await timestampRes.text();
       const keywordsData = await keywordsRes.json();
       
+      if (!keywordsData || !Array.isArray(keywordsData) || keywordsData.length === 0) {
+        throw new Error("키워드 데이터가 비어 있습니다");
+      }
+      
       setTimestamp(ts);
+      console.log("가져온 키워드:", keywordsData);
 
       // d3-scale: 상위 순위는 1600, 후순위는 400의 값을 할당 (면적값)
       const sizeScale = scaleLinear()
@@ -33,28 +49,39 @@ const TrendChat = () => {
         return `hsl(${hue}, 70%, 50%)`;
       };
 
+      // 데이터 포맷팅
       let formattedData = keywordsData.map((keyword, index) => ({
         name: keyword,
         x: Math.random() * 100,
         y: Math.random() * 100,
         z: sizeScale(index),
-        fill: getColorByIndex(index)
+        fill: getColorByIndex(index),
+        index: index
       }));
 
       // d3-force: 원들 간의 충돌 방지 및 위치 조정
       const simulation = d3.forceSimulation(formattedData)
         .force("x", d3.forceX(50).strength(0.05))
         .force("y", d3.forceY(50).strength(0.05))
-        .force("collision", d3.forceCollide(d => d.z / 2 + 5))
+        .force("collision", d3.forceCollide(d => Math.sqrt(d.z) + 5))
         .stop();
 
-      for (let i = 0; i < 100; i++) simulation.tick();
+      // 시뮬레이션 실행
+      for (let i = 0; i < 120; i++) simulation.tick();
 
+      console.log("포맷된 데이터:", formattedData);
       setKeywords([...formattedData]);
       setError(null);
     } catch (error) {
       console.error("Error fetching trends:", error);
-      setError("트렌드 데이터를 불러오는 중 오류가 발생했습니다.");
+      setError(`트렌드 데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`);
+      // 만약 데이터가 없을 경우 더미 데이터를 사용
+      setKeywords([
+        { name: "더미 키워드 1", x: 30, y: 30, z: 1000, fill: "#ff5722" },
+        { name: "더미 키워드 2", x: 70, y: 70, z: 800, fill: "#2196f3" }
+      ]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,6 +102,8 @@ const TrendChat = () => {
       setLoading(true);
       setError(null);
       
+      console.log(`채팅방 열기: ${keyword}`);
+      
       const response = await fetch(`/api/chatrooms?keyword=${encodeURIComponent(keyword)}`);
       
       if (!response.ok) {
@@ -89,6 +118,7 @@ const TrendChat = () => {
       
       try {
         const room = JSON.parse(text);
+        console.log("받은 채팅방 정보:", room);
         
         if (!room || !room.id) {
           throw new Error("채팅방 정보가 올바르지 않습니다.");
@@ -139,13 +169,26 @@ const TrendChat = () => {
           <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
           <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
           <ZAxis type="number" dataKey="z" range={[50, 8000]} />
-          <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-          {/* onBubbleClick prop 전달 */}
-          <Scatter name="Trends" data={keywords} shape={<CustomBubble onBubbleClick={openChatRoom} />}>
+          <Tooltip 
+            cursor={{ strokeDasharray: "3 3" }}
+            formatter={(value, name) => [name === 'z' ? null : value, null]}
+            labelFormatter={(label) => null}
+            contentStyle={{ display: 'none' }}
+          />
+          <Scatter 
+            name="Trends" 
+            data={keywords} 
+            shape={<CustomBubble onBubbleClick={openChatRoom} />}
+          >
             <LabelList 
               dataKey="name" 
               position="center" 
-              style={{ fontSize: 22, fontWeight: "bold", fill: "black" }} 
+              style={{ 
+                fontSize: 16, 
+                fontWeight: "bold", 
+                fill: "black",
+                pointerEvents: "none" 
+              }} 
             />
           </Scatter>
         </ScatterChart>
