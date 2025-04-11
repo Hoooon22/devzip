@@ -1,37 +1,83 @@
 package com.hoooon22.devzip.Service.traceboard;
 
+import com.hoooon22.devzip.Model.traceboard.EventLog;
+import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
+import com.hoooon22.devzip.Model.traceboard.dto.EventLogResponse;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.hoooon22.devzip.Model.traceboard.EventLog;
-
 public interface EventLogService {
-    
-    // 이벤트 로그 저장
+
+    /**
+     * 이벤트 로그 저장
+     */
+    EventLogResponse saveEventLog(String apiKey, String sessionId, String ipAddress, EventLogRequest request);
+
+    /**
+     * 이벤트 로그 저장 (기존 메서드 유지)
+     */
     EventLog saveEventLog(EventLog eventLog);
+
+    /**
+     * 이벤트 로그 조회
+     */
+    EventLogResponse getEventLog(Long id);
+
+    /**
+     * 특정 사용자의 이벤트 로그 목록 조회
+     */
+    List<EventLogResponse> getUserEventLogs(String userId, int page, int size);
+
+    /**
+     * 특정 세션의 이벤트 로그 목록 조회
+     */
+    List<EventLogResponse> getSessionEventLogs(String sessionId);
+
+    /**
+     * 이벤트 타입 및 시간 범위로 로그 조회
+     */
+    List<EventLogResponse> getFilteredEventLogs(
+            String eventType, LocalDateTime startDate, LocalDateTime endDate, int page, int size);
+
+    /**
+     * 시간대별 이벤트 수 집계
+     */
+    Map<String, Long> getHourlyEventCounts(LocalDateTime startDate, LocalDateTime endDate);
+
+    /**
+     * 페이지별 방문자 수 집계
+     */
+    Map<String, Long> getPageViewCounts(LocalDateTime startDate, LocalDateTime endDate);
+
+    /**
+     * 이벤트 데이터 CSV로 내보내기
+     */
+    byte[] exportEventLogsToCSV(String eventType, LocalDateTime startDate, LocalDateTime endDate);
     
-    // 모든 이벤트 로그 조회
-    List<EventLog> getAllEventLogs();
+    /**
+     * 대시보드용 데이터 조회 (기존 메서드 유지)
+     */
+    Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end);
     
-    // 특정 기간 내의 이벤트 로그 조회
+    /**
+     * 특정 기간 내의 모든 이벤트 로그 조회 (기존 메서드 유지)
+     */
     List<EventLog> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end);
     
-    // 특정 유형의 이벤트 로그 조회
+    /**
+     * 특정 이벤트 타입의 로그 조회 (기존 메서드 유지)
+     */
     List<EventLog> getEventLogsByType(String eventType);
     
-    // 특정 사용자의 이벤트 로그 조회
+    /**
+     * 특정 사용자의 이벤트 로그 조회 (기존 메서드 유지)
+     */
     List<EventLog> getEventLogsByUser(String userId);
     
-    // 방문자 통계 조회 (고유 방문자 수, 총 페이지뷰 등)
-    Map<String, Object> getVisitorMetrics(LocalDateTime start, LocalDateTime end);
-    
-    // 이벤트 유형별 통계 조회
-    Map<String, Long> getEventTypeMetrics(LocalDateTime start, LocalDateTime end);
-    
-    // 디바이스 유형별 통계 조회
-    Map<String, Long> getDeviceTypeMetrics(LocalDateTime start, LocalDateTime end);
-    
-    // 대시보드용 종합 데이터 조회
-    Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end);
+    /**
+     * 모든 이벤트 로그 조회 (기존 메서드 유지)
+     */
+    List<EventLog> getAllEventLogs();
 } 

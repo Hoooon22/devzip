@@ -1,4 +1,4 @@
-package com.traceboard.model.entity;
+package com.hoooon22.devzip.Model.traceboard;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,4 +40,4 @@ public class Project extends BaseTimeEntity {
     // 활성화 여부
     @Column(columnDefinition = "boolean default true")
     private boolean active;
-}
+} 

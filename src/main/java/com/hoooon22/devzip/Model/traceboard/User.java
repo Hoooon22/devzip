@@ -1,4 +1,4 @@
-package com.traceboard.model.entity;
+package com.hoooon22.devzip.Model.traceboard;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,4 +32,4 @@ public class User extends BaseTimeEntity {
     
     @Column(columnDefinition = "boolean default true")
     private boolean enabled;
-}
+} 

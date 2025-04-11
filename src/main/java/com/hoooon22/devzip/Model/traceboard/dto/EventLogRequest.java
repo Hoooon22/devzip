@@ -8,22 +8,38 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class EventLogRequest {
-
-    private String eventType; // 이벤트 타입은 필수입니다
-
+    
+    // 이벤트 타입 (필수)
+    private String eventType;
+    
+    // 페이지 경로 (필수)
     private String path;
+    
+    // 참조 URL (선택)
     private String referrer;
+    
+    // 이벤트 추가 데이터 (선택) - JSON 문자열
     private String eventData;
+    
+    // 디바이스 타입 (선택)
     private String deviceType;
+    
+    // 브라우저 정보 (선택)
     private String browser;
+    
+    // 운영체제 정보 (선택)
     private String os;
+    
+    // 이벤트 발생 시간 (선택, null이면 서버 시간 사용)
     private LocalDateTime occurredAt;
     
-    // 위치 정보 (선택적)
+    // 위도 (선택)
     private Double latitude;
+    
+    // 경도 (선택)
     private Double longitude;
 } 

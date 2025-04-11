@@ -1,7 +1,7 @@
-package com.traceboard.repository;
+package com.hoooon22.devzip.Repository.traceboard;
 
-import com.traceboard.model.entity.Project;
-import com.traceboard.model.entity.User;
+import com.hoooon22.devzip.Model.traceboard.Project;
+import com.hoooon22.devzip.Model.traceboard.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +18,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     boolean existsByApiKey(String apiKey);
     
     boolean existsByDomain(String domain);
-}
+} 

@@ -1,6 +1,6 @@
-package com.traceboard.repository;
+package com.hoooon22.devzip.Repository.traceboard;
 
-import com.traceboard.model.entity.User;
+import com.hoooon22.devzip.Model.traceboard.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +12,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     
     boolean existsByEmail(String email);
-}
+} 

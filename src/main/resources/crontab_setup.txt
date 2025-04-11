@@ -1,8 +1,10 @@
-# 트렌드 데이터 자동 갱신을 위한 crontab 설정 방법
+# 트렌드 데이터 자동 갱신을 위한 설정 방법
 
-트렌드 데이터를 정기적으로 자동 갱신하려면 다음과 같이 crontab을 설정하세요.
+트렌드 데이터를 정기적으로 자동 갱신하기 위한 다양한 방법을 제공합니다.
 
-## 사용 방법
+## 방법 1: crontab 사용
+
+### 사용 방법
 
 1. 터미널에서 다음 명령어를 실행하여 crontab 편집기를 엽니다:
    ```
@@ -21,7 +23,7 @@
 
 3. 저장하고 나갑니다 (vi 에디터인 경우 ESC 키를 누른 후 ":wq" 입력).
 
-## 서버에서 설정 방법
+### 서버에서 설정 방법
 
 실제 서버에 배포할 때는 다음과 같이 절대 경로를 사용하세요:
 
@@ -32,6 +34,100 @@
 여기서:
 - `/home/username/devzip/`: 프로젝트가 설치된 서버의 경로로 변경하세요.
 - `*/4`: 4시간마다 실행됩니다 (필요에 따라 조정 가능).
+
+## 방법 2: PM2 사용 (권장)
+
+PM2는 Node.js 애플리케이션을 관리하는 프로세스 매니저이지만, 일반 스크립트의 주기적 실행에도 사용할 수 있습니다.
+
+### PM2 설치 방법
+
+```bash
+npm install -g pm2
+```
+
+### 트렌드 업데이트 스크립트 설정
+
+1. 다음 내용으로 `trend-updater.js` 파일을 프로젝트 루트 디렉토리에 생성합니다:
+
+```javascript
+const { execSync } = require('child_process');
+const path = require('path');
+
+// 스크립트 경로
+const scriptPath = path.join(__dirname, 'src', 'main', 'resources', 'update_trends.sh');
+
+console.log(`[${new Date().toISOString()}] 트렌드 업데이트 시작...`);
+
+try {
+  // 스크립트 실행
+  const output = execSync(`bash ${scriptPath}`, { encoding: 'utf8' });
+  console.log(output);
+  console.log(`[${new Date().toISOString()}] 트렌드 업데이트 완료`);
+} catch (error) {
+  console.error(`[${new Date().toISOString()}] 오류 발생:`, error.message);
+  process.exit(1);
+}
+```
+
+2. PM2로 스크립트 실행 및 모니터링:
+
+```bash
+# 2시간마다 실행하도록 설정
+pm2 start trend-updater.js --name "trend-updater" --cron "0 */2 * * *"
+
+# 로그 확인
+pm2 logs trend-updater
+
+# 상태 확인
+pm2 status
+
+# 재시작
+pm2 restart trend-updater
+
+# 시스템 부팅 시 자동 시작 설정
+pm2 startup
+pm2 save
+```
+
+## 방법 3: GitHub Actions 사용 (서버리스)
+
+GitHub Actions를 사용하여 주기적으로 트렌드 데이터를 업데이트하고 저장소에 커밋할 수 있습니다.
+
+1. `.github/workflows/update-trends.yml` 파일 생성:
+
+```yaml
+name: Update Trend Data
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 6시간마다 실행
+  workflow_dispatch:  # 수동 트리거 허용
+
+jobs:
+  update-trends:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install dependencies
+        run: pip install pytrends requests
+      
+      - name: Run update script
+        run: bash ./src/main/resources/update_trends.sh
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src/main/resources/trending_keywords.json
+          git commit -m "Update trend data $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push
+```
 
 ## 수동 실행 방법
 
@@ -46,4 +142,5 @@ cd /프로젝트/루트/경로
 
 1. 스크립트에 실행 권한이 있는지 확인하세요: `chmod +x update_trends.sh`
 2. 스크립트 내의 경로가 서버 환경에 맞게 설정되어 있는지 확인하세요.
-3. 로그 디렉토리가 존재하는지 확인하세요. 없다면 생성해야 합니다: `mkdir -p logs` 
+3. 로그 디렉토리가 존재하는지 확인하세요. 없다면 생성해야 합니다: `mkdir -p logs`
+4. PM2 방식을 사용할 경우 Node.js가 서버에 설치되어 있어야 합니다. 
