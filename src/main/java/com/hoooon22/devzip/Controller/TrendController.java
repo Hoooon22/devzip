@@ -1,6 +1,5 @@
 package com.hoooon22.devzip.Controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,8 @@ public class TrendController {
         try {
             String timestamp = trendService.getUpdatedAt();
             return ResponseEntity.ok(timestamp);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // 일반 Exception으로 모든 예외 처리 (IOException은 서비스에서 처리됨)
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body("트렌드 정보 타임스탬프를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
@@ -38,7 +38,8 @@ public class TrendController {
         try {
             List<String> keywords = trendService.getTopKeywords();
             return ResponseEntity.ok(keywords);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // 일반 Exception으로 모든 예외 처리 (IOException은 서비스에서 처리됨)
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body("트렌드 키워드를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
