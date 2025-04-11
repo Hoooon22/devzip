@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
@@ -48,61 +48,27 @@ const MetricTrend = styled.span`
   color: ${props => props.positive ? '#10b981' : '#ef4444'};
 `;
 
-const VisitorMetrics = ({ eventLogs }) => {
-  // 계산된 메트릭 값
-  const metrics = useMemo(() => {
-    if (!eventLogs.length) return {};
-    
-    // 고유 방문자 수
-    const uniqueVisitors = new Set(eventLogs
-      .filter(log => log.eventType === 'pageView')
-      .map(log => log.userId)).size;
-    
-    // 총 페이지뷰 수
-    const pageViews = eventLogs.filter(log => log.eventType === 'pageView').length;
-    
-    // 평균 페이지뷰 / 방문자
-    const avgPageViewsPerVisitor = uniqueVisitors ? (pageViews / uniqueVisitors).toFixed(1) : 0;
-    
-    // 가장 많이 방문한 페이지
-    const pageViewsByPath = eventLogs
-      .filter(log => log.eventType === 'pageView')
-      .reduce((acc, log) => {
-        acc[log.path] = (acc[log.path] || 0) + 1;
-        return acc;
-      }, {});
-    
-    const mostVisitedPage = Object.entries(pageViewsByPath)
-      .sort((a, b) => b[1] - a[1])[0] || ['-', 0];
-    
-    // 디바이스 유형별 방문자 수
-    const deviceDistribution = eventLogs
-      .filter(log => log.eventType === 'pageView')
-      .reduce((acc, log) => {
-        acc[log.deviceType] = (acc[log.deviceType] || 0) + 1;
-        return acc;
-      }, {});
-    
-    // 모바일 사용자 비율
-    const mobileUsers = deviceDistribution.mobile || 0;
-    const totalDeviceViews = Object.values(deviceDistribution).reduce((sum, val) => sum + val, 0);
-    const mobilePercentage = totalDeviceViews ? Math.round((mobileUsers / totalDeviceViews) * 100) : 0;
-    
-    return {
-      uniqueVisitors,
-      pageViews,
-      avgPageViewsPerVisitor,
-      mostVisitedPage,
-      mobilePercentage
-    };
-  }, [eventLogs]);
+/**
+ * 방문자 지표를 표시하는 컴포넌트
+ * @param {Object} props
+ * @param {Object} props.metrics - 방문자 관련 지표 데이터
+ */
+const VisitorMetrics = ({ metrics }) => {
+  // 대시보드 API가 제공하는 지표 또는 기본값 사용
+  const {
+    uniqueVisitors = 0,
+    totalPageViews = 0,
+    pageViewsPerVisitor = 0,
+    mostVisitedPage = { path: '-', count: 0 },
+    mobilePercentage = 0
+  } = metrics;
   
   return (
     <MetricsContainer>
       <MetricCard>
         <MetricTitle>고유 방문자</MetricTitle>
         <MetricValue>
-          {metrics.uniqueVisitors || 0}
+          {uniqueVisitors}
           <MetricTrend positive={true}>
             <span style={{ marginRight: '2px' }}>↑</span> 12.5%
           </MetricTrend>
@@ -112,7 +78,7 @@ const VisitorMetrics = ({ eventLogs }) => {
       <MetricCard>
         <MetricTitle>총 페이지뷰</MetricTitle>
         <MetricValue>
-          {metrics.pageViews || 0}
+          {totalPageViews}
           <MetricTrend positive={true}>
             <span style={{ marginRight: '2px' }}>↑</span> 8.3%
           </MetricTrend>
@@ -122,10 +88,12 @@ const VisitorMetrics = ({ eventLogs }) => {
       <MetricCard>
         <MetricTitle>방문자당 페이지뷰</MetricTitle>
         <MetricValue>
-          {metrics.avgPageViewsPerVisitor || 0}
-          <MetricTrend positive={metrics.avgPageViewsPerVisitor > 2}>
-            <span style={{ marginRight: '2px' }}>{metrics.avgPageViewsPerVisitor > 2 ? '↑' : '↓'}</span>
-            {metrics.avgPageViewsPerVisitor > 2 ? '5.2%' : '2.1%'}
+          {typeof pageViewsPerVisitor === 'number' 
+            ? pageViewsPerVisitor.toFixed(1) 
+            : pageViewsPerVisitor}
+          <MetricTrend positive={pageViewsPerVisitor > 2}>
+            <span style={{ marginRight: '2px' }}>{pageViewsPerVisitor > 2 ? '↑' : '↓'}</span>
+            {pageViewsPerVisitor > 2 ? '5.2%' : '2.1%'}
           </MetricTrend>
         </MetricValue>
       </MetricCard>
