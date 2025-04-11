@@ -101,11 +101,11 @@ const VisitorMetrics = ({ metrics }) => {
       <MetricCard>
         <MetricTitle>가장 많이 방문한 페이지</MetricTitle>
         <MetricValue style={{ fontSize: '18px' }}>
-          {metrics.mostVisitedPage ? metrics.mostVisitedPage[0] : '-'}
+          {mostVisitedPage.path || '-'}
         </MetricValue>
-        {metrics.mostVisitedPage && (
+        {mostVisitedPage && mostVisitedPage.count > 0 && (
           <div style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>
-            {metrics.mostVisitedPage[1]} 페이지뷰
+            {mostVisitedPage.count} 페이지뷰
           </div>
         )}
       </MetricCard>
@@ -113,8 +113,8 @@ const VisitorMetrics = ({ metrics }) => {
       <MetricCard>
         <MetricTitle>모바일 사용자 비율</MetricTitle>
         <MetricValue>
-          {metrics.mobilePercentage || 0}%
-          <MetricTrend positive={metrics.mobilePercentage > 40}>
+          {mobilePercentage}%
+          <MetricTrend positive={mobilePercentage > 40}>
             <span style={{ marginRight: '2px' }}>↑</span> 3.7%
           </MetricTrend>
         </MetricValue>
@@ -124,17 +124,29 @@ const VisitorMetrics = ({ metrics }) => {
 };
 
 VisitorMetrics.propTypes = {
-  eventLogs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      timestamp: PropTypes.string.isRequired,
-      eventType: PropTypes.string.isRequired,
-      path: PropTypes.string.isRequired,
-      userId: PropTypes.string.isRequired,
-      deviceType: PropTypes.string.isRequired,
-      browser: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  metrics: PropTypes.shape({
+    uniqueVisitors: PropTypes.number,
+    totalPageViews: PropTypes.number,
+    pageViewsPerVisitor: PropTypes.number,
+    mostVisitedPage: PropTypes.oneOfType([
+      PropTypes.shape({
+        path: PropTypes.string,
+        count: PropTypes.number
+      }),
+      PropTypes.array // 이전 형식 지원을 위해 배열 타입도 허용
+    ]),
+    mobilePercentage: PropTypes.number
+  })
+};
+
+VisitorMetrics.defaultProps = {
+  metrics: {
+    uniqueVisitors: 0,
+    totalPageViews: 0,
+    pageViewsPerVisitor: 0,
+    mostVisitedPage: { path: '-', count: 0 },
+    mobilePercentage: 0
+  }
 };
 
 export default VisitorMetrics; 
