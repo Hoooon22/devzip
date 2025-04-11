@@ -93,18 +93,10 @@ try:
         ]
 
     # 갱신 날짜 및 트렌드 목록을 JSON 형식으로 저장
-    current_time = datetime.now()
-    # 현재 시스템 시간에서 연도만 2024로 하드코딩하여 사용
-    formatted_time = "2024-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
-        current_time.month, 
-        current_time.day, 
-        current_time.hour, 
-        current_time.minute, 
-        current_time.second
-    )
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     result = {
-        "updated_at": formatted_time,  # 갱신 날짜 추가
+        "updated_at": current_time,  # 갱신 날짜 추가
         "top_keywords": top_keywords
     }
 
@@ -114,7 +106,7 @@ try:
         json.dump(result, json_file, ensure_ascii=False, indent=2)
 
     print(f"트렌드 키워드와 갱신 날짜가 '{json_file_path}' 파일로 저장되었습니다.")
-    print(f"업데이트 시간: {formatted_time}")
+    print(f"업데이트 시간: {current_time}")
     print(f"총 {len(top_keywords)}개의 키워드가 저장되었습니다.")
 
 except Exception as e:
