@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
 import * as d3 from "d3-force";
 import { scaleLinear } from "d3-scale";
@@ -13,8 +13,8 @@ const TrendChat = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // API 호출 함수 개선
-  const fetchTrends = async () => {
+  // API 호출 함수 개선 (useCallback으로 메모이제이션)
+  const fetchTrends = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -53,10 +53,10 @@ const TrendChat = () => {
         ];
       }
       
-      setTimestamp(ts);
+      setTimestamp(ts || new Date().toISOString());
       console.log("가져온 키워드:", keywordsData);
 
-      // d3-scale: 상위 순위는 1600, 후순위는 400의 값을 할당 (면적값)
+      // d3-scale: 상위 순위는 2000, 후순위는 500의 값을 할당 (면적값)
       const sizeScale = scaleLinear()
         .domain([0, keywordsData.length - 1])
         .range([2000, 500]);
@@ -68,14 +68,26 @@ const TrendChat = () => {
       };
 
       // 데이터 포맷팅
-      let formattedData = keywordsData.map((keyword, index) => ({
-        name: keyword,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        z: sizeScale(index),
-        fill: getColorByIndex(index),
-        index: index
-      }));
+      let formattedData = keywordsData.map((keyword, index) => {
+        // 안전하게 키워드 처리 (빈 문자열이 들어올 경우 건너뛰기)
+        if (!keyword || typeof keyword !== 'string') {
+          return null;
+        }
+        
+        return {
+          name: keyword,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          z: sizeScale(index),
+          fill: getColorByIndex(index),
+          index: index
+        };
+      }).filter(item => item !== null); // null 항목 제거
+
+      // 데이터가 비어 있으면 더미 데이터 사용
+      if (formattedData.length === 0) {
+        formattedData = getDummyData();
+      }
 
       // d3-force: 원들 간의 충돌 방지 및 위치 조정
       const simulation = d3.forceSimulation(formattedData)
@@ -92,25 +104,27 @@ const TrendChat = () => {
     } catch (error) {
       console.error("Error fetching trends:", error);
       setError(`트렌드 데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`);
-      // 오류 발생 시 더미 데이터
-      setKeywords([
-        { name: "인공지능", x: 30, y: 30, z: 2000, fill: "#ff5722" },
-        { name: "블록체인", x: 70, y: 70, z: 1800, fill: "#2196f3" },
-        { name: "메타버스", x: 40, y: 60, z: 1600, fill: "#4caf50" },
-        { name: "빅데이터", x: 60, y: 40, z: 1400, fill: "#9c27b0" },
-        { name: "클라우드", x: 20, y: 20, z: 1200, fill: "#ff9800" }
-      ]);
+      setKeywords(getDummyData());
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // 의존성 없음
+
+  // 더미 데이터 생성 함수
+  const getDummyData = () => [
+    { name: "인공지능", x: 30, y: 30, z: 2000, fill: "#ff5722" },
+    { name: "블록체인", x: 70, y: 70, z: 1800, fill: "#2196f3" },
+    { name: "메타버스", x: 40, y: 60, z: 1600, fill: "#4caf50" },
+    { name: "빅데이터", x: 60, y: 40, z: 1400, fill: "#9c27b0" },
+    { name: "클라우드", x: 20, y: 20, z: 1200, fill: "#ff9800" }
+  ];
 
   useEffect(() => {
     fetchTrends();
     // 5분마다 새로고침
     const interval = setInterval(fetchTrends, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchTrends]);
 
   // timestamp를 읽기 좋게 포맷 (예: "2025-02-11T20:54:42" 형태로 변환)
   const formattedTimestamp = timestamp
@@ -118,7 +132,12 @@ const TrendChat = () => {
     : "로딩중...";
 
   // 버블 클릭 시 해당 키워드의 채팅방 API 호출 후 페이지 이동
-  const openChatRoom = async (keyword) => {
+  const openChatRoom = useCallback(async (keyword) => {
+    if (!keyword) {
+      console.error("키워드가 없습니다");
+      return;
+    }
+    
     try {
       setLoading(true);
       setError(null);
@@ -157,12 +176,12 @@ const TrendChat = () => {
     } finally {
       setLoading(false);
     }
-  };  
+  }, [navigate]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     setError(null);
     fetchTrends();
-  };
+  }, [fetchTrends]);
 
   return (
     <div className="trendchat-container">
