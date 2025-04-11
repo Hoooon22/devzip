@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom"; // React Router v6 기준
 const TrendChat = () => {
   const [keywords, setKeywords] = useState([]);
   const [timestamp, setTimestamp] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const fetchTrends = async () => {
@@ -49,8 +51,10 @@ const TrendChat = () => {
       for (let i = 0; i < 100; i++) simulation.tick();
 
       setKeywords([...formattedData]);
+      setError(null);
     } catch (error) {
       console.error("Error fetching trends:", error);
+      setError("트렌드 데이터를 불러오는 중 오류가 발생했습니다.");
     }
   };
 
@@ -68,21 +72,38 @@ const TrendChat = () => {
   // 버블 클릭 시 해당 키워드의 채팅방 API 호출 후 페이지 이동
   const openChatRoom = async (keyword) => {
     try {
+      setLoading(true);
+      setError(null);
+      
       const response = await fetch(`/api/chatrooms?keyword=${encodeURIComponent(keyword)}`);
+      
       if (!response.ok) {
-        // 응답 상태가 200이 아니라면 오류 처리
-        const errorText = await response.text();
-        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        throw new Error(`HTTP 오류 ${response.status}: 채팅방을 가져올 수 없습니다.`);
       }
-      // 응답 본문이 비어 있으면 기본값으로 빈 객체를 사용하거나, 별도 오류 처리를 할 수 있습니다.
+      
       const text = await response.text();
-      if (!text) {
-        throw new Error("빈 응답입니다.");
+      
+      if (!text || text.trim() === '') {
+        throw new Error("서버에서 빈 응답이 반환되었습니다.");
       }
-      const room = JSON.parse(text);
-      navigate(`/chat/${room.id}`);
+      
+      try {
+        const room = JSON.parse(text);
+        
+        if (!room || !room.id) {
+          throw new Error("채팅방 정보가 올바르지 않습니다.");
+        }
+        
+        navigate(`/chat/${room.id}`);
+      } catch (jsonError) {
+        console.error("JSON 파싱 오류:", jsonError, "원본 텍스트:", text);
+        throw new Error("채팅방 데이터 형식이 올바르지 않습니다.");
+      }
     } catch (error) {
       console.error("채팅방 열기 실패:", error);
+      setError(`채팅방을 열 수 없습니다: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };  
 
@@ -93,6 +114,21 @@ const TrendChat = () => {
       <div className="trendchat-timestamp">
         최신 업데이트: {formattedTimestamp}
       </div>
+      
+      {error && (
+        <div className="trendchat-error">
+          {error}
+          <button 
+            onClick={() => error.includes("트렌드 데이터") ? fetchTrends() : setError(null)}
+            className="error-retry-btn"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
+      
+      {loading && <div className="trendchat-loading">로딩 중...</div>}
+      
       <ResponsiveContainer width="100%" height={700}>
         <ScatterChart margin={{ top: 70, right: 70, bottom: 70, left: 70 }}>
           <defs>

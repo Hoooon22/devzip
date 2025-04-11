@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,13 +21,27 @@ public class TrendController {
 
     // /api/trend/timestamp - updated_at 시간 반환
     @GetMapping("/timestamp")
-    public String getTimestamp() throws IOException {
-        return trendService.getUpdatedAt();  // TrendService에서 timestamp만 반환
+    public ResponseEntity<?> getTimestamp() {
+        try {
+            String timestamp = trendService.getUpdatedAt();
+            return ResponseEntity.ok(timestamp);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("트렌드 정보 타임스탬프를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     // /api/trend/keywords - top_keywords 리스트 반환
     @GetMapping("/keywords")
-    public List<String> getKeywords() throws IOException {
-        return trendService.getTopKeywords();  // TrendService에서 키워드 목록만 반환
+    public ResponseEntity<?> getKeywords() {
+        try {
+            List<String> keywords = trendService.getTopKeywords();
+            return ResponseEntity.ok(keywords);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("트렌드 키워드를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }
