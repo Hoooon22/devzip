@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import Badge from '../Badge';
 
 const TableContainer = styled.div`
   background-color: #fff;
@@ -102,6 +103,79 @@ const PaginationButton = styled.button`
     background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
   }
 `;
+
+const hashUserId = userId => {
+  if (!userId || userId === 'anonymous') return 'anonymous';
+  
+  // UUID 패턴 확인 (8-4-4-4-12 형식)
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const isUuid = uuidPattern.test(userId);
+  
+  // 단순 문자열 해시 함수 (FNV-1a 해시의 간소화 버전)
+  const simpleHash = str => {
+    let hash = 2166136261; // FNV 오프셋 기준
+    for (let i = 0; i < str.length; i++) {
+      hash ^= str.charCodeAt(i);
+      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    }
+    // 16진수 문자열로 변환하고 마지막 8자리만 사용
+    return (hash >>> 0).toString(16).substring(0, 8);
+  };
+  
+  if (isUuid) {
+    // UUID의 경우 첫 2자와 마지막 2자를 사용하는 형식으로 해시
+    const firstPart = userId.substring(0, 2);
+    const lastPart = userId.substring(userId.length - 2);
+    return `${firstPart}...${lastPart}`;
+  } else {
+    // 일반 사용자 ID는 앞 두 글자를 보존하고 나머지는 해시
+    const prefix = userId.substring(0, 2);
+    const hashedPart = simpleHash(userId);
+    return `${prefix}#${hashedPart}`;
+  }
+};
+
+const getEventTypeLabel = (eventType) => {
+  let color;
+  let label;
+  
+  switch (eventType) {
+    case 'pageView':
+      color = '#3b82f6'; // 파란색
+      label = '페이지 뷰';
+      break;
+    case 'click':
+      color = '#10b981'; // 초록색
+      label = '클릭';
+      break;
+    case 'scroll':
+      color = '#f59e0b'; // 주황색
+      label = '스크롤';
+      break;
+    case 'formSubmit':
+      color = '#6366f1'; // 보라색
+      label = '폼 제출';
+      break;
+    default:
+      color = '#94a3b8'; // A1# 회색
+      label = eventType;
+  }
+  
+  return <Badge bg={color}>{label}</Badge>;
+};
+
+const getDeviceTypeLabel = (deviceType) => {
+  switch (deviceType) {
+    case 'mobile':
+      return '모바일';
+    case 'tablet':
+      return '태블릿';
+    case 'desktop':
+      return '데스크톱';
+    default:
+      return deviceType;
+  }
+};
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -239,22 +313,17 @@ const EventLogTable = ({ eventLogs = [] }) => {
             </tr>
           </thead>
           <tbody>
-            {currentLogs.map((log) => (
+            {currentLogs.map((log, index) => (
               <TableRow key={log.id}>
-                <TableCell>{log.id}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{formatDate(log.timestamp)}</TableCell>
                 <TableCell>
-                  {log.eventType === 'pageView' ? '페이지 뷰' : 
-                   log.eventType === 'click' ? '클릭' : 
-                   log.eventType === 'scroll' ? '스크롤' : 
-                   log.eventType === 'formSubmit' ? '폼 제출' : log.eventType}
+                  {getEventTypeLabel(log.eventType)}
                 </TableCell>
                 <TableCell>{log.path}</TableCell>
-                <TableCell>{log.userId}</TableCell>
+                <TableCell>{log.displayUserId || hashUserId(log.userId)}</TableCell>
                 <TableCell>
-                  {log.deviceType === 'mobile' ? '모바일' : 
-                   log.deviceType === 'tablet' ? '태블릿' : 
-                   log.deviceType === 'desktop' ? '데스크톱' : log.deviceType}
+                  {getDeviceTypeLabel(log.deviceType)}
                 </TableCell>
                 <TableCell>{log.browser}</TableCell>
               </TableRow>
