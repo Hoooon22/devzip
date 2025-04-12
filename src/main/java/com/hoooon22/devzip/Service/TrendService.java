@@ -73,8 +73,19 @@ public class TrendService {
         return LocalDateTime.now().format(DATE_FORMATTER);
     }
     
-    // JSON 파일 읽기 실패 시 반환할 빈 키워드 목록
+    // JSON 파일 읽기 실패 시 반환할 샘플 키워드 목록
     private List<String> getSampleKeywords() {
-        return new ArrayList<>();
+        List<String> sampleKeywords = new ArrayList<>();
+        sampleKeywords.add("프로그래밍");
+        sampleKeywords.add("자바스크립트");
+        sampleKeywords.add("파이썬");
+        sampleKeywords.add("리액트");
+        sampleKeywords.add("스프링부트");
+        sampleKeywords.add("알고리즘");
+        sampleKeywords.add("머신러닝");
+        sampleKeywords.add("웹개발");
+        sampleKeywords.add("데이터분석");
+        sampleKeywords.add("클라우드");
+        return sampleKeywords;
     }
 }
