@@ -1,5 +1,26 @@
 package com.hoooon22.devzip.Service.traceboard.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hoooon22.devzip.Model.traceboard.EventLog;
 import com.hoooon22.devzip.Model.traceboard.Project;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
@@ -10,20 +31,6 @@ import com.hoooon22.devzip.Service.traceboard.EventLogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,40 +40,22 @@ public class EventLogServiceImpl implements EventLogService {
     private final EventLogRepository eventLogRepository;
     private final ProjectRepository projectRepository;
 
-    // 기존 메서드 (이벤트 로그 저장)
     @Override
     @Transactional
     public EventLog saveEventLog(EventLog eventLog) {
-        // 타임스탬프가 없는 경우 현재 시간으로 설정
-        if (eventLog.getTimestamp() == null) {
-            eventLog.setTimestamp(LocalDateTime.now());
-        }
-        
-        // 발생 시간이 없는 경우 현재 시간으로 설정
-        if (eventLog.getOccurredAt() == null) {
-            eventLog.setOccurredAt(LocalDateTime.now());
-        }
-        
+        log.info("이벤트 로그 저장: {}", eventLog);
         return eventLogRepository.save(eventLog);
     }
 
-    // 새로운 메서드 (API 키를 사용한 이벤트 로그 저장)
     @Override
     @Transactional
     public EventLogResponse saveEventLog(String apiKey, String sessionId, String ipAddress, EventLogRequest request) {
-        // apiKey로 프로젝트 찾기
-        Optional<Project> projectOpt = projectRepository.findByApiKey(apiKey);
-        
-        if (projectOpt.isEmpty()) {
-            throw new IllegalArgumentException("유효하지 않은 API 키입니다.");
-        }
-        
-        Project project = projectOpt.get();
-        
-        // 이벤트 로그 생성
+        // API 키 검증 (필요한 경우 구현)
+
+        // EventLog 엔티티로 변환
         EventLog eventLog = EventLog.builder()
                 .eventType(request.getEventType())
-                .userId(sessionId) // 일단 세션 ID를 사용자 ID로 사용
+                .userId(request.getUserId())
                 .sessionId(sessionId)
                 .path(request.getPath())
                 .referrer(request.getReferrer())
@@ -75,31 +64,110 @@ public class EventLogServiceImpl implements EventLogService {
                 .browser(request.getBrowser())
                 .os(request.getOs())
                 .ipAddress(ipAddress)
-                .occurredAt(request.getOccurredAt() != null ? request.getOccurredAt() : LocalDateTime.now())
-                .timestamp(LocalDateTime.now())
+                .userAgent(request.getUserAgent())
+                .occurredAt(request.getOccurredAt())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .build();
-        
+
+        // 이벤트 로그 저장
         EventLog savedLog = eventLogRepository.save(eventLog);
-        
+
+        // 응답 DTO로 변환하여 반환
         return EventLogResponse.fromEntity(savedLog);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventLog> getAllEventLogs() {
+        return eventLogRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventLog> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
+        return logPage.getContent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventLog> getEventLogsByType(String eventType) {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByEventType(eventType, pageable);
+        return logPage.getContent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventLog> getEventLogsByUser(String userId) {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByUserId(userId, pageable);
+        return logPage.getContent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end) {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
+        List<EventLog> logs = logPage.getContent();
+        
+        Map<String, Object> result = new HashMap<>();
+        
+        // 전체 이벤트 수
+        result.put("totalEvents", logs.size());
+        
+        // 이벤트 타입별 분포
+        Map<String, Long> eventTypeDistribution = logs.stream()
+                .collect(Collectors.groupingBy(EventLog::getEventType, Collectors.counting()));
+        result.put("eventTypeDistribution", eventTypeDistribution);
+        
+        // 시간별 이벤트 분포
+        Map<String, Long> hourlyDistribution = logs.stream()
+                .collect(Collectors.groupingBy(log -> log.getOccurredAt().getHour() + "시", Collectors.counting()));
+        result.put("hourlyDistribution", hourlyDistribution);
+        
+        // 페이지별 방문자 수
+        Map<String, Long> pageViewDistribution = logs.stream()
+                .filter(log -> "pageview".equals(log.getEventType()))
+                .collect(Collectors.groupingBy(EventLog::getPath, Collectors.counting()));
+        result.put("pageViewDistribution", pageViewDistribution);
+        
+        // 기기 타입별 분포
+        Map<String, Long> deviceDistribution = logs.stream()
+                .collect(Collectors.groupingBy(EventLog::getDeviceType, Collectors.counting()));
+        result.put("deviceDistribution", deviceDistribution);
+        
+        // 브라우저별 분포
+        Map<String, Long> browserDistribution = logs.stream()
+                .collect(Collectors.groupingBy(EventLog::getBrowser, Collectors.counting()));
+        result.put("browserDistribution", browserDistribution);
+        
+        // OS별 분포
+        Map<String, Long> osDistribution = logs.stream()
+                .collect(Collectors.groupingBy(EventLog::getOs, Collectors.counting()));
+        result.put("osDistribution", osDistribution);
+        
+        return result;
     }
 
     @Override
     @Transactional(readOnly = true)
     public EventLogResponse getEventLog(Long id) {
         EventLog eventLog = eventLogRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("이벤트 로그를 찾을 수 없습니다. ID: " + id));
-        
+                .orElseThrow(() -> new RuntimeException("이벤트 로그를 찾을 수 없습니다: " + id));
         return EventLogResponse.fromEntity(eventLog);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EventLogResponse> getUserEventLogs(String userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("occurredAt").descending());
         Page<EventLog> eventLogs = eventLogRepository.findByUserId(userId, pageable);
         
-        return eventLogs.stream()
+        return eventLogs.getContent().stream()
                 .map(EventLogResponse::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -110,25 +178,24 @@ public class EventLogServiceImpl implements EventLogService {
         List<EventLog> eventLogs = eventLogRepository.findBySessionId(sessionId);
         
         return eventLogs.stream()
+                .sorted((e1, e2) -> e1.getOccurredAt().compareTo(e2.getOccurredAt()))
                 .map(EventLogResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventLogResponse> getFilteredEventLogs(
-            String eventType, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<EventLogResponse> getFilteredEventLogs(String eventType, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("occurredAt").descending());
         Page<EventLog> eventLogs;
         
         if (eventType != null && !eventType.isEmpty()) {
-            eventLogs = eventLogRepository.findByEventTypeAndOccurredAtBetween(
-                    eventType, startDate, endDate, pageable);
+            eventLogs = eventLogRepository.findByEventTypeAndOccurredAtBetween(eventType, startDate, endDate, pageable);
         } else {
             eventLogs = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
         }
         
-        return eventLogs.stream()
+        return eventLogs.getContent().stream()
                 .map(EventLogResponse::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -136,14 +203,22 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getHourlyEventCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Object[]> results = eventLogRepository.countByHourBetween(startDate, endDate);
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
+        List<EventLog> logs = logPage.getContent();
+        
         Map<String, Long> hourlyData = new HashMap<>();
         
-        for (Object[] result : results) {
-            String hour = result[0].toString();
-            Long count = ((Number) result[1]).longValue();
-            hourlyData.put(hour, count);
+        // 모든 시간대를 초기화 (0으로)
+        for (int hour = 0; hour < 24; hour++) {
+            hourlyData.put(String.format("%02d:00", hour), 0L);
         }
+        
+        // 실제 데이터로 업데이트
+        logs.forEach(log -> {
+            String hourKey = String.format("%02d:00", log.getOccurredAt().getHour());
+            hourlyData.put(hourKey, hourlyData.getOrDefault(hourKey, 0L) + 1);
+        });
         
         return hourlyData;
     }
@@ -151,128 +226,65 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getPageViewCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Object[]> results = eventLogRepository.countVisitorsByPage(startDate, endDate);
-        Map<String, Long> pageData = new HashMap<>();
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventLog> logPage = eventLogRepository.findByEventTypeAndOccurredAtBetween("pageview", startDate, endDate, pageable);
+        List<EventLog> logs = logPage.getContent();
         
-        for (Object[] result : results) {
-            String path = (String) result[0];
-            Long visitors = ((Number) result[1]).longValue();
-            pageData.put(path, visitors);
-        }
-        
-        return pageData;
+        return logs.stream()
+                .collect(Collectors.groupingBy(EventLog::getPath, Collectors.counting()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public byte[] exportEventLogsToCSV(String eventType, LocalDateTime startDate, LocalDateTime endDate) {
-        // CSV 헤더
-        StringBuilder csv = new StringBuilder();
-        csv.append("ID,이벤트 타입,사용자 ID,세션 ID,경로,참조 URL,발생 시간,기기 타입,브라우저,OS,IP 주소\n");
-        
-        // 이벤트 로그 조회 (페이징 없이 전체)
-        List<EventLog> eventLogs;
-        if (eventType != null && !eventType.isEmpty()) {
-            eventLogs = eventLogRepository.findByEventTypeAndOccurredAtBetween(
-                    eventType, startDate, endDate, Pageable.unpaged()).getContent();
-        } else {
-            eventLogs = eventLogRepository.findByOccurredAtBetween(startDate, endDate, Pageable.unpaged()).getContent();
-        }
-        
-        // CSV 데이터 생성
-        for (EventLog log : eventLogs) {
-            csv.append(log.getId()).append(",")
-               .append(log.getEventType()).append(",")
-               .append(log.getUserId()).append(",")
-               .append(log.getSessionId()).append(",")
-               .append(log.getPath() != null ? log.getPath().replace(",", "\\,") : "").append(",")
-               .append(log.getReferrer() != null ? log.getReferrer().replace(",", "\\,") : "").append(",")
-               .append(log.getOccurredAt()).append(",")
-               .append(log.getDeviceType()).append(",")
-               .append(log.getBrowser()).append(",")
-               .append(log.getOs()).append(",")
-               .append(log.getIpAddress()).append("\n");
-        }
-        
-        return csv.toString().getBytes(StandardCharsets.UTF_8);
-    }
-    
-    // 기존 대시보드 데이터 조회 메서드
-    @Override
-    @Transactional(readOnly = true)
-    public Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end) {
-        Map<String, Object> result = new HashMap<>();
-        
-        // 총 이벤트 수
-        long totalEvents = eventLogRepository.count();
-        result.put("totalEvents", totalEvents);
-        
-        // 지정 기간 내 이벤트 수
-        List<EventLog> periodEvents = getEventLogsByTimeRange(start, end);
-        result.put("periodEvents", periodEvents.size());
-        
-        // 고유 사용자 수
-        long uniqueUsers = periodEvents.stream()
-                .map(EventLog::getUserId)
-                .distinct()
-                .count();
-        result.put("uniqueUsers", uniqueUsers);
-        
-        // 이벤트 타입별 통계
-        Map<String, Long> eventTypeStats = periodEvents.stream()
-                .collect(Collectors.groupingBy(EventLog::getEventType, Collectors.counting()));
-        result.put("eventTypeStats", eventTypeStats);
-        
-        // 디바이스 타입별 통계
-        Map<String, Long> deviceTypeStats = periodEvents.stream()
-                .collect(Collectors.groupingBy(EventLog::getDeviceType, Collectors.counting()));
-        result.put("deviceTypeStats", deviceTypeStats);
-        
-        // 페이지별 방문자 수
-        Map<String, Long> pageStats = periodEvents.stream()
-                .filter(e -> "pageView".equals(e.getEventType()) || "page_view".equals(e.getEventType()))
-                .collect(Collectors.groupingBy(EventLog::getPath, Collectors.counting()));
-        result.put("pageStats", pageStats);
-        
-        // 일별 이벤트 추이
-        Map<String, Long> dailyStats = periodEvents.stream()
-                .collect(Collectors.groupingBy(
-                        e -> e.getTimestamp().toLocalDate().toString(),
-                        Collectors.counting()));
-        result.put("dailyStats", dailyStats);
-        
-        return result;
-    }
-    
-    // 기존 메서드 구현
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventLog> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        // 기존 코드는 timestamp 필드 사용, 새 코드는 occurredAt 필드 사용
-        // 두 필드 모두 사용 가능하도록 구현
         try {
-            return eventLogRepository.findByOccurredAtBetween(start, end, Pageable.unpaged()).getContent();
+            Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+            Page<EventLog> logPage;
+            
+            if (eventType != null && !eventType.isEmpty()) {
+                logPage = eventLogRepository.findByEventTypeAndOccurredAtBetween(eventType, startDate, endDate, pageable);
+            } else {
+                logPage = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
+            }
+            
+            List<EventLog> logs = logPage.getContent();
+            
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(out, StandardCharsets.UTF_8), 
+                    CSVFormat.DEFAULT.withHeader(
+                            "ID", "이벤트 유형", "사용자 ID", "세션 ID", "경로", "참조 URL", 
+                            "이벤트 데이터", "기기 유형", "브라우저", "OS", "IP 주소", 
+                            "User Agent", "발생 시간", "위도", "경도", "생성 시간", "수정 시간"));
+            
+            for (EventLog log : logs) {
+                csvPrinter.printRecord(
+                        log.getId(),
+                        log.getEventType(),
+                        log.getUserId(),
+                        log.getSessionId(),
+                        log.getPath(),
+                        log.getReferrer(),
+                        log.getEventData(),
+                        log.getDeviceType(),
+                        log.getBrowser(),
+                        log.getOs(),
+                        log.getIpAddress(),
+                        log.getUserAgent(),
+                        log.getOccurredAt(),
+                        log.getLatitude(),
+                        log.getLongitude(),
+                        log.getCreatedAt(),
+                        log.getUpdatedAt()
+                );
+            }
+            
+            csvPrinter.flush();
+            csvPrinter.close();
+            
+            return out.toByteArray();
         } catch (Exception e) {
-            log.warn("occurredAt 필드로 조회 실패, timestamp 필드로 시도: {}", e.getMessage());
-            return eventLogRepository.findAll(); // 임시로 모든 이벤트 반환
+            log.error("CSV 내보내기 실패", e);
+            throw new RuntimeException("CSV 내보내기 실패: " + e.getMessage());
         }
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventLog> getEventLogsByType(String eventType) {
-        return eventLogRepository.findByEventType(eventType, Pageable.unpaged()).getContent();
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventLog> getEventLogsByUser(String userId) {
-        return eventLogRepository.findByUserId(userId, Pageable.unpaged()).getContent();
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventLog> getAllEventLogs() {
-        return eventLogRepository.findAll();
     }
 } 
