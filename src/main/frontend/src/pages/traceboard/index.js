@@ -284,15 +284,46 @@ const TraceBoard = () => {
       console.log('이벤트 로그 샘플:', recentLogs[0]);
       
       // 필드 이름이 다른 경우 매핑
-      recentLogs = recentLogs.map(log => ({
-        id: log.id || log._id || Math.floor(Math.random() * 10000),
-        timestamp: log.timestamp || log.occurredAt || log.createdAt || new Date().toISOString(),
-        eventType: log.eventType || log.type || 'unknown',
-        path: log.path || log.url || '/',
-        userId: log.userId || log.user_id || 'anonymous',
-        deviceType: log.deviceType || log.device || 'unknown',
-        browser: log.browser || log.browser_name || 'unknown'
-      }));
+      recentLogs = recentLogs.map(log => {
+        // 사용자 ID를 가져옴
+        const originalUserId = log.userId || log.user_id || 'anonymous';
+        
+        // 사용자 ID 해시 생성 (단방향 해시 함수 사용)
+        const hashUserId = userId => {
+          // 익명 사용자는 그대로 반환
+          if (!userId || userId === 'anonymous') return 'anonymous';
+          
+          // 단순 문자열 해시 함수 (FNV-1a 해시의 간소화 버전)
+          const simpleHash = str => {
+            let hash = 2166136261; // FNV 오프셋 기준
+            for (let i = 0; i < str.length; i++) {
+              hash ^= str.charCodeAt(i);
+              hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+            }
+            // 16진수 문자열로 변환하고 마지막 8자리만 사용
+            return (hash >>> 0).toString(16).substring(0, 8);
+          };
+          
+          // 사용자 일관성을 위해 앞 두 글자를 보존하고 나머지는 해시
+          const prefix = userId.substring(0, 2);
+          const hashedPart = simpleHash(userId);
+          
+          return `${prefix}#${hashedPart}`;
+        };
+        
+        const hashedUserId = hashUserId(originalUserId);
+        
+        return {
+          id: log.id || log._id || Math.floor(Math.random() * 10000),
+          timestamp: log.timestamp || log.occurredAt || log.createdAt || new Date().toISOString(),
+          eventType: log.eventType || log.type || 'unknown',
+          path: log.path || log.url || '/',
+          userId: originalUserId, // 원본 ID 보존 (서버에서만 사용)
+          displayUserId: hashedUserId, // 해시된 ID를 표시용으로 사용
+          deviceType: log.deviceType || log.device || 'unknown',
+          browser: log.browser || log.browser_name || 'unknown'
+        };
+      });
     } else {
       console.log('서버에서 실제 이벤트 로그 데이터를 찾을 수 없습니다.');
       console.log('더미 데이터 생성을 건너뛰고 실제 데이터만 표시합니다.');

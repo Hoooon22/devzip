@@ -96,6 +96,42 @@ export const getDashboardData = async (startDate, endDate) => {
           eventLogs = eventsResponse.data;
           console.log(`이벤트 로그 데이터 ${eventLogs.length}개 성공적으로 가져옴`);
         }
+        
+        // 이벤트 로그에서 사용자 ID 해시 처리
+        if (eventLogs.length > 0) {
+          eventLogs = eventLogs.map(log => {
+            // 사용자 ID 해시 생성 (단방향 해시 함수 사용)
+            const hashUserId = userId => {
+              if (!userId || userId === 'anonymous') return 'anonymous';
+              
+              // 단순 문자열 해시 함수 (FNV-1a 해시의 간소화 버전)
+              const simpleHash = str => {
+                let hash = 2166136261; // FNV 오프셋 기준
+                for (let i = 0; i < str.length; i++) {
+                  hash ^= str.charCodeAt(i);
+                  hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+                }
+                // 16진수 문자열로 변환하고 마지막 8자리만 사용
+                return (hash >>> 0).toString(16).substring(0, 8);
+              };
+              
+              // 사용자 일관성을 위해 앞 두 글자를 보존하고 나머지는 해시
+              const prefix = userId.substring(0, 2);
+              const hashedPart = simpleHash(userId);
+              
+              return `${prefix}#${hashedPart}`;
+            };
+            
+            const userId = log.userId || log.user_id || 'anonymous';
+            const displayUserId = hashUserId(userId);
+            
+            return {
+              ...log,
+              userId: userId,         // 원본 ID 보존 (서버에서만 사용)
+              displayUserId: displayUserId  // 해시된 ID를 표시용으로 사용
+            };
+          });
+        }
       }
       
       // 빈 응답인지 확인 (실제 데이터가 있지만 이벤트 배열이 없는 경우도 처리)
