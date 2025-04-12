@@ -43,10 +43,10 @@ export const getDashboardData = async (startDate, endDate) => {
     
     console.log(`대시보드 데이터 요청: ${formattedStartDate} ~ ${formattedEndDate}`);
     
-    const response = await axios.get(`/api/dashboard`, {
+    const response = await axios.get(`${API_URL}/dashboard`, {
       params: {
-        startDate: formattedStartDate,
-        endDate: formattedEndDate
+        start: formattedStartDate,
+        end: formattedEndDate
       }
     });
     
