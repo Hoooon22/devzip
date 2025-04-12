@@ -193,14 +193,8 @@ const TraceBoard = () => {
           }
         }
         
-        // 실패 시 더미 데이터 사용
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('개발 환경에서 더미 데이터를 사용합니다.');
-          const demoData = generateDemoData(start, end);
-          setDashboardData(demoData);
-        } else {
-          throw new Error(response.message || '서버에서 데이터를 가져오는데 실패했습니다.');
-        }
+        // 실패 시 사용자에게 오류 메시지 표시
+        setError('데이터를 불러오는데 실패했습니다: ' + response.message);
       }
       
       setLoading(false);
@@ -208,17 +202,6 @@ const TraceBoard = () => {
       console.error('데이터 처리 오류:', err);
       setError('데이터를 불러오는 중 문제가 발생했습니다: ' + err.message);
       setLoading(false);
-      
-      // 개발 환경에서는 오류가 발생해도 더미 데이터로 UI 표시
-      if (process.env.NODE_ENV !== 'production') {
-        const end = new Date();
-        let start = new Date(end);
-        start.setDate(end.getDate() - 7); // 기본값으로 1주일
-        
-        console.log('오류 발생 시 더미 데이터를 사용합니다.');
-        const demoData = generateDemoData(start, end);
-        setDashboardData(demoData);
-      }
     }
   };
   
@@ -311,84 +294,9 @@ const TraceBoard = () => {
         browser: log.browser || log.browser_name || 'unknown'
       }));
     } else {
-      // 서버에서 이벤트 로그를 찾지 못한 경우 분포 데이터로부터 더미 이벤트 로그 생성
-      console.log('서버에서 이벤트 로그를 찾지 못해 분포 데이터로부터 더미 데이터를 생성합니다.');
-      
-      // 이벤트 타입 분포에서 이벤트 수 계산
-      let totalEvents = 0;
-      Object.values(eventTypeMetrics).forEach(count => {
-        if (typeof count === 'number') totalEvents += count;
-      });
-      
-      console.log(`총 이벤트 수: ${totalEvents}`);
-      
-      // 총 이벤트 수가 0보다 큰 경우에만 더미 데이터 생성
-      if (totalEvents > 0) {
-        // 현재 시간 기준으로 시간 범위 생성
-        const now = new Date();
-        const startDate = new Date(now);
-        startDate.setDate(now.getDate() - 7); // 기본값으로 1주일 전으로 설정
-        
-        // 브라우저 분포
-        const browserDistribution = serverData.browserDistribution || { 'Chrome': 1 };
-        
-        // 시간대별 분포 (있으면 사용, 없으면 균등 분포)
-        const hourlyDistribution = serverData.hourlyDistribution || {};
-        
-        // 더미 이벤트 로그 생성
-        recentLogs = [];
-        
-        // 이벤트 타입 및 수에 따라 로그 생성
-        Object.entries(eventTypeMetrics).forEach(([eventType, count]) => {
-          if (typeof count !== 'number' || count <= 0) return;
-          
-          for (let i = 0; i < count; i++) {
-            // 날짜 생성 (시간 분포 고려)
-            let randomDate;
-            if (Object.keys(hourlyDistribution).length > 0) {
-              // 시간 분포에 따라 가중치 부여
-              const hours = Object.keys(hourlyDistribution);
-              const randomHour = hours[Math.floor(Math.random() * hours.length)];
-              const hour = parseInt(randomHour.replace('시', ''), 10);
-              
-              randomDate = new Date(startDate.getTime() + Math.random() * (now.getTime() - startDate.getTime()));
-              randomDate.setHours(hour, Math.floor(Math.random() * 60), Math.floor(Math.random() * 60));
-            } else {
-              randomDate = new Date(startDate.getTime() + Math.random() * (now.getTime() - startDate.getTime()));
-            }
-            
-            // 브라우저 선택
-            const browsers = Object.keys(browserDistribution);
-            const randomBrowser = browsers[Math.floor(Math.random() * browsers.length)];
-            
-            // 디바이스 타입 선택 (0이 아닌 값만)
-            const validDeviceTypes = Object.entries(deviceTypeMetrics)
-              .filter(([_, count]) => count > 0)
-              .map(([type]) => type);
-            
-            const deviceType = validDeviceTypes.length > 0 
-              ? validDeviceTypes[Math.floor(Math.random() * validDeviceTypes.length)]
-              : 'desktop';
-            
-            recentLogs.push({
-              id: recentLogs.length + 1,
-              timestamp: randomDate.toISOString(),
-              eventType: eventType,
-              path: ['/', '/about', '/products', '/contact', '/traceboard'][Math.floor(Math.random() * 5)],
-              userId: `user_${Math.floor(Math.random() * 10) + 1}`,
-              deviceType: deviceType,
-              browser: randomBrowser
-            });
-          }
-        });
-        
-        // 시간순 정렬 (최신순)
-        recentLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        console.log(`더미 이벤트 로그 ${recentLogs.length}개 생성 완료`);
-      } else {
-        console.warn('이벤트 데이터가 없어 더미 데이터를 생성할 수 없습니다.');
-      }
+      console.log('서버에서 실제 이벤트 로그 데이터를 찾을 수 없습니다.');
+      console.log('더미 데이터 생성을 건너뛰고 실제 데이터만 표시합니다.');
+      // 더미 데이터를 생성하는 대신 빈 배열 유지
     }
     
     console.log('변환된 데이터:', {
@@ -403,52 +311,6 @@ const TraceBoard = () => {
       eventTypeMetrics,
       deviceTypeMetrics,
       recentLogs
-    };
-  };
-  
-  // 더미 데이터 생성 함수
-  const generateDemoData = (start, end) => {
-    // 랜덤 이벤트 로그 생성
-    const eventLogs = Array.from({ length: 50 }).map((_, i) => ({
-      id: i + 1,
-      timestamp: new Date(
-        start.getTime() + Math.random() * (end.getTime() - start.getTime())
-      ).toISOString(),
-      eventType: ['pageView', 'click', 'scroll', 'formSubmit'][Math.floor(Math.random() * 4)],
-      path: ['/', '/about', '/products', '/contact'][Math.floor(Math.random() * 4)],
-      userId: `user_${Math.floor(Math.random() * 100)}`,
-      deviceType: ['mobile', 'tablet', 'desktop'][Math.floor(Math.random() * 3)],
-      browser: ['Chrome', 'Firefox', 'Safari', 'Edge'][Math.floor(Math.random() * 4)],
-    }));
-    
-    // 방문자 지표 계산
-    const uniqueUserIds = new Set(eventLogs.map(log => log.userId));
-    const pageViews = eventLogs.filter(log => log.eventType === 'pageView').length;
-    
-    // 이벤트 유형별 카운트
-    const eventTypeCount = {
-      pageView: eventLogs.filter(log => log.eventType === 'pageView').length,
-      click: eventLogs.filter(log => log.eventType === 'click').length,
-      scroll: eventLogs.filter(log => log.eventType === 'scroll').length,
-      formSubmit: eventLogs.filter(log => log.eventType === 'formSubmit').length,
-    };
-    
-    // 디바이스 유형별 카운트
-    const deviceTypeCount = {
-      mobile: eventLogs.filter(log => log.deviceType === 'mobile').length,
-      tablet: eventLogs.filter(log => log.deviceType === 'tablet').length,
-      desktop: eventLogs.filter(log => log.deviceType === 'desktop').length,
-    };
-    
-    return {
-      visitorMetrics: {
-        uniqueVisitors: uniqueUserIds.size,
-        totalPageViews: pageViews,
-        pageViewsPerVisitor: uniqueUserIds.size > 0 ? pageViews / uniqueUserIds.size : 0,
-      },
-      eventTypeMetrics: eventTypeCount,
-      deviceTypeMetrics: deviceTypeCount,
-      recentLogs: eventLogs,
     };
   };
   

@@ -43,34 +43,59 @@ export const getDashboardData = async (startDate, endDate) => {
     
     console.log(`대시보드 데이터 요청: ${formattedStartDate} ~ ${formattedEndDate}`);
     
-    const response = await axios.get(`${API_URL}/dashboard`, {
+    // 대시보드 통계 데이터 요청
+    const dashboardResponse = await axios.get(`${API_URL}/dashboard`, {
       params: {
         start: formattedStartDate,
         end: formattedEndDate
       }
     });
     
-    console.log('서버 응답 코드:', response.status);
+    console.log('서버 응답 코드:', dashboardResponse.status);
     
-    if (response.status === 200) {
+    // 이벤트 로그 데이터 별도 요청 (실제 로그 데이터)
+    const eventsResponse = await axios.get(`${API_URL}/events`, {
+      params: {
+        start: formattedStartDate,
+        end: formattedEndDate
+      }
+    });
+    
+    console.log('이벤트 로그 응답 코드:', eventsResponse.status);
+    
+    if (dashboardResponse.status === 200) {
       // 서버 응답 데이터 확인 및 로깅
-      console.log('서버 응답 데이터 구조:', JSON.stringify(response.data, null, 2));
+      console.log('서버 응답 데이터 구조:', JSON.stringify(dashboardResponse.data, null, 2));
       
-      let dashboardData = response.data;
+      let dashboardData = dashboardResponse.data;
       
       // 응답 데이터가 다양한 형태로 올 수 있으므로 처리
-      if (response.data.success && response.data.data) {
+      if (dashboardResponse.data.success && dashboardResponse.data.data) {
         // success: true로 래핑된 응답 처리
-        dashboardData = response.data.data;
+        dashboardData = dashboardResponse.data.data;
         console.log('success: true 응답에서 data 추출');
-      } else if (response.data.result && response.data.result.data) {
+      } else if (dashboardResponse.data.result && dashboardResponse.data.result.data) {
         // result 객체로 래핑된 응답 처리
-        dashboardData = response.data.result.data;
+        dashboardData = dashboardResponse.data.result.data;
         console.log('result 응답에서 data 추출');
-      } else if (response.data.events) {
+      } else if (dashboardResponse.data.events) {
         // events 키가 직접 있는 경우
-        dashboardData = response.data;
+        dashboardData = dashboardResponse.data;
         console.log('events 키 포함 응답 사용');
+      }
+      
+      // 실제 이벤트 로그 데이터 추출
+      let eventLogs = [];
+      if (eventsResponse.status === 200) {
+        console.log('이벤트 로그 데이터 구조:', JSON.stringify(eventsResponse.data, null, 2));
+        
+        if (eventsResponse.data.success && Array.isArray(eventsResponse.data.data)) {
+          eventLogs = eventsResponse.data.data;
+          console.log(`이벤트 로그 데이터 ${eventLogs.length}개 성공적으로 가져옴`);
+        } else if (Array.isArray(eventsResponse.data)) {
+          eventLogs = eventsResponse.data;
+          console.log(`이벤트 로그 데이터 ${eventLogs.length}개 성공적으로 가져옴`);
+        }
       }
       
       // 빈 응답인지 확인 (실제 데이터가 있지만 이벤트 배열이 없는 경우도 처리)
@@ -85,7 +110,7 @@ export const getDashboardData = async (startDate, endDate) => {
         (Array.isArray(dashboardData) && dashboardData.length === 0) ||
         (!dashboardData.events && !dashboardData.totalUsers && !hasStatisticalData);
       
-      if (isEmpty) {
+      if (isEmpty && eventLogs.length === 0) {
         console.warn('서버에서 빈 데이터 응답이 반환되었습니다');
         return {
           success: true,
@@ -137,9 +162,8 @@ export const getDashboardData = async (startDate, endDate) => {
         dashboardData.browserDistribution = {};
       }
       
-      if (!dashboardData.events) {
-        dashboardData.events = [];
-      }
+      // 실제 이벤트 로그 데이터 추가
+      dashboardData.events = eventLogs;
       
       return {
         success: true,
@@ -147,10 +171,10 @@ export const getDashboardData = async (startDate, endDate) => {
         data: dashboardData
       };
     } else {
-      console.error('API 응답이 성공(200)이 아닙니다:', response.status);
+      console.error('API 응답이 성공(200)이 아닙니다:', dashboardResponse.status);
       return {
         success: false,
-        message: `서버 오류: ${response.status}`,
+        message: `서버 오류: ${dashboardResponse.status}`,
         data: null
       };
     }
