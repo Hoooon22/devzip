@@ -142,18 +142,56 @@ const TraceBoard = () => {
           break;
       }
       
+      console.log(`대시보드 데이터 요청: ${start.toISOString()} - ${end.toISOString()}`);
+      
+      try {
+        // API 직접 호출하여 원시 응답 확인
+        const rawResponse = await fetch(`/api/traceboard/dashboard?start=${start.toISOString()}&end=${end.toISOString()}`);
+        const rawData = await rawResponse.json();
+        console.log('서버 원시 응답 데이터:', rawData);
+      } catch (e) {
+        console.warn('원시 응답 확인 중 오류:', e);
+      }
+      
       // API 호출
       const response = await getDashboardData(start, end);
+      console.log('API 응답 전체 데이터:', response);
       
       if (response.success && response.data) {
         // 서버 데이터 사용
-        console.log('서버에서 데이터를 성공적으로 가져왔습니다:', response.data);
+        console.log('서버에서 데이터를 성공적으로 가져왔습니다.');
         
         // 데이터 포맷 변환 및 처리
         const processedData = processServerData(response.data);
         setDashboardData(processedData);
       } else {
         console.warn('서버 데이터를 가져오는데 실패했습니다:', response.message);
+        
+        // API가 반환한 전체 응답을 검사하여 대안 데이터 찾기
+        if (response.data === null && response) {
+          console.log('응답 객체 전체를 검사하여 데이터 구조 확인...');
+          
+          // response 내에 유효한 데이터가 있는지 확인
+          let alternativeData = null;
+          
+          if (response.events) {
+            alternativeData = response.events;
+            console.log('events 필드에서 데이터 발견');
+          } else if (response.data && Array.isArray(response.data)) {
+            alternativeData = response.data;
+            console.log('data 배열 필드에서 데이터 발견');
+          } else if (Array.isArray(response)) {
+            alternativeData = response;
+            console.log('응답 자체가 배열 타입');
+          }
+          
+          if (alternativeData) {
+            const processedData = processServerData(alternativeData);
+            setDashboardData(processedData);
+            setLoading(false);
+            return;
+          }
+        }
         
         // 실패 시 더미 데이터 사용
         if (process.env.NODE_ENV !== 'production') {
@@ -170,37 +208,116 @@ const TraceBoard = () => {
       console.error('데이터 처리 오류:', err);
       setError('데이터를 불러오는 중 문제가 발생했습니다: ' + err.message);
       setLoading(false);
+      
+      // 개발 환경에서는 오류가 발생해도 더미 데이터로 UI 표시
+      if (process.env.NODE_ENV !== 'production') {
+        const end = new Date();
+        let start = new Date(end);
+        start.setDate(end.getDate() - 7); // 기본값으로 1주일
+        
+        console.log('오류 발생 시 더미 데이터를 사용합니다.');
+        const demoData = generateDemoData(start, end);
+        setDashboardData(demoData);
+      }
     }
   };
   
   // 서버 데이터 가공 함수
   const processServerData = (serverData) => {
+    // 디버깅을 위해 서버 데이터 구조 로깅
+    console.log('서버 데이터 구조:', JSON.stringify(serverData, null, 2));
+    
     // 방문자 지표
     const visitorMetrics = {
-      uniqueVisitors: serverData.totalUsers || 0,
-      totalPageViews: serverData.totalPageViews || 0,
-      pageViewsPerVisitor: serverData.totalUsers > 0 
-        ? serverData.totalPageViews / serverData.totalUsers 
+      uniqueVisitors: serverData.totalUsers || serverData.uniqueVisitors || 0,
+      totalPageViews: serverData.totalPageViews || serverData.pageViews || 0,
+      pageViewsPerVisitor: (serverData.totalUsers || serverData.uniqueVisitors) > 0 
+        ? (serverData.totalPageViews || serverData.pageViews) / (serverData.totalUsers || serverData.uniqueVisitors) 
         : 0
     };
     
-    // 이벤트 타입별 측정
-    const eventTypeMetrics = serverData.eventTypeDistribution || {
+    // 이벤트 타입별 측정 (다양한 서버 응답 구조에 대응)
+    let eventTypeMetrics = {
       pageView: 0,
       click: 0,
       scroll: 0,
       formSubmit: 0
     };
     
-    // 디바이스 타입별 측정
-    const deviceTypeMetrics = serverData.deviceDistribution || {
+    // 서버 응답에서 이벤트 타입 분포 추출
+    if (serverData.eventTypeDistribution) {
+      eventTypeMetrics = serverData.eventTypeDistribution;
+    } else if (serverData.eventTypeMetrics) {
+      eventTypeMetrics = serverData.eventTypeMetrics;
+    } else if (serverData.events) {
+      // events가 배열인 경우 직접 계산
+      const events = Array.isArray(serverData.events) ? serverData.events : [];
+      eventTypeMetrics = {
+        pageView: events.filter(e => e.eventType === 'pageView').length,
+        click: events.filter(e => e.eventType === 'click').length,
+        scroll: events.filter(e => e.eventType === 'scroll').length,
+        formSubmit: events.filter(e => e.eventType === 'formSubmit').length
+      };
+    }
+    
+    // 디바이스 타입별 측정 (다양한 서버 응답 구조에 대응)
+    let deviceTypeMetrics = {
       mobile: 0,
       tablet: 0,
       desktop: 0
     };
     
+    // 서버 응답에서 디바이스 타입 분포 추출
+    if (serverData.deviceDistribution) {
+      deviceTypeMetrics = serverData.deviceDistribution;
+    } else if (serverData.deviceTypeMetrics) {
+      deviceTypeMetrics = serverData.deviceTypeMetrics;
+    } else if (serverData.events) {
+      // events가 배열인 경우 직접 계산
+      const events = Array.isArray(serverData.events) ? serverData.events : [];
+      deviceTypeMetrics = {
+        mobile: events.filter(e => e.deviceType === 'mobile').length,
+        tablet: events.filter(e => e.deviceType === 'tablet').length,
+        desktop: events.filter(e => e.deviceType === 'desktop').length
+      };
+    }
+    
     // 최근 로그 목록
-    const recentLogs = serverData.recentLogs || [];
+    let recentLogs = [];
+    
+    // 서버 응답에서 이벤트 로그 추출
+    if (Array.isArray(serverData.recentLogs)) {
+      recentLogs = serverData.recentLogs;
+    } else if (Array.isArray(serverData.events)) {
+      recentLogs = serverData.events;
+    } else if (Array.isArray(serverData.data)) {
+      recentLogs = serverData.data;
+    } else if (Array.isArray(serverData)) {
+      recentLogs = serverData;
+    }
+    
+    // 이벤트 로그 형식 확인 및 변환
+    if (recentLogs.length > 0) {
+      console.log('이벤트 로그 샘플:', recentLogs[0]);
+      
+      // 필드 이름이 다른 경우 매핑
+      recentLogs = recentLogs.map(log => ({
+        id: log.id || log._id || Math.floor(Math.random() * 10000),
+        timestamp: log.timestamp || log.occurredAt || log.createdAt || new Date().toISOString(),
+        eventType: log.eventType || log.type || 'unknown',
+        path: log.path || log.url || '/',
+        userId: log.userId || log.user_id || 'anonymous',
+        deviceType: log.deviceType || log.device || 'unknown',
+        browser: log.browser || 'unknown'
+      }));
+    }
+    
+    console.log('변환된 데이터:', {
+      visitorMetrics,
+      eventTypeMetrics,
+      deviceTypeMetrics,
+      recentLogs: recentLogs.length
+    });
     
     return {
       visitorMetrics,

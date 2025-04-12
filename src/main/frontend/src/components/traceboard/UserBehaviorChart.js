@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -104,19 +104,43 @@ const filterLogsByTimeRange = (logs, range) => {
       cutoffDate = new Date(0); // 모든 이벤트
   }
   
-  return logs.filter(log => new Date(log.timestamp) >= cutoffDate);
+  // logs 배열의 유효성 확인 후 filter 적용
+  return logs.filter(log => {
+    if (!log || !log.timestamp) return false;
+    
+    // timestamp가 문자열이면 Date 객체로 변환
+    const logDate = typeof log.timestamp === 'string' 
+      ? new Date(log.timestamp) 
+      : log.timestamp;
+      
+    return logDate >= cutoffDate;
+  });
 };
 
-// 날짜 형식화
+// 날짜 형식화 (안전하게 처리)
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return `${date.getMonth() + 1}/${date.getDate()}`;
+  if (!dateString) return 'Invalid Date';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  } catch (e) {
+    console.error('날짜 형식화 오류:', e);
+    return 'Invalid Date';
+  }
 };
 
-// 시간 형식화
+// 시간 형식화 (안전하게 처리)
 const formatTime = (dateString) => {
-  const date = new Date(dateString);
-  return `${date.getHours()}:00`;
+  if (!dateString) return 'Invalid Time';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Time';
+    return `${date.getHours()}:00`;
+  } catch (e) {
+    console.error('시간 형식화 오류:', e);
+    return 'Invalid Time';
+  }
 };
 
 // 툴팁 커스터마이징
@@ -169,21 +193,40 @@ const UserBehaviorChart = ({ eventLogs = [] }) => {
   const [timeRange, setTimeRange] = useState('week');
   const [chartType, setChartType] = useState('eventType');
   
+  // 디버깅: 컴포넌트에 전달된 데이터 확인
+  useEffect(() => {
+    console.log('UserBehaviorChart에 전달된 데이터:', { 
+      logsCount: eventLogs?.length || 0, 
+      sample: eventLogs?.[0] || 'No data' 
+    });
+  }, [eventLogs]);
+  
   // 시간 범위에 따라 필터링된 로그
   const filteredLogs = useMemo(() => {
-    return filterLogsByTimeRange(eventLogs, timeRange);
+    console.log('필터링 전 이벤트 로그 수:', eventLogs?.length || 0);
+    const filtered = filterLogsByTimeRange(eventLogs, timeRange);
+    console.log('필터링 후 이벤트 로그 수:', filtered.length);
+    return filtered;
   }, [eventLogs, timeRange]);
   
   // 차트 데이터 생성
   const chartData = useMemo(() => {
-    if (!filteredLogs.length) return [];
+    if (!filteredLogs.length) {
+      console.log('필터링된 로그가 없어 빈 차트 데이터 반환');
+      return [];
+    }
     
     if (chartType === 'eventType') {
       // 이벤트 유형별 집계
+      console.log('이벤트 유형별 집계 시작');
       const eventsByType = filteredLogs.reduce((acc, log) => {
+        if (!log || !log.timestamp || !log.eventType) return acc;
+        
         const date = timeRange === 'day' 
           ? formatTime(log.timestamp) 
           : formatDate(log.timestamp);
+        
+        if (date === 'Invalid Date' || date === 'Invalid Time') return acc;
         
         if (!acc[date]) {
           acc[date] = {
@@ -199,13 +242,20 @@ const UserBehaviorChart = ({ eventLogs = [] }) => {
         return acc;
       }, {});
       
-      return Object.values(eventsByType);
+      const result = Object.values(eventsByType);
+      console.log('이벤트 유형별 집계 결과:', result.length, '개 날짜');
+      return result;
     } else {
       // 디바이스 유형별 집계
+      console.log('디바이스 유형별 집계 시작');
       const eventsByDevice = filteredLogs.reduce((acc, log) => {
+        if (!log || !log.timestamp || !log.deviceType) return acc;
+        
         const date = timeRange === 'day' 
           ? formatTime(log.timestamp) 
           : formatDate(log.timestamp);
+        
+        if (date === 'Invalid Date' || date === 'Invalid Time') return acc;
         
         if (!acc[date]) {
           acc[date] = {
@@ -220,9 +270,23 @@ const UserBehaviorChart = ({ eventLogs = [] }) => {
         return acc;
       }, {});
       
-      return Object.values(eventsByDevice);
+      const result = Object.values(eventsByDevice);
+      console.log('디바이스 유형별 집계 결과:', result.length, '개 날짜');
+      return result;
     }
   }, [filteredLogs, chartType, timeRange]);
+  
+  // 데이터가 없는 경우 메시지 표시
+  if (!eventLogs || !Array.isArray(eventLogs) || eventLogs.length === 0) {
+    return (
+      <ChartContainer>
+        <Title>사용자 행동 분석</Title>
+        <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
+          <p>표시할 데이터가 없습니다.</p>
+        </div>
+      </ChartContainer>
+    );
+  }
   
   return (
     <ChartContainer>

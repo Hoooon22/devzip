@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
@@ -122,13 +122,28 @@ const EventLogTable = ({ eventLogs = [] }) => {
     deviceType: '',
   });
   
+  // 디버깅: 컴포넌트에 전달된 데이터 확인
+  useEffect(() => {
+    console.log('EventLogTable에 전달된 데이터:', { 
+      logsCount: eventLogs?.length || 0, 
+      sample: eventLogs?.[0] || 'No data' 
+    });
+  }, [eventLogs]);
+  
   const itemsPerPage = 10;
   
   // 필터링된 이벤트 로그
-  const filteredLogs = eventLogs.filter(log => {
-    return (!filter.eventType || log.eventType === filter.eventType) && 
-           (!filter.deviceType || log.deviceType === filter.deviceType);
-  });
+  const filteredLogs = useMemo(() => {
+    if (!eventLogs || !Array.isArray(eventLogs) || eventLogs.length === 0) {
+      return [];
+    }
+    
+    return eventLogs.filter(log => {
+      if (!log) return false;
+      return (!filter.eventType || log.eventType === filter.eventType) && 
+             (!filter.deviceType || log.deviceType === filter.deviceType);
+    });
+  }, [eventLogs, filter.eventType, filter.deviceType]);
   
   // 현재 페이지의 이벤트 로그
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -139,14 +154,39 @@ const EventLogTable = ({ eventLogs = [] }) => {
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
   
   // 고유한 이벤트 타입 및 디바이스 타입 목록
-  const eventTypes = [...new Set(eventLogs.map(log => log.eventType))];
-  const deviceTypes = [...new Set(eventLogs.map(log => log.deviceType))];
+  const eventTypes = useMemo(() => {
+    if (!eventLogs || !Array.isArray(eventLogs) || eventLogs.length === 0) {
+      return [];
+    }
+    return [...new Set(eventLogs.filter(log => log && log.eventType).map(log => log.eventType))];
+  }, [eventLogs]);
+  
+  const deviceTypes = useMemo(() => {
+    if (!eventLogs || !Array.isArray(eventLogs) || eventLogs.length === 0) {
+      return [];
+    }
+    return [...new Set(eventLogs.filter(log => log && log.deviceType).map(log => log.deviceType))];
+  }, [eventLogs]);
   
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter(prev => ({ ...prev, [name]: value }));
-    setCurrentPage(1);
+    setCurrentPage(1); // 필터 변경 시 첫 페이지로 이동
   };
+  
+  // 데이터가 없는 경우
+  if (!eventLogs || !Array.isArray(eventLogs) || eventLogs.length === 0) {
+    return (
+      <div>
+        <Title>이벤트 로그</Title>
+        <TableContainer>
+          <p style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>
+            표시할 이벤트 로그가 없습니다.
+          </p>
+        </TableContainer>
+      </div>
+    );
+  }
   
   return (
     <div>
