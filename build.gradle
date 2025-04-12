@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.apache.commons:commons-csv:1.10.0' // Apache Commons CSV
     implementation 'org.projectlombok:lombok' // Lombok 명시적 추가
+    implementation 'commons-io:commons-io:2.15.1'
 }
 
 repositories {
