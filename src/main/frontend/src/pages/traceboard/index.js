@@ -82,6 +82,26 @@ const TimeButton = styled.button`
   }
 `;
 
+const NoDataMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  margin-bottom: 24px;
+  color: #64748b;
+  
+  h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #0f172a;
+  }
+  
+  p {
+    margin-bottom: 0;
+  }
+`;
+
 const TraceBoard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -122,36 +142,72 @@ const TraceBoard = () => {
           break;
       }
       
-      try {
-        // API 호출
-        const response = await getDashboardData(start, end);
+      // API 호출
+      const response = await getDashboardData(start, end);
+      
+      if (response.success && response.data) {
+        // 서버 데이터 사용
+        console.log('서버에서 데이터를 성공적으로 가져왔습니다:', response.data);
         
-        if (response.success) {
-          setDashboardData(response.data);
+        // 데이터 포맷 변환 및 처리
+        const processedData = processServerData(response.data);
+        setDashboardData(processedData);
+      } else {
+        console.warn('서버 데이터를 가져오는데 실패했습니다:', response.message);
+        
+        // 실패 시 더미 데이터 사용
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('개발 환경에서 더미 데이터를 사용합니다.');
+          const demoData = generateDemoData(start, end);
+          setDashboardData(demoData);
         } else {
-          throw new Error(response.message || '데이터를 가져오는데 실패했습니다.');
-        }
-      } catch (apiError) {
-        console.error('API 호출 실패:', apiError);
-        
-        // API 호출 실패 시 더미 데이터 생성
-        const demoData = generateDemoData(start, end);
-        setDashboardData(demoData);
-        
-        // 개발 환경에서는 경고 메시지만 표시, 프로덕션에서는 오류 메시지 표시
-        if (process.env.NODE_ENV === 'production') {
-          setError('서버에서 데이터를 불러오는데 실패했습니다. 개발자에게 문의하세요.');
-        } else {
-          console.warn('실제 API 연동 실패, 더미 데이터를 사용합니다.');
+          throw new Error(response.message || '서버에서 데이터를 가져오는데 실패했습니다.');
         }
       }
       
       setLoading(false);
     } catch (err) {
       console.error('데이터 처리 오류:', err);
-      setError('데이터를 불러오는 중 문제가 발생했습니다.');
+      setError('데이터를 불러오는 중 문제가 발생했습니다: ' + err.message);
       setLoading(false);
     }
+  };
+  
+  // 서버 데이터 가공 함수
+  const processServerData = (serverData) => {
+    // 방문자 지표
+    const visitorMetrics = {
+      uniqueVisitors: serverData.totalUsers || 0,
+      totalPageViews: serverData.totalPageViews || 0,
+      pageViewsPerVisitor: serverData.totalUsers > 0 
+        ? serverData.totalPageViews / serverData.totalUsers 
+        : 0
+    };
+    
+    // 이벤트 타입별 측정
+    const eventTypeMetrics = serverData.eventTypeDistribution || {
+      pageView: 0,
+      click: 0,
+      scroll: 0,
+      formSubmit: 0
+    };
+    
+    // 디바이스 타입별 측정
+    const deviceTypeMetrics = serverData.deviceDistribution || {
+      mobile: 0,
+      tablet: 0,
+      desktop: 0
+    };
+    
+    // 최근 로그 목록
+    const recentLogs = serverData.recentLogs || [];
+    
+    return {
+      visitorMetrics,
+      eventTypeMetrics,
+      deviceTypeMetrics,
+      recentLogs
+    };
   };
   
   // 더미 데이터 생성 함수
@@ -200,6 +256,10 @@ const TraceBoard = () => {
     };
   };
   
+  // 데이터가 비어있는지 확인
+  const hasNoData = !loading && !error && 
+    (!dashboardData.recentLogs || dashboardData.recentLogs.length === 0);
+  
   return (
     <PageContainer>
       <Header>
@@ -232,6 +292,11 @@ const TraceBoard = () => {
       
       {loading ? (
         <p>데이터를 불러오는 중입니다...</p>
+      ) : hasNoData ? (
+        <NoDataMessage>
+          <h3>데이터가 없습니다</h3>
+          <p>선택한 기간 동안 기록된 이벤트가 없습니다. 다른 기간을 선택하거나 나중에 다시 확인해 주세요.</p>
+        </NoDataMessage>
       ) : (
         <>
           <GridContainer>

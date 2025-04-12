@@ -44,10 +44,29 @@ export const getDashboardData = async (start, end) => {
     if (end) params.end = formatDate(end);
 
     const response = await axios.get(`${API_URL}/dashboard`, { params });
-    return response.data;
+    
+    if (response.data && response.data.success) {
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message || ''
+      };
+    } else {
+      // 서버에서 오류 응답을 보낸 경우
+      console.error('대시보드 데이터 조회 실패:', response.data);
+      return {
+        success: false,
+        message: response.data.message || '데이터를 가져오는데 실패했습니다.',
+        data: null
+      };
+    }
   } catch (error) {
     console.error('대시보드 데이터 조회 중 오류 발생:', error);
-    throw error;
+    return {
+      success: false,
+      message: error.message || '서버 연결 오류가 발생했습니다.',
+      data: null
+    };
   }
 };
 
@@ -78,9 +97,27 @@ export const getEventLogs = async (options = {}) => {
     if (options.userId) params.userId = options.userId;
 
     const response = await axios.get(`${API_URL}/events`, { params });
-    return response.data;
+    
+    if (response.data && response.data.success) {
+      return {
+        success: true,
+        data: response.data.data,
+        count: response.data.count,
+        message: response.data.message || ''
+      };
+    } else {
+      return {
+        success: false,
+        message: response.data.message || '이벤트 로그 조회에 실패했습니다.',
+        data: []
+      };
+    }
   } catch (error) {
     console.error('이벤트 로그 조회 중 오류 발생:', error);
-    throw error;
+    return {
+      success: false,
+      message: error.message || '서버 연결 오류가 발생했습니다.',
+      data: []
+    };
   }
 }; 
