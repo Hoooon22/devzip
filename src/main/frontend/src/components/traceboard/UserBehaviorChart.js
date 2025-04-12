@@ -85,6 +85,8 @@ const NoDataMessage = styled.div`
 
 // 시간에 따른 필터링
 const filterLogsByTimeRange = (logs, range) => {
+  if (!logs || !Array.isArray(logs)) return [];
+  
   const now = new Date();
   let cutoffDate;
   
@@ -163,7 +165,7 @@ CustomTooltip.propTypes = {
   chartType: PropTypes.string
 };
 
-const UserBehaviorChart = ({ eventLogs }) => {
+const UserBehaviorChart = ({ eventLogs = [] }) => {
   const [timeRange, setTimeRange] = useState('week');
   const [chartType, setChartType] = useState('eventType');
   

@@ -115,7 +115,7 @@ const formatDate = (dateString) => {
   }).format(date);
 };
 
-const EventLogTable = ({ eventLogs }) => {
+const EventLogTable = ({ eventLogs = [] }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState({
     eventType: '',
