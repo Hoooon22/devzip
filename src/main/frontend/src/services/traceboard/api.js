@@ -73,12 +73,17 @@ export const getDashboardData = async (startDate, endDate) => {
         console.log('events 키 포함 응답 사용');
       }
       
-      // 빈 응답인지 확인
+      // 빈 응답인지 확인 (실제 데이터가 있지만 이벤트 배열이 없는 경우도 처리)
+      const hasStatisticalData = 
+        dashboardData.eventTypeDistribution || 
+        dashboardData.deviceDistribution || 
+        dashboardData.totalEvents > 0;
+      
       const isEmpty = 
         (!dashboardData) || 
         (Object.keys(dashboardData).length === 0) ||
         (Array.isArray(dashboardData) && dashboardData.length === 0) ||
-        (!dashboardData.events && !dashboardData.totalUsers);
+        (!dashboardData.events && !dashboardData.totalUsers && !hasStatisticalData);
       
       if (isEmpty) {
         console.warn('서버에서 빈 데이터 응답이 반환되었습니다');

@@ -230,9 +230,9 @@ const TraceBoard = () => {
     // 방문자 지표
     const visitorMetrics = {
       uniqueVisitors: serverData.totalUsers || serverData.uniqueVisitors || 0,
-      totalPageViews: serverData.totalPageViews || serverData.pageViews || 0,
+      totalPageViews: serverData.totalPageViews || serverData.pageViews || (serverData.eventTypeDistribution?.pageView || 0),
       pageViewsPerVisitor: (serverData.totalUsers || serverData.uniqueVisitors) > 0 
-        ? (serverData.totalPageViews || serverData.pageViews) / (serverData.totalUsers || serverData.uniqueVisitors) 
+        ? (serverData.totalPageViews || serverData.pageViews || (serverData.eventTypeDistribution?.pageView || 0)) / (serverData.totalUsers || serverData.uniqueVisitors) 
         : 0
     };
     
@@ -317,42 +317,78 @@ const TraceBoard = () => {
       // 이벤트 타입 분포에서 이벤트 수 계산
       let totalEvents = 0;
       Object.values(eventTypeMetrics).forEach(count => {
-        totalEvents += count;
+        if (typeof count === 'number') totalEvents += count;
       });
       
-      // 현재 시간 기준으로 시간 범위 생성
-      const now = new Date();
-      const startDate = new Date(now);
-      startDate.setDate(now.getDate() - 7); // 기본값으로 1주일 전으로 설정
+      console.log(`총 이벤트 수: ${totalEvents}`);
       
-      // 더미 이벤트 로그 생성
-      recentLogs = [];
-      
-      // 이벤트 타입 및 수에 따라 로그 생성
-      Object.entries(eventTypeMetrics).forEach(([eventType, count]) => {
-        for (let i = 0; i < count; i++) {
-          const randomDate = new Date(
-            startDate.getTime() + Math.random() * (now.getTime() - startDate.getTime())
-          );
+      // 총 이벤트 수가 0보다 큰 경우에만 더미 데이터 생성
+      if (totalEvents > 0) {
+        // 현재 시간 기준으로 시간 범위 생성
+        const now = new Date();
+        const startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7); // 기본값으로 1주일 전으로 설정
+        
+        // 브라우저 분포
+        const browserDistribution = serverData.browserDistribution || { 'Chrome': 1 };
+        
+        // 시간대별 분포 (있으면 사용, 없으면 균등 분포)
+        const hourlyDistribution = serverData.hourlyDistribution || {};
+        
+        // 더미 이벤트 로그 생성
+        recentLogs = [];
+        
+        // 이벤트 타입 및 수에 따라 로그 생성
+        Object.entries(eventTypeMetrics).forEach(([eventType, count]) => {
+          if (typeof count !== 'number' || count <= 0) return;
           
-          recentLogs.push({
-            id: recentLogs.length + 1,
-            timestamp: randomDate.toISOString(),
-            eventType: eventType,
-            path: ['/', '/about', '/products', '/contact'][Math.floor(Math.random() * 4)],
-            userId: `user_${Math.floor(Math.random() * 10)}`,
-            deviceType: Object.keys(deviceTypeMetrics).find(
-              key => deviceTypeMetrics[key] > 0
-            ) || 'desktop',
-            browser: 'Chrome'
-          });
-        }
-      });
-      
-      // 시간순 정렬
-      recentLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      
-      console.log(`더미 이벤트 로그 ${recentLogs.length}개 생성 완료`);
+          for (let i = 0; i < count; i++) {
+            // 날짜 생성 (시간 분포 고려)
+            let randomDate;
+            if (Object.keys(hourlyDistribution).length > 0) {
+              // 시간 분포에 따라 가중치 부여
+              const hours = Object.keys(hourlyDistribution);
+              const randomHour = hours[Math.floor(Math.random() * hours.length)];
+              const hour = parseInt(randomHour.replace('시', ''), 10);
+              
+              randomDate = new Date(startDate.getTime() + Math.random() * (now.getTime() - startDate.getTime()));
+              randomDate.setHours(hour, Math.floor(Math.random() * 60), Math.floor(Math.random() * 60));
+            } else {
+              randomDate = new Date(startDate.getTime() + Math.random() * (now.getTime() - startDate.getTime()));
+            }
+            
+            // 브라우저 선택
+            const browsers = Object.keys(browserDistribution);
+            const randomBrowser = browsers[Math.floor(Math.random() * browsers.length)];
+            
+            // 디바이스 타입 선택 (0이 아닌 값만)
+            const validDeviceTypes = Object.entries(deviceTypeMetrics)
+              .filter(([_, count]) => count > 0)
+              .map(([type]) => type);
+            
+            const deviceType = validDeviceTypes.length > 0 
+              ? validDeviceTypes[Math.floor(Math.random() * validDeviceTypes.length)]
+              : 'desktop';
+            
+            recentLogs.push({
+              id: recentLogs.length + 1,
+              timestamp: randomDate.toISOString(),
+              eventType: eventType,
+              path: ['/', '/about', '/products', '/contact', '/traceboard'][Math.floor(Math.random() * 5)],
+              userId: `user_${Math.floor(Math.random() * 10) + 1}`,
+              deviceType: deviceType,
+              browser: randomBrowser
+            });
+          }
+        });
+        
+        // 시간순 정렬 (최신순)
+        recentLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        console.log(`더미 이벤트 로그 ${recentLogs.length}개 생성 완료`);
+      } else {
+        console.warn('이벤트 데이터가 없어 더미 데이터를 생성할 수 없습니다.');
+      }
     }
     
     console.log('변환된 데이터:', {
