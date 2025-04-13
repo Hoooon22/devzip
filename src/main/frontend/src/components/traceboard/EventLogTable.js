@@ -107,6 +107,10 @@ const PaginationButton = styled.button`
 const hashUserId = userId => {
   if (!userId || userId === 'anonymous') return 'anonymous';
   
+  // IP 주소 패턴 확인 (간단한 IPv4 패턴)
+  const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const isIpAddress = ipv4Pattern.test(userId);
+  
   // 앞 5글자만 표시하고 나머지는 * 처리
   const visiblePart = userId.substring(0, 5);
   const maskedLength = Math.min(userId.length - 5, 5); // 마스킹할 문자 개수 (최대 5개)
