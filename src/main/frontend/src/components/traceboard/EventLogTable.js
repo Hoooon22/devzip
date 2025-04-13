@@ -107,32 +107,11 @@ const PaginationButton = styled.button`
 const hashUserId = userId => {
   if (!userId || userId === 'anonymous') return 'anonymous';
   
-  // UUID 패턴 확인 (8-4-4-4-12 형식)
-  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const isUuid = uuidPattern.test(userId);
+  // 앞 5글자만 표시하고 나머지는 * 처리
+  const visiblePart = userId.substring(0, 5);
+  const maskedLength = Math.min(userId.length - 5, 5); // 마스킹할 문자 개수 (최대 5개)
   
-  // 단순 문자열 해시 함수 (FNV-1a 해시의 간소화 버전)
-  const simpleHash = str => {
-    let hash = 2166136261; // FNV 오프셋 기준
-    for (let i = 0; i < str.length; i++) {
-      hash ^= str.charCodeAt(i);
-      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-    }
-    // 16진수 문자열로 변환하고 마지막 8자리만 사용
-    return (hash >>> 0).toString(16).substring(0, 8);
-  };
-  
-  if (isUuid) {
-    // UUID의 경우 첫 2자와 마지막 2자를 사용하는 형식으로 해시
-    const firstPart = userId.substring(0, 2);
-    const lastPart = userId.substring(userId.length - 2);
-    return `${firstPart}...${lastPart}`;
-  } else {
-    // 일반 사용자 ID는 앞 두 글자를 보존하고 나머지는 해시
-    const prefix = userId.substring(0, 2);
-    const hashedPart = simpleHash(userId);
-    return `${prefix}#${hashedPart}`;
-  }
+  return `${visiblePart}${'*'.repeat(maskedLength)}`;
 };
 
 const getEventTypeLabel = (eventType) => {
