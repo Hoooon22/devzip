@@ -204,7 +204,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getHourlyEventCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
         List<EventLog> logs = logPage.getContent();
         
@@ -227,7 +228,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getPageViewCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByEventTypeAndOccurredAtBetween("pageview", startDate, endDate, pageable);
         List<EventLog> logs = logPage.getContent();
         
