@@ -4,12 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hoooon22.devzip.Model.traceboard.EventLog;
-import com.hoooon22.devzip.Model.traceboard.Project;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogResponse;
 import com.hoooon22.devzip.Repository.traceboard.EventLogRepository;
@@ -80,13 +76,15 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getAllEventLogs() {
-        return eventLogRepository.findAll();
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 결과를 반환
+        return eventLogRepository.findAll(Sort.by(Sort.Direction.DESC, "occurredAt"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         return logPage.getContent();
     }
@@ -94,7 +92,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByType(String eventType) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByEventType(eventType, pageable);
         return logPage.getContent();
     }
@@ -102,7 +101,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByUser(String userId) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByUserId(userId, pageable);
         return logPage.getContent();
     }
@@ -110,7 +110,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end) {
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         List<EventLog> logs = logPage.getContent();
         
@@ -178,7 +179,7 @@ public class EventLogServiceImpl implements EventLogService {
         List<EventLog> eventLogs = eventLogRepository.findBySessionId(sessionId);
         
         return eventLogs.stream()
-                .sorted((e1, e2) -> e1.getOccurredAt().compareTo(e2.getOccurredAt()))
+                .sorted((e1, e2) -> e2.getOccurredAt().compareTo(e1.getOccurredAt()))
                 .map(EventLogResponse::fromEntity)
                 .collect(Collectors.toList());
     }

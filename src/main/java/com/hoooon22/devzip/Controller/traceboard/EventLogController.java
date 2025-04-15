@@ -149,6 +149,9 @@ public class EventLogController {
                 events = eventLogService.getAllEventLogs();
             }
             
+            // 이벤트 로그를 최신순(occurredAt 기준 내림차순)으로 정렬
+            events.sort((a, b) -> b.getOccurredAt().compareTo(a.getOccurredAt()));
+            
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "count", events.size(),
