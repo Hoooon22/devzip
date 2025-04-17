@@ -1,0 +1,284 @@
+/* ApiPage.css - 반응형 API 페이지 스타일 */
+
+/* 기본 설정 및 변수 */
+:root {
+  --primary-color: #4a6cf7;
+  --secondary-color: #6e7efc;
+  --accent-color: #ff6b6b;
+  --background-color: #f8f9fa;
+  --border-color: #e1e4e8;
+  --text-color: #333;
+  --text-light-color: #666;
+  --card-bg: #fff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --border-radius: 8px;
+  --get-color: #4caf50;
+  --post-color: #2196f3;
+  --put-color: #ff9800;
+  --delete-color: #f44336;
+  --padding-sm: 10px;
+  --padding-md: 20px;
+  --padding-lg: 30px;
+}
+
+/* 기본 리셋 및 글꼴 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+/* 컨테이너 및 레이아웃 */
+.api-page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--padding-md);
+}
+
+.api-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: var(--padding-lg) var(--padding-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.api-header h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.api-header p {
+  color: var(--text-light-color);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.api-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 카테고리 섹션 */
+.api-category {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--padding-md);
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+.category-header h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.expand-icon {
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.category-content {
+  padding: var(--padding-md);
+}
+
+.category-description {
+  margin-bottom: 1.5rem;
+  color: var(--text-light-color);
+}
+
+/* 엔드포인트 디자인 */
+.endpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.endpoint {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  padding: var(--padding-sm) var(--padding-md);
+  background-color: #f5f7fa;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.method {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  min-width: 60px;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.method.get {
+  background-color: var(--get-color);
+}
+
+.method.post {
+  background-color: var(--post-color);
+}
+
+.method.put {
+  background-color: var(--put-color);
+}
+
+.method.delete {
+  background-color: var(--delete-color);
+}
+
+.path {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.endpoint-details {
+  padding: var(--padding-md);
+}
+
+.description {
+  margin-bottom: 1rem;
+}
+
+.params, .request-body, .response {
+  margin-bottom: 1rem;
+}
+
+.params h4, .request-body h4, .response h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-light-color);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+pre {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: #f6f8fa;
+  padding: 12px;
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #333;
+  border: 1px solid var(--border-color);
+}
+
+.try-api {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.try-api a {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.try-api a:hover {
+  background-color: var(--secondary-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .api-header h1 {
+    font-size: 2rem;
+  }
+  
+  .category-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .endpoint-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .method {
+    margin-bottom: 5px;
+  }
+  
+  .path {
+    font-size: 0.8rem;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --padding-sm: 8px;
+    --padding-md: 15px;
+    --padding-lg: 20px;
+  }
+  
+  .api-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .api-header p {
+    font-size: 0.9rem;
+  }
+  
+  .category-header {
+    padding: var(--padding-sm) var(--padding-md);
+  }
+  
+  .category-content {
+    padding: var(--padding-sm);
+  }
+  
+  pre {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .try-api a {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+} 

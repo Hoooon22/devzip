@@ -28,8 +28,8 @@ const projects = [
     },
     { 
         id: 4, 
-        name: 'api 개발 모음', 
-        description: '사용법 : /api/{apiURL}', 
+        name: 'DevZip API 목록', 
+        description: 'DevZip에서 제공하는 모든 API 엔드포인트와 사용법 소개', 
         link: '/apiPage', 
         active: true,
         startDate: '2024-10-14',
