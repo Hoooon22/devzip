@@ -12,6 +12,13 @@ const ApiPage = () => {
         }
     };
 
+    const handleKeyDown = (event, index) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleCategory(index);
+        }
+    };
+
     const apiCategories = [
         {
             name: '개발자 관련 API',
@@ -134,18 +141,24 @@ const ApiPage = () => {
             <main className="api-content">
                 {apiCategories.map((category, index) => (
                     <section key={index} className="api-category">
-                        <div 
+                        <button 
                             className="category-header" 
                             onClick={() => toggleCategory(index)}
+                            onKeyDown={(e) => handleKeyDown(e, index)}
+                            aria-expanded={expandedCategory === index}
+                            aria-controls={`category-content-${index}`}
                         >
                             <h2>{category.name}</h2>
-                            <span className={`expand-icon ${expandedCategory === index ? 'expanded' : ''}`}>
+                            <span className={`expand-icon ${expandedCategory === index ? 'expanded' : ''}`} aria-hidden="true">
                                 {expandedCategory === index ? '−' : '+'}
                             </span>
-                        </div>
+                        </button>
                         
                         {expandedCategory === index && (
-                            <div className="category-content">
+                            <div 
+                                className="category-content" 
+                                id={`category-content-${index}`}
+                            >
                                 <p className="category-description">{category.description}</p>
                                 
                                 <div className="endpoints">

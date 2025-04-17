@@ -86,11 +86,27 @@ body {
   color: white;
   cursor: pointer;
   user-select: none;
+  width: 100%;
+  text-align: left;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  outline: none;
+}
+
+.category-header:focus {
+  box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.4);
+}
+
+.category-header:hover {
+  background-color: var(--secondary-color);
 }
 
 .category-header h2 {
   font-size: 1.3rem;
   font-weight: 500;
+  margin: 0;
 }
 
 .expand-icon {
