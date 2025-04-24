@@ -21,12 +21,18 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytrends requests
+          pip install pytrends requests beautifulsoup4
+      
+      - name: Create required directories
+        run: |
+          mkdir -p ./src/main/resources
       
       - name: Run update script
         run: |
           chmod +x ./src/main/resources/update_trends.sh
           bash ./src/main/resources/update_trends.sh
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
       
       - name: Commit and push changes
         run: |
@@ -36,6 +42,7 @@ jobs:
           # 변경사항 확인
           if [[ -n $(git status -s) ]]; then
             git add src/main/resources/trending_keywords.json
+            git add src/main/resources/update_trends.log || true
             git commit -m "Update trend data $(date +'%Y-%m-%d %H:%M:%S')"
             git push
             echo "트렌드 데이터가 업데이트되었습니다."

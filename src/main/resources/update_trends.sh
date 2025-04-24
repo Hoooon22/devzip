@@ -3,11 +3,22 @@
 # 로그 시작
 echo "트렌드 키워드 업데이트를 시작합니다: $(date)"
 
-# 프로젝트 루트 디렉토리 설정
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# 프로젝트 루트 디렉토리 설정 (GitHub Actions 환경에서는 GITHUB_WORKSPACE 환경 변수 사용)
+if [ -n "$GITHUB_WORKSPACE" ]; then
+    # GitHub Actions 환경
+    PROJECT_ROOT="$GITHUB_WORKSPACE"
+else
+    # 로컬 환경
+    PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+fi
+
 RESOURCES_DIR="$PROJECT_ROOT/src/main/resources"
 JSON_FILE="$RESOURCES_DIR/trending_keywords.json"
 LOG_FILE="$RESOURCES_DIR/update_trends.log"
+
+# 로그 디렉토리 확인 및 생성
+mkdir -p "$(dirname "$LOG_FILE")"
+touch "$LOG_FILE"
 
 echo "프로젝트 루트: $PROJECT_ROOT" >> "$LOG_FILE"
 echo "리소스 디렉토리: $RESOURCES_DIR" >> "$LOG_FILE"
@@ -30,6 +41,9 @@ source "$VENV_DIR/bin/activate"
 # 필요한 패키지 설치
 echo "필요한 패키지 설치 중..." >> "$LOG_FILE"
 pip install requests beautifulsoup4 >> "$LOG_FILE" 2>&1
+
+# JSON 파일이 저장될 디렉토리 확인 및 생성
+mkdir -p "$(dirname "$JSON_FILE")"
 
 # 새로운 JSON 파일 생성
 echo "새로운 JSON 파일 생성 중..." >> "$LOG_FILE"
