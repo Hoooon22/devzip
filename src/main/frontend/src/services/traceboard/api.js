@@ -37,7 +37,7 @@ export const getDashboardData = async (startDate, endDate) => {
       }
       return date;
     };
-    
+
     const formattedStartDate = formatDate(startDate);
     const formattedEndDate = formatDate(endDate);
     
