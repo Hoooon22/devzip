@@ -1,26 +1,137 @@
+// Pagination container styles
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+// Pagination list styles
 .pagination {
     display: flex;
     justify-content: center;
+    align-items: center;
     list-style: none;
     padding: 0;
-    margin: 20px 0;
+    margin: 0 0 10px 0;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
+// Page item styles
 .page-item {
-    margin: 0 5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    // Active page item
+    &.active .page-link {
+        background-color: #0d47a1; // 진한 블루 배경
+        border-color: #0d47a1;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
+    }
+    
+    // Disabled page item
+    &.disabled .page-link {
+        background-color: #e0e0e0;
+        border-color: #e0e0e0;
+        color: #9e9e9e;
+        cursor: not-allowed;
+        opacity: 0.7;
+        
+        &:hover {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            transform: none;
+        }
+    }
+    
+    // Ellipsis item
+    &.ellipsis {
+        padding: 0 5px;
+    }
 }
 
+// Page link styles
 .page-link {
-    padding: 10px 15px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0;
     border: 1px solid #1e88e5; // 중간 블루 테두리
-    border-radius: 4px;
+    border-radius: 50%; // 원형 버튼
     text-decoration: none;
-    color: #fff;
-    background: #1976d2; // 중간 블루 배경
-    transition: background 0.2s ease, color 0.2s ease;
-
+    color: #1976d2; // 중간 블루 글자색
+    background: white; // 흰색 배경
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    
     &:hover {
         background: #bbdefb; // 밝은 블루 배경
         color: #0d47a1; // 진한 블루 글자 색상
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
+    }
+}
+
+// Navigation buttons (prev/next)
+.page-nav {
+    font-size: 12px;
+    
+    &:hover {
+        background-color: #e3f2fd;
+    }
+}
+
+// Ellipsis style
+.page-ellipsis {
+    color: #757575;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+// Page info text
+.page-info {
+    font-size: 14px;
+    color: #616161;
+    margin-top: 8px;
+    text-align: center;
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+    .pagination {
+        gap: 5px;
+    }
+    
+    .page-link {
+        min-width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 3px;
+    }
+    
+    .page-link {
+        min-width: 32px;
+        height: 32px;
+        font-size: 12px;
     }
 }
