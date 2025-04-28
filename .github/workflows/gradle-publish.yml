@@ -54,8 +54,11 @@ jobs:
             cd /var/project/devzip/
             sudo rm -rf build/
             sudo yum clean all
-            echo "📥 Pulling latest code"
-            git pull origin master || { echo "❌ Git pull failed"; exit 1; }
+            echo "🧹 Cleaning untracked files"
+            git fetch origin master
+            git clean -df
+            echo "📥 Applying latest code changes"
+            git merge origin/master || { echo "❌ Git merge failed"; exit 1; }
             echo "🏗️ Building project"
             ./gradlew clean build --no-daemon --parallel --configure-on-demand || { echo "❌ Build failed"; exit 1; }
             echo "✅ Build completed"
@@ -97,10 +100,14 @@ jobs:
             
             # 가상 환경 설정 및 Python 패키지 설치
             echo "🐍 Setting up Python environment"
+            # 기존 가상환경 제거 후 새로 생성
+            rm -rf venv
             python3 -m venv venv || echo "⚠️ Virtual environment creation failed but continuing"
             source venv/bin/activate
-            pip install --no-cache-dir pytrends || echo "⚠️ Failed to install Python packages but continuing"
+            pip install --no-cache-dir pytrends beautifulsoup4 || echo "⚠️ Failed to install Python packages but continuing"
             deactivate
+            # 가상환경 폴더를 .gitignore에 추가
+            grep -q "venv/" .gitignore || echo "venv/" >> .gitignore
             
             # PM2 프로세스 목록 확인
             echo "📋 Current PM2 processes:"
