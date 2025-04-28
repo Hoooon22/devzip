@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
-import Main from "./pages/main";
+import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
 import Joke from "./pages/Joke";
 // import Lolpatch from "./pages/Lolpatch";
