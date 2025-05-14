@@ -1,9 +1,14 @@
 name: Update Trend Data
 
+# 워크플로우 임시 비활성화 (필요시 주석 해제)
+# on:
+#   schedule:
+#     - cron: '0 */6 * * *'  # 6시간마다 실행
+#   workflow_dispatch:  # 수동 트리거 허용
+
+# 수동 트리거만 활성화 (스케줄은 비활성화)
 on:
-  schedule:
-    - cron: '0 */6 * * *'  # 6시간마다 실행
-  workflow_dispatch:  # 수동 트리거 허용
+  workflow_dispatch:  # 수동 트리거만 허용
 
 jobs:
   update-trends:
