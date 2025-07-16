@@ -47,7 +47,7 @@ const ChatRoomPage = () => {
 
   // WebSocket 연결 설정 (실시간 메시지 수신)
   useEffect(() => {
-    const socket = new SockJS("https://devzip.site/ws");
+    const socket = new SockJS("http://localhost:8080/ws");
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

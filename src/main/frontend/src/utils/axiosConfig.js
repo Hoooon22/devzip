@@ -8,7 +8,7 @@ function getCSRFToken() {
 
 // Axios 인스턴스 설정
 const axiosConfig = axios.create({
-    baseURL: 'https://devzip.site',
+    baseURL: 'http://localhost:8080',
     withCredentials: true, // 쿠키 포함
     headers: {
         'X-CSRF-Token': getCSRFToken(), // CSRF 토큰 추가

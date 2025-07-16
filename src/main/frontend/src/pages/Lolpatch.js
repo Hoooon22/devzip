@@ -7,7 +7,7 @@ function Lolpatch() {
     const fetchLolPatch = async () => {
         try {
             console.log('Fetching patch...');
-            const response = await axios.get('https://devzip.site/api/lolPatch');
+            const response = await axios.get('http://localhost:8080/api/lolPatch');
             console.log('Fetched patch:', response.data);
             setLolPatch(response.data);
         } catch (error) {
