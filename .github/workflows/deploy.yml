@@ -53,9 +53,9 @@ jobs:
           
           # Docker 작업 실행
           if [ $? -eq 0 ]; then
-            docker-compose down
-            docker-compose build
-            docker-compose up -d
+            docker compose down
+            docker compose build
+            docker compose up -d
           else
             echo "Git pull failed. Deployment stopped."
             exit 1
