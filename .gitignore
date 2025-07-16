@@ -502,3 +502,12 @@ src/main/resources/static/
 
 # Python data files
 src/main/resources/trending_keywords.json
+
+# 환경변수 파일
+.env
+.env.local
+.env.production
+.env.staging
+
+# 도커 관련
+docker-compose.override.yml
