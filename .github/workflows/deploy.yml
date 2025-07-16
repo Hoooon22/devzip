@@ -47,7 +47,16 @@ jobs:
         debug: true
         script: |
           cd ~/project/devzip
+          # Git 설정 및 최신 코드 가져오기
+          git config pull.rebase false
           git pull origin master
-          docker-compose down
-          docker-compose build
-          docker-compose up -d
+          
+          # Docker 작업 실행
+          if [ $? -eq 0 ]; then
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
+          else
+            echo "Git pull failed. Deployment stopped."
+            exit 1
+          fi
