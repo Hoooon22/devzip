@@ -44,6 +44,7 @@ jobs:
         port: 3323
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        debug: true
         script: |
           cd ~/project/devzip
           git pull origin master
