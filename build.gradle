@@ -64,6 +64,7 @@ task buildFrontendReact(type: Exec) {
     workingDir "$frontendDir"
     inputs.dir "$frontendDir"
     group = BasePlugin.BUILD_GROUP
+    environment "Host", "0,0,0,0"
     commandLine "npm", "run-script", "build"
 }
 
