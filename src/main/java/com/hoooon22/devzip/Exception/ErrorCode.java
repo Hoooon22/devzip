@@ -11,7 +11,8 @@ public enum ErrorCode {
     // === 일반적인 오류 ===
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "TB001", "내부 서버 오류가 발생했습니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "TB002", "잘못된 요청입니다."),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "TB003", "요청한 리소스를 찾을 수 없습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "TB003", "입력값이 유효하지 않습니다."),
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "TB004", "요청한 리소스를 찾을 수 없습니다."),
     
     // === 인증/권한 관련 오류 ===
     INVALID_API_KEY(HttpStatus.UNAUTHORIZED, "TB101", "유효하지 않은 API 키입니다."),

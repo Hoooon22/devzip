@@ -25,7 +25,8 @@ public class SecurityConfig {
         http
             // CSRF 보호 (SPA용으로 비활성화하되, 헤더 기반 검증 활성화)
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/traceboard/**", "/ws/**")
+                .ignoringRequestMatchers("/api/traceboard/**", "/ws/**", "/api/entry/**", 
+                    "/api/chat/**", "/api/trendchat/**", "/api/joke/**", "/api/trend/**")
             )
             // 세션 관리 - JWT를 사용하므로 STATELESS
             .sessionManagement(session -> session
@@ -37,6 +38,19 @@ public class SecurityConfig {
                 .requestMatchers("/", "/static/**", "/favicon.ico", "/manifest.json").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/ws/**").permitAll() // WebSocket 연결
+                
+                // Guestbook API (공개 API)
+                .requestMatchers("/api/entry/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/entry").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/entry").permitAll()
+                
+                // Chat API (공개 API)
+                .requestMatchers("/api/chat/**").permitAll()
+                .requestMatchers("/api/trendchat/**").permitAll()
+                
+                // Joke API (공개 API) 
+                .requestMatchers("/api/joke/**").permitAll()
+                .requestMatchers("/api/trend/**").permitAll()
                 
                 // TraceBoard 이벤트 수집 API (API 키 필요)
                 .requestMatchers(HttpMethod.POST, "/api/traceboard/event").hasRole("API_CLIENT")

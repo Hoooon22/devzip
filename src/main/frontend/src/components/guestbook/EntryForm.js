@@ -24,7 +24,7 @@ const EntryForm = ({ addEntry }) => {
 
         try {
             const response = await axios.post(
-                '/api/v1/entries',
+                '/api/entry',
                 { name, content }, // 요청 본문에 데이터를 포함
                 {
                     headers: {
@@ -39,7 +39,37 @@ const EntryForm = ({ addEntry }) => {
             setError(null); // 에러 초기화
         } catch (error) {
             console.error('Error adding entry:', error);
-            setError('Failed to add entry. Please try again.'); // 에러 메시지 설정
+            
+            // 백엔드 에러 메시지 확인
+            let errorMessage = 'Failed to add entry. Please try again.';
+            
+            if (error.response?.data) {
+                const errorData = error.response.data;
+                
+                // ApiResponse ErrorResponse 형식 처리
+                if (!errorData.success && errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                } else if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                }
+                
+                // HTTP 상태코드별 메시지
+                switch (error.response.status) {
+                    case 400:
+                        errorMessage = errorData.message || '입력한 정보를 다시 확인해주세요.';
+                        break;
+                    case 500:
+                        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                        break;
+                    default:
+                        // 기본 메시지 유지
+                }
+            }
+            
+            console.log('Setting error message:', errorMessage);
+            setError(errorMessage);
         }
     };
 

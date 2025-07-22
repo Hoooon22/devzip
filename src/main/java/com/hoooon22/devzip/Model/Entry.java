@@ -10,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "Entry")
@@ -19,12 +21,20 @@ public class Entry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "이름을 입력해주세요")
+    @Size(max = 100, message = "이름은 100자 이하로 입력해주세요")
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @NotBlank(message = "내용을 입력해주세요")
+    @Size(max = 1000, message = "내용은 1000자 이하로 입력해주세요")
+    @Column(nullable = false, length = 1000)
     private String content;
 
+    @Column(length = 45)
     private String ip;
 
+    @Column(length = 7)
     private String color;
 
     @Column(nullable = false, updatable = false)

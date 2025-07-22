@@ -1,6 +1,7 @@
 package com.hoooon22.devzip.Config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +14,13 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableConfigurationProperties({TraceBoardProperties.class})
 @EnableAsync
-@RequiredArgsConstructor
 public class TraceBoardConfig {
 
     private final TraceBoardProperties properties;
+
+    public TraceBoardConfig(@Qualifier("app-com.hoooon22.devzip.Config.TraceBoardProperties") TraceBoardProperties properties) {
+        this.properties = properties;
+    }
 
     /**
      * 비동기 작업을 위한 ThreadPoolTaskExecutor 설정

@@ -47,20 +47,28 @@ public class EntryService {
 
     @Transactional
     public Entry addEntry(Entry entry) {
-        String clientIp = getClientIp();
-        entry.setIp(clientIp);
-        // IP를 기반으로 색상 설정
-        String color = getColorFromIp(clientIp);
-        entry.setColor(color);
-        
-        // 현재 날짜와 시간 설정
-        entry.setCreateDate(LocalDateTime.now());
+        try {
+            String clientIp = getClientIp();
+            entry.setIp(clientIp);
+            
+            // IP를 기반으로 색상 설정
+            String color = getColorFromIp(clientIp);
+            entry.setColor(color);
+            
+            // 현재 날짜와 시간 설정
+            entry.setCreateDate(LocalDateTime.now());
 
-        logger.debug("Adding new entry: {}", entry);
-        Entry savedEntry = entryRepository.save(entry);
+            logger.info("방명록 등록 시작 - 이름: {}, IP: {}, 색상: {}", entry.getName(), clientIp, color);
+            Entry savedEntry = entryRepository.save(entry);
 
-        logger.debug("Entry added successfully: {}", savedEntry);
-        return savedEntry;
+            logger.info("방명록 등록 성공 - ID: {}, 이름: {}, 시간: {}", 
+                       savedEntry.getId(), savedEntry.getName(), savedEntry.getCreateDate());
+            return savedEntry;
+        } catch (Exception e) {
+            logger.error("방명록 저장 중 데이터베이스 오류 발생 - 이름: {}, 내용: {}", 
+                        entry.getName(), entry.getContent(), e);
+            throw e; // 상위 컨트롤러에서 TraceBoardException으로 변환
+        }
     }
 
     private String getClientIp() {
