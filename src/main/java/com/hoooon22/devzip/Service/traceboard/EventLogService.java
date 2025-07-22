@@ -3,6 +3,8 @@ package com.hoooon22.devzip.Service.traceboard;
 import com.hoooon22.devzip.Model.traceboard.EventLog;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,4 +82,33 @@ public interface EventLogService {
      * 모든 이벤트 로그 조회 (기존 메서드 유지)
      */
     List<EventLog> getAllEventLogs();
+    
+    // === 페이징 지원 메서드 추가 ===
+    
+    /**
+     * 페이징을 지원하는 모든 이벤트 로그 조회
+     */
+    Page<EventLogResponse> getAllEventLogs(Pageable pageable);
+    
+    /**
+     * 페이징을 지원하는 사용자별 이벤트 로그 조회
+     */
+    Page<EventLogResponse> getUserEventLogs(String userId, Pageable pageable);
+    
+    /**
+     * 페이징을 지원하는 시간 범위별 이벤트 로그 조회
+     */
+    Page<EventLogResponse> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    
+    /**
+     * 검색 조건을 지원하는 고급 이벤트 로그 조회
+     */
+    Page<EventLogResponse> searchEventLogs(
+            String eventType, 
+            String userId, 
+            String path,
+            LocalDateTime startDate, 
+            LocalDateTime endDate, 
+            Pageable pageable
+    );
 } 

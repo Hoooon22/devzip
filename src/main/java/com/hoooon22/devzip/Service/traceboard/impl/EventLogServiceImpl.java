@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogResponse;
 import com.hoooon22.devzip.Repository.traceboard.EventLogRepository;
 import com.hoooon22.devzip.Repository.traceboard.ProjectRepository;
+import com.hoooon22.devzip.Security.DataEncryptionUtil;
 import com.hoooon22.devzip.Service.traceboard.EventLogService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class EventLogServiceImpl implements EventLogService {
 
     private final EventLogRepository eventLogRepository;
     private final ProjectRepository projectRepository;
+    private final DataEncryptionUtil encryptionUtil;
 
     @Override
     @Transactional
@@ -59,8 +62,8 @@ public class EventLogServiceImpl implements EventLogService {
                 .deviceType(request.getDeviceType())
                 .browser(request.getBrowser())
                 .os(request.getOs())
-                .ipAddress(ipAddress)
-                .userAgent(request.getUserAgent())
+                .ipAddressHash(encryptionUtil.hashIpAddress(ipAddress))
+                .userAgentEncrypted(encryptionUtil.encryptUserAgent(request.getUserAgent()))
                 .occurredAt(request.getOccurredAt())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
@@ -76,15 +79,17 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getAllEventLogs() {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 결과를 반환
-        return eventLogRepository.findAll(Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 기본 제한: 최근 1000개 이벤트만 반환
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        Page<EventLog> logPage = eventLogRepository.findAll(pageable);
+        return logPage.getContent();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 시간 범위 조회 시 기본 제한: 10,000개
+        Pageable pageable = PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         return logPage.getContent();
     }
@@ -92,8 +97,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByType(String eventType) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 이벤트 타입별 조회 시 기본 제한: 5,000개
+        Pageable pageable = PageRequest.of(0, 5000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByEventType(eventType, pageable);
         return logPage.getContent();
     }
@@ -101,8 +106,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public List<EventLog> getEventLogsByUser(String userId) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 사용자별 조회 시 기본 제한: 2,000개
+        Pageable pageable = PageRequest.of(0, 2000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByUserId(userId, pageable);
         return logPage.getContent();
     }
@@ -110,8 +115,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getDashboardData(LocalDateTime start, LocalDateTime end) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 대시보드 데이터 조회 시 제한: 50,000개 (통계 목적)
+        Pageable pageable = PageRequest.of(0, 50000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         List<EventLog> logs = logPage.getContent();
         
@@ -204,8 +209,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getHourlyEventCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 시간별 통계 조회 시 제한: 100,000개
+        Pageable pageable = PageRequest.of(0, 100000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
         List<EventLog> logs = logPage.getContent();
         
@@ -228,8 +233,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getPageViewCounts(LocalDateTime startDate, LocalDateTime endDate) {
-        // 최신순(occurredAt 기준 내림차순)으로 정렬된 페이징 객체 생성
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "occurredAt"));
+        // 페이지뷰 통계 조회 시 제한: 50,000개
+        Pageable pageable = PageRequest.of(0, 50000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByEventTypeAndOccurredAtBetween("pageview", startDate, endDate, pageable);
         List<EventLog> logs = logPage.getContent();
         
@@ -241,7 +246,8 @@ public class EventLogServiceImpl implements EventLogService {
     @Transactional(readOnly = true)
     public byte[] exportEventLogsToCSV(String eventType, LocalDateTime startDate, LocalDateTime endDate) {
         try {
-            Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+            // CSV 내보내기 시 제한: 100,000개 (메모리 보호)
+            Pageable pageable = PageRequest.of(0, 100000);
             Page<EventLog> logPage;
             
             if (eventType != null && !eventType.isEmpty()) {
@@ -271,8 +277,8 @@ public class EventLogServiceImpl implements EventLogService {
                         log.getDeviceType(),
                         log.getBrowser(),
                         log.getOs(),
-                        log.getIpAddress(),
-                        log.getUserAgent(),
+                        log.getIpAddressHash(),
+                        log.getUserAgentEncrypted(),
                         log.getOccurredAt(),
                         log.getLatitude(),
                         log.getLongitude(),
@@ -289,5 +295,53 @@ public class EventLogServiceImpl implements EventLogService {
             log.error("CSV 내보내기 실패", e);
             throw new RuntimeException("CSV 내보내기 실패: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Page<EventLogResponse> searchEventLogs(
+            String eventType, 
+            String userId, 
+            String path,
+            LocalDateTime startDate, 
+            LocalDateTime endDate, 
+            Pageable pageable) {
+        
+        // 검색 조건에 따른 동적 쿼리 구성
+        Specification<EventLog> spec = Specification.where(null);
+        
+        if (eventType != null && !eventType.trim().isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> 
+                criteriaBuilder.equal(root.get("eventType"), eventType));
+        }
+        
+        if (userId != null && !userId.trim().isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> 
+                criteriaBuilder.equal(root.get("userId"), userId));
+        }
+        
+        if (path != null && !path.trim().isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> 
+                criteriaBuilder.like(root.get("path"), "%" + path + "%"));
+        }
+        
+        if (startDate != null) {
+            spec = spec.and((root, query, criteriaBuilder) -> 
+                criteriaBuilder.greaterThanOrEqualTo(root.get("occurredAt"), startDate));
+        }
+        
+        if (endDate != null) {
+            spec = spec.and((root, query, criteriaBuilder) -> 
+                criteriaBuilder.lessThanOrEqualTo(root.get("occurredAt"), endDate));
+        }
+        
+        Page<EventLog> eventLogPage = eventLogRepository.findAll(spec, pageable);
+        
+        return eventLogPage.map(EventLogResponse::fromEntity);
+    }
+
+    @Override
+    public Page<EventLogResponse> getEventLogsByTimeRange(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        Page<EventLog> eventLogPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
+        return eventLogPage.map(EventLogResponse::fromEntity);
     }
 } 

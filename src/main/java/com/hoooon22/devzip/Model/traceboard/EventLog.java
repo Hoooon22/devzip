@@ -56,11 +56,11 @@ public class EventLog extends BaseTimeEntity {
     @Column
     private String os; // 운영체제 정보
     
-    @Column(name = "ip_address")
-    private String ipAddress; // IP 주소 (익명화 가능)
+    @Column(name = "ip_address_hash")
+    private String ipAddressHash; // IP 주소 해시 (단방향)
     
-    @Column(name = "user_agent", columnDefinition = "TEXT")
-    private String userAgent; // 브라우저 및 OS 정보
+    @Column(name = "user_agent_encrypted", columnDefinition = "TEXT")
+    private String userAgentEncrypted; // 암호화된 브라우저 및 OS 정보
     
     @Column(name = "occurred_at")
     private LocalDateTime occurredAt; // 이벤트 실제 발생 시간

@@ -24,6 +24,7 @@ import com.hoooon22.devzip.Model.traceboard.EventLog;
 import com.hoooon22.devzip.Model.traceboard.dto.ApiResponse;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogRequest;
 import com.hoooon22.devzip.Model.traceboard.dto.EventLogResponse;
+import com.hoooon22.devzip.Security.DataEncryptionUtil;
 import com.hoooon22.devzip.Service.traceboard.EventLogService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,16 +38,19 @@ import lombok.extern.slf4j.Slf4j;
 public class EventLogController {
     
     private final EventLogService eventLogService;
+    private final DataEncryptionUtil encryptionUtil;
     
     // 이벤트 로그 수집 API
     @PostMapping("/event")
     public ResponseEntity<?> collectEvent(@RequestBody EventLog eventLog, HttpServletRequest request) {
         try {
-            // IP 주소 기록
-            eventLog.setIpAddress(getClientIp(request));
+            // IP 주소 해싱하여 기록
+            String clientIp = getClientIp(request);
+            eventLog.setIpAddressHash(encryptionUtil.hashIpAddress(clientIp));
             
-            // User-Agent 기록
-            eventLog.setUserAgent(request.getHeader("User-Agent"));
+            // User-Agent 암호화하여 기록
+            String userAgent = request.getHeader("User-Agent");
+            eventLog.setUserAgentEncrypted(encryptionUtil.encryptUserAgent(userAgent));
             
             // 이벤트 로그 저장
             EventLog savedLog = eventLogService.saveEventLog(eventLog);
