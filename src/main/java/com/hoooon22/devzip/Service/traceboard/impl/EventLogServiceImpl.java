@@ -344,4 +344,16 @@ public class EventLogServiceImpl implements EventLogService {
         Page<EventLog> eventLogPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         return eventLogPage.map(EventLogResponse::fromEntity);
     }
+
+    @Override
+    public Page<EventLogResponse> getUserEventLogs(String userId, Pageable pageable) {
+        Page<EventLog> eventLogPage = eventLogRepository.findByUserId(userId, pageable);
+        return eventLogPage.map(EventLogResponse::fromEntity);
+    }
+
+    @Override
+    public Page<EventLogResponse> getAllEventLogs(Pageable pageable) {
+        Page<EventLog> eventLogPage = eventLogRepository.findAll(pageable);
+        return eventLogPage.map(EventLogResponse::fromEntity);
+    }
 } 

@@ -46,14 +46,30 @@ public class EventLogController {
         try {
             // IP 주소 해싱하여 기록
             String clientIp = getClientIp(request);
-            eventLog.setIpAddressHash(encryptionUtil.hashIpAddress(clientIp));
             
             // User-Agent 암호화하여 기록
             String userAgent = request.getHeader("User-Agent");
-            eventLog.setUserAgentEncrypted(encryptionUtil.encryptUserAgent(userAgent));
+            
+            // Builder 패턴으로 EventLog 재생성 (암호화된 필드 포함)
+            EventLog encryptedEventLog = EventLog.builder()
+                    .eventType(eventLog.getEventType())
+                    .userId(eventLog.getUserId())
+                    .sessionId(eventLog.getSessionId())
+                    .path(eventLog.getPath())
+                    .referrer(eventLog.getReferrer())
+                    .eventData(eventLog.getEventData())
+                    .deviceType(eventLog.getDeviceType())
+                    .browser(eventLog.getBrowser())
+                    .os(eventLog.getOs())
+                    .ipAddressHash(encryptionUtil.hashIpAddress(clientIp))
+                    .userAgentEncrypted(encryptionUtil.encryptUserAgent(userAgent))
+                    .occurredAt(eventLog.getOccurredAt())
+                    .latitude(eventLog.getLatitude())
+                    .longitude(eventLog.getLongitude())
+                    .build();
             
             // 이벤트 로그 저장
-            EventLog savedLog = eventLogService.saveEventLog(eventLog);
+            EventLog savedLog = eventLogService.saveEventLog(encryptedEventLog);
             
             return ResponseEntity.ok(Map.of(
                 "success", true,

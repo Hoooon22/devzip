@@ -5,150 +5,36 @@
     <!-- 로그 파일 저장 경로 -->
     <property name="LOG_PATH" value="./logs"/>
     
-    <!-- 로그 패턴 정의 -->
-    <property name="CONSOLE_LOG_PATTERN" 
-              value="%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
-    
-    <property name="FILE_LOG_PATTERN" 
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-    
-    <!-- Console Appender -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-    </appender>
-    
-    <!-- File Appender for All Logs -->
-    <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 파일 로그 appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/application.log</file>
         <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/application-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/application-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
     </appender>
-    
-    <!-- File Appender for Error Logs -->
-    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/error.log</file>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
+
+    <!-- 콘솔 로그 appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/error-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
-            <maxFileSize>50MB</maxFileSize>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>5GB</totalSizeCap>
-        </rollingPolicy>
     </appender>
-    
-    <!-- File Appender for TraceBoard Specific Logs -->
-    <appender name="FILE_TRACEBOARD" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/traceboard.log</file>
-        <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/traceboard-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>5GB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
-    
-    <!-- Async Appender for Performance -->
-    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE_ALL"/>
-        <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <includeCallerData>false</includeCallerData>
-    </appender>
-    
-    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE_ERROR"/>
-        <queueSize>256</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <includeCallerData>true</includeCallerData>
-    </appender>
-    
-    <!-- Logger 설정 -->
-    
-    <!-- TraceBoard 패키지 전용 로거 -->
-    <logger name="com.hoooon22.devzip.Controller.traceboard" level="INFO" additivity="false">
+
+    <!-- root 로거 -->
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE_TRACEBOARD"/>
-        <appender-ref ref="ASYNC_ERROR"/>
-    </logger>
-    
-    <logger name="com.hoooon22.devzip.Service.traceboard" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE_TRACEBOARD"/>
-        <appender-ref ref="ASYNC_ERROR"/>
-    </logger>
-    
-    <!-- Exception Handler 로거 -->
-    <logger name="com.hoooon22.devzip.Exception" level="WARN" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
-        <appender-ref ref="ASYNC_ERROR"/>
-    </logger>
-    
-    <!-- Security 관련 로거 -->
-    <logger name="com.hoooon22.devzip.Security" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
-        <appender-ref ref="ASYNC_ERROR"/>
-    </logger>
-    
-    <!-- Spring Security 로거 -->
-    <logger name="org.springframework.security" level="WARN"/>
-    
-    <!-- Database 쿼리 로거 (개발 환경용) -->
-    <logger name="org.hibernate.SQL" level="DEBUG"/>
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- TraceBoard 관련 로거 -->
+    <logger name="com.hoooon22.devzip" level="DEBUG"/>
     
     <!-- 외부 라이브러리 로그 레벨 조정 -->
     <logger name="org.springframework" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
-    <logger name="com.zaxxer.hikari" level="WARN"/>
-    
-    <!-- 환경별 로그 설정 -->
-    <springProfile name="local,dev">
-        <root level="DEBUG">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_FILE"/>
-            <appender-ref ref="ASYNC_ERROR"/>
-        </root>
-    </springProfile>
-    
-    <springProfile name="prod">
-        <root level="INFO">
-            <appender-ref ref="ASYNC_FILE"/>
-            <appender-ref ref="ASYNC_ERROR"/>
-        </root>
-    </springProfile>
-    
-    <!-- 기본 로그 설정 -->
-    <springProfile name="!local & !dev & !prod">
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_FILE"/>
-            <appender-ref ref="ASYNC_ERROR"/>
-        </root>
-    </springProfile>
+    <logger name="org.hibernate" level="WARN"/>
     
 </configuration>

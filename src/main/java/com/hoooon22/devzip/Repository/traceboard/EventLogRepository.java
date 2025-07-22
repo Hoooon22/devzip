@@ -27,9 +27,6 @@ public interface EventLogRepository extends JpaRepository<EventLog, Long>, JpaSp
     // 특정 이벤트 타입의 로그 조회
     Page<EventLog> findByEventType(String eventType, Pageable pageable);
 
-    // 시간 범위 내의 로그 조회
-    Page<EventLog> findByOccurredAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
-
     // 이벤트 타입과 시간 범위로 필터링
     Page<EventLog> findByEventTypeAndOccurredAtBetween(
             String eventType, LocalDateTime start, LocalDateTime end, Pageable pageable);
