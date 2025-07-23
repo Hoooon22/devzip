@@ -7,6 +7,7 @@ const EntryForm = ({ addEntry }) => {
     const [name, setName] = useState('');
     const [content, setContent] = useState('');
     const [error, setError] = useState(null); // 에러 메시지 상태 추가
+    const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
     // CSRF 토큰 가져오는 함수 (쿠키에서)
     const getCSRFToken = () => {
@@ -17,10 +18,16 @@ const EntryForm = ({ addEntry }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // 이미 제출 중이면 무시
+        if (loading) return;
+
         if (!name || !content) {
             setError('Name and Content are required!');
             return;
         }
+
+        setLoading(true); // 로딩 시작
+        setError(null); // 기존 에러 메시지 초기화
 
         try {
             const response = await axios.post(
@@ -70,6 +77,8 @@ const EntryForm = ({ addEntry }) => {
             
             console.log('Setting error message:', errorMessage);
             setError(errorMessage);
+        } finally {
+            setLoading(false); // 성공/실패와 관계없이 로딩 종료
         }
     };
 
@@ -89,7 +98,13 @@ const EntryForm = ({ addEntry }) => {
                 onChange={(e) => setContent(e.target.value)}
                 className="entry-form-textarea"
             />
-            <button type="submit" className="entry-form-button">Submit</button>
+            <button 
+                type="submit" 
+                className="entry-form-button"
+                disabled={loading}
+            >
+                {loading ? 'Submitting...' : 'Submit'}
+            </button>
         </form>
     );
 };
