@@ -41,8 +41,11 @@ public class SecurityConfig {
                 
                 // Guestbook API (공개 API)
                 .requestMatchers("/api/entry/**").permitAll()
+                .requestMatchers("/api/v1/entries/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/entry").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/entry").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/entries").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/entries").permitAll()
                 
                 // Chat API (공개 API)
                 .requestMatchers("/api/chat/**").permitAll()
@@ -52,9 +55,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/joke/**").permitAll()
                 .requestMatchers("/api/trend/**").permitAll()
                 
-                // TraceBoard 이벤트 수집 API (API 키 필요)
-                .requestMatchers(HttpMethod.POST, "/api/traceboard/event").hasRole("API_CLIENT")
-                .requestMatchers(HttpMethod.POST, "/api/traceboard/log/event").hasRole("API_CLIENT")
+                // TraceBoard 이벤트 수집 API (공개 API - 임시)
+                .requestMatchers(HttpMethod.POST, "/api/traceboard/event").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/traceboard/log/event").permitAll()
                 
                 // 대시보드 조회 API (인증 필요)
                 .requestMatchers("/api/traceboard/dashboard/**").hasRole("API_CLIENT")
