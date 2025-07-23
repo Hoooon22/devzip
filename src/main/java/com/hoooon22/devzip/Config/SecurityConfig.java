@@ -40,9 +40,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            // 권한 설정 - 임시로 모든 API를 공개로 설정
+            // 권한 설정 - 모든 API를 공개로 설정
             .authorizeHttpRequests(auth -> auth
-                // 모든 요청 허용 (디버깅을 위한 임시 설정)
+                // 정적 리소스 허용
+                .requestMatchers("/", "/static/**", "/favicon.ico", "/manifest.json").permitAll()
+                // API 엔드포인트 모두 허용
+                .requestMatchers("/api/**").permitAll()
+                // actuator 엔드포인트 허용
+                .requestMatchers("/actuator/**").permitAll()
+                // WebSocket 엔드포인트 허용
+                .requestMatchers("/ws/**").permitAll()
+                // 에러 페이지 허용
+                .requestMatchers("/error").permitAll()
+                // 나머지 모든 요청 허용
                 .anyRequest().permitAll()
             )
             // 폼 로그인 비활성화
