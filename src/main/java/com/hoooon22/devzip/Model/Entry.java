@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Entry")
@@ -31,6 +32,7 @@ public class Entry {
     @Column(nullable = false, length = 1000)
     private String content;
 
+    @JsonIgnore // JSON 응답에서 IP 주소를 숨김
     @Column(length = 45)
     private String ip;
 
@@ -66,10 +68,12 @@ public class Entry {
         this.content = content;
     }
 
+    @JsonIgnore // JSON 응답에서 IP getter를 숨김
     public String getIp() {
         return ip;
     }
 
+    @JsonIgnore // JSON 요청에서 IP setter를 숨김
     public void setIp(String ip) {
         this.ip = ip;
     }
