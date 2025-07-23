@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.hoooon22.devzip.Model.traceboard.EventLog;
 import com.hoooon22.devzip.Model.traceboard.dto.ApiResponse;
@@ -31,6 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.cloud", "http://devzip.cloud"})
 @RestController
 @RequestMapping("/api/traceboard")
 @RequiredArgsConstructor

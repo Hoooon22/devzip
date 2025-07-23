@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
             // CSRF 보호 (SPA용으로 비활성화하되, 헤더 기반 검증 활성화)
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/traceboard/**", "/ws/**", "/api/entry/**", 
+                .ignoringRequestMatchers("/api/traceboard/**", "/ws/**", "/api/entry/**", "/api/v1/entries/**",
                     "/api/chat/**", "/api/trendchat/**", "/api/joke/**", "/api/trend/**")
             )
             // 세션 관리 - JWT를 사용하므로 STATELESS

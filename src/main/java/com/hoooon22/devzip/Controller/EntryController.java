@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.hoooon22.devzip.Exception.ErrorCode;
 import com.hoooon22.devzip.Exception.TraceBoardException;
@@ -20,9 +21,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.cloud", "http://devzip.cloud"})
 @Slf4j
 @RestController
-@RequestMapping("/api/entry")
+@RequestMapping({"/api/entry", "/api/v1/entries"})
 public class EntryController {
 
     @Autowired
