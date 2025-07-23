@@ -23,7 +23,9 @@ public class SecurityConfig {
                 var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
                 corsConfiguration.setAllowedOriginPatterns(java.util.List.of(
                     "http://localhost:*", 
+                    "https://192.168.75.224", 
                     "https://192.168.75.224:*", 
+                    "http://192.168.75.224",
                     "http://192.168.75.224:*",
                     "https://devzip.cloud", 
                     "http://devzip.cloud"
