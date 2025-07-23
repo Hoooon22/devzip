@@ -31,6 +31,12 @@ const Guestbook = () => {
         setEntries((prevEntries) => [...prevEntries, savedEntry]);
     };
 
+    // 엔트리를 상태에서 제거하는 함수
+    const deleteEntry = (entryId) => {
+        console.log('Deleting entry from state:', entryId);
+        setEntries((prevEntries) => prevEntries.filter(entry => entry.id !== entryId));
+    };
+
     useEffect(() => {
         fetchEntries();
     }, []);
@@ -39,7 +45,7 @@ const Guestbook = () => {
         <div className="guestbook-container">
             <h1>Guestbook!?</h1>
             <EntryForm addEntry={addEntry} />
-            <EntryList entries={entries} />
+            <EntryList entries={entries} onDeleteEntry={deleteEntry} />
         </div>
     );
 };

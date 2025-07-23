@@ -2,6 +2,7 @@ package com.hoooon22.devzip.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,37 @@ public class EntryService {
             logger.error("방명록 저장 중 데이터베이스 오류 발생 - 이름: {}, 내용: {}", 
                         entry.getName(), entry.getContent(), e);
             throw e; // 상위 컨트롤러에서 TraceBoardException으로 변환
+        }
+    }
+
+    @Transactional
+    public boolean deleteEntry(Long id) {
+        try {
+            String clientIp = getClientIp();
+            logger.info("방명록 삭제 시도 - ID: {}, 요청 IP: {}", id, clientIp);
+            
+            Optional<Entry> entryOptional = entryRepository.findById(id);
+            if (entryOptional.isEmpty()) {
+                logger.warn("삭제하려는 방명록이 존재하지 않음 - ID: {}", id);
+                return false;
+            }
+            
+            Entry entry = entryOptional.get();
+            String entryIp = entry.getIp();
+            
+            // IP 주소 비교 (현재 요청자의 IP와 게시글 작성자의 IP가 같은지 확인)
+            if (!clientIp.equals(entryIp)) {
+                logger.warn("방명록 삭제 권한 없음 - 요청 IP: {}, 게시글 IP: {}, ID: {}", clientIp, entryIp, id);
+                return false;
+            }
+            
+            entryRepository.deleteById(id);
+            logger.info("방명록 삭제 성공 - ID: {}, IP: {}", id, clientIp);
+            return true;
+            
+        } catch (Exception e) {
+            logger.error("방명록 삭제 중 오류 발생 - ID: {}", id, e);
+            throw e;
         }
     }
 

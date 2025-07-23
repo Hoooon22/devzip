@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +78,25 @@ public class EntryController {
                      entry != null ? entry.getName() : "null", 
                      entry != null ? entry.getContent() : "null", e);
             throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "방명록 저장 중 오류가 발생했습니다", e);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteEntry(@PathVariable Long id) {
+        try {
+            boolean deleted = entryService.deleteEntry(id);
+            if (deleted) {
+                log.info("방명록 삭제 성공: ID={}", id);
+                return ResponseEntity.ok(ApiResponse.success("방명록이 삭제되었습니다"));
+            } else {
+                log.warn("방명록 삭제 실패: 권한 없음 또는 존재하지 않는 게시글 - ID={}", id);
+                throw new TraceBoardException(ErrorCode.INSUFFICIENT_PERMISSIONS, "삭제 권한이 없거나 존재하지 않는 게시글입니다");
+            }
+        } catch (TraceBoardException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("방명록 삭제 중 오류 발생: ID={}", id, e);
+            throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "방명록 삭제 중 오류가 발생했습니다", e);
         }
     }
 }
