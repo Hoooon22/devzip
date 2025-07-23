@@ -25,28 +25,10 @@ const Guestbook = () => {
         }
     };
 
-    // 새로운 엔트리를 추가하는 함수 (POST)
-    const addEntry = async (newEntry) => {
-        try {
-            const response = await axios.post('/api/entry', newEntry);
-            console.log('API Response:', response.data);
-            
-            // ApiResponse 형식 처리
-            let savedEntry;
-            if (response.data && response.data.success) {
-                savedEntry = response.data.data;
-            } else {
-                savedEntry = response.data; // 기존 형식 호환
-            }
-            
-            console.log('Added new entry:', savedEntry);
-            setEntries((prevEntries) => [...prevEntries, savedEntry]);
-        } catch (error) {
-            console.error('Error adding entry:', error);
-            console.error('Error response:', error.response?.data);
-            // 에러를 EntryForm으로 전파
-            throw error;
-        }
+    // 새로운 엔트리를 상태에 추가하는 함수 (EntryForm에서 이미 API 호출 완료된 데이터를 받음)
+    const addEntry = (savedEntry) => {
+        console.log('Adding entry to state:', savedEntry);
+        setEntries((prevEntries) => [...prevEntries, savedEntry]);
     };
 
     useEffect(() => {

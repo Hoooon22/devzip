@@ -40,10 +40,24 @@ const EntryForm = ({ addEntry }) => {
                 }
             );
             console.log('Entry added:', response.data);
-            addEntry(response.data); // Guestbook 상태에 추가
+            
+            // ApiResponse 형식 처리 후 Guestbook 상태에 추가
+            let savedEntry;
+            if (response.data && response.data.success) {
+                savedEntry = response.data.data;
+            } else {
+                savedEntry = response.data; // 기존 형식 호환
+            }
+            
+            // 입력 필드 초기화를 먼저 수행
             setName('');
             setContent('');
             setError(null); // 에러 초기화
+            
+            // 상태 업데이트는 마지막에 수행
+            if (savedEntry) {
+                addEntry(savedEntry);
+            }
         } catch (error) {
             console.error('Error adding entry:', error);
             
