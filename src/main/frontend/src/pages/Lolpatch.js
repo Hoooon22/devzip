@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 
 function Lolpatch() {
     const [lolPatch, setLolPatch] = useState(null);
@@ -7,7 +7,7 @@ function Lolpatch() {
     const fetchLolPatch = async () => {
         try {
             console.log('Fetching patch...');
-            const response = await axios.get('http://localhost:8080/api/lolPatch');
+            const response = await axios.get('/api/lolPatch');
             console.log('Fetched patch:', response.data);
             setLolPatch(response.data);
         } catch (error) {

@@ -1,6 +1,6 @@
 // src/pages/Joke.js
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 import RandomJoke from '../components/Joke/RandomJoke';
 import '../assets/css/Joke.scss';  // CSS 파일 추가
 
@@ -12,7 +12,7 @@ function Joke() {
     const fetchJoke = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8080/api/joke'); // Spring Boot API 주소
+            const response = await axios.get('/api/joke'); // Spring Boot API 주소
             setJoke(response.data);
             console.log('Fetched joke:', response.data);
         } catch (error) {
