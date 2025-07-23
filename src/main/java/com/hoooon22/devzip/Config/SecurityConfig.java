@@ -23,11 +23,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // CSRF 보호 (SPA용으로 비활성화하되, 헤더 기반 검증 활성화)
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/traceboard/**", "/ws/**", "/api/entry/**", "/api/v1/entries/**",
-                    "/api/chat/**", "/api/trendchat/**", "/api/joke/**", "/api/trend/**")
-            )
+            // CSRF 완전 비활성화 (SPA 및 API 사용을 위해)
+            .csrf(csrf -> csrf.disable())
+            // CORS 설정 활성화
+            .cors(cors -> cors.configurationSource(request -> {
+                var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+                corsConfiguration.setAllowedOriginPatterns(java.util.List.of(
+                    "http://localhost:*", 
+                    "https://192.168.75.224:*", 
+                    "http://192.168.75.224:*",
+                    "https://devzip.cloud", 
+                    "http://devzip.cloud"
+                ));
+                corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+                corsConfiguration.setAllowCredentials(true);
+                corsConfiguration.setMaxAge(3600L);
+                return corsConfiguration;
+            }))
             // 세션 관리 - JWT를 사용하므로 STATELESS
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

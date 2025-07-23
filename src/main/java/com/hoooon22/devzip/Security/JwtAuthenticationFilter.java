@@ -29,6 +29,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response, 
                                   FilterChain filterChain) throws ServletException, IOException {
         
+        // CORS preflight 요청(OPTIONS)은 JWT 검증을 건너뛰기
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
