@@ -51,8 +51,13 @@ jobs:
           git config pull.rebase false
           git pull origin master
           
-          # Docker 작업 실행
+          # Gradle 빌드 및 Docker 작업 실행
           if [ $? -eq 0 ]; then
+            # 실행 권한 부여
+            chmod +x gradlew
+            # Spring Boot 애플리케이션 빌드 (프론트엔드 포함)
+            ./gradlew build -x test
+            # Docker 재시작
             docker compose down
             docker compose build
             docker compose up -d
