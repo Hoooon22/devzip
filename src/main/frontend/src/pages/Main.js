@@ -3,6 +3,7 @@ import projects from '../data/projects';
 import Pagination from '../components/Pagination';
 import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
 import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
+import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
 import "../assets/css/Main.scss";
 
 const Main = () => {
@@ -20,6 +21,10 @@ const Main = () => {
     return (
         <div className="container">
             <h1>Hoooon22&apos;s DevZip</h1>
+            
+            {/* 사용자 인증 상태 */}
+            <UserStatus />
+            
             <ul className="project-list">
                 {currentProjects.map(project => (
                     <li key={project.id} className="project-item">

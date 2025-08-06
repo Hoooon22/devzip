@@ -154,3 +154,6 @@ SPRING_DATASOURCE_PASSWORD=your_password
 - Database connection pooling enabled
 - Static resource caching configured
 - CSS/JS minification in production builds
+
+### Claude Github
+- Do not include commit message about Claude

@@ -11,6 +11,7 @@ import ChatRoomPage from "./pages/ChatRoomPage";
 import TraceBoard from './pages/traceboard/index.js';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { initTracker } from './services/traceboard/tracker';
 
@@ -50,11 +51,25 @@ function App() {
         {/* api 모음 페이지 */}
         <Route path="/apiPage" element={<ApiPage />} />
 
-        {/* Dashboard 모음 페이지 */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Dashboard 모음 페이지 - 관리자 전용 */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
         
-        {/* TraceBoard 로그 대시보드 페이지 */}
-        <Route path="/traceboard" element={<TraceBoard />} />
+        {/* TraceBoard 로그 대시보드 페이지 - 관리자 전용 */}
+        <Route 
+          path="/traceboard" 
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <TraceBoard />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Trend 채팅 페이지 */}
         <Route path="/trendchat" element={<TrendChat />} />
