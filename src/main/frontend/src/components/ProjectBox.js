@@ -19,8 +19,12 @@ const ProjectBox = ({ project }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleClick = (e) => {
-        e.preventDefault(); // 기본 링크 이동 방지
-        window.open(link, '_blank'); // 새 탭에서 링크 열기
+        // 외부 링크인 경우에만 새 탭에서 열기
+        if (link.startsWith('http://') || link.startsWith('https://')) {
+            e.preventDefault();
+            window.open(link, '_blank');
+        }
+        // 내부 링크인 경우 기본 링크 동작(같은 탭에서 이동) 허용
     };
 
     // startDate와 endDate를 표시하는 함수
