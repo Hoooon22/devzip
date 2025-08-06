@@ -1,12 +1,12 @@
 const projects = [
     { 
-        id: 1, 
-        name: '매거진 퐁당', 
-        description: '꿈을 쫒는 청소년들을 위한 웹 매거진', 
-        link: 'https://www.stoneinwell.com', 
-        active: false,
-        startDate: '2023-01-01',
-        endDate: '2023-06-30'
+        id: 5, 
+        name: 'devzip 서버 대시보드', 
+        description: '서버의 정보를 표시하는 대시보드', 
+        link: '/dashboard', 
+        active: true,
+        startDate: '2024-11-26',
+        endDate: ''
     },
     { 
         id: 2, 
@@ -16,6 +16,15 @@ const projects = [
         active: true,
         startDate: '2024-07-10',
         endDate: '2024-12-30'
+    },
+    { 
+        id: 7, 
+        name: 'TraceBoard', 
+        description: '웹사이트 사용자 행동을 시각화하는 로그 대시보드', 
+        link: '/traceboard', 
+        active: true,
+        startDate: '2025-04-09',
+        endDate: ''
     },
     { 
         id: 3, 
@@ -36,15 +45,6 @@ const projects = [
         endDate: ''
     },
     { 
-        id: 5, 
-        name: 'devzip 서버 대시보드', 
-        description: '서버의 정보를 표시하는 대시보드', 
-        link: '/dashboard', 
-        active: true,
-        startDate: '2024-11-26',
-        endDate: ''
-    },
-    { 
         id: 6, 
         name: '실시간 트렌드 검색어 채팅', 
         description: '실시간 인기 검색어에 대한 소통을 위한!', 
@@ -54,13 +54,13 @@ const projects = [
         endDate: ''
     },
     { 
-        id: 7, 
-        name: 'TraceBoard', 
-        description: '웹사이트 사용자 행동을 시각화하는 로그 대시보드', 
-        link: '/traceboard', 
-        active: true,
-        startDate: '2025-04-09',
-        endDate: ''
+        id: 1, 
+        name: '매거진 퐁당', 
+        description: '꿈을 쫒는 청소년들을 위한 웹 매거진', 
+        link: 'https://www.stoneinwell.com', 
+        active: false,
+        startDate: '2023-01-01',
+        endDate: '2023-06-30'
     },
     // { 
     //     id: 4, 
