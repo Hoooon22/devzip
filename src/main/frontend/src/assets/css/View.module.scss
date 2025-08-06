@@ -1,10 +1,16 @@
 .container {
-    width: 100%;
-    border: solid;
-    border-color: red;
-
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    flex: 1;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    align-content: start;
+    background: transparent;
+    overflow-y: auto;
+    
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
 }

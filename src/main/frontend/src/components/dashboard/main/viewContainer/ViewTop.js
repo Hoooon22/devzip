@@ -54,15 +54,18 @@ const ViewTop = () => {
         <div className={styles.container}>
             {serverStart && serverStart.id ? (
                 <div>
-                    <h3>최근 서버 시작 정보</h3>
+                    <h3>🖥️ 서버 상태</h3>
+                    <div className={styles.statusIndicator}>
+                        서버 온라인
+                    </div>
                     <p><strong>서버 ID:</strong> {serverStart.id}</p>
-                    <p><strong>날짜:</strong> {new Date(serverStart.date).toLocaleString()}</p>
-                    <p style={{ fontWeight: 'bold', fontSize: '1.2em', color: 'green' }}>
-                        <strong>서버 구동 시간:</strong> {formatUptime(uptime)}
-                    </p>
+                    <p><strong>시작 시간:</strong> {new Date(serverStart.date).toLocaleString()}</p>
+                    <div className={styles.uptimeDisplay}>
+                        ⏱️ 구동 시간: {formatUptime(uptime)}
+                    </div>
                 </div>
             ) : (
-                <p>로딩 중...</p> // 데이터를 불러오는 중일 때 표시
+                <div className={styles.loading}>로딩 중</div>
             )}
         </div>
     );

@@ -20,8 +20,15 @@ const MemoryUsage = () => {
         datasets: [
             {
                 data: [memoryUsage, 100 - memoryUsage], 
-                backgroundColor: ['#36A2EB', '#E0E0E0'], 
+                backgroundColor: [
+                    memoryUsage > 85 ? '#e53e3e' : memoryUsage > 70 ? '#ed8936' : '#764ba2',
+                    '#f7fafc'
+                ], 
                 borderWidth: 0, 
+                hoverBackgroundColor: [
+                    memoryUsage > 85 ? '#c53030' : memoryUsage > 70 ? '#dd6b20' : '#553c9a',
+                    '#edf2f7'
+                ],
             },
         ],
     };
@@ -62,10 +69,27 @@ const MemoryUsage = () => {
     return (
         <div className={styles.container}>
             <div className="usage-box">
-                <h3>실시간 메모리 사용량</h3>
-                <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
-                <div className="percentage-container">
-                    {memoryUsage}%
+                <h3>🧠 메모리 사용량</h3>
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1rem' }}>
+                    <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
+                    <div style={{
+                        position: 'absolute',
+                        fontSize: '1.8rem',
+                        fontWeight: 'bold',
+                        color: memoryUsage > 85 ? '#e53e3e' : memoryUsage > 70 ? '#ed8936' : '#764ba2'
+                    }}>
+                        {memoryUsage}%
+                    </div>
+                </div>
+                <div style={{
+                    padding: '0.5rem 1rem',
+                    borderRadius: '20px',
+                    background: memoryUsage > 85 ? 'rgba(229, 62, 62, 0.1)' : memoryUsage > 70 ? 'rgba(237, 137, 54, 0.1)' : 'rgba(118, 75, 162, 0.1)',
+                    color: memoryUsage > 85 ? '#e53e3e' : memoryUsage > 70 ? '#ed8936' : '#764ba2',
+                    fontWeight: '500',
+                    fontSize: '0.9rem'
+                }}>
+                    {memoryUsage > 85 ? '⚠️ 높음' : memoryUsage > 70 ? '⚡ 중간' : '✅ 정상'}
                 </div>
             </div>
         </div>
