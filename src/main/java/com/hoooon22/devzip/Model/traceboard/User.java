@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "traceboard_users")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
