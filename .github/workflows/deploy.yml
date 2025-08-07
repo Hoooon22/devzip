@@ -48,9 +48,12 @@ jobs:
     - name: Install Frontend Dependencies
       run: |
         cd src/main/frontend
-        npm install --legacy-peer-deps
+        npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
     - name: Frontend Build Test
+      env:
+        CI: false
+        GENERATE_SOURCEMAP: false
       run: |
         cd src/main/frontend
         npm run build
