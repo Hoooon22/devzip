@@ -11,6 +11,9 @@
   align-items: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease-out;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -30,8 +33,11 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 90%;
   max-width: 450px;
+  max-height: calc(100vh - 2rem);
   overflow: hidden;
   animation: slideUp 0.3s ease-out;
+  margin: auto;
+  flex-shrink: 0;
 }
 
 @keyframes slideUp {
@@ -239,9 +245,17 @@
 
 /* 모바일 반응형 */
 @media (max-width: 480px) {
+  .login-modal-backdrop {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+  
   .login-modal {
-    width: 95%;
-    margin: 1rem;
+    width: 100%;
+    max-width: none;
+    max-height: calc(100vh - 1rem);
+    margin: 0;
   }
   
   .login-modal-header {
@@ -254,6 +268,8 @@
   
   .login-modal-body {
     padding: 1.5rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
   }
   
   .form-group input {
@@ -262,5 +278,21 @@
   
   .login-button {
     padding: 0.8rem 1rem;
+  }
+}
+
+/* 매우 작은 화면 대응 */
+@media (max-height: 600px) {
+  .login-modal-backdrop {
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
+  .login-modal-body {
+    padding: 1rem;
+  }
+  
+  .demo-credentials {
+    display: none; /* 작은 화면에서는 데모 정보 숨기기 */
   }
 }
