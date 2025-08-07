@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import authService from '../../services/AuthService';
 import './LoginModal.scss';
@@ -58,7 +59,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <div 
       className="login-modal-backdrop" 
       onClick={handleBackdropClick}
@@ -143,6 +144,9 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       </div>
     </div>
   );
+
+  // Portal을 사용하여 document.body에 직접 렌더링
+  return createPortal(modalContent, document.body);
 };
 
 LoginModal.propTypes = {
