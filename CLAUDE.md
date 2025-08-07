@@ -157,3 +157,9 @@ SPRING_DATASOURCE_PASSWORD=your_password
 
 ### Claude Github
 - Do not include commit message about Claude
+
+### GitHub Actions CI/CD Pipeline
+- Automated testing, building, deployment, and health checks
+- JWT authentication system verification included
+- Protected routes testing for dashboard and traceboard
+- Comprehensive status reporting and monitoring
