@@ -127,9 +127,11 @@ jobs:
             
             if [ $? -eq 0 ]; then
               echo "✅ Build successful, restarting services..."
-              # Docker 재시작
+              # Docker 완전 정리 및 재빌드
               docker compose down
-              docker compose build
+              docker system prune -f
+              docker image prune -f
+              docker compose build --no-cache
               docker compose up -d
               echo "🎉 Deployment completed successfully!"
             else
