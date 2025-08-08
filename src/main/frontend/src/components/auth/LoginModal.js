@@ -140,6 +140,23 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               <p>ID: admin / PW: admin123</p>
             </div>
           </div>
+          
+          <div className="auth-switch">
+            <p className="auth-switch-text">계정이 없으신가요?</p>
+            <button 
+              type="button" 
+              className="auth-switch-button"
+              onClick={() => {
+                onClose();
+                // 부모 컴포넌트에서 회원가입 모달을 열도록 이벤트 전달
+                if (window.openSignupModal) {
+                  window.openSignupModal();
+                }
+              }}
+            >
+              회원가입하기
+            </button>
+          </div>
         </div>
       </div>
     </div>

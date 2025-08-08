@@ -31,6 +31,28 @@ class AuthService {
     }
   }
 
+  // 회원가입
+  async signup(username, email, password) {
+    try {
+      const response = await axios.post('/api/auth/signup', {
+        username,
+        email,
+        password
+      });
+      
+      return {
+        success: true,
+        message: response.data.message || '회원가입이 완료되었습니다.'
+      };
+    } catch (error) {
+      console.error('Signup error:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || '회원가입에 실패했습니다.'
+      };
+    }
+  }
+
   // 로그아웃
   logout() {
     localStorage.removeItem(AUTH_TOKEN_KEY);

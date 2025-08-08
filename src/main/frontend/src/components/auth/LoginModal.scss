@@ -152,6 +152,17 @@
   text-align: center;
 }
 
+.success-message {
+  background: rgba(56, 178, 172, 0.1);
+  color: #38b2ac;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 178, 172, 0.2);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .login-button {
   width: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -223,6 +234,58 @@
   margin-bottom: 1rem;
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+.info-text.small {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+// 회원가입 모달 전용 스타일
+.signup-modal {
+  max-width: 500px;
+}
+
+.signup-modal .login-modal-header {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.signup-modal .login-button {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.signup-modal .login-button:hover:not(:disabled) {
+  box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+}
+
+// 로그인/회원가입 전환 버튼
+.auth-switch {
+  text-align: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.auth-switch-text {
+  color: #4a5568;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-switch-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.auth-switch-button:hover {
+  color: #5a67d8;
 }
 
 .demo-credentials {

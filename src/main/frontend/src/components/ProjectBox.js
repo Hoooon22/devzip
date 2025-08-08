@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import "../assets/css/ProjectBox.scss";
-import { FaCalendarAlt, FaLink, FaInfoCircle, FaTags } from 'react-icons/fa';
+import { FaCalendarAlt, FaLink, FaInfoCircle, FaTags, FaLock } from 'react-icons/fa';
+import authService from '../services/AuthService';
 
 const ProjectBox = ({ project }) => {
     const { 
@@ -13,12 +14,20 @@ const ProjectBox = ({ project }) => {
         endDate, 
         category = '프로젝트', // 기본값 설정
         techStack = [], // 기본값 설정
-        status = active ? '활성' : '비활성' // 기본값 설정
+        status = active ? '활성' : '비활성', // 기본값 설정
+        requiresAdmin = false // 관리자 권한 필요 여부
     } = project;
     
     const [isHovered, setIsHovered] = useState(false);
 
     const handleClick = (e) => {
+        // 관리자 권한이 필요한 프로젝트인 경우 권한 확인
+        if (requiresAdmin && !authService.isAdmin()) {
+            e.preventDefault();
+            alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
+            return;
+        }
+        
         // 외부 링크인 경우에만 새 탭에서 열기
         if (link.startsWith('http://') || link.startsWith('https://')) {
             e.preventDefault();
@@ -84,6 +93,7 @@ const ProjectBox = ({ project }) => {
         >
             {/* 카테고리 표시 */}
             <div className="project-category">
+                {requiresAdmin && <FaLock className="admin-lock-icon" aria-hidden="true" />}
                 <span>{category}</span>
             </div>
             
@@ -137,7 +147,8 @@ ProjectBox.propTypes = {
         endDate: PropTypes.string,
         category: PropTypes.string,
         techStack: PropTypes.arrayOf(PropTypes.string),
-        status: PropTypes.string
+        status: PropTypes.string,
+        requiresAdmin: PropTypes.bool
     }).isRequired,
 };
 

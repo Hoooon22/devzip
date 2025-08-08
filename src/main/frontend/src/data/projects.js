@@ -6,7 +6,9 @@ const projects = [
         link: '/dashboard', 
         active: true,
         startDate: '2024-11-26',
-        endDate: ''
+        endDate: '',
+        category: '프로젝트/관리자용',
+        requiresAdmin: true
     },
     { 
         id: 2, 
@@ -24,7 +26,9 @@ const projects = [
         link: '/traceboard', 
         active: true,
         startDate: '2025-04-09',
-        endDate: ''
+        endDate: '',
+        category: '프로젝트/관리자용',
+        requiresAdmin: true
     },
     { 
         id: 3, 
