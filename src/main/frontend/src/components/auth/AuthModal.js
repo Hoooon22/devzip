@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import LoginModal from './LoginModal';
 import SignupModal from './SignupModal';
 
@@ -49,6 +50,13 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess, initialMode = 'login' }) =
       onSignupSuccess={handleSignupSuccess}
     />
   );
+};
+
+AuthModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onLoginSuccess: PropTypes.func.isRequired,
+  initialMode: PropTypes.oneOf(['login', 'signup'])
 };
 
 export default AuthModal;
