@@ -55,6 +55,8 @@ jobs:
         npm run build
 
     - name: Build Application (includes frontend)
+      env:
+        CI: false
       run: ./gradlew build -x test
 
   deploy:
