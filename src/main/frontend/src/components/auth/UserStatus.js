@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import authService from '../../services/AuthService';
-import LoginModal from './LoginModal';
+import AuthModal from './AuthModal';
 import './UserStatus.scss';
 
 const UserStatus = () => {
   const [user, setUser] = useState(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +30,13 @@ const UserStatus = () => {
   };
 
   const handleLogin = () => {
-    setIsLoginModalOpen(true);
+    setAuthModalMode('login');
+    setIsAuthModalOpen(true);
+  };
+
+  const handleSignup = () => {
+    setAuthModalMode('signup');
+    setIsAuthModalOpen(true);
   };
 
   const handleLogout = () => {
@@ -83,22 +90,31 @@ const UserStatus = () => {
         </div>
       ) : (
         <div className="login-prompt">
-          <button 
-            className="login-button"
-            onClick={handleLogin}
-          >
-            🔐 관리자 로그인
-          </button>
+          <div className="auth-buttons">
+            <button 
+              className="login-button"
+              onClick={handleLogin}
+            >
+              🔐 로그인
+            </button>
+            <button 
+              className="signup-button"
+              onClick={handleSignup}
+            >
+              📝 회원가입
+            </button>
+          </div>
           <div className="login-hint">
-            대시보드/트레이스보드 접근을 위해 로그인하세요
+            관리자는 로그인, 일반 사용자는 회원가입하세요
           </div>
         </div>
       )}
 
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+        initialMode={authModalMode}
       />
     </div>
   );
