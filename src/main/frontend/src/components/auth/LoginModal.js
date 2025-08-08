@@ -135,10 +135,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             <p className="info-text">
               💡 관리자 계정만 대시보드와 트레이스보드에 접근할 수 있습니다.
             </p>
-            <div className="demo-credentials">
-              <p><strong>데모 계정:</strong></p>
-              <p>ID: admin / PW: admin123</p>
-            </div>
           </div>
           
           <div className="auth-switch">
