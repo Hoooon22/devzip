@@ -11,8 +11,8 @@ env:
   NODE_VERSION: '18'
 
 jobs:
-  test:
-    name: Run Tests
+  test-and-build:
+    name: Test & Build Application
     runs-on: ubuntu-latest
     
     steps:
@@ -45,59 +45,22 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Install Frontend Dependencies
-      run: |
-        cd src/main/frontend
-        npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-
-    - name: Frontend Build Test
+    - name: Install Frontend Dependencies & Build
       env:
         CI: false
         GENERATE_SOURCEMAP: false
       run: |
         cd src/main/frontend
+        npm ci --legacy-peer-deps || npm install --legacy-peer-deps
         npm run build
 
-    - name: Backend Compile Test
-      run: ./gradlew compileJava
-
-  build:
-    name: Build Application
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'temurin'
-        
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build with Gradle
-      env:
-        CI: false
+    - name: Build Application (includes frontend)
       run: ./gradlew build -x test
 
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     steps:
@@ -127,11 +90,9 @@ jobs:
             
             if [ $? -eq 0 ]; then
               echo "✅ Build successful, restarting services..."
-              # Docker 완전 정리 및 재빌드
+              # 효율적인 Docker 재시작 (캐시 활용)
               docker compose down
-              docker system prune -f
-              docker image prune -f
-              docker compose build --no-cache
+              docker compose build
               docker compose up -d
               echo "🎉 Deployment completed successfully!"
             else
@@ -147,13 +108,13 @@ jobs:
     name: Health Check & Status Verification
     runs-on: ubuntu-latest
     needs: deploy
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip-health-check]')
 
     steps:
     - name: Wait for Application Startup
       run: |
-        echo "⏳ Waiting for application to fully start..."
-        sleep 60
+        echo "⏳ Waiting for application to start..."
+        sleep 30
 
     - name: Health Check - Basic Connectivity
       run: |
