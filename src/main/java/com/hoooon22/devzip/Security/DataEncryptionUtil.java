@@ -1,6 +1,7 @@
 package com.hoooon22.devzip.Security;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,9 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @Component
-@Slf4j
 public class DataEncryptionUtil {
+    
+    private static final Logger log = LoggerFactory.getLogger(DataEncryptionUtil.class);
 
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";

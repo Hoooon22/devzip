@@ -30,27 +30,43 @@ import com.hoooon22.devzip.Security.DataEncryptionUtil;
 import com.hoooon22.devzip.Service.traceboard.EventLogService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {org.springframework.web.bind.annotation.RequestMethod.GET, org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.OPTIONS})
 @RestController
 @RequestMapping("/api/traceboard")
-@RequiredArgsConstructor
-@Slf4j
 public class EventLogController {
     
-    private final EventLogService eventLogService;
-    private final DataEncryptionUtil encryptionUtil;
+    private static final Logger log = LoggerFactory.getLogger(EventLogController.class);
+    
+    @Autowired
+    private EventLogService eventLogService;
+    
+    @Autowired
+    private DataEncryptionUtil encryptionUtil;
     
     // 이벤트 로그 수집 API
     @PostMapping("/event")
     public ResponseEntity<?> collectEvent(@RequestBody(required = false) Map<String, Object> eventData, HttpServletRequest request) {
+        System.out.println("=== EventLog 요청 받음 ===");
         try {
+            // 서비스 의존성 확인
+            if (eventLogService == null) {
+                System.out.println("ERROR: eventLogService가 null입니다!");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "EventLogService dependency not injected"
+                ));
+            }
+            
             // 기본값 설정
             if (eventData == null) {
                 eventData = new HashMap<>();
             }
+            
+            System.out.println("받은 데이터: " + eventData);
             
             // IP 주소 해싱하여 기록
             String clientIp = getClientIp(request);
@@ -99,10 +115,15 @@ public class EventLogController {
                 "data", savedLog
             ));
         } catch (Exception e) {
-            log.error("이벤트 로그 저장 중 오류 발생: ", e);
+            System.err.println("=== EventLog 저장 중 오류 발생 ===");
+            System.err.println("오류 메시지: " + e.getMessage());
+            System.err.println("오류 타입: " + e.getClass().getSimpleName());
+            e.printStackTrace();
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", "이벤트 로그 저장 중 오류가 발생했습니다: " + e.getMessage()
+                "message", "이벤트 로그 저장 중 오류가 발생했습니다: " + e.getMessage(),
+                "errorType", e.getClass().getSimpleName()
             ));
         }
     }
