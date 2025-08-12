@@ -68,12 +68,13 @@ public class WebSecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // 모든 OPTIONS 요청 허용
+                .requestMatchers("/api/traceboard/event").permitAll() // 이벤트 수집은 공개 (더 구체적인 패턴을 위로)
                 .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/validate").permitAll()
                 .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/v1/serverstarts/**").permitAll()
                 .requestMatchers("/metrics/**").permitAll()
-                .requestMatchers("/api/traceboard/event").permitAll() // 이벤트 수집은 공개
                 .requestMatchers("/api/traceboard/**").hasRole("ADMIN") // 나머지 트레이스보드 API는 관리자만
                 .requestMatchers("/dashboard").hasRole("ADMIN")
                 .requestMatchers("/traceboard").hasRole("ADMIN")
@@ -98,7 +99,8 @@ public class WebSecurityConfig {
             "http://192.168.*:*",
             "https://192.168.*:*",
             "https://devzip.cloud",
-            "http://devzip.cloud"
+            "http://devzip.cloud",
+            "*" // 개발 환경에서 모든 오리진 허용
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

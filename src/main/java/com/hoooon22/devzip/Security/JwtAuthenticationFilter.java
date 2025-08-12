@@ -35,6 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         
+        // 트레이스보드 이벤트 수집 엔드포인트는 JWT 검증을 건너뛰기
+        String requestURI = request.getRequestURI();
+        if ("/api/traceboard/event".equals(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
