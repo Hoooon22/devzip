@@ -99,8 +99,7 @@ public class WebSecurityConfig {
             "http://192.168.*:*",
             "https://192.168.*:*",
             "https://devzip.cloud",
-            "http://devzip.cloud",
-            "*" // 개발 환경에서 모든 오리진 허용
+            "http://devzip.cloud"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
