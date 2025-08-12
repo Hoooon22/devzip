@@ -82,6 +82,19 @@ jobs:
           git config pull.rebase false
           git pull origin master
           
+          # 점검 페이지를 nginx 디렉토리로 복사
+          echo "🔧 Setting up maintenance page..."
+          sudo mkdir -p /var/www/html
+          sudo cp maintenance.html /var/www/html/ || echo "⚠️ Could not copy maintenance page"
+          sudo chown www-data:www-data /var/www/html/maintenance.html 2>/dev/null || echo "ℹ️ Maintenance page copied"
+          
+          # nginx 설정에 502 에러 페이지 처리 추가 (기존 설정이 없는 경우만)
+          if ! grep -q "error_page 502.*maintenance.html" /etc/nginx/sites-available/default 2>/dev/null; then
+            echo "🔧 Updating nginx configuration for maintenance page..."
+            sudo sed -i '/server {/a\\n\t# 502 에러 시 점검 페이지 표시\n\terror_page 502 503 504 /maintenance.html;\n\n\tlocation = /maintenance.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t\tadd_header Cache-Control "no-cache, no-store, must-revalidate";\n\t\tadd_header Pragma "no-cache";\n\t\tadd_header Expires "0";\n\t}' /etc/nginx/sites-available/default || echo "⚠️ Could not update nginx config"
+            sudo nginx -t && sudo systemctl reload nginx || echo "⚠️ Could not reload nginx"
+          fi
+          
           # Gradle 빌드 및 Docker 작업 실행
           if [ $? -eq 0 ]; then
             echo "✅ Git pull successful, starting build..."
