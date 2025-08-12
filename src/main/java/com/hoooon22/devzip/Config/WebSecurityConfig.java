@@ -98,6 +98,8 @@ public class WebSecurityConfig {
             "https://localhost:*", 
             "http://192.168.*:*",
             "https://192.168.*:*",
+            "http://192.168.*", // 포트 없는 경우 추가
+            "https://192.168.*", // 포트 없는 경우 추가
             "https://devzip.cloud",
             "http://devzip.cloud"
         ));
