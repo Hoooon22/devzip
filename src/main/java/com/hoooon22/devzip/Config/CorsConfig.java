@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${app.cors.allowed-origins:http://localhost:8080,http://localhost:3000,https://192.168.75.224,http://192.168.75.224:8080,https://devzip.cloud,http://devzip.cloud}")
+    @Value("${app.cors.allowed-origins:http://localhost:8080,http://localhost:3000,https://192.168.75.224,http://192.168.75.224:8080,https://devzip.cloud,http://devzip.cloud,http://localhost:*}")
     private String[] allowedOrigins;
 
     @Value("${app.cors.max-age:3600}")
@@ -20,12 +20,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders(
-                    "Content-Type", 
-                    "Authorization", 
-                    "X-API-Key",
-                    "X-CSRF-Token", 
-                    "X-Requested-With",
-                    "Cache-Control"
+                    "*" // 모든 헤더 허용 (개발 환경)
                 )
                 .exposedHeaders("X-Total-Count", "X-Page-Count")
                 .allowCredentials(true)

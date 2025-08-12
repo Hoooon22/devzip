@@ -73,7 +73,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/v1/serverstarts/**").permitAll()
                 .requestMatchers("/metrics/**").permitAll()
-                .requestMatchers("/api/traceboard/**").hasRole("ADMIN")
+                .requestMatchers("/api/traceboard/event").permitAll() // 이벤트 수집은 공개
+                .requestMatchers("/api/traceboard/**").hasRole("ADMIN") // 나머지 트레이스보드 API는 관리자만
                 .requestMatchers("/dashboard").hasRole("ADMIN")
                 .requestMatchers("/traceboard").hasRole("ADMIN")
                 .requestMatchers("/", "/static/**", "/manifest.json", "/favicon.ico").permitAll()
