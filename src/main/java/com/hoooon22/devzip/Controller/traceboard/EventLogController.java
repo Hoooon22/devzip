@@ -3,6 +3,7 @@ package com.hoooon22.devzip.Controller.traceboard;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,34 +45,53 @@ public class EventLogController {
     
     // 이벤트 로그 수집 API
     @PostMapping("/event")
-    public ResponseEntity<?> collectEvent(@RequestBody EventLog eventLog, HttpServletRequest request) {
+    public ResponseEntity<?> collectEvent(@RequestBody(required = false) Map<String, Object> eventData, HttpServletRequest request) {
         try {
+            // 기본값 설정
+            if (eventData == null) {
+                eventData = new HashMap<>();
+            }
+            
             // IP 주소 해싱하여 기록
             String clientIp = getClientIp(request);
             
             // User-Agent 암호화하여 기록
             String userAgent = request.getHeader("User-Agent");
+            if (userAgent == null) {
+                userAgent = "Unknown";
+            }
             
-            // Builder 패턴으로 EventLog 재생성 (암호화된 필드 포함)
-            EventLog encryptedEventLog = EventLog.builder()
-                    .eventType(eventLog.getEventType())
-                    .userId(eventLog.getUserId())
-                    .sessionId(eventLog.getSessionId())
-                    .path(eventLog.getPath())
-                    .referrer(eventLog.getReferrer())
-                    .eventData(eventLog.getEventData())
-                    .deviceType(eventLog.getDeviceType())
-                    .browser(eventLog.getBrowser())
-                    .os(eventLog.getOs())
-                    .ipAddressHash(encryptionUtil.hashIpAddress(clientIp))
-                    .userAgentEncrypted(encryptionUtil.encryptUserAgent(userAgent))
-                    .occurredAt(eventLog.getOccurredAt())
-                    .latitude(eventLog.getLatitude())
-                    .longitude(eventLog.getLongitude())
-                    .build();
+            // EventLog 생성 (새 인스턴스)
+            EventLog eventLog = new EventLog();
+            
+            // 리플렉션을 사용한 안전한 필드 설정
+            try {
+                setFieldValue(eventLog, "eventType", getStringValue(eventData, "eventType", "page_view"));
+                setFieldValue(eventLog, "userId", getStringValue(eventData, "userId", null));
+                setFieldValue(eventLog, "sessionId", getStringValue(eventData, "sessionId", null));
+                setFieldValue(eventLog, "path", getStringValue(eventData, "path", null));
+                setFieldValue(eventLog, "referrer", getStringValue(eventData, "referrer", null));
+                setFieldValue(eventLog, "eventData", eventData.toString());
+                setFieldValue(eventLog, "deviceType", getStringValue(eventData, "deviceType", null));
+                setFieldValue(eventLog, "browser", getStringValue(eventData, "browser", null));
+                setFieldValue(eventLog, "os", getStringValue(eventData, "os", null));
+                setFieldValue(eventLog, "occurredAt", LocalDateTime.now());
+                
+                // 암호화된 필드 설정
+                if (encryptionUtil != null) {
+                    setFieldValue(eventLog, "ipAddressHash", encryptionUtil.hashIpAddress(clientIp));
+                    setFieldValue(eventLog, "userAgentEncrypted", encryptionUtil.encryptUserAgent(userAgent));
+                } else {
+                    setFieldValue(eventLog, "ipAddressHash", String.valueOf(clientIp.hashCode()));
+                    setFieldValue(eventLog, "userAgentEncrypted", userAgent);
+                }
+            } catch (Exception e) {
+                // 리플렉션 실패 시 기본 처리
+                System.out.println("리플렉션 실패, 기본값만 설정: " + e.getMessage());
+            }
             
             // 이벤트 로그 저장
-            EventLog savedLog = eventLogService.saveEventLog(encryptedEventLog);
+            EventLog savedLog = eventLogService.saveEventLog(eventLog);
             
             return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -319,5 +339,23 @@ public class EventLogController {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+    
+    // Map에서 String 값 안전하게 가져오기
+    private String getStringValue(Map<String, Object> map, String key, String defaultValue) {
+        Object value = map.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value.toString();
+    }
+    
+    // 리플렉션을 사용한 필드 값 설정
+    private void setFieldValue(EventLog eventLog, String fieldName, Object value) throws Exception {
+        if (value == null) return;
+        
+        java.lang.reflect.Field field = eventLog.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(eventLog, value);
     }
 } 
