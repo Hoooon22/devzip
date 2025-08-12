@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceBoard - 서버 점검 중</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .maintenance-container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .maintenance-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .maintenance-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .maintenance-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .maintenance-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #e0e7ff;
+        }
+
+        .maintenance-info p {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 4px;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 0%; }
+        }
+
+        .contact-info {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-info a {
+            color: #e0e7ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .eta {
+            font-size: 1rem;
+            color: #e0e7ff;
+            margin-top: 1rem;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .maintenance-title {
+                font-size: 2rem;
+            }
+            
+            .maintenance-subtitle {
+                font-size: 1rem;
+            }
+            
+            .maintenance-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .maintenance-icon {
+                font-size: 3rem;
+            }
+        }
+
+        /* 다크모드 지원 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="maintenance-icon">🔧</div>
+        
+        <div class="status-badge">
+            서비스 점검 중
+        </div>
+        
+        <h1 class="maintenance-title">TraceBoard</h1>
+        <p class="maintenance-subtitle">
+            더 나은 서비스를 위해 시스템 점검을 진행하고 있습니다.
+        </p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <div class="maintenance-info">
+            <h3>점검 안내</h3>
+            <p>
+                시스템 안정성 향상 및 성능 개선을 위한 정기 점검을 실시하고 있습니다. 
+                점검이 완료되는 대로 정상 서비스를 재개하겠습니다.
+            </p>
+            
+            <div class="eta">
+                <strong>예상 완료 시간:</strong> 약 30분 ~ 1시간
+            </div>
+        </div>
+        
+        <div class="contact-info">
+            <p>문의사항이 있으시면 아래로 연락해 주세요.</p>
+            <p>
+                <a href="mailto:support@traceboard.com">support@traceboard.com</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 현재 시간 표시 및 자동 새로고침
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ko-KR');
+            document.title = `TraceBoard - 서버 점검 중 (${timeString})`;
+        }
+
+        // 30초마다 페이지 새로고침하여 서버 복구 확인
+        setInterval(() => {
+            updateTime();
+            // 서버가 복구되었는지 확인
+            fetch('/')
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch(() => {
+                    // 여전히 502 에러 - 점검 계속
+                });
+        }, 30000);
+
+        updateTime();
+    </script>
+</body>
+</html>
