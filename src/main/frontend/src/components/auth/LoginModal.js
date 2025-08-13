@@ -90,6 +90,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="사용자명을 입력하세요"
+                autoComplete="username"
                 required
                 disabled={loading}
               />
@@ -104,6 +105,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="비밀번호를 입력하세요"
+                autoComplete="current-password"
                 required
                 disabled={loading}
               />
