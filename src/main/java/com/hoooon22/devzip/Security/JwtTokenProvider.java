@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-@Component
+// @Component - JWT 서비스 중복 제거 (JwtUtils 사용)
 @Slf4j
 public class JwtTokenProvider {
 
