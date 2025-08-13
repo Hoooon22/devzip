@@ -34,20 +34,32 @@ public class AuthController {
     
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getUsername(), 
-            authentication.getAuthorities().iterator().next().getAuthority());
-        
-        UserDetailsServiceImpl.UserPrincipal userPrincipal = (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
-        
-        return ResponseEntity.ok(new JwtResponse(jwt, 
-                                               userPrincipal.getUsername(),
-                                               userPrincipal.getEmail(),
-                                               authentication.getAuthorities().iterator().next().getAuthority()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            
+            UserDetailsServiceImpl.UserPrincipal userPrincipal = (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
+            
+            // 권한을 안전하게 가져오기
+            String role = "ROLE_USER"; // 기본값
+            if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
+                role = authentication.getAuthorities().iterator().next().getAuthority();
+            }
+            
+            String jwt = jwtUtils.generateJwtToken(userPrincipal.getUsername(), role);
+            
+            return ResponseEntity.ok(new JwtResponse(jwt, 
+                                                   userPrincipal.getUsername(),
+                                                   userPrincipal.getEmail(),
+                                                   role));
+        } catch (Exception e) {
+            // 로그에 에러 기록
+            System.err.println("Login error: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // 에러를 다시 던져서 GlobalExceptionHandler가 처리하도록
+        }
     }
     
     @PostMapping("/signup")
