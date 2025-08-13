@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -46,7 +47,8 @@ public class DataInitializer implements CommandLineRunner {
     private void createDefaultAdminIfNotExists() {
         // 관리자 계정이 이미 존재하는지 확인
         if (userRepository.existsByUsername(adminUsername)) {
-            System.out.println("✅ 관리자 계정이 이미 존재합니다: " + adminUsername);
+            // 기존 admin 계정 비밀번호 업데이트
+            updateAdminPasswordIfNeeded();
             return;
         }
 
@@ -114,5 +116,28 @@ public class DataInitializer implements CommandLineRunner {
         password.append("!"); // 특수문자
         
         return password.toString();
+    }
+
+    /**
+     * 기존 admin 계정의 비밀번호를 환경변수 설정에 따라 업데이트
+     */
+    private void updateAdminPasswordIfNeeded() {
+        // 환경변수에 비밀번호가 명시적으로 설정된 경우에만 업데이트
+        if (adminPassword != null && !adminPassword.trim().isEmpty()) {
+            try {
+                Optional<User> adminOpt = userRepository.findByUsername(adminUsername);
+                if (adminOpt.isPresent()) {
+                    User admin = adminOpt.get();
+                    String encodedPassword = passwordEncoder.encode(adminPassword);
+                    admin.setPassword(encodedPassword);
+                    userRepository.save(admin);
+                    System.out.println("🔄 관리자 계정 비밀번호가 업데이트되었습니다: " + adminUsername);
+                }
+            } catch (Exception e) {
+                System.err.println("❌ 관리자 계정 비밀번호 업데이트 실패: " + e.getMessage());
+            }
+        } else {
+            System.out.println("✅ 관리자 계정이 이미 존재합니다: " + adminUsername);
+        }
     }
 }
