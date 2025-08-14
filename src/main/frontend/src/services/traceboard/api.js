@@ -2,7 +2,7 @@
  * TraceBoard API 서비스
  * 백엔드 API와 통신하여 이벤트 로그 데이터를 가져오는 함수들을 제공합니다.
  */
-import axios from 'axios';
+import axios from '../../utils/axiosConfig';
 
 // API 기본 URL
 const API_URL = '/api/traceboard';
