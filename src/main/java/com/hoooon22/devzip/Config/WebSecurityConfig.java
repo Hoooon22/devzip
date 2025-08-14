@@ -76,8 +76,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/serverstarts/**").permitAll()
                 .requestMatchers("/metrics/**").permitAll()
                 .requestMatchers("/api/traceboard/**").hasRole("ADMIN") // 나머지 트레이스보드 API는 관리자만
-                .requestMatchers("/dashboard").hasRole("ADMIN")
-                .requestMatchers("/traceboard").hasRole("ADMIN")
+                // 페이지 라우팅은 React에서 ProtectedRoute로 보호됨
                 .requestMatchers("/", "/static/**", "/manifest.json", "/favicon.ico").permitAll()
                 .requestMatchers("/Guestbook", "/Joke", "/apiPage", "/trendchat").permitAll()
                 .anyRequest().permitAll()
