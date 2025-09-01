@@ -7,30 +7,24 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
   const canvasRef = useRef(null);
   const engineRef = useRef(null);
   const renderRef = useRef(null);
+  const runnerRef = useRef(null);
   const [isRunning, setIsRunning] = useState(false);
 
+  // 시뮬레이션 초기 설정 및 렌더링을 위한 useEffect
   useEffect(() => {
-    console.log('PhysicsCanvas useEffect:', { simulation: simulation?.type, isActive });
+    console.log('PhysicsCanvas setup useEffect:', { simulation: simulation?.type });
     if (!simulation) return;
 
     const canvas = canvasRef.current;
-    console.log('Canvas element:', canvas);
     if (!canvas) return;
 
-    // Matter.js 모듈들 추출
-    const Engine = Matter.Engine;
-    const Render = Matter.Render;
-    const World = Matter.World;
-    const Runner = Matter.Runner;
+    const { Engine, Render, World } = Matter;
 
-    // 엔진 생성
     const engine = Engine.create();
     engineRef.current = engine;
 
-    // 시뮬레이션 기본 설정 가져오기
     const defaults = simulationDefaults[simulation.type];
     
-    // 렌더러 생성
     const render = Render.create({
       canvas: canvas,
       engine: engine,
@@ -45,53 +39,56 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
     });
     renderRef.current = render;
 
-    // 시뮬레이션 타입에 따른 월드 생성
     console.log('Creating simulation:', simulation.type);
     createSimulation(engine, simulation);
 
-    // 렌더링 시작
     Render.run(render);
-
-    // isActive가 true일 때만 물리 엔진 실행
-    let runner = null;
-    if (isActive) {
-      runner = Runner.create();
-      Runner.run(runner, engine);
-    }
-
-    setIsRunning(true);
-
-    // 완료 감지 이벤트 (물리 엔진이 활성화된 경우에만)
-    let completeTimer = null;
-    if (isActive && onComplete) {
-      completeTimer = setTimeout(() => {
-        onComplete();
-      }, 5000);
-    }
 
     // 정리 함수
     return () => {
-      if (completeTimer) {
-        clearTimeout(completeTimer);
-      }
-      setIsRunning(false);
-      
-      if (runner) {
-        Runner.stop(runner);
-      }
-      
-      if (render) {
-        Render.stop(render);
-        render.canvas.remove();
-        render.textures = {};
-      }
-      
-      if (engine) {
-        World.clear(engine.world);
-        Engine.clear(engine);
-      }
+        console.log('Cleanup setup useEffect');
+        if (renderRef.current) {
+            Render.stop(renderRef.current);
+            if(renderRef.current.canvas) {
+                renderRef.current.canvas.remove();
+            }
+            renderRef.current.textures = {};
+        }
+        if (engineRef.current) {
+            World.clear(engineRef.current.world);
+            Engine.clear(engineRef.current);
+        }
     };
-  }, [simulation, isActive, onComplete]);
+  }, [simulation]); // simulation이 바뀔 때만 실행 (즉, 문제가 바뀔 때)
+
+  // 물리 엔진 실행/중지를 위한 useEffect
+  useEffect(() => {
+    console.log('PhysicsCanvas activation useEffect:', { isActive });
+    if (isActive) {
+      setIsRunning(true);
+      const runner = Matter.Runner.create();
+      runnerRef.current = runner;
+      Matter.Runner.run(runner, engineRef.current);
+
+      let completeTimer = null;
+      if (onComplete) {
+        completeTimer = setTimeout(() => {
+          onComplete();
+        }, 5000);
+      }
+
+      return () => {
+        if (completeTimer) clearTimeout(completeTimer);
+      }
+
+    } else {
+      setIsRunning(false);
+      if (runnerRef.current) {
+        Matter.Runner.stop(runnerRef.current);
+        runnerRef.current = null;
+      }
+    }
+  }, [isActive, onComplete]);
 
   const createSimulation = (engine, simulation) => {
     const { Bodies, World } = Matter;
