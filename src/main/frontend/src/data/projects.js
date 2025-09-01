@@ -58,6 +58,16 @@ const projects = [
         endDate: ''
     },
     { 
+        id: 8, 
+        name: '물리학 퀴즈', 
+        description: '물리 문제를 풀고 실제 물리 현상을 시뮬레이션으로 확인해보세요!', 
+        link: '/physics-quiz', 
+        active: true,
+        startDate: '2025-09-01',
+        endDate: '',
+        category: '교육/게임'
+    },
+    { 
         id: 1, 
         name: '매거진 퐁당', 
         description: '꿈을 쫒는 청소년들을 위한 웹 매거진', 

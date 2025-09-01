@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
 import ChatRoomPage from "./pages/ChatRoomPage";
 import TraceBoard from './pages/traceboard/index.js';
+import PhysicsQuiz from './pages/PhysicsQuiz';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -74,6 +75,9 @@ function App() {
         {/* Trend 채팅 페이지 */}
         <Route path="/trendchat" element={<TrendChat />} />
         <Route path="/chat/:roomId" element={<ChatRoomPage />} />
+
+        {/* 물리 퀴즈 페이지 */}
+        <Route path="/physics-quiz" element={<PhysicsQuiz />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
