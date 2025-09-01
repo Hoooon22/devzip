@@ -182,6 +182,139 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
     // 초기 속도 설정 (Matter.js 단위로 조정)
     Matter.Body.setVelocity(ball, {
       x: config.initialVelocity.x / 10,
+      y: -config.initialVelocity.y / 10 // y축은 위쪽이 음수
+    });
+
+    World.add(engine.world, [ground, launcher, ball]);
+  };
+
+  const createCollisionSimulation = (engine, config, Bodies, World) => {
+    engine.world.gravity.y = 0; // 수평면에서의 충돌
+    
+    // 벽들
+    const leftWall = Bodies.rectangle(50, 150, 20, 300, { isStatic: true, render: { fillStyle: '#666' } });
+    const rightWall = Bodies.rectangle(750, 150, 20, 300, { isStatic: true, render: { fillStyle: '#666' } });
+    const ground = Bodies.rectangle(400, 280, 800, 20, { isStatic: true, render: { fillStyle: '#8B4513' } });
+    const ceiling = Bodies.rectangle(400, 20, 800, 20, { isStatic: true, render: { fillStyle: '#8B4513' } });
+
+    // 충돌하는 공들
+    const ball1 = Bodies.circle(200, 150, config.ball1.radius, {
+      render: { fillStyle: config.ball1.color },
+      restitution: config.elasticity,
+      density: config.ball1.mass / 100
+    });
+
+    const ball2 = Bodies.circle(500, 150, config.ball2.radius, {
+      render: { fillStyle: config.ball2.color },
+      restitution: config.elasticity,
+      density: config.ball2.mass / 100
+    });
+
+    // 초기 속도 설정
+    Matter.Body.setVelocity(ball1, { x: config.ball1.velocity / 10, y: 0 });
+    Matter.Body.setVelocity(ball2, { x: config.ball2.velocity / 10, y: 0 });
+
+    World.add(engine.world, [leftWall, rightWall, ground, ceiling, ball1, ball2]);
+  };
+
+  const createCircularSimulation = (engine, config, Bodies, World) => {
+    engine.world.gravity.y = 0; // 중력 제거
+    
+    // 중심점
+    const center = Bodies.circle(250, 250, 5, {
+      isStatic: true,
+      render: { fillStyle: '#333' }
+    });
+
+    // 원운동하는 공
+    const ball = Bodies.circle(250 + config.radius * 50, 250, config.ballRadius, {
+      render: { fillStyle: config.ballColor }
+    });
+
+    // 구속 조건 (원운동을 위한 끈)
+    const constraint = Matter.Constraint.create({
+      bodyA: center,
+      bodyB: ball,
+      length: config.radius * 50,
+      stiffness: 1,
+      render: { visible: true, lineWidth: 2, strokeStyle: '#333' }
+    });
+
+    // 초기 접선 속도 설정
+    Matter.Body.setVelocity(ball, {
+      x: 0,
+      y: -config.velocity / 10
+    });
+
+    World.add(engine.world, [center, ball, constraint]);
+  };
+
+  const createPendulumSimulation = (engine, config, Bodies, World) => {
+    engine.world.gravity.y = config.gravity / 60;
+    
+    // 고정점
+    const anchor = Bodies.circle(300, 50, 5, {
+      isStatic: true,
+      render: { fillStyle: '#333' }
+    });
+
+    // 진자 추
+    const pendulumLength = config.length * 200;
+    const initialAngleRad = (config.initialAngle * Math.PI) / 180;
+    const ball = Bodies.circle(
+      300 + pendulumLength * Math.sin(initialAngleRad),
+      50 + pendulumLength * Math.cos(initialAngleRad),
+      config.ballRadius,
+      {
+        render: { fillStyle: config.ballColor },
+        inertia: Infinity // 회전 방지
+      }
+    );
+
+    // 진자 끈
+    const constraint = Matter.Constraint.create({
+      bodyA: anchor,
+      bodyB: ball,
+      length: pendulumLength,
+      stiffness: 1,
+      render: { visible: true, lineWidth: 3, strokeStyle: '#333' }
+    });
+
+    World.add(engine.world, [anchor, ball, constraint]);
+  };
+
+  const createProjectileSimulation = (engine, config, Bodies, World) => {
+    engine.world.gravity.y = config.gravity / 60;
+    
+    // 지면
+    const ground = Bodies.rectangle(400, 380, 800, 40, {
+      isStatic: true,
+      render: { fillStyle: '#8B4513' }
+    });
+
+    // 발사대
+    const launcher = Bodies.rectangle(50, 350 - config.initialHeight * 10, 20, 20, {
+      isStatic: true,
+      render: { fillStyle: '#666' }
+    });
+
+    // 목표물 (옵션)
+    if (config.showTarget) {
+      const target = Bodies.rectangle(650, 350, 30, 50, {
+        isStatic: true,
+        render: { fillStyle: '#FF6B6B' }
+      });
+      World.add(engine.world, [target]);
+    }
+
+    // 발사되는 공
+    const ball = Bodies.circle(50, 350 - config.initialHeight * 10, config.ballRadius, {
+      render: { fillStyle: config.ballColor }
+    });
+
+    // 초기 속도 설정 (Matter.js 단위로 조정)
+    Matter.Body.setVelocity(ball, {
+      x: config.initialVelocity.x / 10,
       y: config.initialVelocity.y / 10
     });
 
