@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Matter from 'matter-js';
 import { simulationDefaults } from '../data/physicsQuestions';
@@ -56,7 +56,8 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
         Engine.clear(engineRef.current);
       }
     };
-  }, [simulation, createSimulation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulation]);
 
   // 물리 엔진 실행/중지를 위한 useEffect
   useEffect(() => {
@@ -89,7 +90,7 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
     }
   }, [isActive, onComplete]);
 
-  const createSimulation = useCallback((engine, simulation) => {
+  const createSimulation = (engine, simulation) => {
     const { Bodies, World } = Matter;
     const { type, config } = simulation;
 
@@ -112,7 +113,7 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       default:
         break;
     }
-  }, []);
+  };
 
   // 1. 자유낙하 시뮬레이션 (무거운 공 vs 가벼운 공)
   const createFreefallSimulation = (engine, config, Bodies, World) => {
