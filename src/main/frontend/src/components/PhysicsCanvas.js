@@ -402,15 +402,15 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
 
   // 4. 원형 운동 시뮬레이션 (롤러코스터의 원형 구간)
   const createCircularSimulation = (engine, config, Bodies, World, canvasSize, scale) => {
-    engine.world.gravity.y = 1.2 * scale; // 원형 운동을 위한 적절한 중력
+    engine.world.gravity.y = 1.0 * scale; // 적절한 중력으로 원형 운동 구현
     
-    // 원형 레일 구조 만들기
+    // 수직 원형 레일의 중심과 크기
     const centerX = canvasSize.width / 2;
-    const centerY = canvasSize.height * 0.6; // 중심을 약간 아래로
-    const radius = Math.min(config.radius * 60 * scale, canvasSize.height * 0.3); // 적절한 크기
+    const centerY = canvasSize.height / 2; // 화면 중앙
+    const radius = Math.min(config.radius * 80 * scale, Math.min(canvasSize.width, canvasSize.height) * 0.35);
 
-    // 원형 레일을 여러 개의 작은 세그먼트로 만들기
-    const segments = 24; // 더 부드러운 곡선
+    // 완전한 수직 원형 레일 구조
+    const segments = 32; // 매우 부드러운 원형
     const railBodies = [];
     
     for (let i = 0; i < segments; i++) {
@@ -428,45 +428,79 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
         (x + nextX) / 2, 
         (y + nextY) / 2, 
         segmentLength, 
-        10 * scale, // 레일 두께
+        12 * scale, // 레일 두께
         {
           isStatic: true,
           angle: segmentAngle,
-          render: { fillStyle: '#333' }
+          render: { fillStyle: '#444' }
         }
       );
       railBodies.push(segment);
     }
 
-    // 롤러코스터 카트 (공) - 바닥에서 시작해서 충분한 속도로
-    const ballRadius = Math.min(config.ballRadius * scale, 20 * scale);
+    // 롤러코스터 카트 - 바닥 지점에서 시작 (6시 방향)
+    const ballRadius = Math.min(config.ballRadius * scale, 15 * scale);
+    const startX = centerX;
+    const startY = centerY + radius - ballRadius * 1.5; // 레일 안쪽, 바닥에서 시작
+    
     const cart = Bodies.circle(
-      centerX + radius - ballRadius * 2, // 레일 안쪽에서 시작
-      centerY, 
+      startX,
+      startY, 
       ballRadius, 
       {
         render: { fillStyle: config.ballColor },
-        restitution: 0.8,
-        frictionAir: 0.005 // 약간의 공기 저항
+        restitution: 0.1, // 낮은 반발력
+        frictionAir: 0.002, // 매우 적은 공기 저항
+        friction: 0.001 // 매우 적은 마찰
       }
     );
 
-    // 초기 속도 설정 - 원형 운동이 가능한 충분한 속도
-    const initialSpeed = config.velocity * scale * 0.4; // 적절한 속도
+    // 원형 운동이 가능한 최소 속도 계산: v = sqrt(g * r * 5) (안전 여유분 포함)
+    // 맨 위에서 구심력 = 중력이 되려면 v² = g * r이 필요
+    const minVelocityForLoop = Math.sqrt(engine.world.gravity.y * radius * 5); 
+    const initialSpeed = minVelocityForLoop / scale; // 스케일 조정
+    
+    // 초기 속도 - 오른쪽 방향으로 (시계방향 회전)
     Matter.Body.setVelocity(cart, {
-      x: 0,
-      y: -initialSpeed // 위쪽으로 시작
+      x: initialSpeed,
+      y: 0
     });
+
+    // 맨 위 지점 표시 (12시 방향)
+    const topPoint = Bodies.circle(
+      centerX,
+      centerY - radius,
+      5 * scale,
+      {
+        isStatic: true,
+        render: { fillStyle: '#FF6B6B' },
+        isSensor: true // 충돌하지 않는 센서
+      }
+    );
+
+    // 설명을 위한 텍스트 표시점들 (시각적 참고용)
+    const bottomPoint = Bodies.circle(
+      centerX,
+      centerY + radius,
+      3 * scale,
+      {
+        isStatic: true,
+        render: { fillStyle: '#4ECDC4' },
+        isSensor: true
+      }
+    );
 
     console.log('Circular simulation created:', {
       center: { x: centerX, y: centerY },
       radius,
-      ballRadius,
+      startPosition: { x: startX, y: startY },
+      minVelocityForLoop,
       initialSpeed,
+      ballRadius,
       canvasSize
     });
 
-    World.add(engine.world, [...railBodies, cart]);
+    World.add(engine.world, [...railBodies, cart, topPoint, bottomPoint]);
   };
 
   // 5. 진자 운동 시뮬레이션 (그네의 비밀)
