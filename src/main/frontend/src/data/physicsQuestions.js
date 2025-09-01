@@ -84,6 +84,7 @@ export const physicsQuestions = [
         velocity: 6,
         ballRadius: 18,
         ballColor: "#51CF66",
+        gravity: 9.8,
         showForces: true
       }
     }
