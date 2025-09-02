@@ -177,6 +177,9 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       case 'pendulum':
         createPendulumSimulation(engine, config, Bodies, World, canvasSize, scale);
         break;
+      case 'orbital':
+        createOrbitalSimulation(engine, config, Bodies, World, canvasSize, scale);
+        break;
       default:
         break;
     }
@@ -300,7 +303,7 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
 
     // 초기 속도 설정 - 각도와 힘을 기반으로 계산
     const angleRad = (config.angle * Math.PI) / 180; // 각도를 라디안으로 변환
-    const power = config.power * scale * 0.1; // 기본 힘에 스케일 적용 (0.1은 미세조정된 값)
+    const power = config.power * scale * 0.9; // 기본 힘에 스케일 적용 (0.9는 미세조정된 값)
 
     const velocityX = Math.cos(angleRad) * power;
     const velocityY = -Math.sin(angleRad) * power; // Y축은 위쪽이 음수
@@ -436,10 +439,10 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     );
 
-    // 원형 운동이 가능한 최소 속도 계산: v = sqrt(g * r * 5) (안전 여유분 포함)
-    // 맨 위에서 구심력 = 중력이 되려면 v² = g * r이 필요
-    const minVelocityForLoop = Math.sqrt(engine.world.gravity.y * radius * 5); 
-    const initialSpeed = minVelocityForLoop / scale; // 스케일 조정
+    // 원형 운동이 가능한 최소 속도 계산: v = sqrt(g * r) (무중력 상태)
+    // config.velocity_multiplier를 사용하여 최소 속도에 대한 배율 적용
+    const minVelocityForWeightlessness = Math.sqrt(engine.world.gravity.y * radius);
+    const initialSpeed = (minVelocityForWeightlessness * config.velocity_multiplier) / scale; // 스케일 조정
     
     // 초기 속도 - 오른쪽 방향으로 (시계방향 회전)
     Matter.Body.setVelocity(cart, {
@@ -508,17 +511,18 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       {
         render: { fillStyle: config.ballColor },
         inertia: Infinity, // 회전 방지
-        frictionAir: 0.01 // 약간의 공기 저항
+        frictionAir: 0.001, // 공기 저항을 거의 제거하여 관성 증가
+        mass: 1 // 질량 설정으로 관성 효과 강화
       }
     );
 
-    // 진자 끈 - 더 강한 제약
+    // 진자 끈 - 더 강한 제약, 관성을 위해 감쇠 최소화
     const constraint = Matter.Constraint.create({
       bodyA: anchor,
       bodyB: ball,
       length: pendulumLength,
       stiffness: 1,
-      damping: 0.01, // 약간의 감쇠
+      damping: 0.001, // 감쇠를 거의 제거해서 관성 증가
       render: { 
         visible: true, 
         lineWidth: 4 * scale, 
@@ -527,8 +531,208 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     });
 
+    // 하단 지점 표시 (가장 낮은 지점 시각적 표시)
+    const bottomIndicator = Bodies.rectangle(
+      anchorX,
+      anchorY + pendulumLength + ballRadius + 20 * scale,
+      60 * scale,
+      8 * scale,
+      {
+        isStatic: true,
+        render: { 
+          fillStyle: '#4ECDC4',
+          strokeStyle: '#2E8B8B',
+          lineWidth: 2
+        },
+        isSensor: true // 충돌하지 않음
+      }
+    );
 
-    World.add(engine.world, [anchor, ball, constraint]);
+    // 그네 타기 효과 구현 - Y좌표 기준 가장 낮은 지점에서만 에너지 추가
+    let swingCount = 0;
+    let lastBottomTime = 0;
+    let energyBoostActive = false;
+    let maxY = ball.position.y; // 현재까지의 최대 Y값 (가장 낮은 위치) 추적
+
+    Matter.Events.on(engine, 'beforeUpdate', () => {
+      const currentY = ball.position.y;
+      
+      // 현재까지의 최대 Y값 (가장 낮은 위치) 업데이트
+      if (currentY > maxY) {
+        maxY = currentY;
+      }
+      
+      // Y좌표 기준 정확히 가장 아래인지 확인
+      // 현재 Y가 최대 Y에서 공 반지름 이내에 있을 때만
+      const isAtAbsoluteBottom = Math.abs(currentY - maxY) < ballRadius;
+      
+      // 진자가 충분히 움직이고 있는지 확인
+      const speed = Math.sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
+      const isMoving = speed > 0.1;
+      
+      // 현재 시간
+      const currentTime = swingCount;
+      
+      // 디버깅을 위한 로그 (매 30프레임마다)
+      if (swingCount % 30 === 0) {
+        console.log('진자 상태:', { 
+          currentY: currentY.toFixed(1),
+          maxY: maxY.toFixed(1),
+          distanceFromMaxY: Math.abs(currentY - maxY).toFixed(1),
+          isAtAbsoluteBottom,
+          speed: speed.toFixed(2),
+          isMoving,
+          timeSinceLastBoost: currentTime - lastBottomTime
+        });
+      }
+      
+      // 진자의 움직임 방향 확인 (오른쪽에서 왼쪽으로 가는지)
+      const isMovingLeftward = ball.velocity.x < 0; // 왼쪽으로 가는 중
+      
+      // Y좌표 기준 정확히 가장 아래에서 왼쪽으로 움직일 때만 에너지 부스트
+      if (isAtAbsoluteBottom && isMoving && isMovingLeftward && (currentTime - lastBottomTime) > 120) {
+        energyBoostActive = true;
+        lastBottomTime = currentTime;
+        
+        // 현재 속도에 부드러운 부스트 적용
+        const currentVel = ball.velocity;
+        const boostFactor = 2.5; // 150% 증가 (더 강한 가속)
+        
+        // 속도 직접 설정으로 확실히 적용
+        const newVelX = currentVel.x * boostFactor;
+        const newVelY = currentVel.y * boostFactor;
+        
+        Matter.Body.setVelocity(ball, {
+          x: newVelX,
+          y: newVelY
+        });
+        
+        // 추가 힘을 더 강하게 적용
+        Matter.Body.applyForce(ball, ball.position, {
+          x: -0.008 * scale, // 왼쪽 방향으로 더 강한 힘
+          y: -0.006 * scale  // 상승 힘도 더 강하게
+        });
+        
+        // 추가 임펄스로 즉각적인 에너지 전달 (관성 효과 강화)
+        const impulseStrength = 0.020 * scale; // 임펄스도 더 강하게
+        Matter.Body.applyForce(ball, ball.position, {
+          x: currentVel.x > 0 ? -impulseStrength : -impulseStrength, // 왼쪽으로 임펄스
+          y: -impulseStrength * 0.7 // 위쪽으로도 임펄스
+        });
+        
+        // 시각적 피드백 (왼쪽으로 갈 때만)
+        ball.render.fillStyle = '#FF0000';
+        bottomIndicator.render.fillStyle = '#FF0000';
+        
+        setTimeout(() => {
+          ball.render.fillStyle = config.ballColor;
+          bottomIndicator.render.fillStyle = '#4ECDC4';
+          energyBoostActive = false;
+        }, 500);
+        
+        console.log('🚀🚀🚀 에너지 부스트 적용! (Y좌표 기준 가장 아래, 왼쪽으로 이동 중)', { 
+          oldVel: currentVel,
+          newVel: { x: newVelX, y: newVelY },
+          boostFactor,
+          position: { x: ball.position.x, y: ball.position.y },
+          currentY: currentY.toFixed(1),
+          maxY: maxY.toFixed(1),
+          isAtAbsoluteBottom,
+          isMovingLeftward,
+          currentSpeed: speed.toFixed(2)
+        });
+      }
+      
+      swingCount++;
+    });
+
+    // 설명 텍스트를 위한 표시점 (시각적 가이드)
+    const leftIndicator = Bodies.circle(
+      anchorX - pendulumLength * 0.8,
+      anchorY + pendulumLength * 0.6,
+      4 * scale,
+      {
+        isStatic: true,
+        render: { fillStyle: '#FFB74D' },
+        isSensor: true
+      }
+    );
+
+    const rightIndicator = Bodies.circle(
+      anchorX + pendulumLength * 0.8,
+      anchorY + pendulumLength * 0.6,
+      4 * scale,
+      {
+        isStatic: true,
+        render: { fillStyle: '#FFB74D' },
+        isSensor: true
+      }
+    );
+
+    World.add(engine.world, [anchor, ball, constraint, bottomIndicator, leftIndicator, rightIndicator]);
+  };
+
+  // 6. 궤도 운동 시뮬레이션 (행성 주위의 위성)
+  const createOrbitalSimulation = (engine, config, Bodies, World, canvasSize, scale) => {
+    engine.world.gravity.y = 0; // 중력은 0으로 설정
+
+    // 행성 (중심)
+    const planetRadius = Math.min(config.planetRadius * scale, 35 * scale);
+    const planet = Bodies.circle(
+      canvasSize.width / 2,
+      canvasSize.height / 2,
+      planetRadius,
+      {
+        isStatic: true,
+        render: { fillStyle: config.planetColor },
+        label: 'planet'
+      }
+    );
+
+    // 궤도 반지름과 위성 크기
+    const orbitRadius = Math.min(config.initialOrbitRadius * scale, Math.min(canvasSize.width, canvasSize.height) * 0.32);
+    const satelliteRadius = Math.min(config.satelliteRadius * scale, 6 * scale);
+    
+    // 위성을 행성 오른쪽에 배치
+    const satellite = Bodies.circle(
+      canvasSize.width / 2 + orbitRadius,
+      canvasSize.height / 2,
+      satelliteRadius,
+      {
+        render: { fillStyle: config.satelliteColor },
+        frictionAir: 0,
+        friction: 0,
+        restitution: 0,
+        label: 'satellite'
+      }
+    );
+
+    // 수학적으로 정확한 원형 궤도 구현
+    const centerX = canvasSize.width / 2;
+    const centerY = canvasSize.height / 2;
+    const angularSpeed = 0.03 * config.initialVelocityFactor; // 각속도 (라디안/프레임)
+    let currentAngle = 0; // 시작 각도 (오른쪽에서 시작하므로 0)
+
+    // 물리 엔진을 사용하지 않고 수학적으로 위치 계산
+    Matter.Events.on(engine, 'beforeUpdate', () => {
+      // 각도 업데이트
+      currentAngle += angularSpeed;
+
+      // 원형 궤도 위치 계산
+      const newX = centerX + Math.cos(currentAngle) * orbitRadius;
+      const newY = centerY + Math.sin(currentAngle) * orbitRadius;
+
+      // 위성 위치 직접 설정
+      Matter.Body.setPosition(satellite, { x: newX, y: newY });
+
+      // 궤도 방향 속도 설정 (시각적 효과를 위해)
+      const velocityX = -Math.sin(currentAngle) * angularSpeed * orbitRadius;
+      const velocityY = Math.cos(currentAngle) * angularSpeed * orbitRadius;
+      
+      Matter.Body.setVelocity(satellite, { x: velocityX, y: velocityY });
+    });
+
+    World.add(engine.world, [planet, satellite]);
   };
 
   return (

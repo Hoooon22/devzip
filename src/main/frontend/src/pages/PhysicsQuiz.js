@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PhysicsCanvas from '../components/PhysicsCanvas';
 import { physicsQuestions } from '../data/physicsQuestions';
 import '../assets/css/PhysicsQuiz.css';
@@ -9,8 +9,21 @@ const PhysicsQuiz = () => {
   const [showResult, setShowResult] = useState(false);
   const [showSimulation, setShowSimulation] = useState(true); // 처음부터 시뮬레이션 표시 (정적 상태)
   const [simulationActive, setSimulationActive] = useState(false); // 실제 물리 현상 실행 여부
-  const [score, setScore] = useState(0);
+  // answerHistory를 기반으로 실시간 점수 계산
+  const calculateScore = () => {
+    return answerHistory.filter(answer => answer.correct).length;
+  };
   const [answerHistory, setAnswerHistory] = useState([]);
+  const timeoutRef = useRef(null);
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const question = physicsQuestions[currentQuestion];
 
@@ -29,18 +42,17 @@ const PhysicsQuiz = () => {
     setShowResult(true);
     
     const isCorrect = question.options.find(opt => opt.id === optionId)?.correct || false;
-    if (isCorrect) {
-      setScore(score + 1);
-    }
     
-    setAnswerHistory([...answerHistory, {
+    // answerHistory 업데이트 (기존 답이 있으면 덮어쓰기)
+    const newHistory = answerHistory.filter(h => h.questionId !== question.id);
+    setAnswerHistory([...newHistory, {
       questionId: question.id,
       selectedAnswer: optionId,
       correct: isCorrect
     }]);
 
     // 2초 후 시뮬레이션 활성화 (실제 물리 현상 시작)
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setSimulationActive(true);
     }, 2000);
   };
@@ -51,10 +63,13 @@ const PhysicsQuiz = () => {
       setSelectedAnswer('');
       setShowResult(false);
       setShowSimulation(true); // 정적 상태로 시뮬레이션 표시
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       setSimulationActive(false); // 물리 현상은 비활성화
     } else {
       // 퀴즈 완료
-      alert(`퀴즈 완료! 총 점수: ${score + (question.options.find(opt => opt.id === selectedAnswer)?.correct ? 1 : 0)}/${physicsQuestions.length}`);
+      alert(`퀴즈 완료! 총 점수: ${calculateScore()}/${physicsQuestions.length}`);
     }
   };
 
@@ -64,6 +79,9 @@ const PhysicsQuiz = () => {
       setSelectedAnswer('');
       setShowResult(false);
       setShowSimulation(true); // 정적 상태로 시뮬레이션 표시
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       setSimulationActive(false); // 물리 현상은 비활성화
     }
   };
@@ -73,9 +91,24 @@ const PhysicsQuiz = () => {
     setSelectedAnswer('');
     setShowResult(false);
     setShowSimulation(true); // 정적 상태로 시뮬레이션 표시
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     setSimulationActive(false); // 물리 현상은 비활성화
-    setScore(0);
     setAnswerHistory([]);
+  };
+
+  const handleRetryCurrentQuestion = () => {
+    // 현재 문제의 답변 기록을 제거 (다시 풀 수 있도록)
+    const newHistory = answerHistory.filter(h => h.questionId !== question.id);
+    setAnswerHistory(newHistory);
+    
+    setSelectedAnswer('');
+    setShowResult(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setSimulationActive(false);
   };
 
   const getOptionClass = (option) => {
@@ -101,7 +134,7 @@ const PhysicsQuiz = () => {
           <span className="question-counter">
             문제 {currentQuestion + 1} / {physicsQuestions.length}
           </span>
-          <span className="score">점수: {score}</span>
+          <span className="score">점수: {calculateScore()}</span>
         </div>
       </header>
 
@@ -204,6 +237,14 @@ const PhysicsQuiz = () => {
 
         <button 
           className="nav-button secondary"
+          onClick={handleRetryCurrentQuestion}
+          disabled={!showResult} // 답을 선택한 후에만 활성화
+        >
+          ↩️ 다시 풀기
+        </button>
+
+        <button 
+          className="nav-button secondary"
           onClick={handleRestart}
         >
           🔄 처음부터
@@ -226,13 +267,13 @@ const PhysicsQuiz = () => {
             <div className="stat-item">
               <span className="stat-label">총 점수</span>
               <span className="stat-value">
-                {score + (question.options.find(opt => opt.id === selectedAnswer)?.correct ? 1 : 0)}/{physicsQuestions.length}
+                {calculateScore()}/{physicsQuestions.length}
               </span>
             </div>
             <div className="stat-item">
               <span className="stat-label">정답률</span>
               <span className="stat-value">
-                {Math.round(((score + (question.options.find(opt => opt.id === selectedAnswer)?.correct ? 1 : 0)) / physicsQuestions.length) * 100)}%
+                {Math.round((calculateScore() / physicsQuestions.length) * 100)}%
               </span>
             </div>
           </div>

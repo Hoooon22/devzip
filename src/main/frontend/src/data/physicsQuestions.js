@@ -69,24 +69,25 @@ export const physicsQuestions = [
   },
   {
     id: 4,
-    title: "롤러코스터의 원형 구간",
-    question: "롤러코스터가 수직 원형 레일을 돌 때, 맨 위 지점에서 승객이 느끼는 힘은?",
+    title: "인공위성의 궤도",
+    question: "지구 주위를 도는 인공위성이 떨어지지 않고 계속 궤도를 유지하는 이유는 무엇일까요?",
     options: [
-      { id: "A", text: "평소보다 더 무거워진다", correct: false },
-      { id: "B", text: "평소와 같다", correct: false },
-      { id: "C", text: "더 가벼워진다 (무중력 상태)", correct: true },
-      { id: "D", text: "옆으로 밀려나는 힘을 느낀다", correct: false }
+      { id: "A", text: "지구의 자기장 때문", correct: false },
+      { id: "B", text: "지구의 중력이 없기 때문", correct: false },
+      { id: "C", text: "지구 중력과 위성의 속도가 균형을 이루기 때문", correct: true },
+      { id: "D", text: "우주 공간에 공기가 없기 때문", correct: false }
     ],
-    explanation: "원형 운동에서 중심으로 향하는 구심력이 필요합니다. 맨 위에서는 중력이 구심력 역할을 하므로, 승객은 무중력 상태를 경험합니다. 이것이 롤러코스터의 스릴 포인트입니다!",
+    explanation: "인공위성은 지구의 중력에 의해 계속 지구 쪽으로 '떨어지고' 있지만, 동시에 엄청난 속도로 옆으로 움직이고 있어 지표면에 닿지 않고 계속 지구 주위를 돌게 됩니다. 중력과 위성의 속도가 완벽한 균형을 이루는 것이죠!",
     simulation: {
-      type: "circular",
+      type: "orbital",
       config: {
-        radius: 1.5,
-        velocity: 6,
-        ballRadius: 18,
-        ballColor: "#51CF66",
-        gravity: 9.8,
-        showForces: true
+        planetRadius: 50,
+        satelliteRadius: 8,
+        initialOrbitRadius: 90,
+        initialVelocityFactor: 1.0, // 원형 궤도 속도에 대한 배율
+        planetColor: "#4DABF7",
+        satelliteColor: "#FF6B6B",
+        gravitationalConstant: 0.0008 // 구심력 상수
       }
     }
   },
