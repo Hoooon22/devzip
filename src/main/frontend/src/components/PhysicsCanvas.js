@@ -298,10 +298,13 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     );
 
-    // 초기 속도 설정 - 포물선이 잘 보이도록 조정
-    const velocityX = config.initialVelocity.x * scale * 0.3; // 수평 속도
-    const velocityY = -config.initialVelocity.y * scale * 0.3; // 수직 속도 (위쪽)
-    
+    // 초기 속도 설정 - 각도와 힘을 기반으로 계산
+    const angleRad = (config.angle * Math.PI) / 180; // 각도를 라디안으로 변환
+    const power = config.power * scale * 0.1; // 기본 힘에 스케일 적용 (0.1은 미세조정된 값)
+
+    const velocityX = Math.cos(angleRad) * power;
+    const velocityY = -Math.sin(angleRad) * power; // Y축은 위쪽이 음수
+
     Matter.Body.setVelocity(ball, {
       x: velocityX,
       y: velocityY

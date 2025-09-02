@@ -38,7 +38,8 @@ export const physicsQuestions = [
       type: "projectile",
       config: {
         initialHeight: 3,
-        initialVelocity: { x: 15, y: 8 },
+        angle: 30,
+        power: 18,
         gravity: 9.8,
         ballRadius: 12,
         ballColor: "#4ECDC4",
