@@ -67,15 +67,8 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
   // 시뮬레이션 초기 설정 및 렌더링을 위한 useEffect
   useEffect(() => {
     if (!simulation || !canvasRef.current) {
-      console.log('PhysicsCanvas: Missing simulation or canvas ref', { simulation, canvas: canvasRef.current });
       return;
     }
-
-    console.log('PhysicsCanvas: Initializing simulation', {
-      type: simulation.type,
-      canvasSize,
-      config: simulation.config
-    });
 
     // 이전 상태 정리
     cleanupMatter();
@@ -117,11 +110,9 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
     try {
       // 시뮬레이션 생성
       createSimulation(engine, simulation, canvasSize);
-      console.log('PhysicsCanvas: Simulation created successfully');
 
       // 렌더링 시작
       Render.run(render);
-      console.log('PhysicsCanvas: Render started');
     } catch (error) {
       console.error('PhysicsCanvas: Error creating simulation', error);
     }
@@ -316,12 +307,6 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       y: velocityY
     });
 
-    console.log('Projectile simulation created:', {
-      launchPosition: { x: launchX, y: launchY },
-      ballRadius,
-      initialVelocity: { x: velocityX, y: velocityY },
-      canvasSize
-    });
 
     World.add(engine.world, [ground, launcher, ball]);
   };
@@ -389,13 +374,6 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       y: 0 
     });
 
-    console.log('Collision simulation created:', {
-      ball1Position: { x: canvasSize.width * 0.3, y: canvasSize.height / 2 },
-      ball2Position: { x: canvasSize.width * 0.7, y: canvasSize.height / 2 },
-      ball1Velocity: { x: config.ball1.velocity * velocityScale, y: 0 },
-      ballRadius,
-      canvasSize
-    });
 
     World.add(engine.world, [leftWall, rightWall, ground, ceiling, ball1, ball2]);
   };
@@ -490,15 +468,6 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     );
 
-    console.log('Circular simulation created:', {
-      center: { x: centerX, y: centerY },
-      radius,
-      startPosition: { x: startX, y: startY },
-      minVelocityForLoop,
-      initialSpeed,
-      ballRadius,
-      canvasSize
-    });
 
     World.add(engine.world, [...railBodies, cart, topPoint, bottomPoint]);
   };
@@ -555,14 +524,6 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     });
 
-    console.log('Pendulum simulation created:', {
-      anchorPosition: { x: anchorX, y: anchorY },
-      ballPosition: { x: ballX, y: ballY },
-      pendulumLength,
-      initialAngle: config.initialAngle,
-      ballRadius,
-      canvasSize
-    });
 
     World.add(engine.world, [anchor, ball, constraint]);
   };
