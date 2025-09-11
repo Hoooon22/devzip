@@ -11,9 +11,26 @@ const Main = () => {
     const [projectsPerPage] = useState(6);
 
     // 현재 페이지에 표시할 프로젝트 계산
+    // Sort projects by startDate in descending order
+    const sortedProjects = [...projects].sort((a, b) => {
+        // Pinned projects first
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+
+        // Admin projects second
+        if (a.requiresAdmin && !b.requiresAdmin) return -1;
+        if (!a.requiresAdmin && b.requiresAdmin) return 1;
+
+        // Then sort by date
+        if (!a.startDate) return 1;
+        if (!b.startDate) return -1;
+        return new Date(b.startDate) - new Date(a.startDate);
+    });
+
+    // 현재 페이지에 표시할 프로젝트 계산
     const indexOfLastProject = currentPage * projectsPerPage;
     const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-    const currentProjects = projects.slice(indexOfFirstProject, indexOfLastProject);
+    const currentProjects = sortedProjects.slice(indexOfFirstProject, indexOfLastProject);
 
     // 페이지 변경
     const paginate = pageNumber => setCurrentPage(pageNumber);
@@ -34,7 +51,7 @@ const Main = () => {
             </ul>
             <Pagination
                 projectsPerPage={projectsPerPage}
-                totalProjects={projects.length}
+                totalProjects={sortedProjects.length}
                 paginate={paginate}
             />
             <Footer />
