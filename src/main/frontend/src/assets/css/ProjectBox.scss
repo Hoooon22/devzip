@@ -220,6 +220,10 @@
         display: none; // 기본적으로 숨김
     }
 
+    &.admin-project {
+        background: linear-gradient(145deg, #ef5350, #d32f2f);
+    }
+
     // 프로젝트 상태별 스타일
     &.inactive {
         opacity: 0.8;

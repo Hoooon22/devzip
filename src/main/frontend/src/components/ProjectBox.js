@@ -83,7 +83,7 @@ const ProjectBox = ({ project }) => {
     return (
         <a 
             href={link} 
-            className={`project-box ${getStatusClass()}`} 
+            className={`project-box ${getStatusClass()} ${requiresAdmin ? 'admin-project' : ''}`} 
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
