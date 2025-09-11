@@ -1,12 +1,12 @@
-package com.hoooon22.devzip.service.livechat;
+package com.hoooon22.devzip.Service.livechat;
 
 import com.hoooon22.devzip.dto.livechat.CreateLiveChatRoomRequest;
 import com.hoooon22.devzip.dto.livechat.LiveChatMessageResponse;
 import com.hoooon22.devzip.dto.livechat.LiveChatRoomResponse;
-import com.hoooon22.devzip.model.livechat.LiveChatMessage;
-import com.hoooon22.devzip.model.livechat.LiveChatRoom;
-import com.hoooon22.devzip.repository.livechat.LiveChatMessageRepository;
-import com.hoooon22.devzip.repository.livechat.LiveChatRoomRepository;
+import com.hoooon22.devzip.Model.livechat.LiveChatMessage;
+import com.hoooon22.devzip.Model.livechat.LiveChatRoom;
+import com.hoooon22.devzip.Repository.livechat.LiveChatMessageRepository;
+import com.hoooon22.devzip.Repository.livechat.LiveChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

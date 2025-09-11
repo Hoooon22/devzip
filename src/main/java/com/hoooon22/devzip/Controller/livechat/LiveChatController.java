@@ -1,13 +1,14 @@
-package com.hoooon22.devzip.controller.livechat;
+package com.hoooon22.devzip.Controller.livechat;
 
 import com.hoooon22.devzip.dto.livechat.CreateLiveChatRoomRequest;
 import com.hoooon22.devzip.dto.livechat.LiveChatMessageResponse;
 import com.hoooon22.devzip.dto.livechat.LiveChatRoomResponse;
-import com.hoooon22.devzip.service.livechat.LiveChatService;
+import com.hoooon22.devzip.Service.livechat.LiveChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.hoooon22.devzip.config;
+package com.hoooon22.devzip.Config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

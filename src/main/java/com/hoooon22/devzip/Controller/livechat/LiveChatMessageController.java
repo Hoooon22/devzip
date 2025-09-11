@@ -1,10 +1,10 @@
-package com.hoooon22.devzip.controller.livechat;
+package com.hoooon22.devzip.Controller.livechat;
 
 import com.hoooon22.devzip.dto.livechat.LiveChatMessageRequest;
-import com.hoooon22.devzip.model.livechat.LiveChatMessage;
-import com.hoooon22.devzip.model.livechat.LiveChatRoom;
-import com.hoooon22.devzip.repository.livechat.LiveChatMessageRepository;
-import com.hoooon22.devzip.repository.livechat.LiveChatRoomRepository;
+import com.hoooon22.devzip.Model.livechat.LiveChatMessage;
+import com.hoooon22.devzip.Model.livechat.LiveChatRoom;
+import com.hoooon22.devzip.Repository.livechat.LiveChatMessageRepository;
+import com.hoooon22.devzip.Repository.livechat.LiveChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;

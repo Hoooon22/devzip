@@ -1,6 +1,6 @@
-package com.hoooon22.devzip.repository.livechat;
+package com.hoooon22.devzip.Repository.livechat;
 
-import com.hoooon22.devzip.model.livechat.LiveChatMessage;
+import com.hoooon22.devzip.Model.livechat.LiveChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

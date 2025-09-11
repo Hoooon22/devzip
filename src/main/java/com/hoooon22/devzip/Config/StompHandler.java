@@ -1,4 +1,4 @@
-package com.hoooon22.devzip.config;
+package com.hoooon22.devzip.Config;
 
 import com.hoooon22.devzip.Service.JwtUtils;
 import com.hoooon22.devzip.Service.UserDetailsServiceImpl;

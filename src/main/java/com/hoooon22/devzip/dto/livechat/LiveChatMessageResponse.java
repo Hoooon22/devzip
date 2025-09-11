@@ -1,6 +1,6 @@
 package com.hoooon22.devzip.dto.livechat;
 
-import com.hoooon22.devzip.model.livechat.LiveChatMessage;
+import com.hoooon22.devzip.Model.livechat.LiveChatMessage;
 import lombok.Getter;
 import lombok.Setter;
 

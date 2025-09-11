@@ -1,6 +1,6 @@
-package com.hoooon22.devzip.model.livechat;
+package com.hoooon22.devzip.Model.livechat;
 
-import com.hoooon22.devzip.model.traceboard.BaseTimeEntity;
+import com.hoooon22.devzip.Model.traceboard.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
