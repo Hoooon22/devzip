@@ -29,10 +29,10 @@ public class LiveChatService {
     }
 
     @Transactional
-    public LiveChatRoomResponse createRoom(CreateLiveChatRoomRequest request) {
+    public LiveChatRoomResponse createRoom(CreateLiveChatRoomRequest request, String username) { // Add username
         LiveChatRoom liveChatRoom = new LiveChatRoom();
         liveChatRoom.setName(request.getName());
-        liveChatRoom.setCreatorName(request.getCreatorName()); // Should be from authenticated user
+        liveChatRoom.setCreatorName(username); // Use username
         LiveChatRoom savedRoom = liveChatRoomRepository.save(liveChatRoom);
         return new LiveChatRoomResponse(savedRoom);
     }

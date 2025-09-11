@@ -22,9 +22,7 @@ function LiveChatListPage() {
         const roomName = prompt('Enter new chat room name:');
         if (roomName) {
             try {
-                // In a real app, creatorName would come from auth context
-                const creatorName = 'testuser';
-                await axios.post('/api/livechat/rooms', { name: roomName, creatorName });
+                await axios.post('/api/livechat/rooms', { name: roomName });
                 fetchRooms(); // Refresh the list
             } catch (error) {
                 console.error('Error creating chat room:', error);

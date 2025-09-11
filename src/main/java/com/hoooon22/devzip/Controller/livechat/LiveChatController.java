@@ -7,8 +7,7 @@ import com.hoooon22.devzip.service.livechat.LiveChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +22,8 @@ public class LiveChatController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<LiveChatRoomResponse> createRoom(@RequestBody CreateLiveChatRoomRequest request) {
-        LiveChatRoomResponse room = liveChatService.createRoom(request);
+    public ResponseEntity<LiveChatRoomResponse> createRoom(@RequestBody CreateLiveChatRoomRequest request, Principal principal) {
+        LiveChatRoomResponse room = liveChatService.createRoom(request, principal.getName());
         return ResponseEntity.ok(room);
     }
 

@@ -3,13 +3,20 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import authService from '../services/AuthService';
+import '../assets/css/LiveChatRoomPage.scss';
 
 function LiveChatRoomPage() {
     const { roomId } = useParams();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [currentUser, setCurrentUser] = useState(null);
     const stompClient = useRef(null);
     const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        setCurrentUser(authService.getCurrentUsername());
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,9 +38,14 @@ function LiveChatRoomPage() {
 
         fetchPreviousMessages();
 
+        const token = authService.getToken();
+
         const socket = new SockJS('/ws-livechat');
         stompClient.current = new Client({
             webSocketFactory: () => socket,
+            connectHeaders: {
+                Authorization: `Bearer ${token}`,
+            },
             onConnect: () => {
                 console.log('Connected to WebSocket');
                 stompClient.current.subscribe(`/topic/room/${roomId}`, (message) => {
@@ -60,7 +72,6 @@ function LiveChatRoomPage() {
         if (newMessage.trim() && stompClient.current) {
             const chatMessage = {
                 roomId: roomId,
-                senderName: 'testuser', // Should be from auth context
                 message: newMessage,
             };
             stompClient.current.publish({
@@ -72,25 +83,30 @@ function LiveChatRoomPage() {
     };
 
     return (
-        <div>
+        <div className="live-chat-room">
             <h2>Chat Room #{roomId}</h2>
-            <div style={{ border: '1px solid #ccc', height: '400px', overflowY: 'scroll', padding: '10px', marginBottom: '10px' }}>
+            <div className="message-list">
                 {messages.map((msg, index) => (
-                    <div key={index}>
-                        <strong>{msg.senderName}:</strong> {msg.message}
+                    <div 
+                        key={index} 
+                        className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
+                    >
+                        <div className="sender">{msg.senderName}</div>
+                        <div className="text">{msg.message}</div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-            <input
-                type="text"
-                placeholder="Enter message"
-                style={{ width: '80%' }}
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            />
-            <button onClick={sendMessage}>Send</button>
+            <div className="input-area">
+                <input
+                    type="text"
+                    placeholder="Enter message"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                />
+                <button onClick={sendMessage}>Send</button>
+            </div>
         </div>
     );
 }
