@@ -42,13 +42,6 @@ const Main = () => {
             
             {/* 사용자 인증 상태 */}
             <UserStatus />
-            
-            {/* Live Chat Link */}
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <Link to="/livechat" style={{ fontSize: '1.2em', color: '#007bff', textDecoration: 'none' }}>
-                    Go to Live Chat
-                </Link>
-            </div>
 
             <ul className="project-list">
                 {currentProjects.map(project => (

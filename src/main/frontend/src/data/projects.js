@@ -1,5 +1,15 @@
 const projects = [
     { 
+        id: 9, 
+        name: '실시간 라이브 채팅', 
+        description: '다른 사람들과 실시간으로 대화하세요!', 
+        link: '/livechat', 
+        active: true,
+        startDate: '2025-09-12',
+        endDate: '',
+        pinned: true
+    },
+    { 
         id: 5, 
         name: 'devzip 서버 대시보드', 
         description: '서버의 정보를 표시하는 대시보드', 
