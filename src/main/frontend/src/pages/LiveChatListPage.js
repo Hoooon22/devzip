@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import axios from '../utils/axiosConfig';
+import { Link, useNavigate } from 'react-router-dom';
 
 function LiveChatListPage() {
     const [rooms, setRooms] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchRooms();
@@ -22,8 +23,8 @@ function LiveChatListPage() {
         const roomName = prompt('Enter new chat room name:');
         if (roomName) {
             try {
-                await axios.post('/api/livechat/rooms', { name: roomName });
-                fetchRooms(); // Refresh the list
+                const response = await axios.post('/api/livechat/rooms', { name: roomName });
+                navigate(`/livechat/${response.data.id}`);
             } catch (error) {
                 console.error('Error creating chat room:', error);
             }
