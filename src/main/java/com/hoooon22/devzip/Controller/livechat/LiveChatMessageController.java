@@ -25,13 +25,18 @@ public class LiveChatMessageController {
         System.out.println("Received message request: " + messageRequest.getMessage() + " for room: " + messageRequest.getRoomId());
         System.out.println("Principal: " + (principal != null ? principal.getName() : "null"));
 
-        LiveChatRoom room = liveChatRoomRepository.findById(messageRequest.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Chat room not found"));
+        try {
+            LiveChatRoom room = liveChatRoomRepository.findById(messageRequest.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
-        LiveChatMessage chatMessage = new LiveChatMessage();
-        chatMessage.setLiveChatRoom(room);
-        chatMessage.setSenderName(principal.getName());
-        chatMessage.setMessage(messageRequest.getMessage());
+            LiveChatMessage chatMessage = new LiveChatMessage();
+            chatMessage.setLiveChatRoom(room);
+
+            // Principal이 null인 경우 임시로 senderName 사용
+            String senderName = (principal != null) ? principal.getName() :
+                               (messageRequest.getSenderName() != null) ? messageRequest.getSenderName() : "Anonymous";
+            chatMessage.setSenderName(senderName);
+            chatMessage.setMessage(messageRequest.getMessage());
 
         LiveChatMessage savedMessage = liveChatMessageRepository.save(chatMessage);
         System.out.println("Message saved with ID: " + savedMessage.getId());
@@ -44,8 +49,12 @@ public class LiveChatMessageController {
                 savedMessage.getCreatedAt()
         );
 
-        System.out.println("Sending DTO: " + messageDTO.getMessage() + " to topic: /topic/room/" + messageRequest.getRoomId());
-        messagingTemplate.convertAndSend("/topic/room/" + messageRequest.getRoomId(), messageDTO);
-        System.out.println("Message sent to topic");
+            System.out.println("Sending DTO: " + messageDTO.getMessage() + " to topic: /topic/room/" + messageRequest.getRoomId());
+            messagingTemplate.convertAndSend("/topic/room/" + messageRequest.getRoomId(), messageDTO);
+            System.out.println("Message sent to topic");
+        } catch (Exception e) {
+            System.err.println("Error processing message: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

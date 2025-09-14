@@ -144,10 +144,12 @@ function LiveChatRoomPage() {
         try {
             const chatMessage = {
                 roomId: parseInt(roomId),
+                senderName: currentUser,
                 message: newMessage.trim(),
             };
-            
+
             console.log('Sending message:', chatMessage);
+            console.log('Current user when sending:', currentUser);
             
             stompClient.current.publish({
                 destination: '/app/livechat/message',
