@@ -164,35 +164,92 @@ function LiveChatRoomPage() {
         }
     };
 
+    const formatTime = (timestamp) => {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    };
+
     return (
         <div className="live-chat-room">
             <div className="chat-header">
-                <h2>Chat Room #{roomId}</h2>
+                <div className="header-left">
+                    <button
+                        className="back-button"
+                        onClick={() => window.history.back()}
+                    >
+                        ←
+                    </button>
+                    <div className="room-info">
+                        <h2>채팅방 #{roomId}</h2>
+                        <span className="room-subtitle">실시간 채팅</span>
+                    </div>
+                </div>
                 <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-                    {isConnected ? '🟢 연결됨' : '🔴 연결 안됨'}
+                    <span className="status-dot"></span>
+                    {isConnected ? '연결됨' : '연결 안됨'}
                 </div>
             </div>
             <div className="message-list">
-                {messages.map((msg, index) => (
-                    <div
-                        key={index}
-                        className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
-                    >
-                        <div className="sender">{msg.senderName}</div>
-                        <div className="text">{msg.message}</div>
+                {messages.length === 0 ? (
+                    <div className="empty-chat">
+                        <div className="empty-icon">💬</div>
+                        <div className="empty-title">아직 메시지가 없습니다</div>
+                        <div className="empty-subtitle">첫 번째 메시지를 보내보세요!</div>
                     </div>
-                ))}
+                ) : (
+                    messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
+                        >
+                            {msg.senderName !== currentUser && (
+                                <div className="sender">{msg.senderName}</div>
+                            )}
+                            <div className="message-content">
+                                <div className="text">{msg.message}</div>
+                                <div className="timestamp">
+                                    {formatTime(msg.sentAt || msg.createdAt)}
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
                 <div ref={messagesEndRef} />
             </div>
             <div className="input-area">
-                <input
-                    type="text"
-                    placeholder="Enter message"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                />
-                <button onClick={sendMessage}>Send</button>
+                <div className="input-container">
+                    <input
+                        type="text"
+                        placeholder="메시지를 입력하세요..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        disabled={!isConnected}
+                    />
+                    <button
+                        onClick={sendMessage}
+                        disabled={!newMessage.trim() || !isConnected}
+                        className="send-button"
+                    >
+                        {!isConnected ? '⏳' : '➤'}
+                    </button>
+                </div>
+                {!isConnected && (
+                    <div className="connection-warning">
+                        <span>⚠️ 연결이 끊어졌습니다. 다시 연결하는 중...</span>
+                    </div>
+                )}
             </div>
         </div>
     );
