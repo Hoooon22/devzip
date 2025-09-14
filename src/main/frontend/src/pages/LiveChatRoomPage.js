@@ -165,20 +165,15 @@ function LiveChatRoomPage() {
                 </div>
             </div>
             <div className="message-list">
-                {console.log('Rendering messages:', messages)}
-                {console.log('Current user:', currentUser)}
-                {messages.map((msg, index) => {
-                    console.log(`Rendering message ${index}:`, msg);
-                    return (
-                        <div 
-                            key={index} 
-                            className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
-                        >
-                            <div className="sender">{msg.senderName}</div>
-                            <div className="text">{msg.message}</div>
-                        </div>
-                    );
-                })}
+                {messages.map((msg, index) => (
+                    <div
+                        key={index}
+                        className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
+                    >
+                        <div className="sender">{msg.senderName}</div>
+                        <div className="text">{msg.message}</div>
+                    </div>
+                ))}
                 <div ref={messagesEndRef} />
             </div>
             <div className="input-area">
