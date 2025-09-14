@@ -79,8 +79,22 @@ function App() {
         <Route path="/chat/:roomId" element={<ChatRoomPage />} />
 
         {/* 실시간 채팅 페이지 */}
-        <Route path="/livechat" element={<LiveChatListPage />} />
-        <Route path="/livechat/:roomId" element={<LiveChatRoomPage />} />
+        <Route 
+          path="/livechat" 
+          element={
+            <ProtectedRoute>
+              <LiveChatListPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/livechat/:roomId" 
+          element={
+            <ProtectedRoute>
+              <LiveChatRoomPage />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* 물리 퀴즈 페이지 */}
         <Route path="/physics-quiz" element={<PhysicsQuiz />} />

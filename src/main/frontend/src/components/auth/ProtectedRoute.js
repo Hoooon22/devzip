@@ -23,9 +23,13 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
       if (isValid) {
         setAuthenticated(true);
         setIsAdmin(authService.isAdmin());
+      } else {
+        // 토큰이 유효하지 않은 경우, 인증 상태를 false로 설정
+        setAuthenticated(false);
       }
     } catch (error) {
       console.error('Auth check error:', error);
+      setAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -56,11 +60,13 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
   // 인증이 필요한데 인증되지 않은 경우
   if (!authenticated) {
+    alert('로그인이 필요합니다.');
     return <Navigate to="/" replace />;
   }
 
   // 관리자 권한이 필요한데 관리자가 아닌 경우
   if (requireAdmin && !isAdmin) {
+    alert('관리자 권한이 필요합니다.');
     return <Navigate to="/" replace />;
   }
 
