@@ -1,5 +1,6 @@
 package com.hoooon22.devzip.Controller.livechat;
 
+import com.hoooon22.devzip.dto.livechat.LiveChatMessageDTO;
 import com.hoooon22.devzip.dto.livechat.LiveChatMessageRequest;
 import com.hoooon22.devzip.Model.livechat.LiveChatMessage;
 import com.hoooon22.devzip.Model.livechat.LiveChatRoom;
@@ -31,6 +32,14 @@ public class LiveChatMessageController {
 
         LiveChatMessage savedMessage = liveChatMessageRepository.save(chatMessage);
 
-        messagingTemplate.convertAndSend("/topic/room/" + messageRequest.getRoomId(), savedMessage);
+        LiveChatMessageDTO messageDTO = new LiveChatMessageDTO(
+                savedMessage.getId(),
+                savedMessage.getLiveChatRoom().getId(),
+                savedMessage.getSenderName(),
+                savedMessage.getMessage(),
+                savedMessage.getCreatedAt()
+        );
+
+        messagingTemplate.convertAndSend("/topic/room/" + messageRequest.getRoomId(), messageDTO);
     }
 }
