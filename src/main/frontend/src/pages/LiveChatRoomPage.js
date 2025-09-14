@@ -135,6 +135,12 @@ function LiveChatRoomPage() {
             return;
         }
 
+        if (!stompClient.current.connected) {
+            console.error('STOMP client is not connected');
+            alert('STOMP 연결이 아직 완료되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
         try {
             const chatMessage = {
                 roomId: parseInt(roomId),
