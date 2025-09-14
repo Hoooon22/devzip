@@ -8,14 +8,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
+    setLoading(true);
     try {
       if (!authService.isAuthenticated()) {
-        setLoading(false);
+        setAuthenticated(false);
         return;
       }
 
@@ -24,7 +21,6 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
         setAuthenticated(true);
         setIsAdmin(authService.isAdmin());
       } else {
-        // 토큰이 유효하지 않은 경우, 인증 상태를 false로 설정
         setAuthenticated(false);
       }
     } catch (error) {
@@ -34,6 +30,20 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+
+    const handleAuthFailure = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('auth-failure', handleAuthFailure);
+
+    return () => {
+      window.removeEventListener('auth-failure', handleAuthFailure);
+    };
+  }, []);
 
   if (loading) {
     return (

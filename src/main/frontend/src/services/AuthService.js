@@ -180,10 +180,8 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       authService.logout();
-      // 현재 페이지가 보호된 페이지라면 메인으로 리다이렉트
-      if (window.location.pathname === '/dashboard' || window.location.pathname === '/traceboard') {
-        window.location.href = '/';
-      }
+      // 인증 실패 이벤트를 발생시켜 다른 컴포넌트에서 처리할 수 있도록 함
+      window.dispatchEvent(new Event('auth-failure'));
     }
     return Promise.reject(error);
   }
