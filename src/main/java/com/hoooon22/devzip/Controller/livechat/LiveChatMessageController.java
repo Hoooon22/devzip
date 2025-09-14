@@ -22,6 +22,9 @@ public class LiveChatMessageController {
 
     @MessageMapping("/livechat/message")
     public void message(LiveChatMessageRequest messageRequest, Principal principal) {
+        System.out.println("Received message request: " + messageRequest.getMessage() + " for room: " + messageRequest.getRoomId());
+        System.out.println("Principal: " + (principal != null ? principal.getName() : "null"));
+
         LiveChatRoom room = liveChatRoomRepository.findById(messageRequest.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
@@ -31,6 +34,7 @@ public class LiveChatMessageController {
         chatMessage.setMessage(messageRequest.getMessage());
 
         LiveChatMessage savedMessage = liveChatMessageRepository.save(chatMessage);
+        System.out.println("Message saved with ID: " + savedMessage.getId());
 
         LiveChatMessageDTO messageDTO = new LiveChatMessageDTO(
                 savedMessage.getId(),
@@ -40,6 +44,8 @@ public class LiveChatMessageController {
                 savedMessage.getCreatedAt()
         );
 
+        System.out.println("Sending DTO: " + messageDTO.getMessage() + " to topic: /topic/room/" + messageRequest.getRoomId());
         messagingTemplate.convertAndSend("/topic/room/" + messageRequest.getRoomId(), messageDTO);
+        System.out.println("Message sent to topic");
     }
 }

@@ -60,11 +60,12 @@ function LiveChatRoomPage() {
             connectHeaders: {
                 Authorization: `Bearer ${token}`,
             },
-            onConnect: () => {
-                console.log('Connected to WebSocket');
+            onConnect: (frame) => {
+                console.log('Connected to WebSocket', frame);
                 setIsConnected(true);
-                
-                stompClient.current.subscribe(`/topic/room/${roomId}`, (message) => {
+
+                console.log(`Subscribing to topic: /topic/room/${roomId}`);
+                const subscription = stompClient.current.subscribe(`/topic/room/${roomId}`, (message) => {
                     console.log('Received raw message:', message.body);
                     const receivedMessage = JSON.parse(message.body);
                     console.log('Parsed message object:', receivedMessage);
@@ -87,6 +88,9 @@ function LiveChatRoomPage() {
                         return newMessages;
                     });
                 });
+
+                console.log('Subscription created:', subscription);
+                console.log('Subscription id:', subscription.id);
             },
             onDisconnect: () => {
                 console.log('Disconnected from WebSocket');
