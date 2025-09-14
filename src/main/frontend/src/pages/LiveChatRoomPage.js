@@ -38,6 +38,8 @@ function LiveChatRoomPage() {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                console.log('Loaded previous messages:', response.data);
+                console.log('First message structure:', response.data[0]);
                 setMessages(response.data);
             } catch (error) {
                 console.error('Error fetching previous messages:', error);
@@ -63,9 +65,27 @@ function LiveChatRoomPage() {
                 setIsConnected(true);
                 
                 stompClient.current.subscribe(`/topic/room/${roomId}`, (message) => {
-                    console.log('Received message:', message.body);
+                    console.log('Received raw message:', message.body);
                     const receivedMessage = JSON.parse(message.body);
-                    setMessages(prevMessages => [...prevMessages, receivedMessage]);
+                    console.log('Parsed message object:', receivedMessage);
+                    console.log('Message fields:', Object.keys(receivedMessage));
+                    
+                    // DTO 구조에 맞게 메시지 객체 변환
+                    const formattedMessage = {
+                        id: receivedMessage.id,
+                        senderName: receivedMessage.senderName,
+                        message: receivedMessage.message,
+                        sentAt: receivedMessage.createdAt || receivedMessage.sentAt, // 두 필드 모두 처리
+                        createdAt: receivedMessage.createdAt || receivedMessage.sentAt
+                    };
+                    
+                    console.log('Formatted message:', formattedMessage);
+                    setMessages(prevMessages => {
+                        console.log('Current messages:', prevMessages);
+                        const newMessages = [...prevMessages, formattedMessage];
+                        console.log('New messages array:', newMessages);
+                        return newMessages;
+                    });
                 });
             },
             onDisconnect: () => {
@@ -141,15 +161,20 @@ function LiveChatRoomPage() {
                 </div>
             </div>
             <div className="message-list">
-                {messages.map((msg, index) => (
-                    <div 
-                        key={index} 
-                        className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
-                    >
-                        <div className="sender">{msg.senderName}</div>
-                        <div className="text">{msg.message}</div>
-                    </div>
-                ))}
+                {console.log('Rendering messages:', messages)}
+                {console.log('Current user:', currentUser)}
+                {messages.map((msg, index) => {
+                    console.log(`Rendering message ${index}:`, msg);
+                    return (
+                        <div 
+                            key={index} 
+                            className={`message-bubble ${msg.senderName === currentUser ? 'my-message' : 'other-message'}`}
+                        >
+                            <div className="sender">{msg.senderName}</div>
+                            <div className="text">{msg.message}</div>
+                        </div>
+                    );
+                })}
                 <div ref={messagesEndRef} />
             </div>
             <div className="input-area">
