@@ -196,7 +196,7 @@ function LiveChatListPage() {
                     <div className="modal-content">
                         <h3>채팅방 삭제</h3>
                         <p>
-                            '<strong>{deleteModal.roomName}</strong>' 채팅방을 정말 삭제하시겠습니까?
+                            &lsquo;<strong>{deleteModal.roomName}</strong>&rsquo; 채팅방을 정말 삭제하시겠습니까?
                         </p>
                         <p className="warning-text">
                             ⚠️ 이 작업은 되돌릴 수 없으며, 모든 메시지가 함께 삭제됩니다.
