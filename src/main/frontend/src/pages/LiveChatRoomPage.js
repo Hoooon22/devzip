@@ -10,8 +10,10 @@ function LiveChatRoomPage() {
     const { roomId } = useParams();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [roomName, setRoomName] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [isComposing, setIsComposing] = useState(false);
     const stompClient = useRef(null);
     const messagesEndRef = useRef(null);
 
@@ -28,6 +30,21 @@ function LiveChatRoomPage() {
     }, [messages]);
 
     useEffect(() => {
+        const fetchRoomDetails = async () => {
+            try {
+                const token = authService.getToken();
+                const response = await axios.get('/api/livechat/rooms', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const room = response.data.find(r => r.id.toString() === roomId);
+                if (room) {
+                    setRoomName(room.name);
+                }
+            } catch (error) {
+                console.error('Error fetching room details:', error);
+            }
+        };
+
         const fetchPreviousMessages = async () => {
             try {
                 const token = authService.getToken();
@@ -49,6 +66,7 @@ function LiveChatRoomPage() {
             }
         };
 
+        fetchRoomDetails();
         fetchPreviousMessages();
 
         const token = authService.getToken();
@@ -174,6 +192,7 @@ function LiveChatRoomPage() {
     };
 
     const handleKeyPress = (e) => {
+        if (isComposing) return;
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
@@ -191,7 +210,7 @@ function LiveChatRoomPage() {
                         ←
                     </button>
                     <div className="room-info">
-                        <h2>채팅방 #{roomId}</h2>
+                        <h2>{roomName || `채팅방 #${roomId}`}</h2>
                         <span className="room-subtitle">실시간 채팅</span>
                     </div>
                 </div>
@@ -235,6 +254,8 @@ function LiveChatRoomPage() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={handleKeyPress}
+                        onCompositionStart={() => setIsComposing(true)}
+                        onCompositionEnd={() => setIsComposing(false)}
                         disabled={!isConnected}
                     />
                     <button

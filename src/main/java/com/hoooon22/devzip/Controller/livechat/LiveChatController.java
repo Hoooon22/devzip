@@ -32,4 +32,16 @@ public class LiveChatController {
     public ResponseEntity<List<LiveChatMessageResponse>> getRoomMessages(@PathVariable Long roomId) {
         return ResponseEntity.ok(liveChatService.findMessagesByRoomId(roomId));
     }
+
+    @DeleteMapping("/rooms/{roomId}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId, Principal principal) {
+        try {
+            liveChatService.deleteRoom(roomId, principal.getName());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(403).build();
+        }
+    }
 }

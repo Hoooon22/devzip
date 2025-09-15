@@ -8,9 +8,14 @@ function LiveChatListPage() {
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [creating, setCreating] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ show: false, roomId: null, roomName: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
+        setCurrentUser(authService.getCurrentUsername());
+        setIsAdmin(authService.isAdmin());
         fetchRooms();
     }, []);
 
@@ -69,6 +74,41 @@ function LiveChatListPage() {
         navigate(`/livechat/${roomId}`);
     };
 
+    const canDeleteRoom = (room) => {
+        return isAdmin || (currentUser && room.creatorName === currentUser);
+    };
+
+    const handleDeleteClick = (e, room) => {
+        e.stopPropagation();
+        setDeleteModal({
+            show: true,
+            roomId: room.id,
+            roomName: room.name
+        });
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await axios.delete(`/api/livechat/rooms/${deleteModal.roomId}`);
+            setRooms(rooms.filter(room => room.id !== deleteModal.roomId));
+            setDeleteModal({ show: false, roomId: null, roomName: '' });
+        } catch (error) {
+            console.error('Error deleting chat room:', error);
+            if (error.response?.status === 403) {
+                alert('채팅방을 삭제할 권한이 없습니다.');
+            } else if (error.response?.status === 404) {
+                alert('채팅방을 찾을 수 없습니다.');
+            } else {
+                alert('채팅방 삭제에 실패했습니다. 다시 시도해주세요.');
+            }
+            setDeleteModal({ show: false, roomId: null, roomName: '' });
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteModal({ show: false, roomId: null, roomName: '' });
+    };
+
     return (
         <div className="live-chat-list">
             <div className="container">
@@ -108,8 +148,19 @@ function LiveChatListPage() {
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 <div className="room-header">
-                                    <h3 className="room-name">{room.name}</h3>
-                                    <span className="room-id">#{room.id}</span>
+                                    <div className="room-title">
+                                        <h3 className="room-name">{room.name}</h3>
+                                        <span className="room-id">#{room.id}</span>
+                                    </div>
+                                    {canDeleteRoom(room) && (
+                                        <button
+                                            className="delete-btn"
+                                            onClick={(e) => handleDeleteClick(e, room)}
+                                            title="채팅방 삭제"
+                                        >
+                                            🗑️
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="room-info">
@@ -138,6 +189,35 @@ function LiveChatListPage() {
                     </div>
                 )}
             </div>
+
+            {/* 삭제 확인 모달 */}
+            {deleteModal.show && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>채팅방 삭제</h3>
+                        <p>
+                            '<strong>{deleteModal.roomName}</strong>' 채팅방을 정말 삭제하시겠습니까?
+                        </p>
+                        <p className="warning-text">
+                            ⚠️ 이 작업은 되돌릴 수 없으며, 모든 메시지가 함께 삭제됩니다.
+                        </p>
+                        <div className="modal-buttons">
+                            <button
+                                className="cancel-btn"
+                                onClick={handleDeleteCancel}
+                            >
+                                취소
+                            </button>
+                            <button
+                                className="confirm-btn"
+                                onClick={handleDeleteConfirm}
+                            >
+                                삭제
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
