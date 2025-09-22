@@ -20,10 +20,29 @@ ChartJS.register(LineElement, PointElement, LinearScale, Title, Tooltip, Legend,
 const UPDATE_INTERVAL = 2000; // 2초
 
 const RequestsPerSecond = () => {
-    const [rpsData, setRpsData] = useState({
-        labels: [],
-        values: []
-    });
+    // localStorage에서 저장된 RPS 데이터 로드
+    const loadStoredData = () => {
+        try {
+            const stored = localStorage.getItem('rpsData');
+            if (stored) {
+                const parsedData = JSON.parse(stored);
+                // 저장된 데이터가 1시간 이내인지 확인
+                const now = Date.now();
+                const oneHour = 60 * 60 * 1000;
+                if (parsedData.timestamp && (now - parsedData.timestamp) < oneHour) {
+                    return {
+                        labels: parsedData.labels || [],
+                        values: parsedData.values || []
+                    };
+                }
+            }
+        } catch (error) {
+            console.error('RPS 데이터 로드 실패:', error);
+        }
+        return { labels: [], values: [] };
+    };
+
+    const [rpsData, setRpsData] = useState(loadStoredData());
     const lastRequestCount = useRef(0);
     const lastRequestTime = useRef(Date.now());
 
@@ -46,7 +65,19 @@ const RequestsPerSecond = () => {
                 const newValues = [...prevData.values, rps];
                 if (newValues.length > 12) newValues.shift();
 
-                return { labels: newLabels, values: newValues };
+                const newData = { labels: newLabels, values: newValues };
+
+                // localStorage에 데이터 저장
+                try {
+                    localStorage.setItem('rpsData', JSON.stringify({
+                        ...newData,
+                        timestamp: Date.now()
+                    }));
+                } catch (error) {
+                    console.error('RPS 데이터 저장 실패:', error);
+                }
+
+                return newData;
             });
 
             // 다음 계산을 위해 현재 값 저장
