@@ -63,9 +63,8 @@ const CPUUsage = () => {
     }, []);
 
     return (
-        <div className={styles.container}>
-            <div className="usage-box">
-                <h3>💻 CPU 사용량</h3>
+        <div className="usage-box">
+            <h3>💻 CPU 사용량</h3>
                 <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1rem' }}>
                     <Doughnut data={chartData} options={chartOptions} width={120} height={120} />
                     <div style={{
