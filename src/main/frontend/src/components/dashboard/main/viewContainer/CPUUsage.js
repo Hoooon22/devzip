@@ -46,13 +46,18 @@ const CPUUsage = () => {
 
     const fetchCPUUsage = async () => {
         try {
-            const response = await axios.get('/actuator/metrics/system.cpu.usage');
-            const rawValue = response.data.measurements[0]?.value; 
-            const value = rawValue !== undefined ? Math.ceil(rawValue * 100) : 0; 
-            setCpuUsage(value);
-            console.log('CPU 사용량 업데이트:', value);
+            const response = await axios.get('/api/system/cpu');
+            if (response.data.success) {
+                const value = Math.round(response.data.cpuUsage || 0);
+                setCpuUsage(value);
+                console.log('시스템 CPU 사용량 업데이트:', value);
+            } else {
+                console.error('CPU 사용량 가져오기 실패:', response.data.error);
+                setCpuUsage(0);
+            }
         } catch (error) {
             console.error('CPU 사용량 가져오기 실패:', error);
+            setCpuUsage(0);
         }
     };
 

@@ -73,6 +73,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/validate").permitAll()
                 .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/api/system/**").permitAll()
                 .requestMatchers("/api/v1/serverstarts/**").permitAll()
                 .requestMatchers("/metrics/**").permitAll()
                 .requestMatchers("/api/traceboard/**").hasRole("ADMIN") // 나머지 트레이스보드 API는 관리자만

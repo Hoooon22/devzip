@@ -46,17 +46,18 @@ const MemoryUsage = () => {
 
     const fetchMemoryUsage = async () => {
         try {
-            const usedResponse = await axios.get('/actuator/metrics/jvm.memory.used');
-            const maxResponse = await axios.get('/actuator/metrics/jvm.memory.max');
-
-            const usedMemory = usedResponse.data.measurements[0]?.value ?? 0; 
-            const maxMemory = maxResponse.data.measurements[0]?.value ?? 1; // 0으로 나누는 걸 방지하기 위해 1로 설정
-
-            const usagePercentage = Math.ceil((usedMemory / maxMemory) * 100); 
-            setMemoryUsage(usagePercentage); // 💡 사용률 업데이트
-            console.log('메모리 사용률 업데이트:', usagePercentage + '%');
+            const response = await axios.get('/api/system/memory');
+            if (response.data.success) {
+                const usagePercentage = Math.round(response.data.memoryUsage || 0);
+                setMemoryUsage(usagePercentage);
+                console.log('시스템 메모리 사용률 업데이트:', usagePercentage + '%');
+            } else {
+                console.error('메모리 사용량 가져오기 실패:', response.data.error);
+                setMemoryUsage(0);
+            }
         } catch (error) {
             console.error('메모리 사용량 가져오기 실패:', error);
+            setMemoryUsage(0);
         }
     };
 
