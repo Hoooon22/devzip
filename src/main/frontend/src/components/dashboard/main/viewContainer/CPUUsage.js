@@ -62,8 +62,8 @@ const CPUUsage = () => {
     };
 
     useEffect(() => {
-        fetchCPUUsage(); 
-        const interval = setInterval(fetchCPUUsage, 5000); 
+        fetchCPUUsage();
+        const interval = setInterval(fetchCPUUsage, 2000); 
         return () => clearInterval(interval); 
     }, []);
 

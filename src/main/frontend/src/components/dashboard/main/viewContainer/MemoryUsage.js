@@ -62,8 +62,8 @@ const MemoryUsage = () => {
     };
 
     useEffect(() => {
-        fetchMemoryUsage(); 
-        const interval = setInterval(fetchMemoryUsage, 5000); // 5초마다 메모리 사용률 갱신
+        fetchMemoryUsage();
+        const interval = setInterval(fetchMemoryUsage, 2000); // 2초마다 메모리 사용률 갱신
         return () => clearInterval(interval); 
     }, []);
 

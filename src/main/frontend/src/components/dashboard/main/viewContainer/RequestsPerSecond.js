@@ -17,7 +17,7 @@ import {
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, Tooltip, Legend, CategoryScale, TimeScale);
 
-const UPDATE_INTERVAL = 5000; // 5초
+const UPDATE_INTERVAL = 2000; // 2초
 
 const RequestsPerSecond = () => {
     const [rpsData, setRpsData] = useState({
