@@ -29,3 +29,14 @@
     color: #f7fafc; /* 기본 텍스트 색상을 밝게 */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); /* 텍스트 그림자 추가 */
 }
+
+.fullWidthWidget {
+    grid-column: 1 / -1; /* 전체 너비 차지 */
+    background: rgba(255, 255, 255, 0.95); /* 밝은 배경 */
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #2d3748; /* 어두운 텍스트 색상 */
+}

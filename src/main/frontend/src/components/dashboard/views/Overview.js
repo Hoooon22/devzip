@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../../../assets/css/View.module.scss';
-import { OverallStatus, CPUUsage, MemoryUsage, RequestsPerSecond } from "../main/viewContainer";
+import { OverallStatus, CPUUsage, MemoryUsage, RequestsPerSecond, SystemMetricsChart } from "../main/viewContainer";
 
 const Overview = () => {
     return (
@@ -9,6 +9,7 @@ const Overview = () => {
             <div className={styles.widget}><CPUUsage /></div>
             <div className={styles.widget}><MemoryUsage /></div>
             <div className={styles.widget}><RequestsPerSecond /></div>
+            <div className={styles.fullWidthWidget}><SystemMetricsChart /></div>
         </div>
     );
 };

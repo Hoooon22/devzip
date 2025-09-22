@@ -71,66 +71,111 @@ public class SystemMetricsController {
     }
 
     private double getLinuxCpuUsage() throws Exception {
-        // Ubuntu에서 확실하게 작동하는 CPU 사용량 측정
-        ProcessBuilder pb = new ProcessBuilder("sh", "-c",
-            "grep 'cpu ' /proc/stat | head -1 | awk '{idle=$5; total=0; for(i=2;i<=NF;i++) total+=$i; printf \"%.1f\", (total-idle)*100/total}'");
+        // 방법 1: vmstat으로 CPU 사용량 측정 (우분투에서 가장 안정적)
+        try {
+            ProcessBuilder pb = new ProcessBuilder("vmstat", "1", "2");
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        Process process = pb.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String result = reader.readLine();
-        process.waitFor();
-
-        if (result != null && !result.isEmpty()) {
-            try {
-                double cpuUsage = Double.parseDouble(result.trim());
-                return Math.max(cpuUsage, 1.0);
-            } catch (NumberFormatException e) {
-                // 파싱 실패 시 다음 방법 시도
-            }
-        }
-
-        // 대안 1: ps 명령어로 전체 프로세스 CPU 사용량 합계
-        pb = new ProcessBuilder("sh", "-c",
-            "ps -eo pcpu | tail -n +2 | awk '{sum += $1} END {printf \"%.1f\", sum}'");
-
-        process = pb.start();
-        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        result = reader.readLine();
-        process.waitFor();
-
-        if (result != null && !result.isEmpty()) {
-            try {
-                double cpuUsage = Double.parseDouble(result.trim());
-                return Math.max(Math.min(cpuUsage, 100), 1.0);
-            } catch (NumberFormatException e) {
-                // 파싱 실패 시 다음 방법 시도
-            }
-        }
-
-        // 대안 2: uptime으로 load average 기반 계산
-        pb = new ProcessBuilder("uptime");
-        process = pb.start();
-        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        result = reader.readLine();
-        process.waitFor();
-
-        if (result != null && result.contains("load average:")) {
-            try {
-                String loadPart = result.substring(result.indexOf("load average:") + 13);
-                String[] loads = loadPart.split(",");
-                if (loads.length > 0) {
-                    double load = Double.parseDouble(loads[0].trim());
-                    // Load average를 CPU 사용량으로 근사 변환
-                    double cpuUsage = Math.min(load * 25, 100);
-                    return Math.max(cpuUsage, 1.0);
+            String line;
+            String lastLine = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().matches("^\\d+.*")) {
+                    lastLine = line.trim();
                 }
-            } catch (Exception e) {
-                // 파싱 실패
             }
+            process.waitFor();
+
+            if (lastLine != null) {
+                String[] parts = lastLine.trim().split("\\s+");
+                if (parts.length >= 15) {
+                    // vmstat: user + system = CPU 사용량, idle = 유휴 상태
+                    int user = Integer.parseInt(parts[12]);    // us
+                    int system = Integer.parseInt(parts[13]);  // sy
+                    int idle = Integer.parseInt(parts[14]);    // id
+
+                    double cpuUsage = 100.0 - idle;
+                    return Math.max(Math.min(cpuUsage, 100.0), 0.1);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("vmstat 실패: " + e.getMessage());
         }
 
-        // 최종 대안: 기본값 반환
-        return 8.0;
+        // 방법 2: top 명령어로 즉시 CPU 사용량 측정
+        try {
+            ProcessBuilder pb = new ProcessBuilder("sh", "-c",
+                "top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'");
+
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String result = reader.readLine();
+            process.waitFor();
+
+            if (result != null && !result.trim().isEmpty()) {
+                double cpuUsage = Double.parseDouble(result.trim());
+                return Math.max(Math.min(cpuUsage, 100.0), 0.1);
+            }
+        } catch (Exception e) {
+            System.err.println("top 명령어 실패: " + e.getMessage());
+        }
+
+        // 방법 3: /proc/stat을 이용한 CPU 사용량 계산 (개선된 버전)
+        try {
+            ProcessBuilder pb = new ProcessBuilder("sh", "-c",
+                "awk '/^cpu /{u=$2+$4; t=$2+$3+$4+$5; if (NR==1){u1=u; t1=t;} else print ($2+$4-u1) * 100 / (t-t1) \"%\"; }' " +
+                "/proc/stat /proc/stat");
+
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String result = reader.readLine();
+            process.waitFor();
+
+            if (result != null && result.contains("%")) {
+                String numStr = result.replace("%", "").trim();
+                double cpuUsage = Double.parseDouble(numStr);
+                return Math.max(Math.min(cpuUsage, 100.0), 0.1);
+            }
+        } catch (Exception e) {
+            System.err.println("/proc/stat 실패: " + e.getMessage());
+        }
+
+        // 방법 4: sar 명령어 (sysstat 패키지)
+        try {
+            ProcessBuilder pb = new ProcessBuilder("sar", "-u", "1", "1");
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("Average:") && line.contains("all")) {
+                    String[] parts = line.trim().split("\\s+");
+                    if (parts.length >= 7) {
+                        double idle = Double.parseDouble(parts[6]);
+                        double cpuUsage = 100.0 - idle;
+                        return Math.max(Math.min(cpuUsage, 100.0), 0.1);
+                    }
+                }
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            System.err.println("sar 명령어 실패: " + e.getMessage());
+        }
+
+        // 최종 대안: JVM에서 제공하는 시스템 CPU 로드
+        try {
+            com.sun.management.OperatingSystemMXBean osBean =
+                (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+            double systemLoad = osBean.getCpuLoad();
+            if (systemLoad >= 0) {
+                return Math.max(systemLoad * 100, 0.1);
+            }
+        } catch (Exception e) {
+            System.err.println("JVM 시스템 로드 실패: " + e.getMessage());
+        }
+
+        // 마지막 기본값: 실제 측정값 대신 낮은 값 반환
+        return 5.0;
     }
 
     private double getMacCpuUsage() throws Exception {
@@ -192,71 +237,138 @@ public class SystemMetricsController {
     private Map<String, Object> getLinuxMemoryInfo() throws Exception {
         Map<String, Object> memoryInfo = new HashMap<>();
 
-        // Ubuntu에서 확실하게 작동하는 메모리 정보
-        ProcessBuilder pb = new ProcessBuilder("sh", "-c",
-            "cat /proc/meminfo | grep -E '^(MemTotal|MemAvailable|MemFree):' | awk '{print $2}' | paste -sd ' '");
+        // 방법 1: /proc/meminfo를 직접 파싱 (가장 정확한 방법)
+        try {
+            ProcessBuilder pb = new ProcessBuilder("sh", "-c",
+                "awk '/^MemTotal:/{total=$2} /^MemAvailable:/{available=$2} /^MemFree:/{free=$2} /^Buffers:/{buffers=$2} /^Cached:/{cached=$2} END{if(available>0) used=total-available; else used=total-free-buffers-cached; print total \" \" used \" \" (available>0?available:free+buffers+cached) \" \" (used*100/total)}' /proc/meminfo");
 
-        Process process = pb.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String result = reader.readLine();
-        process.waitFor();
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String result = reader.readLine();
+            process.waitFor();
 
-        if (result != null) {
-            String[] parts = result.trim().split("\\s+");
-            if (parts.length >= 3) {
-                try {
+            if (result != null && !result.trim().isEmpty()) {
+                String[] parts = result.trim().split("\\s+");
+                if (parts.length >= 4) {
                     long totalKB = Long.parseLong(parts[0]);
-                    long availableKB = Long.parseLong(parts[1]);
-                    long freeKB = Long.parseLong(parts[2]);
+                    long usedKB = Long.parseLong(parts[1]);
+                    long availableKB = Long.parseLong(parts[2]);
+                    double usagePercent = Double.parseDouble(parts[3]);
 
                     long totalBytes = totalKB * 1024;
+                    long usedBytes = usedKB * 1024;
                     long availableBytes = availableKB * 1024;
-                    long usedBytes = totalBytes - availableBytes;
 
                     memoryInfo.put("totalMemory", totalBytes);
                     memoryInfo.put("usedMemory", usedBytes);
                     memoryInfo.put("availableMemory", availableBytes);
-                    memoryInfo.put("memoryUsage", (double) usedBytes / totalBytes * 100);
+                    memoryInfo.put("memoryUsage", Math.max(Math.min(usagePercent, 100.0), 0.0));
 
                     return memoryInfo;
-                } catch (NumberFormatException e) {
-                    // 파싱 실패 시 다음 방법 시도
                 }
             }
+        } catch (Exception e) {
+            System.err.println("/proc/meminfo 파싱 실패: " + e.getMessage());
         }
 
-        // 대안: free 명령어 사용
-        pb = new ProcessBuilder("free", "-b");
-        process = pb.start();
-        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        // 방법 2: free 명령어 사용 (간단하고 신뢰할 수 있음)
+        try {
+            ProcessBuilder pb = new ProcessBuilder("free", "-b");
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith("Mem:")) {
-                String[] parts = line.trim().split("\\s+");
-                if (parts.length >= 7) {
-                    try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("Mem:")) {
+                    String[] parts = line.trim().split("\\s+");
+                    if (parts.length >= 7) {
                         long total = Long.parseLong(parts[1]);
                         long used = Long.parseLong(parts[2]);
                         long free = Long.parseLong(parts[3]);
                         long available = parts.length > 6 ? Long.parseLong(parts[6]) : free;
 
+                        // 실제 사용량 계산 (available 기준)
+                        long actualUsed = total - available;
+                        double usagePercent = (double) actualUsed / total * 100;
+
                         memoryInfo.put("totalMemory", total);
-                        memoryInfo.put("usedMemory", used);
+                        memoryInfo.put("usedMemory", actualUsed);
                         memoryInfo.put("availableMemory", available);
-                        memoryInfo.put("memoryUsage", (double) used / total * 100);
+                        memoryInfo.put("memoryUsage", Math.max(Math.min(usagePercent, 100.0), 0.0));
 
                         return memoryInfo;
-                    } catch (NumberFormatException e) {
-                        // 파싱 실패
                     }
+                    break;
                 }
-                break;
             }
+            process.waitFor();
+        } catch (Exception e) {
+            System.err.println("free 명령어 실패: " + e.getMessage());
         }
-        process.waitFor();
 
-        // 기본값 반환
+        // 방법 3: cat /proc/meminfo로 직접 읽기
+        try {
+            ProcessBuilder pb = new ProcessBuilder("cat", "/proc/meminfo");
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            long total = 0, available = 0, free = 0, buffers = 0, cached = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("MemTotal:")) {
+                    total = Long.parseLong(line.split("\\s+")[1]) * 1024;
+                } else if (line.startsWith("MemAvailable:")) {
+                    available = Long.parseLong(line.split("\\s+")[1]) * 1024;
+                } else if (line.startsWith("MemFree:")) {
+                    free = Long.parseLong(line.split("\\s+")[1]) * 1024;
+                } else if (line.startsWith("Buffers:")) {
+                    buffers = Long.parseLong(line.split("\\s+")[1]) * 1024;
+                } else if (line.startsWith("Cached:")) {
+                    cached = Long.parseLong(line.split("\\s+")[1]) * 1024;
+                }
+            }
+            process.waitFor();
+
+            if (total > 0) {
+                long actualAvailable = available > 0 ? available : (free + buffers + cached);
+                long used = total - actualAvailable;
+                double usagePercent = (double) used / total * 100;
+
+                memoryInfo.put("totalMemory", total);
+                memoryInfo.put("usedMemory", used);
+                memoryInfo.put("availableMemory", actualAvailable);
+                memoryInfo.put("memoryUsage", Math.max(Math.min(usagePercent, 100.0), 0.0));
+
+                return memoryInfo;
+            }
+        } catch (Exception e) {
+            System.err.println("직접 /proc/meminfo 읽기 실패: " + e.getMessage());
+        }
+
+        // 최종 대안: JVM 메모리 정보
+        try {
+            com.sun.management.OperatingSystemMXBean osBean =
+                (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
+            long totalPhysical = osBean.getTotalMemorySize();
+            long freePhysical = osBean.getFreeMemorySize();
+
+            if (totalPhysical > 0 && freePhysical >= 0) {
+                long used = totalPhysical - freePhysical;
+                double usagePercent = (double) used / totalPhysical * 100;
+
+                memoryInfo.put("totalMemory", totalPhysical);
+                memoryInfo.put("usedMemory", used);
+                memoryInfo.put("availableMemory", freePhysical);
+                memoryInfo.put("memoryUsage", Math.max(Math.min(usagePercent, 100.0), 0.0));
+
+                return memoryInfo;
+            }
+        } catch (Exception e) {
+            System.err.println("JVM 메모리 정보 실패: " + e.getMessage());
+        }
+
+        // 마지막 기본값: Runtime 메모리 정보
         Runtime runtime = Runtime.getRuntime();
         long totalMemory = runtime.totalMemory();
         long freeMemory = runtime.freeMemory();
@@ -265,7 +377,7 @@ public class SystemMetricsController {
         memoryInfo.put("totalMemory", totalMemory);
         memoryInfo.put("usedMemory", usedMemory);
         memoryInfo.put("freeMemory", freeMemory);
-        memoryInfo.put("memoryUsage", (double) usedMemory / totalMemory * 100);
+        memoryInfo.put("memoryUsage", totalMemory > 0 ? (double) usedMemory / totalMemory * 100 : 0.0);
 
         return memoryInfo;
     }
