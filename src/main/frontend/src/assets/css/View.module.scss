@@ -20,10 +20,12 @@
 }
 
 .widget {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(45, 55, 72, 0.55); /* 어둡고 불투명하게 변경 */
     border-radius: 15px;
     padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #f7fafc; /* 기본 텍스트 색상을 밝게 */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); /* 텍스트 그림자 추가 */
 }

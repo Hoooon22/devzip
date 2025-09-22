@@ -17,6 +17,8 @@ import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { initTracker } from './services/traceboard/tracker';
+import Overview from './components/dashboard/views/Overview';
+import SystemView from './components/dashboard/views/SystemView';
 
 function App() {
   // 트래커 초기화
@@ -56,13 +58,16 @@ function App() {
 
         {/* Dashboard 모음 페이지 - 관리자 전용 */}
         <Route 
-          path="/dashboard" 
+          path="/dashboard"
           element={
             <ProtectedRoute requireAdmin={true}>
               <Dashboard />
             </ProtectedRoute>
-          } 
-        />
+          }
+        >
+          <Route index element={<Overview />} />
+          <Route path="system" element={<SystemView />} />
+        </Route>
         
         {/* TraceBoard 로그 대시보드 페이지 - 관리자 전용 */}
         <Route 
