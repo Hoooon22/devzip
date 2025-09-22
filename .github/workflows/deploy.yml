@@ -67,20 +67,42 @@ jobs:
 
     steps:
     - name: Deploy to server
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
         port: 3323
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        timeout: 60s
+        command_timeout: 30m
         debug: true
         script: |
           cd ~/project/devzip
           echo "🚀 Starting deployment process..."
-          
-          # Git 설정 및 최신 코드 가져오기
+
+          # Git 설정 및 최신 코드 가져오기 (재시도 로직 포함)
           git config pull.rebase false
-          git pull origin master
+
+          # Git pull with retry mechanism
+          retry_count=0
+          max_retries=3
+
+          while [ $retry_count -lt $max_retries ]; do
+            echo "📥 Attempting git pull (attempt $((retry_count + 1))/$max_retries)..."
+            if git pull origin master; then
+              echo "✅ Git pull successful"
+              break
+            else
+              retry_count=$((retry_count + 1))
+              if [ $retry_count -lt $max_retries ]; then
+                echo "⚠️ Git pull failed, retrying in 10 seconds..."
+                sleep 10
+              else
+                echo "❌ Git pull failed after $max_retries attempts"
+                exit 1
+              fi
+            fi
+          done
           
           # 점검 페이지를 nginx 디렉토리로 복사
           echo "🔧 Setting up maintenance page..."
@@ -96,26 +118,21 @@ jobs:
           fi
           
           # Gradle 빌드 및 Docker 작업 실행
+          echo "✅ Git pull successful, starting build..."
+          # 실행 권한 부여
+          chmod +x gradlew
+          # Spring Boot 애플리케이션 빌드 (프론트엔드 포함)
+          ./gradlew clean build -x test
+
           if [ $? -eq 0 ]; then
-            echo "✅ Git pull successful, starting build..."
-            # 실행 권한 부여
-            chmod +x gradlew
-            # Spring Boot 애플리케이션 빌드 (프론트엔드 포함)
-            ./gradlew clean build -x test
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ Build successful, restarting services..."
-              # 효율적인 Docker 재시작 (캐시 활용)
-              docker compose down
-              docker compose build
-              docker compose up -d
-              echo "🎉 Deployment completed successfully!"
-            else
-              echo "❌ Build failed. Deployment stopped."
-              exit 1
-            fi
+            echo "✅ Build successful, restarting services..."
+            # 효율적인 Docker 재시작 (캐시 활용)
+            docker compose down
+            docker compose build
+            docker compose up -d
+            echo "🎉 Deployment completed successfully!"
           else
-            echo "❌ Git pull failed. Deployment stopped."
+            echo "❌ Build failed. Deployment stopped."
             exit 1
           fi
 
