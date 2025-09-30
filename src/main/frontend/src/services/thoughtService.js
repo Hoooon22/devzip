@@ -1,50 +1,4 @@
-import axios from 'axios';
-
-// API 기본 URL 설정
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
-
-const thoughtAPI = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// 요청 인터셉터
-thoughtAPI.interceptors.request.use(
-  (config) => {
-    // 토큰이 필요한 경우 여기에 추가
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// 응답 인터셉터
-thoughtAPI.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response) {
-      // 서버 응답 에러
-      console.error('API Error:', error.response.data);
-    } else if (error.request) {
-      // 요청은 보냈지만 응답 없음
-      console.error('No response from server');
-    } else {
-      // 요청 설정 중 에러
-      console.error('Request setup error:', error.message);
-    }
-    return Promise.reject(error);
-  }
-);
+import axios from '../utils/axiosConfig';
 
 /**
  * Thought Service
@@ -57,7 +11,7 @@ const thoughtService = {
    */
   createThought: async (content) => {
     try {
-      const response = await thoughtAPI.post('/thoughts', { content });
+      const response = await axios.post('/api/thoughts', { content });
       return response.data;
     } catch (error) {
       console.error('Failed to create thought:', error);
@@ -71,7 +25,7 @@ const thoughtService = {
    */
   getAllThoughts: async () => {
     try {
-      const response = await thoughtAPI.get('/thoughts');
+      const response = await axios.get('/api/thoughts');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch thoughts:', error);
@@ -86,7 +40,7 @@ const thoughtService = {
    */
   getThoughtById: async (id) => {
     try {
-      const response = await thoughtAPI.get(`/thoughts/${id}`);
+      const response = await axios.get(`/api/thoughts/${id}`);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch thought:', error);
@@ -100,7 +54,7 @@ const thoughtService = {
    */
   getThoughtMap: async () => {
     try {
-      const response = await thoughtAPI.get('/thoughts/map');
+      const response = await axios.get('/api/thoughts/map');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch thought map:', error);
@@ -115,7 +69,7 @@ const thoughtService = {
    */
   deleteThought: async (id) => {
     try {
-      const response = await thoughtAPI.delete(`/thoughts/${id}`);
+      const response = await axios.delete(`/api/thoughts/${id}`);
       return response.data;
     } catch (error) {
       console.error('Failed to delete thought:', error);
@@ -131,7 +85,7 @@ const thoughtService = {
    */
   updateThought: async (id, content) => {
     try {
-      const response = await thoughtAPI.put(`/thoughts/${id}`, { content });
+      const response = await axios.put(`/api/thoughts/${id}`, { content });
       return response.data;
     } catch (error) {
       console.error('Failed to update thought:', error);
@@ -146,7 +100,7 @@ const thoughtService = {
    */
   searchByTag: async (tag) => {
     try {
-      const response = await thoughtAPI.get('/thoughts/search', {
+      const response = await axios.get('/api/thoughts/search', {
         params: { tag },
       });
       return response.data;
