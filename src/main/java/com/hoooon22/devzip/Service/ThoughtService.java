@@ -1,6 +1,7 @@
 package com.hoooon22.devzip.Service;
 
 import com.hoooon22.devzip.Model.Thought;
+import com.hoooon22.devzip.Model.User;
 import com.hoooon22.devzip.Repository.ThoughtRepository;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
 import lombok.RequiredArgsConstructor;
