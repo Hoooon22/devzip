@@ -1,4 +1,4 @@
-import axios from '../axiosConfig';
+import axios from '../utils/axiosConfig';
 
 const API_URL = '/api/topics';
 
