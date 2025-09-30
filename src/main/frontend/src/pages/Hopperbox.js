@@ -16,10 +16,12 @@ const Hopperbox = () => {
   const fetchThoughts = async () => {
     setIsLoadingThoughts(true);
     try {
-      const data = await thoughtService.getAllThoughts();
-      setThoughts(data);
+      const response = await thoughtService.getAllThoughts();
+      // ApiResponse 구조에서 데이터 추출
+      setThoughts(response.data || []);
     } catch (error) {
       console.error('Failed to load thoughts:', error);
+      setThoughts([]);
     } finally {
       setIsLoadingThoughts(false);
     }
@@ -29,10 +31,12 @@ const Hopperbox = () => {
   const fetchThoughtMap = async () => {
     setIsLoadingMap(true);
     try {
-      const data = await thoughtService.getThoughtMap();
-      setMapData(data);
+      const response = await thoughtService.getThoughtMap();
+      // ApiResponse 구조에서 데이터 추출
+      setMapData(response.data || []);
     } catch (error) {
       console.error('Failed to load thought map:', error);
+      setMapData([]);
     } finally {
       setIsLoadingMap(false);
     }
