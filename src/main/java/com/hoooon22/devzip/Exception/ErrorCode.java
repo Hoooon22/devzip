@@ -13,8 +13,10 @@ public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "TB002", "잘못된 요청입니다."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "TB003", "입력값이 유효하지 않습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "TB004", "요청한 리소스를 찾을 수 없습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "TB005", "찾을 수 없습니다."),
     
     // === 인증/권한 관련 오류 ===
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "TB100", "인증이 필요합니다."),
     INVALID_API_KEY(HttpStatus.UNAUTHORIZED, "TB101", "잘못된 사용자명 또는 비밀번호입니다."),
     EXPIRED_API_KEY(HttpStatus.UNAUTHORIZED, "TB102", "만료된 API 키입니다."),
     API_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "TB103", "API 요청 제한을 초과했습니다."),
