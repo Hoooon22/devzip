@@ -1,9 +1,20 @@
 const projects = [
-    { 
-        id: 9, 
-        name: '실시간 라이브 채팅', 
-        description: '다른 사람들과 실시간으로 대화하세요!', 
-        link: '/livechat', 
+    {
+        id: 10,
+        name: 'Hopperbox',
+        description: '생각한 무언가를 일단 넣어보세요!',
+        link: '/hopperbox',
+        active: true,
+        startDate: '2025-09-30',
+        endDate: '',
+        pinned: true,
+        category: '생산성/AI'
+    },
+    {
+        id: 9,
+        name: '실시간 라이브 채팅',
+        description: '다른 사람들과 실시간으로 대화하세요!',
+        link: '/livechat',
         active: true,
         startDate: '2025-09-12',
         endDate: '',

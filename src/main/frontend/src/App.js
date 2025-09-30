@@ -12,6 +12,7 @@ import TraceBoard from './pages/traceboard/index.js';
 import PhysicsQuiz from './pages/PhysicsQuiz';
 import LiveChatListPage from "./pages/LiveChatListPage";
 import LiveChatRoomPage from "./pages/LiveChatRoomPage";
+import Hopperbox from './pages/Hopperbox';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -103,6 +104,9 @@ function App() {
 
         {/* 물리 퀴즈 페이지 */}
         <Route path="/physics-quiz" element={<PhysicsQuiz />} />
+
+        {/* Hopperbox 페이지 */}
+        <Route path="/hopperbox" element={<Hopperbox />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
