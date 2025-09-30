@@ -56,6 +56,7 @@ public class ThoughtController {
     public ResponseEntity<ApiResponse<Thought>> createThought(@Valid @RequestBody Map<String, String> request) {
         try {
             String content = request.get("content");
+            String topicIdStr = request.get("topicId");
 
             if (content == null || content.trim().isEmpty()) {
                 log.warn("생각 등록 실패: 내용이 비어있음");
@@ -68,7 +69,14 @@ public class ThoughtController {
             }
 
             User currentUser = getCurrentUser();
-            Thought savedThought = thoughtService.createThought(currentUser, content);
+            Thought savedThought;
+
+            // Topic이 지정된 경우
+            if (topicIdStr != null && !topicIdStr.trim().isEmpty()) {
+                savedThought = thoughtService.createThoughtWithTopic(currentUser, Long.parseLong(topicIdStr), content);
+            } else {
+                savedThought = thoughtService.createThought(currentUser, content);
+            }
 
             log.info("생각 등록 성공: ID={}, User={}", savedThought.getId(), currentUser.getUsername());
             return ResponseEntity.ok(ApiResponse.success(savedThought));
@@ -128,14 +136,24 @@ public class ThoughtController {
 
     /**
      * 생각 맵 데이터 조회 (태그별 그룹화)
+     * topicId 파라미터가 있으면 해당 주제의 생각만, 없으면 전체 생각 조회
      */
     @GetMapping("/map")
-    public ResponseEntity<ApiResponse<List<ThoughtMapResponse>>> getThoughtMap() {
+    public ResponseEntity<ApiResponse<List<ThoughtMapResponse>>> getThoughtMap(@RequestParam(required = false) Long topicId) {
         try {
             User currentUser = getCurrentUser();
-            List<ThoughtMapResponse> thoughtMap = thoughtService.getThoughtMap(currentUser);
+            List<ThoughtMapResponse> thoughtMap;
 
-            log.info("생각 맵 조회: User={}, Tags={}", currentUser.getUsername(), thoughtMap.size());
+            if (topicId != null) {
+                // 특정 주제의 생각 맵 조회
+                thoughtMap = thoughtService.getThoughtMapByTopicId(currentUser, topicId);
+                log.info("주제별 생각 맵 조회: User={}, TopicId={}, Tags={}", currentUser.getUsername(), topicId, thoughtMap.size());
+            } else {
+                // 전체 생각 맵 조회
+                thoughtMap = thoughtService.getThoughtMap(currentUser);
+                log.info("전체 생각 맵 조회: User={}, Tags={}", currentUser.getUsername(), thoughtMap.size());
+            }
+
             return ResponseEntity.ok(ApiResponse.success(thoughtMap));
         } catch (TraceBoardException e) {
             throw e;

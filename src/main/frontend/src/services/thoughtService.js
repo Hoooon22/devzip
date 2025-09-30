@@ -20,6 +20,26 @@ const thoughtService = {
   },
 
   /**
+   * 새로운 생각 저장 (주제 포함)
+   * @param {string} content - 생각 내용
+   * @param {number|null} topicId - 주제 ID (null이면 주제 없이 저장)
+   * @returns {Promise} 저장된 생각 데이터
+   */
+  createThoughtWithTopic: async (content, topicId) => {
+    try {
+      const payload = { content };
+      if (topicId !== null) {
+        payload.topicId = topicId;
+      }
+      const response = await axios.post('/api/thoughts', payload);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create thought with topic:', error);
+      throw error;
+    }
+  },
+
+  /**
    * 모든 생각 목록 조회
    * @returns {Promise} 생각 목록
    */
@@ -58,6 +78,23 @@ const thoughtService = {
       return response.data;
     } catch (error) {
       console.error('Failed to fetch thought map:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * 특정 주제의 생각 맵 데이터 조회 (태그별 그룹화)
+   * @param {number} topicId - 주제 ID
+   * @returns {Promise} 태그별 생각 맵 데이터
+   */
+  getThoughtMapByTopic: async (topicId) => {
+    try {
+      const response = await axios.get('/api/thoughts/map', {
+        params: { topicId }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch thought map by topic:', error);
       throw error;
     }
   },

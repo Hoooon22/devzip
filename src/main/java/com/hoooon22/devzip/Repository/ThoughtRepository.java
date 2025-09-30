@@ -1,6 +1,7 @@
 package com.hoooon22.devzip.Repository;
 
 import com.hoooon22.devzip.Model.Thought;
+import com.hoooon22.devzip.Model.Topic;
 import com.hoooon22.devzip.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,11 @@ public interface ThoughtRepository extends JpaRepository<Thought, Long> {
      * 특정 사용자의 모든 생각 조회 (최신순)
      */
     List<Thought> findByUserOrderByCreatedAtDesc(User user);
+
+    /**
+     * 특정 사용자의 특정 주제에 속한 생각들 조회 (최신순)
+     */
+    List<Thought> findByUserAndTopicOrderByCreatedAtDesc(User user, Topic topic);
 
     /**
      * 특정 사용자의 특정 태그를 포함하는 생각들 조회

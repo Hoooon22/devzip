@@ -25,6 +25,10 @@ public class Thought {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -46,6 +50,20 @@ public class Thought {
 
     public Thought(User user, String content, List<String> tags) {
         this.user = user;
+        this.content = content;
+        this.tags = tags != null ? tags : new ArrayList<>();
+    }
+
+    public Thought(User user, Topic topic, String content) {
+        this.user = user;
+        this.topic = topic;
+        this.content = content;
+        this.tags = new ArrayList<>();
+    }
+
+    public Thought(User user, Topic topic, String content, List<String> tags) {
+        this.user = user;
+        this.topic = topic;
         this.content = content;
         this.tags = tags != null ? tags : new ArrayList<>();
     }

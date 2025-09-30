@@ -1,6 +1,7 @@
 package com.hoooon22.devzip.Service;
 
 import com.hoooon22.devzip.Model.Thought;
+import com.hoooon22.devzip.Model.Topic;
 import com.hoooon22.devzip.Model.User;
 import com.hoooon22.devzip.Repository.ThoughtRepository;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
@@ -40,6 +41,26 @@ public class ThoughtService {
     }
 
     /**
+     * 새로운 생각 저장 (주제 포함, AI 태그 자동 추출)
+     */
+    @Transactional
+    public Thought createThoughtWithTopic(User user, Long topicId, String content) {
+        log.info("Creating new thought for user {} with topic {} and content: {}",
+                 user.getUsername(), topicId, content);
+
+        // AI를 사용하여 태그 추출
+        List<String> tags = aiTagExtractorService.extractTags(content);
+        log.info("Extracted tags: {}", tags);
+
+        // Topic은 Controller에서 설정
+        Thought thought = new Thought(user, content, tags);
+        Thought savedThought = thoughtRepository.save(thought);
+
+        log.info("Thought saved with id: {} and topic: {}", savedThought.getId(), topicId);
+        return savedThought;
+    }
+
+    /**
      * 특정 사용자의 모든 생각 조회 (최신순)
      */
     @Transactional(readOnly = true)
@@ -66,6 +87,61 @@ public class ThoughtService {
         Map<String, List<Thought>> tagToThoughtsMap = new HashMap<>();
 
         for (Thought thought : allThoughts) {
+            for (String tag : thought.getTags()) {
+                tagToThoughtsMap
+                    .computeIfAbsent(tag, k -> new ArrayList<>())
+                    .add(thought);
+            }
+        }
+
+        // ThoughtMapResponse 리스트로 변환
+        return tagToThoughtsMap.entrySet().stream()
+            .map(entry -> ThoughtMapResponse.from(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(ThoughtMapResponse::getTag))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 특정 주제의 생각 맵 데이터 조회 (태그별 그룹화)
+     */
+    @Transactional(readOnly = true)
+    public List<ThoughtMapResponse> getThoughtMapByTopic(User user, Topic topic) {
+        List<Thought> topicThoughts = thoughtRepository.findByUserAndTopicOrderByCreatedAtDesc(user, topic);
+
+        // 태그별로 생각들을 그룹화
+        Map<String, List<Thought>> tagToThoughtsMap = new HashMap<>();
+
+        for (Thought thought : topicThoughts) {
+            for (String tag : thought.getTags()) {
+                tagToThoughtsMap
+                    .computeIfAbsent(tag, k -> new ArrayList<>())
+                    .add(thought);
+            }
+        }
+
+        // ThoughtMapResponse 리스트로 변환
+        return tagToThoughtsMap.entrySet().stream()
+            .map(entry -> ThoughtMapResponse.from(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(ThoughtMapResponse::getTag))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 특정 주제 ID로 생각 맵 데이터 조회 (태그별 그룹화)
+     */
+    @Transactional(readOnly = true)
+    public List<ThoughtMapResponse> getThoughtMapByTopicId(User user, Long topicId) {
+        // TopicRepository에서 Topic 조회 필요 - Controller에서 Topic을 직접 전달하는 방식으로 변경 권장
+        // 여기서는 간단히 Repository 메서드를 추가로 만들거나, Controller에서 처리하도록 수정
+        List<Thought> allThoughts = thoughtRepository.findByUserOrderByCreatedAtDesc(user);
+        List<Thought> topicThoughts = allThoughts.stream()
+            .filter(thought -> thought.getTopic() != null && thought.getTopic().getId().equals(topicId))
+            .collect(Collectors.toList());
+
+        // 태그별로 생각들을 그룹화
+        Map<String, List<Thought>> tagToThoughtsMap = new HashMap<>();
+
+        for (Thought thought : topicThoughts) {
             for (String tag : thought.getTags()) {
                 tagToThoughtsMap
                     .computeIfAbsent(tag, k -> new ArrayList<>())
