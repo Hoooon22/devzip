@@ -105,8 +105,15 @@ function App() {
         {/* 물리 퀴즈 페이지 */}
         <Route path="/physics-quiz" element={<PhysicsQuiz />} />
 
-        {/* Hopperbox 페이지 */}
-        <Route path="/hopperbox" element={<Hopperbox />} />
+        {/* Hopperbox 페이지 - 로그인 필수 */}
+        <Route
+          path="/hopperbox"
+          element={
+            <ProtectedRoute>
+              <Hopperbox />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
