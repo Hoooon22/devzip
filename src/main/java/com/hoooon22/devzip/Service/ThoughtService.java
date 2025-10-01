@@ -1,9 +1,12 @@
 package com.hoooon22.devzip.Service;
 
+import com.hoooon22.devzip.Exception.ErrorCode;
+import com.hoooon22.devzip.Exception.TraceBoardException;
 import com.hoooon22.devzip.Model.Thought;
 import com.hoooon22.devzip.Model.Topic;
 import com.hoooon22.devzip.Model.User;
 import com.hoooon22.devzip.Repository.ThoughtRepository;
+import com.hoooon22.devzip.Repository.TopicRepository;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 public class ThoughtService {
 
     private final ThoughtRepository thoughtRepository;
+    private final TopicRepository topicRepository;
     private final AiTagExtractorService aiTagExtractorService;
 
     /**
@@ -48,12 +52,21 @@ public class ThoughtService {
         log.info("Creating new thought for user {} with topic {} and content: {}",
                  user.getUsername(), topicId, content);
 
+        // Topic 조회 및 검증
+        Topic topic = topicRepository.findById(topicId)
+            .orElseThrow(() -> new TraceBoardException(ErrorCode.NOT_FOUND, "주제를 찾을 수 없습니다"));
+
+        // 주제 소유자 확인
+        if (!topic.getUser().getId().equals(user.getId())) {
+            throw new TraceBoardException(ErrorCode.INSUFFICIENT_PERMISSIONS, "해당 주제에 접근할 수 없습니다");
+        }
+
         // AI를 사용하여 태그 추출
         List<String> tags = aiTagExtractorService.extractTags(content);
         log.info("Extracted tags: {}", tags);
 
-        // Topic은 Controller에서 설정
-        Thought thought = new Thought(user, content, tags);
+        // Topic과 함께 생각 생성
+        Thought thought = new Thought(user, topic, content, tags);
         Thought savedThought = thoughtRepository.save(thought);
 
         log.info("Thought saved with id: {} and topic: {}", savedThought.getId(), topicId);
