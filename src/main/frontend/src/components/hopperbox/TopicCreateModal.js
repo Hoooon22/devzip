@@ -50,12 +50,19 @@ const TopicCreateModal = ({ isOpen, onClose, onCreateTopic }) => {
     }
   };
 
+  const handleOverlayClick = (e) => {
+    // 오버레이 자체를 클릭했을 때만 닫기
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
       className="modal-overlay"
-      onClick={onClose}
+      onClick={handleOverlayClick}
       onKeyDown={handleOverlayKeyDown}
       role="presentation"
     >
