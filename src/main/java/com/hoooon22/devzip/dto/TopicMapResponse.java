@@ -19,7 +19,16 @@ public class TopicMapResponse {
     private String topicName;
     private String topicEmoji;
     private String topicColor;
-    private List<ThoughtNode> thoughts;
+    private List<ThoughtCluster> clusters;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ThoughtCluster {
+        private String clusterId;
+        private List<ThoughtNode> thoughts;
+    }
 
     @Data
     @Builder
@@ -31,12 +40,20 @@ public class TopicMapResponse {
         private List<String> tags;
     }
 
-    public static TopicMapResponse from(Topic topic, List<Thought> thoughts) {
+    public static TopicMapResponse from(Topic topic, List<ThoughtCluster> clusters) {
         return TopicMapResponse.builder()
             .topicId(topic.getId())
             .topicName(topic.getName())
             .topicEmoji(topic.getEmoji())
             .topicColor(topic.getColor())
+            .clusters(clusters)
+            .build();
+    }
+
+    // 레거시 호환성을 위한 메서드 (클러스터링 없이)
+    public static TopicMapResponse fromThoughts(Topic topic, List<Thought> thoughts) {
+        ThoughtCluster singleCluster = ThoughtCluster.builder()
+            .clusterId("default")
             .thoughts(thoughts.stream()
                 .map(thought -> ThoughtNode.builder()
                     .id(thought.getId())
@@ -44,6 +61,14 @@ public class TopicMapResponse {
                     .tags(thought.getTags())
                     .build())
                 .collect(Collectors.toList()))
+            .build();
+
+        return TopicMapResponse.builder()
+            .topicId(topic.getId())
+            .topicName(topic.getName())
+            .topicEmoji(topic.getEmoji())
+            .topicColor(topic.getColor())
+            .clusters(List.of(singleCluster))
             .build();
     }
 }

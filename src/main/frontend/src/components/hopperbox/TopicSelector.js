@@ -9,7 +9,17 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
   const handleDelete = async (topicId, e) => {
     e.stopPropagation();
 
-    if (!window.confirm('이 주제를 삭제하시겠습니까?\n(주제 안의 생각이 있으면 삭제할 수 없습니다)')) {
+    // 주제 정보 찾기
+    const topic = topics.find(t => t.id === topicId);
+    const thoughtCount = topic?.thoughtCount || 0;
+
+    // 경고 메시지 구성
+    let confirmMessage = '이 주제를 삭제하시겠습니까?';
+    if (thoughtCount > 0) {
+      confirmMessage += `\n\n⚠️ 주의: 주제에 포함된 ${thoughtCount}개의 생각도 함께 삭제됩니다.`;
+    }
+
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 

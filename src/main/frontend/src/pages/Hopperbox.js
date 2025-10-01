@@ -18,7 +18,33 @@ const Hopperbox = () => {
     setIsLoadingTopics(true);
     try {
       const response = await topicService.getAllTopics();
-      setTopics(response.data || []);
+      const topicsData = response.data || [];
+
+      // 각 주제별 생각 개수 조회
+      const topicsWithCount = await Promise.all(
+        topicsData.map(async (topic) => {
+          try {
+            const mapResponse = await thoughtService.getTopicCentricMap(topic.id);
+            const clusters = mapResponse.data?.clusters || [];
+            const thoughtCount = clusters.reduce(
+              (sum, cluster) => sum + (cluster.thoughts?.length || 0),
+              0
+            );
+            return {
+              ...topic,
+              thoughtCount
+            };
+          } catch (error) {
+            console.error(`Failed to get thought count for topic ${topic.id}:`, error);
+            return {
+              ...topic,
+              thoughtCount: 0
+            };
+          }
+        })
+      );
+
+      setTopics(topicsWithCount);
     } catch (error) {
       console.error('Failed to load topics:', error);
       setTopics([]);
@@ -36,9 +62,26 @@ const Hopperbox = () => {
         const response = await thoughtService.getTopicCentricMap(topicId);
         setMapData(response.data || null);
       } else {
-        // 전체 보기 (태그별 그룹화)
-        const response = await thoughtService.getThoughtMap();
-        setMapData(response.data || []);
+        // 전체 보기 (주제 목록 표시)
+        // topics 배열에 각 주제별 생각 개수를 추가
+        const topicsWithCount = await Promise.all(
+          topics.map(async (topic) => {
+            try {
+              const response = await thoughtService.getTopicCentricMap(topic.id);
+              return {
+                ...topic,
+                thoughtCount: response.data?.thoughts?.length || 0
+              };
+            } catch (error) {
+              console.error(`Failed to get thought count for topic ${topic.id}:`, error);
+              return {
+                ...topic,
+                thoughtCount: 0
+              };
+            }
+          })
+        );
+        setMapData(topicsWithCount);
       }
     } catch (error) {
       console.error('Failed to load thought map:', error);

@@ -25,6 +25,7 @@ public class ThoughtService {
     private final ThoughtRepository thoughtRepository;
     private final TopicRepository topicRepository;
     private final AiTagExtractorService aiTagExtractorService;
+    private final ThoughtClusteringService clusteringService;
 
     /**
      * 새로운 생각 저장 (AI 태그 자동 추출)
@@ -141,7 +142,7 @@ public class ThoughtService {
     }
 
     /**
-     * 특정 주제 중심의 생각 맵 데이터 조회 (주제가 중심)
+     * 특정 주제 중심의 생각 맵 데이터 조회 (주제가 중심, AI 클러스터링 적용)
      */
     @Transactional(readOnly = true)
     public TopicMapResponse getTopicCentricMap(User user, Long topicId) {
@@ -159,7 +160,10 @@ public class ThoughtService {
             .filter(thought -> thought.getTopic() != null && thought.getTopic().getId().equals(topicId))
             .collect(Collectors.toList());
 
-        return TopicMapResponse.from(topic, thoughts);
+        // AI 클러스터링 적용
+        List<TopicMapResponse.ThoughtCluster> clusters = clusteringService.clusterThoughts(thoughts);
+
+        return TopicMapResponse.from(topic, clusters);
     }
 
     /**

@@ -94,7 +94,7 @@ public class TopicService {
     }
 
     /**
-     * 주제 삭제
+     * 주제 삭제 (연관된 생각들도 함께 삭제됨)
      */
     @Transactional
     public boolean deleteTopic(Long id, User user) {
@@ -106,16 +106,11 @@ public class TopicService {
         }
 
         Topic topic = topicOpt.get();
+        int thoughtCount = topic.getThoughts().size();
 
-        // 주제에 생각이 있는지 확인
-        if (!topic.getThoughts().isEmpty()) {
-            log.warn("주제 삭제 실패: 생각이 존재함 - ID={}, ThoughtCount={}", id, topic.getThoughts().size());
-            throw new TraceBoardException(ErrorCode.INVALID_INPUT_VALUE,
-                "주제에 생각이 존재합니다. 먼저 생각을 삭제하거나 다른 주제로 이동해주세요.");
-        }
-
+        // CASCADE 설정으로 인해 주제 삭제 시 연관된 생각들도 함께 삭제됨
         topicRepository.delete(topic);
-        log.info("주제 삭제 성공: ID={}", id);
+        log.info("주제 삭제 성공: ID={}, 삭제된 생각 수={}", id, thoughtCount);
 
         return true;
     }

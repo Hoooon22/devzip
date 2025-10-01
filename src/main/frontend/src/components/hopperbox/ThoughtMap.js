@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactFlow, {
   Background,
@@ -25,7 +25,7 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     const newNodes = [];
     const newEdges = [];
 
-    // 주제 중심 맵 데이터인 경우 (topicId, topicName, thoughts 필드 있음)
+    // 주제 중심 맵 데이터인 경우 (topicId, topicName, clusters 필드 있음)
     if (mapData.topicId !== undefined) {
       // 주제 중심 노드
       const topicNodeId = 'topic-center';
@@ -53,57 +53,137 @@ const ThoughtMap = ({ mapData, isLoading }) => {
         },
       });
 
-      // 생각 노드들 (주제 주변에 원형으로 배치)
-      const thoughts = mapData.thoughts || [];
-      thoughts.forEach((thought, thoughtIndex) => {
-        const thoughtNodeId = `thought-${thoughtIndex}`;
-        const angle = (thoughtIndex / thoughts.length) * 2 * Math.PI;
-        const radius = 300;
+      // 클러스터별로 생각 노드 배치
+      const clusters = mapData.clusters || [];
+      const clusterColors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
+
+      clusters.forEach((cluster, clusterIndex) => {
+        const clusterThoughts = cluster.thoughts || [];
+        if (clusterThoughts.length === 0) return;
+
+        // 클러스터별 각도 계산 (원형으로 분산)
+        const clusterAngle = (clusterIndex / clusters.length) * 2 * Math.PI;
+        const clusterColor = clusterColors[clusterIndex % clusterColors.length];
+
+        // 클러스터 내 생각들을 체인 형태로 배치
+        clusterThoughts.forEach((thought, thoughtIndex) => {
+          const thoughtNodeId = `thought-${clusterIndex}-${thoughtIndex}`;
+
+          // 첫 번째 생각은 주제에서 일정 거리, 나머지는 이전 생각에서 연결
+          let x, y;
+          if (thoughtIndex === 0) {
+            // 클러스터의 첫 번째 노드는 주제 주변에 배치
+            const radius = 300;
+            x = 400 + radius * Math.cos(clusterAngle);
+            y = 300 + radius * Math.sin(clusterAngle);
+          } else {
+            // 나머지 노드는 클러스터 방향으로 체인 형태로 배치
+            const chainRadius = 200;
+            const offsetAngle = clusterAngle + (thoughtIndex * 0.3 - 0.15);
+            x = 400 + (300 + chainRadius * thoughtIndex * 0.5) * Math.cos(offsetAngle);
+            y = 300 + (300 + chainRadius * thoughtIndex * 0.5) * Math.sin(offsetAngle);
+          }
+
+          newNodes.push({
+            id: thoughtNodeId,
+            type: 'default',
+            data: {
+              label: (
+                <div className="thought-node">
+                  <div className="thought-node-content">
+                    {thought.content.length > 80
+                      ? thought.content.substring(0, 80) + '...'
+                      : thought.content}
+                  </div>
+                  {thought.tags && thought.tags.length > 0 && (
+                    <div className="thought-tags">
+                      {thought.tags.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="tag-badge">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ),
+            },
+            position: { x, y },
+            style: {
+              background: 'white',
+              border: `2px solid ${clusterColor}`,
+              borderRadius: '12px',
+              padding: '12px',
+              fontSize: '13px',
+              maxWidth: '220px',
+            },
+          });
+
+          // 엣지 연결
+          if (thoughtIndex === 0) {
+            // 클러스터 첫 번째 노드는 주제와 연결
+            newEdges.push({
+              id: `edge-${topicNodeId}-${thoughtNodeId}`,
+              source: topicNodeId,
+              target: thoughtNodeId,
+              animated: true,
+              style: {
+                stroke: clusterColor,
+                strokeWidth: 2,
+              },
+            });
+          } else {
+            // 나머지 노드는 이전 노드와 연결 (체인)
+            const prevNodeId = `thought-${clusterIndex}-${thoughtIndex - 1}`;
+            newEdges.push({
+              id: `edge-${prevNodeId}-${thoughtNodeId}`,
+              source: prevNodeId,
+              target: thoughtNodeId,
+              animated: false,
+              style: {
+                stroke: clusterColor,
+                strokeWidth: 2,
+              },
+            });
+          }
+        });
+      });
+    }
+    // 전체 보기 - 주제 목록 표시 (배열이고 topics 필드가 있는 경우)
+    else if (Array.isArray(mapData) && mapData.length > 0 && mapData[0].id !== undefined) {
+      // 그리드 레이아웃으로 주제 노드 배치
+      const columns = Math.ceil(Math.sqrt(mapData.length));
+      const spacing = 250;
+      const startX = 100;
+      const startY = 100;
+
+      mapData.forEach((topic, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
 
         newNodes.push({
-          id: thoughtNodeId,
+          id: `topic-${topic.id}`,
           type: 'default',
           data: {
             label: (
-              <div className="thought-node">
-                <div className="thought-node-content">
-                  {thought.content.length > 80
-                    ? thought.content.substring(0, 80) + '...'
-                    : thought.content}
-                </div>
-                {thought.tags && thought.tags.length > 0 && (
-                  <div className="thought-tags">
-                    {thought.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="tag-badge">{tag}</span>
-                    ))}
-                  </div>
-                )}
+              <div className="topic-overview-node">
+                <span className="topic-emoji">{topic.emoji || '💭'}</span>
+                <strong>{topic.name}</strong>
+                <span className="thought-count">({topic.thoughtCount || 0})</span>
               </div>
             ),
           },
           position: {
-            x: 400 + radius * Math.cos(angle),
-            y: 300 + radius * Math.sin(angle),
+            x: startX + col * spacing,
+            y: startY + row * spacing,
           },
           style: {
-            background: 'white',
-            border: '2px solid #e0e0e0',
-            borderRadius: '12px',
-            padding: '12px',
-            fontSize: '13px',
-            maxWidth: '220px',
-          },
-        });
-
-        // 주제 노드와 생각 노드 연결
-        newEdges.push({
-          id: `edge-${topicNodeId}-${thoughtNodeId}`,
-          source: topicNodeId,
-          target: thoughtNodeId,
-          animated: true,
-          style: {
-            stroke: mapData.topicColor || '#667eea',
-            strokeWidth: 2,
+            background: topic.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '16px',
+            padding: '16px 24px',
+            fontWeight: 'bold',
+            minWidth: '180px',
+            fontSize: '15px',
+            cursor: 'pointer',
           },
         });
       });
@@ -203,14 +283,19 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     );
   }
 
-  if (!mapData || (Array.isArray(mapData) && mapData.length === 0) || (mapData.topicId && (!mapData.thoughts || mapData.thoughts.length === 0))) {
+  if (!mapData ||
+      (Array.isArray(mapData) && mapData.length === 0) ||
+      (mapData.topicId && (!mapData.clusters || mapData.clusters.length === 0 ||
+        mapData.clusters.every(c => !c.thoughts || c.thoughts.length === 0)))) {
     return (
       <div className="thought-map-container">
         <div className="thought-map-empty">
           <span className="empty-icon">🗺️</span>
           <p>아직 생각 지도가 비어있습니다</p>
           <p className="empty-hint">
-            생각을 저장하면 AI가 자동으로 연관 관계를 분석하여 지도를 그려줍니다
+            {mapData?.topicId
+              ? '이 주제에 생각을 저장하면 AI가 자동으로 연관 관계를 분석하여 지도를 그려줍니다'
+              : '주제를 만들고 생각을 저장해보세요'}
           </p>
         </div>
       </div>
@@ -224,6 +309,8 @@ const ThoughtMap = ({ mapData, isLoading }) => {
         <p className="thought-map-description">
           {mapData.topicId
             ? `${mapData.topicName} 주제의 생각들을 탐험해보세요`
+            : Array.isArray(mapData) && mapData.length > 0 && mapData[0].id !== undefined
+            ? '주제를 클릭하면 해당 주제의 생각들을 확인할 수 있습니다'
             : '태그를 중심으로 연결된 생각들을 탐험해보세요'}
         </p>
       </div>
@@ -254,6 +341,7 @@ const ThoughtMap = ({ mapData, isLoading }) => {
 
 ThoughtMap.propTypes = {
   mapData: PropTypes.oneOfType([
+    // 태그별 그룹화 맵
     PropTypes.arrayOf(
       PropTypes.shape({
         tag: PropTypes.string.isRequired,
@@ -265,16 +353,22 @@ ThoughtMap.propTypes = {
         ).isRequired,
       })
     ),
+    // 주제 중심 맵 (클러스터 구조)
     PropTypes.shape({
       topicId: PropTypes.number.isRequired,
       topicName: PropTypes.string.isRequired,
       topicEmoji: PropTypes.string,
       topicColor: PropTypes.string,
-      thoughts: PropTypes.arrayOf(
+      clusters: PropTypes.arrayOf(
         PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          content: PropTypes.string.isRequired,
-          tags: PropTypes.arrayOf(PropTypes.string),
+          clusterId: PropTypes.string.isRequired,
+          thoughts: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.number.isRequired,
+              content: PropTypes.string.isRequired,
+              tags: PropTypes.arrayOf(PropTypes.string),
+            })
+          ).isRequired,
         })
       ).isRequired,
     }),
