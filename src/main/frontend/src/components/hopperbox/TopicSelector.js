@@ -1,39 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import TopicCreateModal from './TopicCreateModal';
 import './TopicSelector.css';
 
 const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, onDeleteTopic }) => {
-  const [isCreating, setIsCreating] = useState(false);
-  const [newTopicName, setNewTopicName] = useState('');
-  const [newTopicEmoji, setNewTopicEmoji] = useState('💡');
-  const [newTopicColor, setNewTopicColor] = useState('#3498db');
-
-  // 이모지 옵션
-  const emojiOptions = ['💡', '🎯', '📚', '💼', '🎨', '🔧', '🌟', '🚀', '💭', '✨'];
-
-  // 색상 옵션
-  const colorOptions = [
-    '#3498db', '#e74c3c', '#2ecc71', '#f39c12',
-    '#9b59b6', '#1abc9c', '#34495e', '#e67e22'
-  ];
-
-  const handleCreateSubmit = async () => {
-    if (!newTopicName.trim()) {
-      alert('주제명을 입력해주세요');
-      return;
-    }
-
-    try {
-      await onCreateTopic(newTopicName, '', newTopicColor, newTopicEmoji);
-      setIsCreating(false);
-      setNewTopicName('');
-      setNewTopicEmoji('💡');
-      setNewTopicColor('#3498db');
-    } catch (error) {
-      console.error('주제 생성 실패:', error);
-      alert('주제 생성에 실패했습니다');
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDelete = async (topicId, e) => {
     e.stopPropagation();
@@ -88,59 +59,24 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
         </div>
       ))}
 
-      {/* 새 주제 만들기 */}
-      {isCreating ? (
-        <div className="topic-create-form">
-          <div className="form-row">
-            <select
-              value={newTopicEmoji}
-              onChange={(e) => setNewTopicEmoji(e.target.value)}
-              className="emoji-select"
-            >
-              {emojiOptions.map(emoji => (
-                <option key={emoji} value={emoji}>{emoji}</option>
-              ))}
-            </select>
-            <input
-              type="text"
-              value={newTopicName}
-              onChange={(e) => setNewTopicName(e.target.value)}
-              placeholder="주제명"
-              className="topic-name-input"
-              maxLength={100}
-            />
-          </div>
-          <div className="form-row color-row">
-            {colorOptions.map(color => (
-              <div
-                key={color}
-                className={`color-option ${newTopicColor === color ? 'selected' : ''}`}
-                style={{ backgroundColor: color }}
-                onClick={() => setNewTopicColor(color)}
-                onKeyPress={(e) => e.key === 'Enter' && setNewTopicColor(color)}
-                role="button"
-                tabIndex={0}
-                aria-label={`색상 선택: ${color}`}
-              />
-            ))}
-          </div>
-          <div className="form-actions">
-            <button onClick={handleCreateSubmit} className="btn-create">생성</button>
-            <button onClick={() => setIsCreating(false)} className="btn-cancel">취소</button>
-          </div>
-        </div>
-      ) : (
-        <div
-          className="topic-item topic-create-btn"
-          onClick={() => setIsCreating(true)}
-          onKeyPress={(e) => e.key === 'Enter' && setIsCreating(true)}
-          role="button"
-          tabIndex={0}
-        >
-          <span className="topic-emoji">➕</span>
-          <span className="topic-name">새 주제 만들기</span>
-        </div>
-      )}
+      {/* 새 주제 만들기 버튼 */}
+      <div
+        className="topic-item topic-create-btn"
+        onClick={() => setIsModalOpen(true)}
+        onKeyPress={(e) => e.key === 'Enter' && setIsModalOpen(true)}
+        role="button"
+        tabIndex={0}
+      >
+        <span className="topic-emoji">➕</span>
+        <span className="topic-name">새 주제 만들기</span>
+      </div>
+
+      {/* 주제 생성 모달 */}
+      <TopicCreateModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreateTopic={onCreateTopic}
+      />
     </div>
   );
 };
