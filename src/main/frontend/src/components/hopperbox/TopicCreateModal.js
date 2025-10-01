@@ -44,13 +44,28 @@ const TopicCreateModal = ({ isOpen, onClose, onCreateTopic }) => {
     }
   };
 
+  const handleOverlayKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      onKeyDown={handleOverlayKeyDown}
+      role="presentation"
+    >
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-labelledby="modal-title"
+      >
         <div className="modal-header">
-          <h2>새 주제 만들기</h2>
+          <h2 id="modal-title">새 주제 만들기</h2>
           <button
             className="modal-close-btn"
             onClick={onClose}
@@ -87,8 +102,8 @@ const TopicCreateModal = ({ isOpen, onClose, onCreateTopic }) => {
           </div>
 
           <div className="form-group">
-            <label>이모지 선택</label>
-            <div className="emoji-selector">
+            <div className="form-label" id="emoji-label">이모지 선택</div>
+            <div className="emoji-selector" role="group" aria-labelledby="emoji-label">
               {emojiOptions.map((emoji) => (
                 <div
                   key={emoji}
@@ -106,8 +121,8 @@ const TopicCreateModal = ({ isOpen, onClose, onCreateTopic }) => {
           </div>
 
           <div className="form-group">
-            <label>색상 선택</label>
-            <div className="color-selector">
+            <div className="form-label" id="color-label">색상 선택</div>
+            <div className="color-selector" role="group" aria-labelledby="color-label">
               {colorOptions.map((color) => (
                 <div
                   key={color}
@@ -124,7 +139,7 @@ const TopicCreateModal = ({ isOpen, onClose, onCreateTopic }) => {
           </div>
 
           <div className="form-preview">
-            <label>미리보기</label>
+            <div className="preview-label">미리보기</div>
             <div
               className="topic-preview"
               style={{

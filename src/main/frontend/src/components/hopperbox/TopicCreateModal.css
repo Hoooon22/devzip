@@ -81,7 +81,8 @@
   margin-bottom: 20px;
 }
 
-.form-group label {
+.form-group label,
+.form-group .form-label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
@@ -168,6 +169,14 @@
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid #e0e0e0;
+}
+
+.preview-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
 }
 
 .topic-preview {

@@ -167,3 +167,35 @@ SPRING_DATASOURCE_PASSWORD=your_password
 ### Server Test
 - Real Server is running on Desktop PC (Ubuntu)
 - All functions of the server should work the same on devzip.cloud and 192.168.75.224 (same network).
+
+### Rule: Run & Manage Backend Application
+# When the user requests to run, test, or check logs for the backend server,
+# automatically use the designated 'backend-test' agent.
+- **When (Triggers):**
+  - "Run backend"
+  - "Execute the backend application"
+  - "Run the server"
+  - "Start the backend"
+  - "Launch the Spring Boot application"
+  - "Test the backend"
+  - "Check backend logs"
+
+- **Do (Action):**
+  - Activate and delegate the task to the **`backend-test`**.
+
+---
+
+### Rule: Run & Manage Frontend Dev Server
+# When the user requests to run, compile, or test the frontend development server,
+# automatically use the designated 'frontend-test' agent.
+- **When (Triggers):**
+  - "Run frontend"
+  - "Execute the frontend"
+  - "Run the React app"
+  - "Start the frontend"
+  - "Launch the frontend dev server"
+  - "Test the frontend"
+  - "Compile the frontend"
+
+- **Do (Action):**
+  - Activate and delegate the task to the **`frontend-test`**.
