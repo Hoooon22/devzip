@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import './TopicSelector.css';
 
 const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, onDeleteTopic }) => {
@@ -55,6 +56,9 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
       <div
         className={`topic-item ${selectedTopicId === null ? 'active' : ''}`}
         onClick={() => onTopicSelect(null)}
+        onKeyPress={(e) => e.key === 'Enter' && onTopicSelect(null)}
+        role="button"
+        tabIndex={0}
       >
         <span className="topic-emoji">🗺️</span>
         <span className="topic-name">전체 보기</span>
@@ -66,6 +70,9 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
           key={topic.id}
           className={`topic-item ${selectedTopicId === topic.id ? 'active' : ''}`}
           onClick={() => onTopicSelect(topic.id)}
+          onKeyPress={(e) => e.key === 'Enter' && onTopicSelect(topic.id)}
+          role="button"
+          tabIndex={0}
           style={{ borderLeft: `4px solid ${topic.color || '#3498db'}` }}
         >
           <span className="topic-emoji">{topic.emoji || '💭'}</span>
@@ -74,6 +81,7 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
             className="topic-delete-btn"
             onClick={(e) => handleDelete(topic.id, e)}
             title="주제 삭제"
+            aria-label="주제 삭제"
           >
             ×
           </button>
@@ -99,7 +107,6 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
               onChange={(e) => setNewTopicName(e.target.value)}
               placeholder="주제명"
               className="topic-name-input"
-              autoFocus
               maxLength={100}
             />
           </div>
@@ -110,6 +117,10 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
                 className={`color-option ${newTopicColor === color ? 'selected' : ''}`}
                 style={{ backgroundColor: color }}
                 onClick={() => setNewTopicColor(color)}
+                onKeyPress={(e) => e.key === 'Enter' && setNewTopicColor(color)}
+                role="button"
+                tabIndex={0}
+                aria-label={`색상 선택: ${color}`}
               />
             ))}
           </div>
@@ -119,13 +130,38 @@ const TopicSelector = ({ topics, selectedTopicId, onTopicSelect, onCreateTopic, 
           </div>
         </div>
       ) : (
-        <div className="topic-item topic-create-btn" onClick={() => setIsCreating(true)}>
+        <div
+          className="topic-item topic-create-btn"
+          onClick={() => setIsCreating(true)}
+          onKeyPress={(e) => e.key === 'Enter' && setIsCreating(true)}
+          role="button"
+          tabIndex={0}
+        >
           <span className="topic-emoji">➕</span>
           <span className="topic-name">새 주제 만들기</span>
         </div>
       )}
     </div>
   );
+};
+
+TopicSelector.propTypes = {
+  topics: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      emoji: PropTypes.string,
+      color: PropTypes.string,
+    })
+  ).isRequired,
+  selectedTopicId: PropTypes.number,
+  onTopicSelect: PropTypes.func.isRequired,
+  onCreateTopic: PropTypes.func.isRequired,
+  onDeleteTopic: PropTypes.func.isRequired,
+};
+
+TopicSelector.defaultProps = {
+  selectedTopicId: null,
 };
 
 export default TopicSelector;
