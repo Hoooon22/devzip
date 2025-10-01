@@ -8,6 +8,7 @@ import com.hoooon22.devzip.Model.User;
 import com.hoooon22.devzip.Repository.ThoughtRepository;
 import com.hoooon22.devzip.Repository.TopicRepository;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
+import com.hoooon22.devzip.dto.TopicMapResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -140,7 +141,29 @@ public class ThoughtService {
     }
 
     /**
-     * 특정 주제 ID로 생각 맵 데이터 조회 (태그별 그룹화)
+     * 특정 주제 중심의 생각 맵 데이터 조회 (주제가 중심)
+     */
+    @Transactional(readOnly = true)
+    public TopicMapResponse getTopicCentricMap(User user, Long topicId) {
+        // Topic 조회 및 검증
+        Topic topic = topicRepository.findById(topicId)
+            .orElseThrow(() -> new TraceBoardException(ErrorCode.NOT_FOUND, "주제를 찾을 수 없습니다"));
+
+        // 주제 소유자 확인
+        if (!topic.getUser().getId().equals(user.getId())) {
+            throw new TraceBoardException(ErrorCode.INSUFFICIENT_PERMISSIONS, "해당 주제에 접근할 수 없습니다");
+        }
+
+        // 주제에 속한 생각들 조회
+        List<Thought> thoughts = thoughtRepository.findByUserOrderByCreatedAtDesc(user).stream()
+            .filter(thought -> thought.getTopic() != null && thought.getTopic().getId().equals(topicId))
+            .collect(Collectors.toList());
+
+        return TopicMapResponse.from(topic, thoughts);
+    }
+
+    /**
+     * 특정 주제 ID로 생각 맵 데이터 조회 (태그별 그룹화) - 레거시
      */
     @Transactional(readOnly = true)
     public List<ThoughtMapResponse> getThoughtMapByTopicId(User user, Long topicId) {

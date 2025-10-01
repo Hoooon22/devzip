@@ -83,6 +83,23 @@ const thoughtService = {
   },
 
   /**
+   * 주제 중심 생각 맵 데이터 조회 (주제가 중심에 위치)
+   * @param {number} topicId - 주제 ID
+   * @returns {Promise} 주제 중심 맵 데이터
+   */
+  getTopicCentricMap: async (topicId) => {
+    try {
+      const response = await axios.get('/api/thoughts/map/topic', {
+        params: { topicId }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch topic centric map:', error);
+      throw error;
+    }
+  },
+
+  /**
    * 특정 주제의 생각 맵 데이터 조회 (태그별 그룹화)
    * @param {number} topicId - 주제 ID
    * @returns {Promise} 태그별 생각 맵 데이터

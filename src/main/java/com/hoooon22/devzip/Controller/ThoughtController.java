@@ -9,6 +9,7 @@ import com.hoooon22.devzip.Repository.UserRepository;
 import com.hoooon22.devzip.Service.ThoughtService;
 import com.hoooon22.devzip.Service.UserDetailsServiceImpl;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
+import com.hoooon22.devzip.dto.TopicMapResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -131,6 +132,27 @@ public class ThoughtController {
         } catch (Exception e) {
             log.error("생각 조회 중 오류 발생: ID={}", id, e);
             throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "생각 조회 중 오류가 발생했습니다", e);
+        }
+    }
+
+    /**
+     * 주제 중심 생각 맵 데이터 조회 (주제가 중심에 위치)
+     */
+    @GetMapping("/map/topic")
+    public ResponseEntity<ApiResponse<TopicMapResponse>> getTopicCentricMap(@RequestParam Long topicId) {
+        try {
+            User currentUser = getCurrentUser();
+            TopicMapResponse topicMap = thoughtService.getTopicCentricMap(currentUser, topicId);
+
+            log.info("주제 중심 맵 조회: User={}, TopicId={}, Thoughts={}",
+                     currentUser.getUsername(), topicId, topicMap.getThoughts().size());
+
+            return ResponseEntity.ok(ApiResponse.success(topicMap));
+        } catch (TraceBoardException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("주제 맵 조회 중 오류 발생", e);
+            throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "주제 맵 조회 중 오류가 발생했습니다", e);
         }
     }
 

@@ -31,13 +31,18 @@ const Hopperbox = () => {
   const fetchThoughtMap = async (topicId = null) => {
     setIsLoadingMap(true);
     try {
-      const response = topicId
-        ? await thoughtService.getThoughtMapByTopic(topicId)
-        : await thoughtService.getThoughtMap();
-      setMapData(response.data || []);
+      if (topicId) {
+        // 주제 중심 맵 데이터 조회
+        const response = await thoughtService.getTopicCentricMap(topicId);
+        setMapData(response.data || null);
+      } else {
+        // 전체 보기 (태그별 그룹화)
+        const response = await thoughtService.getThoughtMap();
+        setMapData(response.data || []);
+      }
     } catch (error) {
       console.error('Failed to load thought map:', error);
-      setMapData([]);
+      setMapData(topicId ? null : []);
     } finally {
       setIsLoadingMap(false);
     }
