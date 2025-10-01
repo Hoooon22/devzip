@@ -1,23 +1,32 @@
 package com.hoooon22.devzip.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoooon22.devzip.Model.Thought;
 import com.hoooon22.devzip.dto.TopicMapResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ThoughtClusteringService {
 
-    private final ChatClient.Builder chatClientBuilder;
+    @Value("${google.api.key:}")
+    private String googleApiKey;
+
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+
+    public ThoughtClusteringService() {
+        this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
+    }
 
     /**
      * AI를 사용하여 생각들을 관련성에 따라 클러스터링
@@ -49,31 +58,95 @@ public class ThoughtClusteringService {
      * AI에게 클러스터링 요청
      */
     private String requestClustering(List<Thought> thoughts) {
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("다음 생각들을 내용의 유사성과 관련성에 따라 그룹화해주세요.\n\n");
-
-        // 각 생각에 인덱스 부여
-        for (int i = 0; i < thoughts.size(); i++) {
-            Thought thought = thoughts.get(i);
-            prompt.append(String.format("[%d] %s\n", i, thought.getContent()));
-            if (!thought.getTags().isEmpty()) {
-                prompt.append(String.format("   태그: %s\n", String.join(", ", thought.getTags())));
-            }
+        // API 키가 설정되지 않은 경우 빈 문자열 반환 (폴백 처리는 호출자가 담당)
+        if (googleApiKey == null || googleApiKey.trim().isEmpty()) {
+            log.warn("Google API key is not configured for clustering.");
+            return "";
         }
 
-        prompt.append("\n응답 형식:\n");
-        prompt.append("각 그룹을 다음 형식으로 출력해주세요:\n");
-        prompt.append("GROUP:그룹설명\n");
-        prompt.append("MEMBERS:0,1,2\n");
-        prompt.append("---\n");
-        prompt.append("\n중요: 서로 관련 있는 생각들은 같은 그룹으로, 독립적인 생각은 별도 그룹으로 만들어주세요.");
+        try {
+            String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + googleApiKey;
 
-        ChatClient chatClient = chatClientBuilder.build();
+            // 프롬프트 작성
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("다음 생각들을 내용의 유사성과 관련성에 따라 그룹화해주세요.\n\n");
 
-        return chatClient.prompt()
-            .user(prompt.toString())
-            .call()
-            .content();
+            // 각 생각에 인덱스 부여
+            for (int i = 0; i < thoughts.size(); i++) {
+                Thought thought = thoughts.get(i);
+                prompt.append(String.format("[%d] %s\n", i, thought.getContent()));
+                List<String> tags = thought.getTags();
+                if (tags != null && !tags.isEmpty()) {
+                    prompt.append(String.format("   태그: %s\n", String.join(", ", tags)));
+                }
+            }
+
+            prompt.append("\n응답 형식:\n");
+            prompt.append("각 그룹을 다음 형식으로 출력해주세요:\n");
+            prompt.append("GROUP:그룹설명\n");
+            prompt.append("MEMBERS:0,1,2\n");
+            prompt.append("---\n");
+            prompt.append("\n중요: 서로 관련 있는 생각들은 같은 그룹으로, 독립적인 생각은 별도 그룹으로 만들어주세요.");
+
+            // 요청 바디 생성
+            Map<String, Object> requestBody = Map.of(
+                "contents", List.of(
+                    Map.of(
+                        "parts", List.of(
+                            Map.of("text", prompt.toString())
+                        )
+                    )
+                )
+            );
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+            // API 호출
+            ResponseEntity<String> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.POST,
+                request,
+                String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return parseGeminiClusteringResponse(response.getBody());
+            } else {
+                log.error("Failed to call Gemini API for clustering. Status: {}", response.getStatusCode());
+                return "";
+            }
+
+        } catch (Exception e) {
+            log.error("Error requesting clustering from AI: {}", e.getMessage(), e);
+            return "";
+        }
+    }
+
+    /**
+     * Gemini API 응답에서 클러스터링 결과 파싱
+     */
+    private String parseGeminiClusteringResponse(String responseBody) {
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            JsonNode candidates = root.path("candidates");
+
+            if (candidates.isArray() && candidates.size() > 0) {
+                JsonNode firstCandidate = candidates.get(0);
+                JsonNode content = firstCandidate.path("content");
+                JsonNode parts = content.path("parts");
+
+                if (parts.isArray() && parts.size() > 0) {
+                    return parts.get(0).path("text").asText();
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error parsing Gemini clustering response: {}", e.getMessage());
+        }
+
+        return "";
     }
 
     /**

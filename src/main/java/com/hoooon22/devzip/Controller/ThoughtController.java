@@ -144,8 +144,15 @@ public class ThoughtController {
             User currentUser = getCurrentUser();
             TopicMapResponse topicMap = thoughtService.getTopicCentricMap(currentUser, topicId);
 
-            log.info("주제 중심 맵 조회: User={}, TopicId={}, Thoughts={}",
-                     currentUser.getUsername(), topicId, topicMap.getThoughts().size());
+            int totalThoughts = topicMap.getClusters() != null
+                ? topicMap.getClusters().stream()
+                    .mapToInt(cluster -> cluster.getThoughts() != null ? cluster.getThoughts().size() : 0)
+                    .sum()
+                : 0;
+            log.info("주제 중심 맵 조회: User={}, TopicId={}, Clusters={}, Thoughts={}",
+                     currentUser.getUsername(), topicId,
+                     topicMap.getClusters() != null ? topicMap.getClusters().size() : 0,
+                     totalThoughts);
 
             return ResponseEntity.ok(ApiResponse.success(topicMap));
         } catch (TraceBoardException e) {
