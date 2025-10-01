@@ -129,11 +129,19 @@ public class AiTagExtractorService {
         String[] words = content.split("[\\s\\p{Punct}]+");
 
         // 3글자 이상의 의미있는 단어만 추출
-        return Arrays.stream(words)
+        List<String> tags = Arrays.stream(words)
             .filter(word -> word.length() >= 3)
             .map(String::toLowerCase)
             .distinct()
             .limit(5)
             .collect(Collectors.toList());
+
+        // 태그가 없으면 기본 태그 추가
+        if (tags.isEmpty()) {
+            tags.add("생각");
+            log.info("No tags extracted, added default tag: 생각");
+        }
+
+        return tags;
     }
 }
