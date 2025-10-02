@@ -95,7 +95,7 @@ public class ThoughtHierarchyService {
             googleApiKey.length() > 10 ? "****" : "");
 
         try {
-            String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + googleApiKey;
+            String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + googleApiKey;
 
             // 프롬프트 작성
             StringBuilder prompt = new StringBuilder();
