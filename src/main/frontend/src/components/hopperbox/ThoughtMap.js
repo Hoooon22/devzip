@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactFlow, {
   Background,
@@ -13,6 +13,8 @@ import './ThoughtMap.css';
 const ThoughtMap = ({ mapData, isLoading }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
   // mapData를 React Flow 노드/엣지로 변환
   useEffect(() => {
@@ -104,6 +106,12 @@ const ThoughtMap = ({ mapData, isLoading }) => {
                   )}
                 </div>
               ),
+              // 호버박스용 메타데이터
+              fullContent: thought.content,
+              tags: thought.tags || [],
+              clusterId: clusterIndex,
+              clusterColor: clusterColor,
+              thoughtId: thought.id,
             },
             position: { x, y },
             style: {
@@ -321,6 +329,20 @@ const ThoughtMap = ({ mapData, isLoading }) => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeMouseEnter={(event, node) => {
+            if (node.data.fullContent) {
+              setHoveredNode(node);
+              setHoverPosition({ x: event.clientX, y: event.clientY });
+            }
+          }}
+          onNodeMouseLeave={() => {
+            setHoveredNode(null);
+          }}
+          onNodeMouseMove={(event) => {
+            if (hoveredNode) {
+              setHoverPosition({ x: event.clientX, y: event.clientY });
+            }
+          }}
           fitView
           attributionPosition="bottom-left"
         >
@@ -334,6 +356,52 @@ const ThoughtMap = ({ mapData, isLoading }) => {
             maskColor="rgba(0, 0, 0, 0.1)"
           />
         </ReactFlow>
+
+        {/* 호버박스 */}
+        {hoveredNode && hoveredNode.data.fullContent && (
+          <div
+            className="thought-hover-box"
+            style={{
+              position: 'fixed',
+              left: `${hoverPosition.x + 15}px`,
+              top: `${hoverPosition.y + 15}px`,
+              maxWidth: '350px',
+              background: 'white',
+              border: `3px solid ${hoveredNode.data.clusterColor || '#667eea'}`,
+              borderRadius: '12px',
+              padding: '16px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+              zIndex: 1000,
+              pointerEvents: 'none',
+            }}
+          >
+            <div className="hover-box-header">
+              <span className="hover-box-badge" style={{ background: hoveredNode.data.clusterColor || '#667eea' }}>
+                클러스터 {hoveredNode.data.clusterId + 1}
+              </span>
+              <span className="hover-box-id">#{hoveredNode.data.thoughtId}</span>
+            </div>
+            <div className="hover-box-content">
+              {hoveredNode.data.fullContent}
+            </div>
+            {hoveredNode.data.tags && hoveredNode.data.tags.length > 0 && (
+              <div className="hover-box-tags">
+                <strong>AI 추출 태그:</strong>
+                <div className="tag-list">
+                  {hoveredNode.data.tags.map((tag, idx) => (
+                    <span key={idx} className="hover-tag" style={{ borderColor: hoveredNode.data.clusterColor }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="hover-box-cluster-info">
+              <span className="cluster-indicator" style={{ background: hoveredNode.data.clusterColor }}>●</span>
+              AI가 이 생각을 같은 주제로 그룹화했습니다
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

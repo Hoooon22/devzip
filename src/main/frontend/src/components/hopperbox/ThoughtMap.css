@@ -188,6 +188,109 @@
   border-radius: 8px;
 }
 
+/* 호버박스 스타일 */
+.thought-hover-box {
+  animation: fadeIn 0.15s ease-in;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hover-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.hover-box-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hover-box-id {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+}
+
+.hover-box-content {
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 12px;
+  word-break: break-word;
+  font-size: 14px;
+}
+
+.hover-box-tags {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.hover-box-tags strong {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hover-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  background: #f8f8f8;
+  border: 1.5px solid #e0e0e0;
+  color: #555;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.hover-box-cluster-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.cluster-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .thought-map-container {
@@ -209,5 +312,14 @@
 
   .thought-node-content {
     font-size: 12px;
+  }
+
+  .thought-hover-box {
+    max-width: 280px !important;
+    font-size: 13px;
+  }
+
+  .hover-box-content {
+    font-size: 13px;
   }
 }

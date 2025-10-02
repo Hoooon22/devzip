@@ -164,9 +164,12 @@ SPRING_DATASOURCE_PASSWORD=your_password
 - Protected routes testing for dashboard and traceboard
 - Comprehensive status reporting and monitoring
 
-### Server Test
-- Real Server is running on Desktop PC (Ubuntu)
-- All functions of the server should work the same on devzip.cloud and 192.168.75.224 (same network).
+### Production Server
+- **Live Server**: Running on external Ubuntu server
+- **Domain**: devzip.cloud (production environment)
+- **Local Network**: 192.168.75.224 (same network access)
+- **SSH Access**: `ssh -p 3323 hoooon22@192.168.75.224`
+- **Note**: All functions should work identically on both devzip.cloud and local network IP
 
 ### Rule: Run & Manage Backend Application
 # When the user requests to run, test, or check logs for the backend server,
