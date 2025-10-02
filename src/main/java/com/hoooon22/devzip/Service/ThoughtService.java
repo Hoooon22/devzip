@@ -274,7 +274,37 @@ public class ThoughtService {
             .collect(Collectors.toList());
 
         // AI 기반 계층 구조 생성
-        return hierarchyService.buildHierarchy(thoughts);
+        ThoughtHierarchyResponse response = hierarchyService.buildHierarchy(thoughts);
+
+        // 주제를 최상위 노드 (Level 0)로 추가
+        if (response != null && response.getNodes() != null) {
+            // 주제 노드 생성 (ID는 음수로 구별)
+            ThoughtHierarchyResponse.HierarchyNode topicNode =
+                ThoughtHierarchyResponse.HierarchyNode.createTopicNode(
+                    -topicId,  // 음수 ID로 주제 구별
+                    topic.getEmoji() + " " + topic.getName(),  // 이모지 + 주제명
+                    0,  // Level 0 (최상위)
+                    -1  // 부모 없음
+                );
+
+            // 기존 노드들의 레벨을 1씩 증가
+            List<ThoughtHierarchyResponse.HierarchyNode> nodes = response.getNodes();
+            for (ThoughtHierarchyResponse.HierarchyNode node : nodes) {
+                node.setLevel(node.getLevel() + 1);
+                // 원래 최상위 노드 (parentIndex == -1)들은 주제 노드를 부모로 설정
+                if (node.getParentIndex() == -1) {
+                    node.setParentIndex(0);  // 주제 노드의 인덱스
+                } else if (node.getParentIndex() >= 0) {
+                    // 다른 노드들의 parentIndex도 1씩 증가
+                    node.setParentIndex(node.getParentIndex() + 1);
+                }
+            }
+
+            // 주제 노드를 맨 앞에 추가
+            nodes.add(0, topicNode);
+        }
+
+        return response;
     }
 
     /**

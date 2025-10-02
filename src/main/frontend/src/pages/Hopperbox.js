@@ -13,38 +13,15 @@ const Hopperbox = () => {
   const [isLoadingTopics, setIsLoadingTopics] = useState(false);
   const [isLoadingMap, setIsLoadingMap] = useState(false);
 
-  // 주제 목록 불러오기
+  // 주제 목록 불러오기 (생각 개수는 선택 시에만 조회)
   const fetchTopics = async () => {
     setIsLoadingTopics(true);
     try {
       const response = await topicService.getAllTopics();
       const topicsData = response.data || [];
 
-      // 각 주제별 생각 개수 조회
-      const topicsWithCount = await Promise.all(
-        topicsData.map(async (topic) => {
-          try {
-            const mapResponse = await thoughtService.getTopicCentricMap(topic.id);
-            const clusters = mapResponse.data?.clusters || [];
-            const thoughtCount = clusters.reduce(
-              (sum, cluster) => sum + (cluster.thoughts?.length || 0),
-              0
-            );
-            return {
-              ...topic,
-              thoughtCount
-            };
-          } catch (error) {
-            console.error(`Failed to get thought count for topic ${topic.id}:`, error);
-            return {
-              ...topic,
-              thoughtCount: 0
-            };
-          }
-        })
-      );
-
-      setTopics(topicsWithCount);
+      // 생각 개수는 기본값 0으로 설정 (선택 시 자동 업데이트됨)
+      setTopics(topicsData.map(topic => ({ ...topic, thoughtCount: 0 })));
     } catch (error) {
       console.error('Failed to load topics:', error);
       setTopics([]);

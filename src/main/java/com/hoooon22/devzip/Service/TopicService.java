@@ -27,6 +27,13 @@ public class TopicService {
     public Topic createTopic(User user, String name, String description, String color, String emoji) {
         log.info("주제 생성 시도: User={}, Name={}", user.getUsername(), name);
 
+        // 중복 주제명 체크
+        Optional<Topic> existingTopic = topicRepository.findByUserAndName(user, name);
+        if (existingTopic.isPresent()) {
+            log.warn("중복된 주제명: User={}, Name={}", user.getUsername(), name);
+            throw new TraceBoardException(ErrorCode.INVALID_INPUT_VALUE, "이미 동일한 이름의 주제가 존재합니다");
+        }
+
         Topic topic = new Topic(user, name, description, color, emoji);
         Topic savedTopic = topicRepository.save(topic);
 

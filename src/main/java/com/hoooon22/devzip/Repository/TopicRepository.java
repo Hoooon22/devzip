@@ -30,4 +30,9 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
      * 특정 사용자의 주제 수 조회
      */
     long countByUser(User user);
+
+    /**
+     * 특정 사용자의 주제명으로 정확히 일치하는 주제 조회 (중복 체크용)
+     */
+    Optional<Topic> findByUserAndName(User user, String name);
 }

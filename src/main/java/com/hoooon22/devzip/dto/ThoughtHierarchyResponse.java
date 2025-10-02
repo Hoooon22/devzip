@@ -51,6 +51,20 @@ public class ThoughtHierarchyResponse {
         }
 
         /**
+         * 주제 노드 생성 (최상위 노드용)
+         */
+        public static HierarchyNode createTopicNode(long id, String name, int level, int parentIndex) {
+            return HierarchyNode.builder()
+                .id(id)
+                .content(name)
+                .tags(new ArrayList<>())
+                .level(level)
+                .parentIndex(parentIndex)
+                .children(new ArrayList<>())
+                .build();
+        }
+
+        /**
          * 자식 노드 추가
          */
         public void addChild(HierarchyNode child) {
