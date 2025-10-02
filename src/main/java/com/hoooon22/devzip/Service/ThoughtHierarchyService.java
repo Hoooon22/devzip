@@ -39,7 +39,7 @@ public class ThoughtHierarchyService {
         // 생각이 1개인 경우
         if (thoughts.size() == 1) {
             return new ThoughtHierarchyResponse(
-                List.of(ThoughtHierarchyResponse.HierarchyNode.fromThought(thoughts.get(0), 0))
+                new ArrayList<>(List.of(ThoughtHierarchyResponse.HierarchyNode.fromThought(thoughts.get(0), 0)))
             );
         }
 
