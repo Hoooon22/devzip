@@ -44,13 +44,37 @@ public class ThoughtHierarchyService {
         }
 
         try {
+            log.info("========================================");
+            log.info("🔍 AI 계층 구조 분석 시작");
+            log.info("생각 개수: {}", thoughts.size());
+            for (int i = 0; i < thoughts.size(); i++) {
+                log.info("[{}] {}", i, thoughts.get(i).getContent());
+                log.info("    태그: {}", thoughts.get(i).getTags());
+            }
+            log.info("========================================");
+
             // AI에게 계층 구조 생성 요청
             String hierarchyResult = requestHierarchyStructure(thoughts);
 
+            log.info("🤖 AI 원본 응답:");
+            log.info("{}", hierarchyResult);
+            log.info("========================================");
+
             // AI 응답을 파싱하여 계층 구조 생성
-            return parseHierarchyResult(hierarchyResult, thoughts);
+            ThoughtHierarchyResponse response = parseHierarchyResult(hierarchyResult, thoughts);
+
+            log.info("✅ 계층 구조 파싱 완료:");
+            log.info("노드 개수: {}", response.getNodes().size());
+            for (ThoughtHierarchyResponse.HierarchyNode node : response.getNodes()) {
+                log.info("노드 ID: {}, Level: {}, Parent: {}",
+                    node.getId(), node.getLevel(), node.getParentIndex());
+                log.info("  내용: {}", node.getContent().substring(0, Math.min(50, node.getContent().length())));
+            }
+            log.info("========================================");
+
+            return response;
         } catch (Exception e) {
-            log.error("AI 계층 구조 생성 실패, 기본 전략 사용", e);
+            log.error("❌ AI 계층 구조 생성 실패, 기본 전략 사용", e);
             // AI 실패 시 태그 기반 계층 구조로 폴백
             return buildHierarchyByTags(thoughts);
         }

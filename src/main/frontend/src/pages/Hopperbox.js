@@ -59,7 +59,20 @@ const Hopperbox = () => {
     try {
       if (topicId) {
         // 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
+        console.log('========================================');
+        console.log('📡 계층 구조 맵 데이터 요청 중... (topicId:', topicId, ')');
         const response = await thoughtService.getTopicHierarchyMap(topicId);
+        console.log('✅ 서버로부터 받은 계층 구조 데이터:');
+        console.log(JSON.stringify(response.data, null, 2));
+        console.log('노드 개수:', response.data?.nodes?.length || 0);
+        if (response.data?.nodes) {
+          response.data.nodes.forEach((node, idx) => {
+            console.log(`[${idx}] Level ${node.level} - ID: ${node.id}, Parent: ${node.parentIndex}`);
+            console.log(`    내용: ${node.content.substring(0, 50)}...`);
+            console.log(`    태그: ${node.tags?.join(', ') || '없음'}`);
+          });
+        }
+        console.log('========================================');
         setMapData(response.data || null);
       } else {
         // 전체 보기 (주제 목록 표시)

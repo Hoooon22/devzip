@@ -24,11 +24,16 @@ const ThoughtMap = ({ mapData, isLoading }) => {
       return;
     }
 
+    console.log('🎨 ThoughtMap 렌더링 시작');
+    console.log('받은 mapData:', mapData);
+
     const newNodes = [];
     const newEdges = [];
 
     // 계층 구조 맵 데이터인 경우 (nodes 필드 있고 배열의 첫 요소가 level을 가짐)
     if (Array.isArray(mapData.nodes) && mapData.nodes.length > 0 && mapData.nodes[0].level !== undefined) {
+      console.log('✅ 계층 구조 모드로 렌더링');
+      console.log('노드 개수:', mapData.nodes.length);
       // 계층 구조를 트리 형태로 시각화
       const levelGap = 200; // 레벨 간 수직 거리
       const siblingGap = 250; // 같은 레벨 내 노드 간 수평 거리
@@ -117,9 +122,13 @@ const ThoughtMap = ({ mapData, isLoading }) => {
       };
 
       // 최상위 노드들 처리
+      console.log('최상위 노드 처리 시작...');
       mapData.nodes.forEach((rootNode, idx) => {
+        console.log(`  [${idx}] 처리 중 - Level: ${rootNode.level}, ID: ${rootNode.id}`);
+        console.log(`       내용: ${rootNode.content.substring(0, 30)}...`);
         processHierarchyNode(rootNode, null, null, idx);
       });
+      console.log(`✅ 생성된 노드: ${newNodes.length}개, 엣지: ${newEdges.length}개`);
     }
     // 주제 중심 맵 데이터인 경우 (topicId, topicName, clusters 필드 있음)
     else if (mapData.topicId !== undefined) {
