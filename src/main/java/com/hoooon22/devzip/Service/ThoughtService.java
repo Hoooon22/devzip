@@ -9,6 +9,7 @@ import com.hoooon22.devzip.Repository.ThoughtRepository;
 import com.hoooon22.devzip.Repository.TopicRepository;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
 import com.hoooon22.devzip.dto.TopicMapResponse;
+import com.hoooon22.devzip.dto.ThoughtHierarchyResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ThoughtService {
     private final TopicRepository topicRepository;
     private final AiTagExtractorService aiTagExtractorService;
     private final ThoughtClusteringService clusteringService;
+    private final ThoughtHierarchyService hierarchyService;
 
     /**
      * 새로운 생각 저장 (AI 태그 자동 추출)
@@ -250,6 +252,29 @@ public class ThoughtService {
     @Transactional(readOnly = true)
     public List<Thought> searchByTag(User user, String tag) {
         return thoughtRepository.findByUserAndTagOrderByCreatedAtDesc(user, tag);
+    }
+
+    /**
+     * 주제 중심의 생각 계층 구조 맵 데이터 조회 (유사도 기반)
+     */
+    @Transactional(readOnly = true)
+    public ThoughtHierarchyResponse getTopicHierarchyMap(User user, Long topicId) {
+        // Topic 조회 및 검증
+        Topic topic = topicRepository.findById(topicId)
+            .orElseThrow(() -> new TraceBoardException(ErrorCode.NOT_FOUND, "주제를 찾을 수 없습니다"));
+
+        // 주제 소유자 확인
+        if (!topic.getUser().getId().equals(user.getId())) {
+            throw new TraceBoardException(ErrorCode.INSUFFICIENT_PERMISSIONS, "해당 주제에 접근할 수 없습니다");
+        }
+
+        // 주제에 속한 생각들 조회
+        List<Thought> thoughts = thoughtRepository.findByUserOrderByCreatedAtDesc(user).stream()
+            .filter(thought -> thought.getTopic() != null && thought.getTopic().getId().equals(topicId))
+            .collect(Collectors.toList());
+
+        // AI 기반 계층 구조 생성
+        return hierarchyService.buildHierarchy(thoughts);
     }
 
     /**

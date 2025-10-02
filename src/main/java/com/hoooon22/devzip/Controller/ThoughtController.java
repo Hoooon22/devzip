@@ -10,6 +10,7 @@ import com.hoooon22.devzip.Service.ThoughtService;
 import com.hoooon22.devzip.Service.UserDetailsServiceImpl;
 import com.hoooon22.devzip.dto.ThoughtMapResponse;
 import com.hoooon22.devzip.dto.TopicMapResponse;
+import com.hoooon22.devzip.dto.ThoughtHierarchyResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -292,6 +293,28 @@ public class ThoughtController {
         } catch (Exception e) {
             log.error("태그 검색 중 오류 발생: Tag={}", tag, e);
             throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "태그 검색 중 오류가 발생했습니다", e);
+        }
+    }
+
+    /**
+     * 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
+     */
+    @GetMapping("/map/hierarchy")
+    public ResponseEntity<ApiResponse<ThoughtHierarchyResponse>> getTopicHierarchyMap(@RequestParam Long topicId) {
+        try {
+            User currentUser = getCurrentUser();
+            ThoughtHierarchyResponse hierarchyMap = thoughtService.getTopicHierarchyMap(currentUser, topicId);
+
+            log.info("주제 계층 구조 맵 조회: User={}, TopicId={}, Nodes={}",
+                     currentUser.getUsername(), topicId,
+                     hierarchyMap.getNodes() != null ? hierarchyMap.getNodes().size() : 0);
+
+            return ResponseEntity.ok(ApiResponse.success(hierarchyMap));
+        } catch (TraceBoardException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("계층 구조 맵 조회 중 오류 발생", e);
+            throw new TraceBoardException(ErrorCode.INTERNAL_SERVER_ERROR, "계층 구조 맵 조회 중 오류가 발생했습니다", e);
         }
     }
 }

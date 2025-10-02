@@ -58,8 +58,8 @@ const Hopperbox = () => {
     setIsLoadingMap(true);
     try {
       if (topicId) {
-        // 주제 중심 맵 데이터 조회
-        const response = await thoughtService.getTopicCentricMap(topicId);
+        // 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
+        const response = await thoughtService.getTopicHierarchyMap(topicId);
         setMapData(response.data || null);
       } else {
         // 전체 보기 (주제 목록 표시)

@@ -163,6 +163,23 @@ const thoughtService = {
       throw error;
     }
   },
+
+  /**
+   * 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
+   * @param {number} topicId - 주제 ID
+   * @returns {Promise} 계층 구조 맵 데이터
+   */
+  getTopicHierarchyMap: async (topicId) => {
+    try {
+      const response = await axios.get('/api/thoughts/map/hierarchy', {
+        params: { topicId }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch topic hierarchy map:', error);
+      throw error;
+    }
+  },
 };
 
 export default thoughtService;

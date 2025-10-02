@@ -27,8 +27,102 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     const newNodes = [];
     const newEdges = [];
 
+    // 계층 구조 맵 데이터인 경우 (nodes 필드 있고 배열의 첫 요소가 level을 가짐)
+    if (Array.isArray(mapData.nodes) && mapData.nodes.length > 0 && mapData.nodes[0].level !== undefined) {
+      // 계층 구조를 트리 형태로 시각화
+      const levelGap = 200; // 레벨 간 수직 거리
+      const siblingGap = 250; // 같은 레벨 내 노드 간 수평 거리
+      const startY = 100;
+      const levelCounts = [0, 0, 0, 0]; // 각 레벨별 노드 수
+
+      const processHierarchyNode = (node, parentX, parentY, nodeIndex) => {
+        const level = node.level || 0;
+        const nodeId = `hierarchy-${node.id}`;
+
+        // 같은 레벨 내에서 수평 위치 계산
+        const xOffset = levelCounts[level] * siblingGap - (levelCounts[level] * siblingGap / 2);
+        const x = parentX !== null ? parentX + xOffset : 400 + xOffset;
+        const y = startY + (level * levelGap);
+
+        levelCounts[level]++;
+
+        // 레벨별 색상
+        const levelColors = [
+          '#667eea', // Level 0 - 가장 핵심
+          '#f093fb', // Level 1
+          '#4facfe', // Level 2
+          '#43e97b', // Level 3
+        ];
+        const nodeColor = levelColors[level] || '#999';
+
+        newNodes.push({
+          id: nodeId,
+          type: 'default',
+          data: {
+            label: (
+              <div className="thought-node">
+                <div className="thought-node-level">Level {level}</div>
+                <div className="thought-node-content">
+                  {node.content.length > 80
+                    ? node.content.substring(0, 80) + '...'
+                    : node.content}
+                </div>
+                {node.tags && node.tags.length > 0 && (
+                  <div className="thought-tags">
+                    {node.tags.slice(0, 3).map((tag, idx) => (
+                      <span key={idx} className="tag-badge">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ),
+            // 호버박스용 메타데이터
+            fullContent: node.content,
+            tags: node.tags || [],
+            hierarchyLevel: level,
+            levelColor: nodeColor,
+            thoughtId: node.id,
+          },
+          position: { x, y },
+          style: {
+            background: 'white',
+            border: `3px solid ${nodeColor}`,
+            borderRadius: '12px',
+            padding: '12px',
+            fontSize: '13px',
+            maxWidth: '220px',
+          },
+        });
+
+        // 자식 노드들 처리
+        if (node.children && node.children.length > 0) {
+          node.children.forEach((child, childIdx) => {
+            const childNodeId = processHierarchyNode(child, x, y, childIdx);
+
+            // 부모-자식 간 엣지 연결
+            newEdges.push({
+              id: `edge-${nodeId}-${childNodeId}`,
+              source: nodeId,
+              target: childNodeId,
+              animated: true,
+              style: {
+                stroke: nodeColor,
+                strokeWidth: 2,
+              },
+            });
+          });
+        }
+
+        return nodeId;
+      };
+
+      // 최상위 노드들 처리
+      mapData.nodes.forEach((rootNode, idx) => {
+        processHierarchyNode(rootNode, null, null, idx);
+      });
+    }
     // 주제 중심 맵 데이터인 경우 (topicId, topicName, clusters 필드 있음)
-    if (mapData.topicId !== undefined) {
+    else if (mapData.topicId !== undefined) {
       // 주제 중심 노드
       const topicNodeId = 'topic-center';
       newNodes.push({
@@ -367,7 +461,7 @@ const ThoughtMap = ({ mapData, isLoading }) => {
               top: `${hoverPosition.y + 15}px`,
               maxWidth: '350px',
               background: 'white',
-              border: `3px solid ${hoveredNode.data.clusterColor || '#667eea'}`,
+              border: `3px solid ${hoveredNode.data.levelColor || hoveredNode.data.clusterColor || '#667eea'}`,
               borderRadius: '12px',
               padding: '16px',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
@@ -376,9 +470,17 @@ const ThoughtMap = ({ mapData, isLoading }) => {
             }}
           >
             <div className="hover-box-header">
-              <span className="hover-box-badge" style={{ background: hoveredNode.data.clusterColor || '#667eea' }}>
-                클러스터 {hoveredNode.data.clusterId + 1}
-              </span>
+              {hoveredNode.data.hierarchyLevel !== undefined ? (
+                <span className="hover-box-badge" style={{ background: hoveredNode.data.levelColor }}>
+                  {hoveredNode.data.hierarchyLevel === 0 ? '핵심 생각' :
+                   hoveredNode.data.hierarchyLevel === 1 ? '관련 생각' :
+                   hoveredNode.data.hierarchyLevel === 2 ? '세부 생각' : '상세 생각'}
+                </span>
+              ) : (
+                <span className="hover-box-badge" style={{ background: hoveredNode.data.clusterColor || '#667eea' }}>
+                  클러스터 {hoveredNode.data.clusterId + 1}
+                </span>
+              )}
               <span className="hover-box-id">#{hoveredNode.data.thoughtId}</span>
             </div>
             <div className="hover-box-content">
@@ -389,17 +491,28 @@ const ThoughtMap = ({ mapData, isLoading }) => {
                 <strong>AI 추출 태그:</strong>
                 <div className="tag-list">
                   {hoveredNode.data.tags.map((tag, idx) => (
-                    <span key={idx} className="hover-tag" style={{ borderColor: hoveredNode.data.clusterColor }}>
+                    <span key={idx} className="hover-tag" style={{
+                      borderColor: hoveredNode.data.levelColor || hoveredNode.data.clusterColor
+                    }}>
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
             )}
-            <div className="hover-box-cluster-info">
-              <span className="cluster-indicator" style={{ background: hoveredNode.data.clusterColor }}>●</span>
-              AI가 이 생각을 같은 주제로 그룹화했습니다
-            </div>
+            {hoveredNode.data.hierarchyLevel !== undefined ? (
+              <div className="hover-box-cluster-info">
+                <span className="cluster-indicator" style={{
+                  background: hoveredNode.data.levelColor
+                }}>●</span>
+                AI가 유사도 분석으로 레벨 {hoveredNode.data.hierarchyLevel}로 분류했습니다
+              </div>
+            ) : (
+              <div className="hover-box-cluster-info">
+                <span className="cluster-indicator" style={{ background: hoveredNode.data.clusterColor }}>●</span>
+                AI가 이 생각을 같은 주제로 그룹화했습니다
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -439,6 +552,19 @@ ThoughtMap.propTypes = {
           ).isRequired,
         })
       ).isRequired,
+    }),
+    // 계층 구조 맵
+    PropTypes.shape({
+      nodes: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number.isRequired,
+          content: PropTypes.string.isRequired,
+          tags: PropTypes.arrayOf(PropTypes.string),
+          level: PropTypes.number.isRequired,
+          parentIndex: PropTypes.number,
+          children: PropTypes.array,
+        })
+      ),
     }),
   ]),
   isLoading: PropTypes.bool,
