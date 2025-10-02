@@ -85,9 +85,14 @@ public class ThoughtHierarchyService {
      */
     private String requestHierarchyStructure(List<Thought> thoughts) {
         if (googleApiKey == null || googleApiKey.trim().isEmpty()) {
-            log.warn("Google API key is not configured for hierarchy building.");
+            log.error("❌ Google API 키가 설정되지 않음! application.properties에 google.api.key를 추가하세요.");
+            log.error("   현재 값: googleApiKey={}", googleApiKey);
             return "";
         }
+
+        log.info("🔑 Google API 키 확인: {}...{}",
+            googleApiKey.substring(0, Math.min(10, googleApiKey.length())),
+            googleApiKey.length() > 10 ? "****" : "");
 
         try {
             String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + googleApiKey;
