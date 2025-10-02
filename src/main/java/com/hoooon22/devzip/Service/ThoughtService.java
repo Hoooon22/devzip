@@ -34,8 +34,12 @@ public class ThoughtService {
     public Thought createThought(User user, String content) {
         log.info("Creating new thought for user {} with content: {}", user.getUsername(), content);
 
-        // AI를 사용하여 태그 추출
-        List<String> tags = aiTagExtractorService.extractTags(content);
+        // 기존 태그 수집 (사용자의 모든 생각에서)
+        List<String> existingTags = getExistingTagsForUser(user, null);
+        log.info("Existing tags for context: {}", existingTags);
+
+        // AI를 사용하여 태그 추출 (기존 태그 참조)
+        List<String> tags = aiTagExtractorService.extractTags(content, existingTags);
         log.info("Extracted tags: {}", tags);
 
         // Thought 엔티티 생성 및 저장
@@ -63,8 +67,12 @@ public class ThoughtService {
             throw new TraceBoardException(ErrorCode.INSUFFICIENT_PERMISSIONS, "해당 주제에 접근할 수 없습니다");
         }
 
-        // AI를 사용하여 태그 추출
-        List<String> tags = aiTagExtractorService.extractTags(content);
+        // 기존 태그 수집 (같은 주제의 생각들에서)
+        List<String> existingTags = getExistingTagsForUser(user, topicId);
+        log.info("Existing tags for topic {} context: {}", topicId, existingTags);
+
+        // AI를 사용하여 태그 추출 (기존 태그 참조)
+        List<String> tags = aiTagExtractorService.extractTags(content, existingTags);
         log.info("Extracted tags: {}", tags);
 
         // Topic과 함께 생각 생성
@@ -220,8 +228,12 @@ public class ThoughtService {
             Thought thought = thoughtOpt.get();
             thought.setContent(newContent);
 
-            // 내용이 변경되면 태그도 다시 추출
-            List<String> newTags = aiTagExtractorService.extractTags(newContent);
+            // 기존 태그 수집 (같은 주제 또는 전체에서)
+            Long topicId = thought.getTopic() != null ? thought.getTopic().getId() : null;
+            List<String> existingTags = getExistingTagsForUser(thought.getUser(), topicId);
+
+            // 내용이 변경되면 태그도 다시 추출 (기존 태그 참조)
+            List<String> newTags = aiTagExtractorService.extractTags(newContent, existingTags);
             thought.setTags(newTags);
 
             Thought updatedThought = thoughtRepository.save(thought);
@@ -238,5 +250,31 @@ public class ThoughtService {
     @Transactional(readOnly = true)
     public List<Thought> searchByTag(User user, String tag) {
         return thoughtRepository.findByUserAndTagOrderByCreatedAtDesc(user, tag);
+    }
+
+    /**
+     * 기존 태그 수집 (사용자의 모든 생각 또는 특정 주제의 생각들에서)
+     * @param user 사용자
+     * @param topicId 주제 ID (null이면 모든 생각에서 태그 수집)
+     * @return 중복 제거된 기존 태그 목록
+     */
+    private List<String> getExistingTagsForUser(User user, Long topicId) {
+        List<Thought> thoughts;
+
+        if (topicId != null) {
+            // 특정 주제의 생각들에서 태그 수집
+            thoughts = thoughtRepository.findByUserOrderByCreatedAtDesc(user).stream()
+                .filter(thought -> thought.getTopic() != null && thought.getTopic().getId().equals(topicId))
+                .collect(Collectors.toList());
+        } else {
+            // 모든 생각에서 태그 수집
+            thoughts = thoughtRepository.findByUserOrderByCreatedAtDesc(user);
+        }
+
+        // 모든 태그를 수집하고 중복 제거
+        return thoughts.stream()
+            .flatMap(thought -> thought.getTags().stream())
+            .distinct()
+            .collect(Collectors.toList());
     }
 }

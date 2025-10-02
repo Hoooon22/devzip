@@ -30,9 +30,18 @@ public class AiTagExtractorService {
     }
 
     /**
-     * Google Gemini API를 사용하여 텍스트에서 태그 추출
+     * Google Gemini API를 사용하여 텍스트에서 태그 추출 (기본 버전 - 기존 태그 없음)
      */
     public List<String> extractTags(String content) {
+        return extractTags(content, new ArrayList<>());
+    }
+
+    /**
+     * Google Gemini API를 사용하여 텍스트에서 태그 추출 (기존 태그 참조)
+     * @param content 태그를 추출할 텍스트
+     * @param existingTags 기존에 사용된 태그 목록 (일관성 유지를 위해)
+     */
+    public List<String> extractTags(String content, List<String> existingTags) {
         // API 키가 설정되지 않은 경우 기본 태그 추출 방식 사용
         if (googleApiKey == null || googleApiKey.trim().isEmpty()) {
             log.warn("Google API key is not configured. Using fallback tag extraction.");
@@ -42,22 +51,34 @@ public class AiTagExtractorService {
         try {
             String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + googleApiKey;
 
-            // 프롬프트 작성
-            String prompt = String.format(
-                "다음 텍스트에서 핵심 키워드를 3-5개 추출해주세요. " +
-                "키워드는 쉼표로 구분하고, 한글 또는 영어로 작성해주세요. " +
-                "키워드만 추출하고 다른 설명은 하지 마세요.\n\n" +
-                "텍스트: %s\n\n" +
-                "키워드:",
-                content
-            );
+            // 프롬프트 작성 - 기존 태그 참조
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("다음 텍스트에서 핵심 키워드를 3-5개 추출해주세요.\n\n");
+
+            // 기존 태그가 있으면 우선 참조하도록 지시
+            if (existingTags != null && !existingTags.isEmpty()) {
+                prompt.append("### 중요: 기존 태그 우선 사용\n");
+                prompt.append("아래 기존 태그 목록을 먼저 확인하고, 새 텍스트와 관련 있는 태그가 있으면 반드시 그 태그를 재사용하세요.\n");
+                prompt.append("새로운 태그는 기존 태그로 표현할 수 없을 때만 추가하세요.\n\n");
+                prompt.append("기존 태그 목록: ");
+                prompt.append(String.join(", ", existingTags));
+                prompt.append("\n\n");
+            }
+
+            prompt.append("텍스트: ").append(content).append("\n\n");
+            prompt.append("규칙:\n");
+            prompt.append("1. 기존 태그 목록에 적합한 태그가 있으면 반드시 재사용\n");
+            prompt.append("2. 키워드는 쉼표로 구분\n");
+            prompt.append("3. 한글 또는 영어로 작성\n");
+            prompt.append("4. 키워드만 출력하고 다른 설명 금지\n\n");
+            prompt.append("키워드:");
 
             // 요청 바디 생성
             Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
                     Map.of(
                         "parts", List.of(
-                            Map.of("text", prompt)
+                            Map.of("text", prompt.toString())
                         )
                     )
                 )
