@@ -59,20 +59,53 @@ const Hopperbox = () => {
     try {
       if (topicId) {
         // 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
-        console.log('========================================');
-        console.log('📡 계층 구조 맵 데이터 요청 중... (topicId:', topicId, ')');
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #4CAF50');
+        console.log('%c🎯 Hopperbox 계층 구조 맵 요청', 'color: #2196F3; font-weight: bold; font-size: 14px');
+        console.log('%c주제 ID:', 'color: #FF9800; font-weight: bold', topicId);
+
         const response = await thoughtService.getTopicHierarchyMap(topicId);
-        console.log('✅ 서버로부터 받은 계층 구조 데이터:');
-        console.log(JSON.stringify(response.data, null, 2));
-        console.log('노드 개수:', response.data?.nodes?.length || 0);
-        if (response.data?.nodes) {
-          response.data.nodes.forEach((node, idx) => {
-            console.log(`[${idx}] Level ${node.level} - ID: ${node.id}, Parent: ${node.parentIndex}`);
-            console.log(`    내용: ${node.content.substring(0, 50)}...`);
-            console.log(`    태그: ${node.tags?.join(', ') || '없음'}`);
+        const nodeCount = response.data?.nodes?.length || 0;
+
+        console.log('%c✅ 서버 응답 수신 완료', 'color: #4CAF50; font-weight: bold');
+        console.log('%c📊 노드 개수:', 'color: #9C27B0; font-weight: bold', nodeCount);
+
+        if (response.data?.nodes && nodeCount > 0) {
+          // 계층 구조 분석
+          const levelCount = {};
+          const hasParent = response.data.nodes.filter(n => n.parentIndex !== -1).length;
+
+          response.data.nodes.forEach(node => {
+            levelCount[node.level] = (levelCount[node.level] || 0) + 1;
           });
+
+          console.log('%c🔍 계층 구조 분석:', 'color: #FF5722; font-weight: bold');
+          console.log('  레벨별 분포:', levelCount);
+          console.log('  연결된 노드:', `${hasParent}/${nodeCount}개`);
+          console.log('  최상위 노드:', `${nodeCount - hasParent}개`);
+
+          // AI API 연결 상태 확인
+          const isAiConnected = Object.keys(levelCount).length > 1 || hasParent > 0;
+          if (isAiConnected) {
+            console.log('%c🤖 AI API 연결: ✅ 정상', 'color: #4CAF50; font-weight: bold; background: #E8F5E9; padding: 2px 8px');
+            console.log('  └─ 계층 구조가 AI에 의해 생성되었습니다');
+          } else {
+            console.log('%c🤖 AI API 연결: ⚠️  미연결', 'color: #FF9800; font-weight: bold; background: #FFF3E0; padding: 2px 8px');
+            console.log('  └─ 태그 기반 기본 구조가 사용되었습니다');
+            console.log('  └─ Google AI Studio API 키를 확인하세요');
+          }
+
+          console.log('%c📝 노드 상세:', 'color: #3F51B5; font-weight: bold');
+          response.data.nodes.forEach((node, idx) => {
+            const emoji = node.level === 0 ? '🌟' : node.level === 1 ? '📌' : node.level === 2 ? '📍' : '📎';
+            console.log(`  ${emoji} [${idx}] Lv.${node.level} ${node.parentIndex !== -1 ? `(부모: ${node.parentIndex})` : '(최상위)'}`);
+            console.log(`      내용: ${node.content.substring(0, 40)}${node.content.length > 40 ? '...' : ''}`);
+            console.log(`      태그: ${node.tags?.join(', ') || '없음'}`);
+          });
+        } else {
+          console.log('%c⚠️  노드가 없습니다', 'color: #FF9800; font-weight: bold');
         }
-        console.log('========================================');
+
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #4CAF50');
         setMapData(response.data || null);
       } else {
         // 전체 보기 (주제 목록 표시)
