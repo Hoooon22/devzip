@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './ViewModeToggle.scss';
 
 const ViewModeToggle = ({ isProductionMode, onToggle }) => {
@@ -20,6 +21,11 @@ const ViewModeToggle = ({ isProductionMode, onToggle }) => {
       </button>
     </div>
   );
+};
+
+ViewModeToggle.propTypes = {
+  isProductionMode: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired
 };
 
 export default ViewModeToggle;
