@@ -11,12 +11,13 @@ const ViewModeToggle = ({ isProductionMode, onToggle }) => {
         aria-label={isProductionMode ? "Switch to Experimental Mode" : "Switch to Production Mode"}
       >
         <span className="toggle-track">
-          <span className="toggle-label-left">Production</span>
-          <span className="toggle-label-right">Experimental</span>
-        </span>
-        <span className="toggle-slider">
-          <span className="toggle-icon">
-            {isProductionMode ? '🚀' : '🧪'}
+          <span className="toggle-slider">
+            <span className="toggle-icon">
+              {isProductionMode ? '🚀' : '🧪'}
+            </span>
+            <span className="toggle-label">
+              {isProductionMode ? 'Production' : 'Experimental'}
+            </span>
           </span>
         </span>
       </button>

@@ -6,12 +6,12 @@
 
   .toggle-button {
     position: relative;
-    width: 280px;
+    width: 200px;
     height: 56px;
     border: none;
     border-radius: 28px;
     cursor: pointer;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 
@@ -29,20 +29,7 @@
       background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
 
       .toggle-slider {
-        transform: translateX(4px);
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      .toggle-label-left {
-        color: white;
-        opacity: 1;
-        font-weight: 700;
-      }
-
-      .toggle-label-right {
-        color: rgba(255, 255, 255, 0.5);
-        opacity: 0.7;
+        transform: translateX(0);
       }
     }
 
@@ -51,20 +38,7 @@
       background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
 
       .toggle-slider {
-        transform: translateX(calc(280px - 48px - 4px));
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      .toggle-label-left {
-        color: rgba(255, 255, 255, 0.5);
-        opacity: 0.7;
-      }
-
-      .toggle-label-right {
-        color: white;
-        opacity: 1;
-        font-weight: 700;
+        transform: translateX(0);
       }
     }
 
@@ -76,40 +50,36 @@
       height: 100%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
+      justify-content: center;
       z-index: 1;
 
-      .toggle-label-left,
-      .toggle-label-right {
-        font-family: 'Spoqa Han Sans Neo', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        user-select: none;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-    }
-
-    .toggle-slider {
-      position: absolute;
-      top: 4px;
-      left: 0;
-      width: 48px;
-      height: 48px;
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 2;
-
-      .toggle-icon {
-        font-size: 1.4rem;
+      .toggle-slider {
         display: flex;
         align-items: center;
         justify-content: center;
-        animation: iconBounce 0.6s ease;
+        gap: 8px;
+        padding: 0 20px;
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        .toggle-icon {
+          font-size: 1.4rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: iconBounce 0.6s ease;
+        }
+
+        .toggle-label {
+          font-family: 'Spoqa Han Sans Neo', sans-serif;
+          font-size: 0.95rem;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          color: white;
+          user-select: none;
+          white-space: nowrap;
+          animation: textFadeIn 0.4s ease;
+        }
       }
     }
   }
@@ -127,35 +97,37 @@
   }
 }
 
+@keyframes textFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // 모바일 반응형
 @media (max-width: 768px) {
   .view-mode-toggle {
     .toggle-button {
-      width: 240px;
+      width: 180px;
       height: 48px;
       border-radius: 24px;
 
-      &.experimental {
-        .toggle-slider {
-          transform: translateX(calc(240px - 40px - 4px));
-        }
-      }
-
       .toggle-track {
-        padding: 0 16px;
+        .toggle-slider {
+          gap: 6px;
+          padding: 0 16px;
 
-        .toggle-label-left,
-        .toggle-label-right {
-          font-size: 0.85rem;
-        }
-      }
+          .toggle-icon {
+            font-size: 1.2rem;
+          }
 
-      .toggle-slider {
-        width: 40px;
-        height: 40px;
-
-        .toggle-icon {
-          font-size: 1.2rem;
+          .toggle-label {
+            font-size: 0.85rem;
+          }
         }
       }
     }
