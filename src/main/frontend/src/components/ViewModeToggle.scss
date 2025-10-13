@@ -6,12 +6,12 @@
 
   .toggle-button {
     position: relative;
-    width: 200px;
+    width: 240px;
     height: 56px;
     border: none;
     border-radius: 28px;
     cursor: pointer;
-    overflow: visible;
+    overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 
@@ -28,8 +28,8 @@
     &.production {
       background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
 
-      .toggle-slider {
-        transform: translateX(0);
+      .toggle-icon {
+        left: 8px;
       }
     }
 
@@ -37,8 +37,8 @@
     &.experimental {
       background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
 
-      .toggle-slider {
-        transform: translateX(0);
+      .toggle-icon {
+        left: calc(100% - 48px - 8px);
       }
     }
 
@@ -53,33 +53,38 @@
       justify-content: center;
       z-index: 1;
 
-      .toggle-slider {
+      .toggle-label {
+        font-family: 'Spoqa Han Sans Neo', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        color: white;
+        user-select: none;
+        white-space: nowrap;
+        animation: textFadeIn 0.4s ease;
+        z-index: 1;
+      }
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 4px;
+      z-index: 2;
+
+      .toggle-icon {
+        position: absolute;
+        top: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
+        background: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 0 20px;
-        height: 100%;
+        font-size: 1.4rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-        .toggle-icon {
-          font-size: 1.4rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          animation: iconBounce 0.6s ease;
-        }
-
-        .toggle-label {
-          font-family: 'Spoqa Han Sans Neo', sans-serif;
-          font-size: 0.95rem;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          color: white;
-          user-select: none;
-          white-space: nowrap;
-          animation: textFadeIn 0.4s ease;
-        }
+        animation: iconBounce 0.6s ease;
       }
     }
   }
@@ -112,22 +117,33 @@
 @media (max-width: 768px) {
   .view-mode-toggle {
     .toggle-button {
-      width: 180px;
+      width: 200px;
       height: 48px;
       border-radius: 24px;
 
+      &.experimental {
+        .toggle-icon {
+          left: calc(100% - 40px - 6px);
+        }
+      }
+
+      &.production {
+        .toggle-icon {
+          left: 6px;
+        }
+      }
+
       .toggle-track {
-        .toggle-slider {
-          gap: 6px;
-          padding: 0 16px;
+        .toggle-label {
+          font-size: 0.85rem;
+        }
+      }
 
-          .toggle-icon {
-            font-size: 1.2rem;
-          }
-
-          .toggle-label {
-            font-size: 0.85rem;
-          }
+      .toggle-slider {
+        .toggle-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 1.2rem;
         }
       }
     }
