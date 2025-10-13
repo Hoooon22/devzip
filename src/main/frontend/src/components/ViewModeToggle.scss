@@ -33,8 +33,9 @@
       }
 
       .toggle-track {
-        justify-content: flex-end;
-        padding-right: 16px;
+        left: 56px; // 아이콘(48px) + 여백(4px) + 여유(4px)
+        width: calc(100% - 56px);
+        justify-content: center;
       }
     }
 
@@ -47,16 +48,15 @@
       }
 
       .toggle-track {
-        justify-content: flex-start;
-        padding-left: 16px;
+        left: 0;
+        width: calc(100% - 56px);
+        justify-content: center;
       }
     }
 
     .toggle-track {
       position: absolute;
       top: 0;
-      left: 0;
-      width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
