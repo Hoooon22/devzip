@@ -31,6 +31,14 @@ const Main = () => {
         }
     }, [isProductionMode]);
 
+    // 페이지 로드 시 production 프로젝트 확인 및 자동 모드 전환
+    useEffect(() => {
+        const productionProjects = projects.filter(project => project.isProduction === true);
+        if (productionProjects.length === 0) {
+            setIsProductionMode(false); // production이 없으면 experiment 모드로 전환
+        }
+    }, []);
+
     // 일일 CS 팁 가져오기 (Hopperbox 패턴 적용)
     useEffect(() => {
         const fetchDailyTip = async () => {
