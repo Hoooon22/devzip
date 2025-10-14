@@ -78,8 +78,8 @@ const Main = () => {
             {/* 프로젝트가 없을 때 메시지 표시 */}
             {sortedProjects.length === 0 ? (
                 <div className="empty-projects">
-                    <p>🚧 {isProductionMode ? '실서비스' : '실험용'} 프로젝트가 아직 없습니다.</p>
-                    <p>곧 추가될 예정이니 기대해주세요!</p>
+                    <p>🚧 {isProductionMode ? '현재 서비스 중인' : '현재 실험'} 프로젝트가 없습니다.</p>
+                    <p>곧 추가될 예정입니다!</p>
                 </div>
             ) : (
                 <>

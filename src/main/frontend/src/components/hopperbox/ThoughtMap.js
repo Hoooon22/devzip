@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import ReactFlow, {
   Background,
@@ -10,11 +10,126 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './ThoughtMap.css';
 
+// 호버박스 컴포넌트를 별도로 분리하여 메모이제이션
+const ThoughtHoverBox = React.memo(({ hoveredNode, hoverPosition }) => {
+  if (!hoveredNode?.data?.fullContent) return null;
+
+  return (
+    <div
+      className="thought-hover-box"
+      style={{
+        position: 'fixed',
+        left: `${hoverPosition.x + 15}px`,
+        top: `${hoverPosition.y + 15}px`,
+        maxWidth: '350px',
+        background: 'white',
+        border: `3px solid ${hoveredNode.data.levelColor || hoveredNode.data.clusterColor || '#667eea'}`,
+        borderRadius: '12px',
+        padding: '16px',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+        zIndex: 1000,
+        pointerEvents: 'none',
+      }}
+    >
+      <div className="hover-box-header">
+        {hoveredNode.data.hierarchyLevel !== undefined ? (
+          <span className="hover-box-badge" style={{ background: hoveredNode.data.levelColor }}>
+            {hoveredNode.data.hierarchyLevel === 0 ? '핵심 생각' :
+             hoveredNode.data.hierarchyLevel === 1 ? '관련 생각' :
+             hoveredNode.data.hierarchyLevel === 2 ? '세부 생각' : '상세 생각'}
+          </span>
+        ) : (
+          <span className="hover-box-badge" style={{ background: hoveredNode.data.clusterColor || '#667eea' }}>
+            클러스터 {hoveredNode.data.clusterId + 1}
+          </span>
+        )}
+        <span className="hover-box-id">#{hoveredNode.data.thoughtId}</span>
+      </div>
+      <div className="hover-box-content">
+        {hoveredNode.data.fullContent}
+      </div>
+      {hoveredNode.data.tags && hoveredNode.data.tags.length > 0 && (
+        <div className="hover-box-tags">
+          <strong>AI 추출 태그:</strong>
+          <div className="tag-list">
+            {hoveredNode.data.tags.map((tag, idx) => (
+              <span key={idx} className="hover-tag" style={{
+                borderColor: hoveredNode.data.levelColor || hoveredNode.data.clusterColor
+              }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {hoveredNode.data.hierarchyLevel !== undefined ? (
+        <div className="hover-box-cluster-info">
+          <span className="cluster-indicator" style={{
+            background: hoveredNode.data.levelColor
+          }}>●</span>
+          AI가 유사도 분석으로 레벨 {hoveredNode.data.hierarchyLevel}로 분류했습니다
+        </div>
+      ) : (
+        <div className="hover-box-cluster-info">
+          <span className="cluster-indicator" style={{ background: hoveredNode.data.clusterColor }}>●</span>
+          AI가 이 생각을 같은 주제로 그룹화했습니다
+        </div>
+      )}
+    </div>
+  );
+});
+
+ThoughtHoverBox.displayName = 'ThoughtHoverBox';
+
+ThoughtHoverBox.propTypes = {
+  hoveredNode: PropTypes.shape({
+    data: PropTypes.shape({
+      fullContent: PropTypes.string,
+      tags: PropTypes.arrayOf(PropTypes.string),
+      hierarchyLevel: PropTypes.number,
+      levelColor: PropTypes.string,
+      clusterId: PropTypes.number,
+      clusterColor: PropTypes.string,
+      thoughtId: PropTypes.number,
+    }),
+  }),
+  hoverPosition: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
 const ThoughtMap = ({ mapData, isLoading }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+
+  // 마우스 이동 throttling을 위한 ref
+  const lastMoveTime = useRef(0);
+  const THROTTLE_MS = 16; // ~60fps (16ms)
+
+  // 호버 상태 업데이트를 최적화하기 위한 useCallback
+  const handleNodeMouseEnter = useCallback((event, node) => {
+    if (node.data.fullContent) {
+      setHoveredNode(node);
+      setHoverPosition({ x: event.clientX, y: event.clientY });
+    }
+  }, []);
+
+  const handleNodeMouseLeave = useCallback(() => {
+    setHoveredNode(null);
+  }, []);
+
+  const handleNodeMouseMove = useCallback((event) => {
+    if (!hoveredNode) return;
+
+    const now = Date.now();
+    if (now - lastMoveTime.current < THROTTLE_MS) return;
+
+    lastMoveTime.current = now;
+    setHoverPosition({ x: event.clientX, y: event.clientY });
+  }, [hoveredNode]);
 
   // mapData를 React Flow 노드/엣지로 변환
   useEffect(() => {
@@ -434,20 +549,9 @@ const ThoughtMap = ({ mapData, isLoading }) => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onNodeMouseEnter={(event, node) => {
-            if (node.data.fullContent) {
-              setHoveredNode(node);
-              setHoverPosition({ x: event.clientX, y: event.clientY });
-            }
-          }}
-          onNodeMouseLeave={() => {
-            setHoveredNode(null);
-          }}
-          onNodeMouseMove={(event) => {
-            if (hoveredNode) {
-              setHoverPosition({ x: event.clientX, y: event.clientY });
-            }
-          }}
+          onNodeMouseEnter={handleNodeMouseEnter}
+          onNodeMouseLeave={handleNodeMouseLeave}
+          onNodeMouseMove={handleNodeMouseMove}
           fitView
           attributionPosition="bottom-left"
         >
@@ -462,70 +566,8 @@ const ThoughtMap = ({ mapData, isLoading }) => {
           />
         </ReactFlow>
 
-        {/* 호버박스 */}
-        {hoveredNode && hoveredNode.data.fullContent && (
-          <div
-            className="thought-hover-box"
-            style={{
-              position: 'fixed',
-              left: `${hoverPosition.x + 15}px`,
-              top: `${hoverPosition.y + 15}px`,
-              maxWidth: '350px',
-              background: 'white',
-              border: `3px solid ${hoveredNode.data.levelColor || hoveredNode.data.clusterColor || '#667eea'}`,
-              borderRadius: '12px',
-              padding: '16px',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-              zIndex: 1000,
-              pointerEvents: 'none',
-            }}
-          >
-            <div className="hover-box-header">
-              {hoveredNode.data.hierarchyLevel !== undefined ? (
-                <span className="hover-box-badge" style={{ background: hoveredNode.data.levelColor }}>
-                  {hoveredNode.data.hierarchyLevel === 0 ? '핵심 생각' :
-                   hoveredNode.data.hierarchyLevel === 1 ? '관련 생각' :
-                   hoveredNode.data.hierarchyLevel === 2 ? '세부 생각' : '상세 생각'}
-                </span>
-              ) : (
-                <span className="hover-box-badge" style={{ background: hoveredNode.data.clusterColor || '#667eea' }}>
-                  클러스터 {hoveredNode.data.clusterId + 1}
-                </span>
-              )}
-              <span className="hover-box-id">#{hoveredNode.data.thoughtId}</span>
-            </div>
-            <div className="hover-box-content">
-              {hoveredNode.data.fullContent}
-            </div>
-            {hoveredNode.data.tags && hoveredNode.data.tags.length > 0 && (
-              <div className="hover-box-tags">
-                <strong>AI 추출 태그:</strong>
-                <div className="tag-list">
-                  {hoveredNode.data.tags.map((tag, idx) => (
-                    <span key={idx} className="hover-tag" style={{
-                      borderColor: hoveredNode.data.levelColor || hoveredNode.data.clusterColor
-                    }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {hoveredNode.data.hierarchyLevel !== undefined ? (
-              <div className="hover-box-cluster-info">
-                <span className="cluster-indicator" style={{
-                  background: hoveredNode.data.levelColor
-                }}>●</span>
-                AI가 유사도 분석으로 레벨 {hoveredNode.data.hierarchyLevel}로 분류했습니다
-              </div>
-            ) : (
-              <div className="hover-box-cluster-info">
-                <span className="cluster-indicator" style={{ background: hoveredNode.data.clusterColor }}>●</span>
-                AI가 이 생각을 같은 주제로 그룹화했습니다
-              </div>
-            )}
-          </div>
-        )}
+        {/* 호버박스 - 메모이제이션된 컴포넌트 사용 */}
+        <ThoughtHoverBox hoveredNode={hoveredNode} hoverPosition={hoverPosition} />
       </div>
     </div>
   );
