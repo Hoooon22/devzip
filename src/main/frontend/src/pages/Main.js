@@ -85,11 +85,18 @@ const Main = () => {
         <div className="container production-mode">
             <h1>Hoooon22&apos;s DevZip</h1>
 
-            {/* 사용자 인증 상태 */}
-            <UserStatus />
+            {/* 상단 정보 영역: CS 팁(왼쪽) + 로그인(오른쪽) */}
+            <div className="top-info-section">
+                {/* 일일 CS 팁 */}
+                <div className="tip-section">
+                    {dailyTip && <DailyTip tip={dailyTip} />}
+                </div>
 
-            {/* 일일 CS 팁 */}
-            {dailyTip && <DailyTip tip={dailyTip} />}
+                {/* 사용자 인증 상태 */}
+                <div className="auth-section">
+                    <UserStatus />
+                </div>
+            </div>
 
             {/* 모드 전환 버튼 */}
             <ViewModeToggle

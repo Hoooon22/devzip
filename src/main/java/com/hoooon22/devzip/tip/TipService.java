@@ -66,10 +66,13 @@ public class TipService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 프롬프트 정의
-        String prompt = "Give me a single, interesting computer science or software engineering tip, in Korean. " +
-                "Start it with '알고 계셨나요?'. It should be concise and be easy to understand, " +
-                "like a loading screen tip in a game. For example: '알고 계셨나요? Java의 가비지 컬렉션은 " +
-                "더 이상 사용되지 않는 객체를 자동으로 메모리에서 해제하여 메모리 누수를 방지하는 프로세스입니다.'";
+        String prompt = "Give me a single, practical tip about full-stack or backend/server development, in Korean. " +
+                "Focus on topics like: REST API design, database optimization, Spring Boot best practices, " +
+                "microservices architecture, caching strategies, server performance, security practices, " +
+                "Docker/containerization, CI/CD, authentication/authorization, or scalability patterns. " +
+                "Start it with '알고 계셨나요?'. Keep it concise and actionable, " +
+                "like a loading screen tip in a game. For example: '알고 계셨나요? REST API에서 GET 요청은 " +
+                "멱등성을 보장해야 하며, 같은 요청을 여러 번 보내도 동일한 결과를 반환해야 합니다.'";
 
         // DTO를 사용한 요청 객체 생성
         GeminiRequest.Part part = new GeminiRequest.Part(prompt);
