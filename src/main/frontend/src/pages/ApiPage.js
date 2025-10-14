@@ -21,112 +21,141 @@ const ApiPage = () => {
 
     const apiCategories = [
         {
-            name: '개발자 관련 API',
-            description: '개발자 관련 정보를 제공하는 API들입니다.',
-            endpoints: [
-                {
-                    path: '/api/developer/emotion',
-                    method: 'GET',
-                    description: '개발자의 감정 상태를 반환합니다.',
-                    responseType: 'text/plain',
-                    sampleResponse: 'Not Bad :/'
-                }
-            ]
-        },
-        {
-            name: '트렌드 API',
-            description: '개발 트렌드 관련 정보를 제공하는 API들입니다.',
-            endpoints: [
-                {
-                    path: '/api/trend/timestamp',
-                    method: 'GET',
-                    description: '트렌드 데이터가 마지막으로 업데이트된 시간을 반환합니다.',
-                    responseType: 'text/plain',
-                    sampleResponse: '2023-05-15T12:30:45Z'
-                },
-                {
-                    path: '/api/trend/keywords',
-                    method: 'GET',
-                    description: '인기 트렌드 키워드 목록을 반환합니다.',
-                    responseType: 'application/json',
-                    sampleResponse: '["React", "Next.js", "TypeScript", "AWS", "Docker"]'
-                }
-            ]
-        },
-        {
-            name: '채팅방 API',
-            description: '채팅방 관련 기능을 제공하는 API들입니다.',
-            endpoints: [
-                {
-                    path: '/api/chatrooms',
-                    method: 'GET',
-                    description: '키워드로 채팅방을 생성하거나 조회합니다.',
-                    params: 'keyword (필수): 채팅방 키워드',
-                    responseType: 'application/json',
-                    sampleResponse: '{"id": 1, "roomId": "room-123", "keyword": "React", "createdAt": "2023-05-15T12:30:45Z"}'
-                },
-                {
-                    path: '/api/chatrooms/{id}',
-                    method: 'GET',
-                    description: 'ID로 특정 채팅방 정보를 조회합니다.',
-                    params: 'id (경로 변수): 채팅방 ID',
-                    responseType: 'application/json',
-                    sampleResponse: '{"id": 1, "roomId": "room-123", "keyword": "React", "createdAt": "2023-05-15T12:30:45Z"}'
-                }
-            ]
-        },
-        {
-            name: '엔트리 API',
-            description: '엔트리 관련 데이터를 제공하는 API들입니다.',
+            name: '공개 API',
+            description: '누구나 인증 없이 사용할 수 있는 API입니다.',
             endpoints: [
                 {
                     path: '/api/v1/entries',
                     method: 'GET',
-                    description: '모든 엔트리 목록을 반환합니다.',
-                    responseType: 'application/json',
-                    sampleResponse: '[{"id": 1, "title": "첫 번째 엔트리", "content": "내용...", "createdAt": "2023-05-15T12:30:45Z"}]'
+                    description: '모든 방명록 글 목록을 조회합니다.',
                 },
                 {
                     path: '/api/v1/entries',
                     method: 'POST',
-                    description: '새 엔트리를 추가합니다.',
-                    requestBody: '{"title": "새 엔트리", "content": "내용..."}',
-                    responseType: 'application/json',
-                    sampleResponse: '{"id": 2, "title": "새 엔트리", "content": "내용...", "createdAt": "2023-05-15T12:30:45Z"}'
-                }
-            ]
-        },
-        {
-            name: '재미 API',
-            description: '재미있는 콘텐츠를 제공하는 API들입니다.',
-            endpoints: [
+                    description: '새 방명록 글을 작성합니다.',
+                    requestBody: '{"name": "이름", "content": "내용"}',
+                },
                 {
                     path: '/api/joke',
                     method: 'GET',
                     description: '랜덤 개발자 농담을 반환합니다.',
-                    responseType: 'text/plain',
-                    sampleResponse: '왜 개발자들은 할로윈을 좋아할까요? 고스트 코드가 많아서요!'
                 },
                 {
                     path: '/api/lolPatch',
                     method: 'GET',
                     description: '최신 롤 패치 정보를 HTML 형식으로 반환합니다.',
-                    responseType: 'text/html',
-                    sampleResponse: '<html>패치 노트 내용...</html>'
-                }
+                },
+                {
+                    path: '/api/trend/timestamp',
+                    method: 'GET',
+                    description: '트렌드 데이터가 마지막으로 업데이트된 시간을 반환합니다.',
+                },
+                {
+                    path: '/api/trend/keywords',
+                    method: 'GET',
+                    description: '인기 트렌드 키워드 목록을 반환합니다.',
+                },
+                {
+                    path: '/api/cs-tip',
+                    method: 'GET',
+                    description: '매일 다른 CS 팁을 제공합니다.',
+                },
             ]
         },
         {
-            name: '서버 관련 API',
-            description: '서버 상태 및 정보를 제공하는 API들입니다.',
+            name: '인증이 필요한 API',
+            description: '로그인 후 발급된 JWT 토큰이 필요한 API입니다. 헤더에 `Authorization: Bearer {token}`을 포함해야 합니다.',
             endpoints: [
+                {
+                    path: '/api/auth/signin',
+                    method: 'POST',
+                    description: '로그인하여 JWT 토큰을 발급받습니다.',
+                    requestBody: '{"username": "user", "password": "password"}',
+                },
+                {
+                    path: '/api/auth/signup',
+                    method: 'POST',
+                    description: '새로운 사용자를 등록합니다.',
+                    requestBody: '{"username": "user", "email": "user@example.com", "password": "password"}',
+                },
+                {
+                    path: '/api/auth/validate',
+                    method: 'GET',
+                    description: '현재 JWT 토큰의 유효성을 검사합니다. (헤더 필요)',
+                },
+                {
+                    path: '/api/v1/entries/{id}',
+                    method: 'DELETE',
+                    description: 'ID로 특정 방명록 글을 삭제합니다. (권한 필요)',
+                },
+                {
+                    path: '/api/topics',
+                    method: 'GET',
+                    description: '사용자의 모든 주제 목록을 조회합니다. (인증 필요)',
+                },
+                {
+                    path: '/api/topics',
+                    method: 'POST',
+                    description: '새로운 주제를 생성합니다. (인증 필요)',
+                    requestBody: '{"name": "주제명", "description": "설명", "color": "#FFFFFF", "emoji": "👍"}',
+                },
+                {
+                    path: '/api/topics/{id}',
+                    method: 'GET',
+                    description: 'ID로 특정 주제를 조회합니다. (인증 필요)',
+                },
+                {
+                    path: '/api/topics/{id}',
+                    method: 'PUT',
+                    description: 'ID로 특정 주제를 수정합니다. (인증 필요)',
+                    requestBody: '{"name": "새 주제명", "description": "새 설명"}',
+                },
+                {
+                    path: '/api/topics/{id}',
+                    method: 'DELETE',
+                    description: 'ID로 특정 주제를 삭제합니다. (인증 필요)',
+                },
+            ]
+        },
+        {
+            name: '내부 개발 및 분석용 API',
+            description: '서버 관리, 모니터링, 데이터 분석 등 내부용으로 사용되는 API입니다. 직접적인 호출은 권장되지 않습니다.',
+            endpoints: [
+                {
+                    path: '/api/developer/emotion',
+                    method: 'GET',
+                    description: '개발자의 현재 감정 상태를 반환합니다. (내부용)',
+                },
+                {
+                    path: '/api/system/cpu',
+                    method: 'GET',
+                    description: '서버의 현재 CPU 사용량을 조회합니다. (내부 모니터링용)',
+                },
+                {
+                    path: '/api/system/memory',
+                    method: 'GET',
+                    description: '서버의 현재 메모리 사용량을 조회합니다. (내부 모니터링용)',
+                },
                 {
                     path: '/api/v1/serverstarts',
                     method: 'GET',
-                    description: '서버 시작 기록을 조회합니다.',
-                    responseType: 'application/json',
-                    sampleResponse: '[{"id": 1, "startTime": "2023-05-15T12:30:45Z", "serverVersion": "1.0.0"}]'
-                }
+                    description: '서버 시작 기록을 조회합니다. (내부용)',
+                },
+                {
+                    path: '/api/traceboard/event',
+                    method: 'POST',
+                    description: '사용자 행동 등 이벤트 로그를 수집합니다. (내부 분석용)',
+                },
+                {
+                    path: '/api/traceboard/dashboard',
+                    method: 'GET',
+                    description: '수집된 로그 기반의 대시보드 데이터를 조회합니다. (내부 분석용)',
+                },
+                {
+                    path: '/api/traceboard/events',
+                    method: 'GET',
+                    description: '저장된 모든 이벤트 로그를 조회합니다. (내부 분석용)',
+                },
             ]
         }
     ];

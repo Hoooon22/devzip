@@ -2,7 +2,7 @@ const projects = [
     {
         id: 10,
         name: 'Hopperbox',
-        description: '생각한 무언가를 일단 넣어보세요!',
+        description: '생각한 무언가를 일단 넣어보세요! (응답속도 및 응답로직 개선 필요)',
         link: '/hopperbox',
         active: true,
         startDate: '2025-09-30',
@@ -18,7 +18,7 @@ const projects = [
         link: '/livechat',
         active: true,
         startDate: '2025-09-12',
-        endDate: '',
+        endDate: '2025-09-25',
         pinned: true,
         isProduction: false // 실험용
     },
