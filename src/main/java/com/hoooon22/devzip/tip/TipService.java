@@ -70,9 +70,13 @@ public class TipService {
                 "Focus on topics like: REST API design, database optimization, Spring Boot best practices, " +
                 "microservices architecture, caching strategies, server performance, security practices, " +
                 "Docker/containerization, CI/CD, authentication/authorization, or scalability patterns. " +
-                "Start it with '알고 계셨나요?'. Keep it concise and actionable, " +
-                "like a loading screen tip in a game. For example: '알고 계셨나요? REST API에서 GET 요청은 " +
-                "멱등성을 보장해야 하며, 같은 요청을 여러 번 보내도 동일한 결과를 반환해야 합니다.'";
+                "Start with '알고 계셨나요?' followed by a natural statement or question that flows smoothly. " +
+                "Keep it concise and actionable, like a loading screen tip in a game. " +
+                "Make sure the sentence after '알고 계셨나요?' reads naturally - it should either be a complete statement " +
+                "or a rhetorical question. Examples: " +
+                "'알고 계셨나요? REST API에서 GET 요청은 멱등성을 보장해야 합니다!' " +
+                "'알고 계셨나요? @Transactional 어노테이션은 기본적으로 RuntimeException에만 롤백됩니다.' " +
+                "'알고 계셨나요? 데이터베이스 인덱스는 읽기 성능을 높이지만 쓰기 성능은 낮출 수 있습니다.'";
 
         // DTO를 사용한 요청 객체 생성
         GeminiRequest.Part part = new GeminiRequest.Part(prompt);
