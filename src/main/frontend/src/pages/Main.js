@@ -15,6 +15,7 @@ const Main = () => {
     const [projectsPerPage] = useState(6);
     const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
     const [dailyTip, setDailyTip] = useState('');
+    const [isTipLoading, setIsTipLoading] = useState(true); // 로딩 상태 추가
 
     // 테마 전환 효과
     useEffect(() => {
@@ -33,6 +34,7 @@ const Main = () => {
     // 일일 CS 팁 가져오기 (Hopperbox 패턴 적용)
     useEffect(() => {
         const fetchDailyTip = async () => {
+            setIsTipLoading(true);
             try {
                 const response = await csTipService.getDailyTip();
                 // 백엔드에서 ResponseEntity<String>으로 반환하므로 response.data가 직접 문자열
@@ -40,6 +42,8 @@ const Main = () => {
             } catch (error) {
                 console.error('Failed to load daily tip:', error);
                 setDailyTip('팁을 불러오는 중 오류가 발생했습니다. 😥');
+            } finally {
+                setIsTipLoading(false);
             }
         };
 
@@ -89,7 +93,7 @@ const Main = () => {
             <div className="top-info-section">
                 {/* 일일 CS 팁 */}
                 <div className="tip-section">
-                    {dailyTip && <DailyTip tip={dailyTip} />}
+                    <DailyTip tip={dailyTip} isLoading={isTipLoading} />
                 </div>
 
                 {/* 사용자 인증 상태 */}

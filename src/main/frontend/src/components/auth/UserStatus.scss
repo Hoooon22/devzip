@@ -7,7 +7,8 @@
   border: 1px solid rgba(255, 255, 255, 0.18);
   margin: 0;
   transition: all 0.3s ease;
-  height: 100%;
+  width: 100%; // 부모의 너비에 맞춤
+  flex: 1; // 부모의 높이에 맞춤
   display: flex;
   align-items: center;
 

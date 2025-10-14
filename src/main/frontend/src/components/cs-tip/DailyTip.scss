@@ -8,8 +8,8 @@
     align-items: center;
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
     transition: all 0.3s ease;
-    height: 100%;
-    min-height: 100px;
+    width: 100%; // 부모의 너비에 맞춤
+    flex: 1; // 부모의 높이에 맞춤
 
     &:hover {
         transform: translateY(-2px);
@@ -28,7 +28,28 @@
         color: #333;
         line-height: 1.6;
         text-align: left;
+
+        &.loading {
+            color: #4a90e2;
+            font-style: italic;
+        }
     }
+
+    .loading-spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(74, 144, 226, 0.2);
+        border-top: 3px solid #4a90e2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 // 모바일 반응형

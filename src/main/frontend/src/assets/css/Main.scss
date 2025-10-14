@@ -88,16 +88,18 @@ h1 {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto 2rem;
-    align-items: flex-start;
+    align-items: stretch; // 높이를 동일하게 맞춤
 
     .tip-section {
-        flex: 2;
+        flex: 1.5; // 2에서 1.5로 축소
         min-width: 0; // Flexbox overflow 방지
+        display: flex; // 자식 요소의 높이를 100%로 만들기 위함
     }
 
     .auth-section {
         flex: 1;
         min-width: 280px;
+        display: flex; // 자식 요소의 높이를 100%로 만들기 위함
     }
 }
 
