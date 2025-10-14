@@ -5,6 +5,7 @@ import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 �
 import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
 import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
 import ViewModeToggle from '../components/ViewModeToggle'; // ViewModeToggle 컴포넌트 임포트
+import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 임포트
 import { Link } from 'react-router-dom'; // Import Link
 import "../assets/css/Main.scss";
 
@@ -12,6 +13,7 @@ const Main = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [projectsPerPage] = useState(6);
     const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
+    const [dailyTip, setDailyTip] = useState('');
 
     // 테마 전환 효과
     useEffect(() => {
@@ -26,6 +28,26 @@ const Main = () => {
             }
         }
     }, [isProductionMode]);
+
+    // 일일 CS 팁 가져오기
+    useEffect(() => {
+        const fetchDailyTip = async () => {
+            try {
+                const response = await fetch('/api/cs-tip');
+                if (response.ok) {
+                    const tip = await response.text();
+                    setDailyTip(tip);
+                } else {
+                    setDailyTip('오늘의 팁을 가져오는 데 실패했어요. 😥');
+                }
+            } catch (error) {
+                console.error('Error fetching daily tip:', error);
+                setDailyTip('팁을 불러오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        fetchDailyTip();
+    }, []); // 페이지 로드 시 한 번만 실행
 
     // 모드 전환 핸들러
     const handleModeToggle = () => {
@@ -64,10 +86,13 @@ const Main = () => {
 
     return (
         <div className="container production-mode">
-            <h1>Hoooon22&apos;s DevZip</h1>
+            <h1>Hoooon22's DevZip</h1>
 
             {/* 사용자 인증 상태 */}
             <UserStatus />
+
+            {/* 일일 CS 팁 */}
+            {dailyTip && <DailyTip tip={dailyTip} />}
 
             {/* 모드 전환 버튼 */}
             <ViewModeToggle
