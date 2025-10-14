@@ -27,7 +27,7 @@ public class TipService {
     private String cachedTip;
     private LocalDate lastGeneratedDate;
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     /**
      * 오늘의 CS 팁 가져오기 (동시성 안전)
