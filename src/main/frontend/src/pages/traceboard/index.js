@@ -107,6 +107,7 @@ const TraceBoard = () => {
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState({
     visitorMetrics: {},
+    trends: {},
     eventTypeMetrics: {},
     deviceTypeMetrics: {},
     recentLogs: []
@@ -209,14 +210,21 @@ const TraceBoard = () => {
   const processServerData = (serverData) => {
     // 디버깅을 위해 서버 데이터 구조 로깅
     console.log('서버 데이터 구조:', JSON.stringify(serverData, null, 2));
-    
+
     // 방문자 지표
     const visitorMetrics = {
       uniqueVisitors: serverData.totalUsers || serverData.uniqueVisitors || 0,
-      totalPageViews: serverData.totalPageViews || serverData.pageViews || (serverData.eventTypeDistribution?.pageView || 0),
-      pageViewsPerVisitor: (serverData.totalUsers || serverData.uniqueVisitors) > 0 
-        ? (serverData.totalPageViews || serverData.pageViews || (serverData.eventTypeDistribution?.pageView || 0)) / (serverData.totalUsers || serverData.uniqueVisitors) 
-        : 0
+      totalPageViews: serverData.totalPageViews || serverData.pageViews || (serverData.eventTypeDistribution?.pageview || 0),
+      pageViewsPerVisitor: serverData.pageViewsPerVisitor || 0,
+      mostVisitedPage: serverData.mostVisitedPage || { path: '-', count: 0 },
+      mobilePercentage: serverData.mobilePercentage || 0
+    };
+
+    // 트렌드 데이터
+    const trends = serverData.trends || {
+      uniqueVisitors: 0,
+      totalPageViews: 0,
+      pageViewsPerVisitor: 0
     };
     
     // 이벤트 타입별 측정 (다양한 서버 응답 구조에 대응)
@@ -332,13 +340,15 @@ const TraceBoard = () => {
     
     console.log('변환된 데이터:', {
       visitorMetrics,
+      trends,
       eventTypeMetrics,
       deviceTypeMetrics,
       recentLogs: recentLogs.length
     });
-    
+
     return {
       visitorMetrics,
+      trends,
       eventTypeMetrics,
       deviceTypeMetrics,
       recentLogs
@@ -389,13 +399,16 @@ const TraceBoard = () => {
       ) : (
         <>
           <GridContainer>
-            <VisitorMetrics metrics={dashboardData.visitorMetrics} />
+            <VisitorMetrics
+              metrics={dashboardData.visitorMetrics}
+              trends={dashboardData.trends}
+            />
           </GridContainer>
-          
+
           <FullWidthSection>
             <UserBehaviorChart eventLogs={dashboardData.recentLogs} />
           </FullWidthSection>
-          
+
           <FullWidthSection>
             <EventLogTable eventLogs={dashboardData.recentLogs} />
           </FullWidthSection>

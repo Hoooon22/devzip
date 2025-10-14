@@ -119,44 +119,167 @@ public class EventLogServiceImpl implements EventLogService {
         Pageable pageable = PageRequest.of(0, 50000, Sort.by(Sort.Direction.DESC, "occurredAt"));
         Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(start, end, pageable);
         List<EventLog> logs = logPage.getContent();
-        
+
+        // 이전 기간 데이터 조회 (비교용)
+        long daysDiff = java.time.Duration.between(start, end).toDays();
+        if (daysDiff == 0) daysDiff = 1; // 최소 1일
+
+        LocalDateTime prevStart = start.minusDays(daysDiff);
+        LocalDateTime prevEnd = start;
+        Page<EventLog> prevLogPage = eventLogRepository.findByOccurredAtBetween(prevStart, prevEnd, pageable);
+        List<EventLog> prevLogs = prevLogPage.getContent();
+
         Map<String, Object> result = new HashMap<>();
-        
+
         // 전체 이벤트 수
         result.put("totalEvents", logs.size());
-        
+
+        // 고유 방문자 수 계산 (IP 해시 기반 또는 userId 기반)
+        long uniqueVisitors = logs.stream()
+                .filter(log -> log.getUserId() != null && !log.getUserId().isEmpty())
+                .map(EventLog::getUserId)
+                .distinct()
+                .count();
+
+        // userId가 없는 경우 IP 해시로 대체
+        if (uniqueVisitors == 0) {
+            uniqueVisitors = logs.stream()
+                    .filter(log -> log.getIpAddressHash() != null)
+                    .map(EventLog::getIpAddressHash)
+                    .distinct()
+                    .count();
+        }
+
+        long prevUniqueVisitors = prevLogs.stream()
+                .filter(log -> log.getUserId() != null && !log.getUserId().isEmpty())
+                .map(EventLog::getUserId)
+                .distinct()
+                .count();
+
+        if (prevUniqueVisitors == 0) {
+            prevUniqueVisitors = prevLogs.stream()
+                    .filter(log -> log.getIpAddressHash() != null)
+                    .map(EventLog::getIpAddressHash)
+                    .distinct()
+                    .count();
+        }
+
+        result.put("totalUsers", uniqueVisitors);
+        result.put("uniqueVisitors", uniqueVisitors);
+
+        // 총 페이지뷰 수
+        long totalPageViews = logs.stream()
+                .filter(log -> "pageview".equalsIgnoreCase(log.getEventType()) || "page_view".equalsIgnoreCase(log.getEventType()))
+                .count();
+
+        long prevTotalPageViews = prevLogs.stream()
+                .filter(log -> "pageview".equalsIgnoreCase(log.getEventType()) || "page_view".equalsIgnoreCase(log.getEventType()))
+                .count();
+
+        result.put("totalPageViews", totalPageViews);
+        result.put("pageViews", totalPageViews);
+
+        // 방문자당 페이지뷰
+        double pageViewsPerVisitor = uniqueVisitors > 0 ? (double) totalPageViews / uniqueVisitors : 0;
+        double prevPageViewsPerVisitor = prevUniqueVisitors > 0 ? (double) prevTotalPageViews / prevUniqueVisitors : 0;
+        result.put("pageViewsPerVisitor", Math.round(pageViewsPerVisitor * 10.0) / 10.0);
+
+        // 증감률 계산
+        Map<String, Object> trends = new HashMap<>();
+        trends.put("uniqueVisitors", calculatePercentageChange(prevUniqueVisitors, uniqueVisitors));
+        trends.put("totalPageViews", calculatePercentageChange(prevTotalPageViews, totalPageViews));
+        trends.put("pageViewsPerVisitor", calculatePercentageChange(prevPageViewsPerVisitor, pageViewsPerVisitor));
+        result.put("trends", trends);
+
         // 이벤트 타입별 분포
         Map<String, Long> eventTypeDistribution = logs.stream()
-                .collect(Collectors.groupingBy(EventLog::getEventType, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                    log -> {
+                        String type = log.getEventType();
+                        if (type == null) return "unknown";
+                        // 대소문자 통일 및 언더스코어 처리
+                        return type.toLowerCase().replace("_", "");
+                    },
+                    Collectors.counting()
+                ));
         result.put("eventTypeDistribution", eventTypeDistribution);
-        
+
         // 시간별 이벤트 분포
         Map<String, Long> hourlyDistribution = logs.stream()
                 .collect(Collectors.groupingBy(log -> log.getOccurredAt().getHour() + "시", Collectors.counting()));
         result.put("hourlyDistribution", hourlyDistribution);
-        
-        // 페이지별 방문자 수
+
+        // 가장 많이 방문한 페이지
         Map<String, Long> pageViewDistribution = logs.stream()
-                .filter(log -> "pageview".equals(log.getEventType()))
+                .filter(log -> {
+                    String type = log.getEventType();
+                    return type != null && (type.equalsIgnoreCase("pageview") || type.equalsIgnoreCase("page_view"));
+                })
+                .filter(log -> log.getPath() != null && !log.getPath().isEmpty())
                 .collect(Collectors.groupingBy(EventLog::getPath, Collectors.counting()));
+
         result.put("pageViewDistribution", pageViewDistribution);
-        
+
+        // 최다 방문 페이지 정보
+        Map<String, Object> mostVisitedPage = new HashMap<>();
+        if (!pageViewDistribution.isEmpty()) {
+            Map.Entry<String, Long> topPage = pageViewDistribution.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .orElse(null);
+            if (topPage != null) {
+                mostVisitedPage.put("path", topPage.getKey());
+                mostVisitedPage.put("count", topPage.getValue());
+            }
+        } else {
+            mostVisitedPage.put("path", "-");
+            mostVisitedPage.put("count", 0);
+        }
+        result.put("mostVisitedPage", mostVisitedPage);
+
         // 기기 타입별 분포
         Map<String, Long> deviceDistribution = logs.stream()
+                .filter(log -> log.getDeviceType() != null && !log.getDeviceType().isEmpty())
                 .collect(Collectors.groupingBy(EventLog::getDeviceType, Collectors.counting()));
         result.put("deviceDistribution", deviceDistribution);
-        
+
+        // 모바일 사용자 비율
+        long mobileCount = deviceDistribution.getOrDefault("mobile", 0L) + deviceDistribution.getOrDefault("Mobile", 0L);
+        double mobilePercentage = logs.size() > 0 ? (double) mobileCount / logs.size() * 100 : 0;
+        result.put("mobilePercentage", Math.round(mobilePercentage * 10.0) / 10.0);
+
         // 브라우저별 분포
         Map<String, Long> browserDistribution = logs.stream()
+                .filter(log -> log.getBrowser() != null && !log.getBrowser().isEmpty())
                 .collect(Collectors.groupingBy(EventLog::getBrowser, Collectors.counting()));
         result.put("browserDistribution", browserDistribution);
-        
+
         // OS별 분포
         Map<String, Long> osDistribution = logs.stream()
+                .filter(log -> log.getOs() != null && !log.getOs().isEmpty())
                 .collect(Collectors.groupingBy(EventLog::getOs, Collectors.counting()));
         result.put("osDistribution", osDistribution);
-        
+
+        // 최근 로그 추가 (최대 100개)
+        List<EventLog> recentLogs = logs.stream()
+                .limit(100)
+                .collect(Collectors.toList());
+        result.put("recentLogs", recentLogs);
+
         return result;
+    }
+
+    /**
+     * 퍼센테지 변화율 계산
+     * @param oldValue 이전 값
+     * @param newValue 현재 값
+     * @return 변화율 (소수점 첫째자리까지)
+     */
+    private double calculatePercentageChange(double oldValue, double newValue) {
+        if (oldValue == 0) {
+            return newValue > 0 ? 100.0 : 0.0;
+        }
+        double change = ((newValue - oldValue) / oldValue) * 100;
+        return Math.round(change * 10.0) / 10.0;
     }
 
     @Override
