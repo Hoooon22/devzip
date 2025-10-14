@@ -7,10 +7,10 @@
   border: 1px solid rgba(255, 255, 255, 0.18);
   margin: 0;
   transition: all 0.3s ease;
-  width: 100%; // 부모의 너비에 맞춤
-  flex: 1; // 부모의 높이에 맞춤
+  width: auto; // 콘텐츠 크기에 맞춤
   display: flex;
   align-items: center;
+  justify-content: center;
 
   &:hover {
     transform: translateY(-2px);
@@ -109,9 +109,9 @@
 
 /* 로그인 프롬프트 */
 .login-prompt {
-  text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -124,7 +124,7 @@
 
 .login-button, .signup-button {
   border: none;
-  padding: 1rem 1.5rem;
+  padding: 1rem 2rem;
   border-radius: 15px;
   font-size: 1rem;
   font-weight: 600;
@@ -133,7 +133,7 @@
   position: relative;
   overflow: hidden;
   flex: 1;
-  min-width: 120px;
+  min-width: 140px;
 
   &::before {
     content: '';
