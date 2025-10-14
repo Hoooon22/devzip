@@ -6,6 +6,7 @@ import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
 import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
 import ViewModeToggle from '../components/ViewModeToggle'; // ViewModeToggle 컴포넌트 임포트
 import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 임포트
+import csTipService from '../services/csTipService'; // CS Tip Service 임포트
 import { Link } from 'react-router-dom'; // Import Link
 import "../assets/css/Main.scss";
 
@@ -29,20 +30,16 @@ const Main = () => {
         }
     }, [isProductionMode]);
 
-    // 일일 CS 팁 가져오기
+    // 일일 CS 팁 가져오기 (Hopperbox 패턴 적용)
     useEffect(() => {
         const fetchDailyTip = async () => {
             try {
-                const response = await fetch('/api/cs-tip');
-                if (response.ok) {
-                    const tip = await response.text();
-                    setDailyTip(tip);
-                } else {
-                    setDailyTip('오늘의 팁을 가져오는 데 실패했어요. 😥');
-                }
+                const response = await csTipService.getDailyTip();
+                // 백엔드에서 ResponseEntity<String>으로 반환하므로 response.data가 직접 문자열
+                setDailyTip(response.data || '');
             } catch (error) {
-                console.error('Error fetching daily tip:', error);
-                setDailyTip('팁을 불러오는 중 오류가 발생했습니다.');
+                console.error('Failed to load daily tip:', error);
+                setDailyTip('팁을 불러오는 중 오류가 발생했습니다. 😥');
             }
         };
 
