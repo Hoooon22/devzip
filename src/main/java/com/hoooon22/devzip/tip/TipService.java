@@ -1,5 +1,7 @@
 package com.hoooon22.devzip.tip;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,10 +13,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
 @Service
 public class TipService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TipService.class);
 
     @Value("${google.api.key}")
     private String apiKey;
@@ -31,6 +34,7 @@ public class TipService {
                 cachedTip = generateNewTip();
                 lastGeneratedDate = today;
             } catch (Exception e) {
+                logger.error("Error generating new CS tip from Gemini API", e);
                 // In case of API failure, return a default message
                 return "CS 팁을 불러오는 데 실패했습니다. 내일 다시 시도해주세요!";
             }
