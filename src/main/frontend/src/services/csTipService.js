@@ -22,7 +22,22 @@ const csTipService = {
   },
 
   /**
-   * 번역된 농담 조회 (Joke API)
+   * 오늘의 농담 조회 (Daily Joke - 캐싱 적용)
+   * 메인 페이지에서 사용, 자정에 초기화
+   * @returns {Promise} API 응답 객체 (response.data에 TranslatedJoke 객체 포함)
+   */
+  getDailyJoke: async () => {
+    try {
+      const response = await axios.get('/api/joke/daily');
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch daily joke:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * 번역된 농담 조회 (Joke API - 매번 새로운 농담)
    * @returns {Promise} API 응답 객체 (response.data에 TranslatedJoke 객체 포함)
    */
   getJoke: async () => {

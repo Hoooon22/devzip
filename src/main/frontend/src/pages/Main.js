@@ -61,12 +61,12 @@ const Main = () => {
         fetchDailyTip();
     }, []); // 페이지 로드 시 한 번만 실행
 
-    // 일일 농담 가져오기
+    // 일일 농담 가져오기 (자정에 초기화되는 캐시된 농담)
     useEffect(() => {
         const fetchDailyJoke = async () => {
             setIsJokeLoading(true);
             try {
-                const response = await csTipService.getJoke();
+                const response = await csTipService.getDailyJoke();
                 // 백엔드에서 ResponseEntity<TranslatedJoke>로 반환
                 setDailyJoke(response.data || null);
             } catch (error) {

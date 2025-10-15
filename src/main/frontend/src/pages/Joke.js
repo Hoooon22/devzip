@@ -8,11 +8,11 @@ function Joke() {
     const [joke, setJoke] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // 농담을 가져오는 함수
+    // 농담을 가져오는 함수 (매번 새로운 농담)
     const fetchJoke = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('/api/joke'); // Spring Boot API 주소
+            const response = await axios.get('/api/joke/random'); // 매번 새로운 농담
             setJoke(response.data);
             console.log('Fetched joke:', response.data);
         } catch (error) {
