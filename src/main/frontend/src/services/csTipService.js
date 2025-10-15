@@ -20,6 +20,28 @@ const csTipService = {
       throw error;
     }
   },
+
+  /**
+   * 번역된 농담 조회 (Joke API)
+   * @returns {Promise} API 응답 객체 (response.data에 TranslatedJoke 객체 포함)
+   */
+  getJoke: async () => {
+    try {
+      const response = await axios.get('/api/joke');
+      // 백엔드에서 ResponseEntity<TranslatedJoke>를 반환
+      // response.data = {
+      //   originalSetup: string,
+      //   originalPunchline: string,
+      //   translatedSetup: string,
+      //   translatedPunchline: string,
+      //   type: string
+      // }
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch joke:', error);
+      throw error;
+    }
+  },
 };
 
 export default csTipService;

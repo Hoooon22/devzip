@@ -1,0 +1,148 @@
+.daily-joke-container {
+    background-color: #fff5e6; // 따뜻한 오렌지 계열 배경 (농담 느낌)
+    border-left: 5px solid #ff9800;
+    margin: 0;
+    padding: 15px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+    transition: all 0.3s ease;
+    width: 100%;
+    flex: 1;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.25);
+    }
+
+    .daily-joke-icon {
+        font-size: 1.8rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+        margin-top: 2px; // 텍스트와 정렬
+    }
+
+    .joke-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .joke-setup {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .joke-punchline {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .joke-original {
+            margin-top: 8px;
+            font-size: 0.85rem;
+
+            summary {
+                cursor: pointer;
+                color: #ff9800;
+                font-weight: 500;
+                user-select: none;
+                transition: color 0.2s;
+
+                &:hover {
+                    color: #f57c00;
+                }
+            }
+
+            .original-content {
+                margin-top: 8px;
+                padding: 10px;
+                background-color: rgba(255, 152, 0, 0.1);
+                border-radius: 8px;
+
+                .original-text {
+                    margin: 4px 0;
+                    color: #666;
+                    font-size: 0.85rem;
+                    line-height: 1.5;
+
+                    strong {
+                        color: #ff9800;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+    }
+
+    .daily-joke-text {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #333;
+        line-height: 1.6;
+        text-align: left;
+
+        &.loading {
+            color: #ff9800;
+            font-style: italic;
+        }
+    }
+
+    .loading-spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(255, 152, 0, 0.2);
+        border-top: 3px solid #ff9800;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+// 모바일 반응형
+@media (max-width: 768px) {
+    .daily-joke-container {
+        padding: 12px 16px;
+
+        .daily-joke-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+
+        .joke-content {
+            .joke-setup,
+            .joke-punchline {
+                font-size: 0.9rem;
+            }
+
+            .joke-original {
+                font-size: 0.8rem;
+
+                .original-content {
+                    padding: 8px;
+
+                    .original-text {
+                        font-size: 0.8rem;
+                    }
+                }
+            }
+        }
+
+        .daily-joke-text {
+            font-size: 0.9rem;
+        }
+    }
+}

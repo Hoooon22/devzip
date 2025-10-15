@@ -6,6 +6,7 @@ import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
 import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
 import ViewModeToggle from '../components/ViewModeToggle'; // ViewModeToggle 컴포넌트 임포트
 import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 임포트
+import DailyJoke from '../components/cs-tip/DailyJoke'; // DailyJoke 컴포넌트 임포트
 import csTipService from '../services/csTipService'; // CS Tip Service 임포트
 import { Link } from 'react-router-dom'; // Import Link
 import "../assets/css/Main.scss";
@@ -16,6 +17,8 @@ const Main = () => {
     const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
     const [dailyTip, setDailyTip] = useState('');
     const [isTipLoading, setIsTipLoading] = useState(true); // 로딩 상태 추가
+    const [dailyJoke, setDailyJoke] = useState(null);
+    const [isJokeLoading, setIsJokeLoading] = useState(true); // 농담 로딩 상태
 
     // 테마 전환 효과
     useEffect(() => {
@@ -58,6 +61,25 @@ const Main = () => {
         fetchDailyTip();
     }, []); // 페이지 로드 시 한 번만 실행
 
+    // 일일 농담 가져오기
+    useEffect(() => {
+        const fetchDailyJoke = async () => {
+            setIsJokeLoading(true);
+            try {
+                const response = await csTipService.getJoke();
+                // 백엔드에서 ResponseEntity<TranslatedJoke>로 반환
+                setDailyJoke(response.data || null);
+            } catch (error) {
+                console.error('Failed to load daily joke:', error);
+                setDailyJoke(null);
+            } finally {
+                setIsJokeLoading(false);
+            }
+        };
+
+        fetchDailyJoke();
+    }, []); // 페이지 로드 시 한 번만 실행
+
     // 모드 전환 핸들러
     const handleModeToggle = () => {
         setIsProductionMode(prev => !prev);
@@ -95,19 +117,22 @@ const Main = () => {
 
     return (
         <div className="container production-mode">
-            <h1>Hoooon22&apos;s DevZip</h1>
-
-            {/* 상단 정보 영역: CS 팁(왼쪽) + 로그인(오른쪽) */}
-            <div className="top-info-section">
-                {/* 일일 CS 팁 */}
-                <div className="tip-section">
-                    <DailyTip tip={dailyTip} isLoading={isTipLoading} />
-                </div>
-
-                {/* 사용자 인증 상태 */}
+            {/* 헤더 영역: 타이틀(왼쪽) + 로그인(오른쪽) */}
+            <div className="main-header">
+                <h1>Hoooon22&apos;s DevZip</h1>
                 <div className="auth-section">
                     <UserStatus />
                 </div>
+            </div>
+
+            {/* CS 팁 영역 */}
+            <div className="tip-section">
+                <DailyTip tip={dailyTip} isLoading={isTipLoading} />
+            </div>
+
+            {/* 농담 영역 */}
+            <div className="joke-section">
+                <DailyJoke joke={dailyJoke} isLoading={isJokeLoading} />
             </div>
 
             {/* 모드 전환 버튼 */}
