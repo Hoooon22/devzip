@@ -61,6 +61,65 @@
   }
 }
 
+/* 구석 로딩 인디케이터 */
+.corner-loading-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out, pulse 2s ease-in-out infinite;
+  border: 2px solid #667eea;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+}
+
+.corner-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.corner-loading-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  white-space: nowrap;
+}
+
+.corner-loading-subtext {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
 /* 빈 상태 */
 .thought-map-empty {
   display: flex;

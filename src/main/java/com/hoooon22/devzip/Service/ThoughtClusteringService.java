@@ -67,32 +67,31 @@ public class ThoughtClusteringService {
         try {
             String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + googleApiKey;
 
-            // 프롬프트 작성
+            // 최적화된 프롬프트 작성
             StringBuilder prompt = new StringBuilder();
-            prompt.append("아래 생각들을 의미적 연관성에 따라 그룹화해주세요.\n\n");
-            prompt.append("### 그룹화 규칙:\n");
-            prompt.append("1. 같은 주제나 맥락에 속하는 생각들은 반드시 하나의 그룹으로 묶어주세요\n");
-            prompt.append("2. 연속적이거나 인과관계가 있는 생각들(예: A → B → C)은 같은 그룹입니다\n");
-            prompt.append("3. 도구/기술 스택처럼 함께 사용되는 것들도 같은 그룹입니다\n");
-            prompt.append("4. 완전히 다른 주제만 별도 그룹으로 분리하세요\n\n");
-            prompt.append("### 생각 목록:\n");
+            prompt.append("생각들을 의미적 연관성으로 그룹화.\n\n");
+            prompt.append("규칙:\n");
+            prompt.append("1. 같은 주제/맥락/인과관계 = 하나의 그룹\n");
+            prompt.append("2. 함께 사용되는 도구/기술 = 같은 그룹\n");
+            prompt.append("3. 연관성 있으면 최대한 통합, 완전히 다른 주제만 분리\n\n");
+            prompt.append("생각:\n");
 
-            // 각 생각에 인덱스 부여
+            // 각 생각에 인덱스와 태그 부여
             for (int i = 0; i < thoughts.size(); i++) {
                 Thought thought = thoughts.get(i);
-                prompt.append(String.format("[%d] %s\n", i, thought.getContent()));
+                prompt.append(String.format("[%d] %s", i, thought.getContent()));
                 List<String> tags = thought.getTags();
                 if (tags != null && !tags.isEmpty()) {
-                    prompt.append(String.format("   태그: %s\n", String.join(", ", tags)));
+                    prompt.append(String.format(" (태그: %s)", String.join(", ", tags)));
                 }
+                prompt.append("\n");
             }
 
-            prompt.append("\n### 응답 형식:\n");
-            prompt.append("각 그룹을 다음 형식으로 출력해주세요:\n");
-            prompt.append("GROUP:그룹의 주제나 공통점\n");
+            prompt.append("\n출력 형식:\n");
+            prompt.append("GROUP:그룹명\n");
             prompt.append("MEMBERS:0,1,2\n");
             prompt.append("---\n");
-            prompt.append("\n중요: 연관성이 조금이라도 있으면 같은 그룹으로 묶어주세요. 너무 세분화하지 마세요.");
+            prompt.append("\n중요: 관련성 높은 생각들끼리 최대한 통합.");
 
             // 요청 바디 생성
             Map<String, Object> requestBody = Map.of(

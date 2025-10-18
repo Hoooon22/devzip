@@ -97,34 +97,33 @@ public class ThoughtHierarchyService {
         try {
             String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + googleApiKey;
 
-            // 프롬프트 작성
+            // 최적화된 프롬프트 작성
             StringBuilder prompt = new StringBuilder();
-            prompt.append("아래 생각들을 의미적 유사도와 연관성에 따라 계층 구조로 재구성해주세요.\n\n");
-            prompt.append("### 계층 구조 규칙:\n");
-            prompt.append("1. 가장 핵심적이고 포괄적인 생각을 최상위(레벨 0)에 배치\n");
-            prompt.append("2. 관련되거나 세부적인 생각을 하위 레벨에 배치\n");
-            prompt.append("3. 유사도가 높은 생각들끼리 상-하위 관계 형성\n");
-            prompt.append("4. 각 생각은 한 번만 사용 (중복 배치 금지)\n");
-            prompt.append("5. 최대 4레벨까지 구성 (0, 1, 2, 3)\n\n");
-            prompt.append("### 생각 목록:\n");
+            prompt.append("생각들을 유사도와 연관성 기반으로 계층 구조로 분류.\n\n");
+            prompt.append("규칙:\n");
+            prompt.append("1. 핵심/포괄적 생각=레벨0, 관련/세부 생각=하위 레벨\n");
+            prompt.append("2. 의미적 유사도가 높거나 인과관계가 있는 생각들을 우선 연결\n");
+            prompt.append("3. 각 생각은 1회만 사용, 모든 노드 트리 구조로 연결\n");
+            prompt.append("4. 레벨 제한 없음 (깊이 제한 없이 자연스럽게 계층화)\n\n");
+            prompt.append("생각:\n");
 
-            // 각 생각에 인덱스 부여
+            // 각 생각에 인덱스와 태그 부여
             for (int i = 0; i < thoughts.size(); i++) {
                 Thought thought = thoughts.get(i);
-                prompt.append(String.format("[%d] %s\n", i, thought.getContent()));
+                prompt.append(String.format("[%d] %s", i, thought.getContent()));
                 List<String> tags = thought.getTags();
                 if (tags != null && !tags.isEmpty()) {
-                    prompt.append(String.format("   태그: %s\n", String.join(", ", tags)));
+                    prompt.append(String.format(" (태그: %s)", String.join(", ", tags)));
                 }
+                prompt.append("\n");
             }
 
-            prompt.append("\n### 응답 형식:\n");
-            prompt.append("각 생각을 다음 형식으로 출력해주세요:\n");
-            prompt.append("INDEX:생각번호\n");
-            prompt.append("LEVEL:레벨(0-3)\n");
-            prompt.append("PARENT:부모생각번호(최상위는 -1)\n");
+            prompt.append("\n출력 형식:\n");
+            prompt.append("INDEX:번호\n");
+            prompt.append("LEVEL:레벨\n");
+            prompt.append("PARENT:부모번호(-1=최상위)\n");
             prompt.append("---\n");
-            prompt.append("\n중요: 모든 생각이 하나의 트리 구조로 연결되어야 합니다. 고아 노드가 없도록 해주세요.");
+            prompt.append("\n중요: 관련성 높은 생각들끼리 최대한 연결. 고아 노드 금지.");
 
             // 요청 바디 생성
             Map<String, Object> requestBody = Map.of(

@@ -500,7 +500,8 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     setEdges(newEdges);
   }, [mapData, setNodes, setEdges]);
 
-  if (isLoading) {
+  // 초기 로딩 시에만 전체 로딩 화면 표시 (mapData가 없을 때)
+  if (isLoading && !mapData) {
     return (
       <div className="thought-map-container">
         <div className="thought-map-loading">
@@ -543,7 +544,18 @@ const ThoughtMap = ({ mapData, isLoading }) => {
         </p>
       </div>
 
-      <div className="thought-map-canvas">
+      <div className="thought-map-canvas" style={{ position: 'relative' }}>
+        {/* 구석 로딩 인디케이터 - 백그라운드 AI 분석 중 */}
+        {isLoading && mapData && (
+          <div className="corner-loading-indicator">
+            <div className="corner-spinner"></div>
+            <div>
+              <div className="corner-loading-text">AI 분석 중</div>
+              <div className="corner-loading-subtext">생각 지도 업데이트 중...</div>
+            </div>
+          </div>
+        )}
+
         <ReactFlow
           nodes={nodes}
           edges={edges}
