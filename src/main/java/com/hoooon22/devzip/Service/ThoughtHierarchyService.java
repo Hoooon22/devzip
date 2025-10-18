@@ -99,12 +99,14 @@ public class ThoughtHierarchyService {
 
             // 최적화된 프롬프트 작성
             StringBuilder prompt = new StringBuilder();
-            prompt.append("생각들을 유사도와 연관성 기반으로 계층 구조로 분류.\n\n");
+            prompt.append("생각들을 마인드맵 계층 구조로 분류.\n\n");
             prompt.append("규칙:\n");
-            prompt.append("1. 핵심/포괄적 생각=레벨0, 관련/세부 생각=하위 레벨\n");
-            prompt.append("2. 의미적 유사도가 높거나 인과관계가 있는 생각들을 우선 연결\n");
-            prompt.append("3. 각 생각은 1회만 사용, 모든 노드 트리 구조로 연결\n");
-            prompt.append("4. 레벨 제한 없음 (깊이 제한 없이 자연스럽게 계층화)\n\n");
+            prompt.append("1. 가장 핵심적인 생각 1개만 레벨0으로 선정 (마인드맵 중심)\n");
+            prompt.append("2. 레벨0과 직접 관련된 생각들 = 레벨1\n");
+            prompt.append("3. 레벨1의 세부/하위 생각들 = 레벨2, 레벨2의 세부 = 레벨3 (레벨 숫자가 클수록 하위 개념)\n");
+            prompt.append("4. 의미적 유사도, 인과관계, 주제 연관성이 높은 것끼리 부모-자식 관계 형성\n");
+            prompt.append("5. 모든 생각은 반드시 레벨0에서 시작하는 트리 구조로 연결\n");
+            prompt.append("6. 같은 레벨끼리는 절대 연결하지 말 것 (부모는 항상 더 낮은 레벨)\n\n");
             prompt.append("생각:\n");
 
             // 각 생각에 인덱스와 태그 부여
@@ -120,10 +122,14 @@ public class ThoughtHierarchyService {
 
             prompt.append("\n출력 형식:\n");
             prompt.append("INDEX:번호\n");
-            prompt.append("LEVEL:레벨\n");
-            prompt.append("PARENT:부모번호(-1=최상위)\n");
+            prompt.append("LEVEL:레벨(0=핵심,1=주요,2=세부,3=상세...)\n");
+            prompt.append("PARENT:부모번호(-1=레벨0만)\n");
             prompt.append("---\n");
-            prompt.append("\n중요: 관련성 높은 생각들끼리 최대한 연결. 고아 노드 금지.");
+            prompt.append("\n중요:\n");
+            prompt.append("- 레벨0은 정확히 1개만\n");
+            prompt.append("- 레벨1의 PARENT는 반드시 레벨0의 인덱스\n");
+            prompt.append("- 레벨2의 PARENT는 레벨1 중 하나\n");
+            prompt.append("- 연관성을 깊이 분석하여 자연스러운 계층 형성");
 
             // 요청 바디 생성
             Map<String, Object> requestBody = Map.of(
