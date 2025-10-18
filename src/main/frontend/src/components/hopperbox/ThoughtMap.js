@@ -500,7 +500,7 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     setEdges(newEdges);
   }, [mapData, setNodes, setEdges]);
 
-  // 초기 로딩 시에만 전체 로딩 화면 표시 (mapData가 없을 때)
+  // 로딩 중이고 데이터가 없으면 전체 로딩 화면 표시
   if (isLoading && !mapData) {
     return (
       <div className="thought-map-container">
@@ -512,10 +512,11 @@ const ThoughtMap = ({ mapData, isLoading }) => {
     );
   }
 
-  if (!mapData ||
+  // 로딩 중이 아닌데 데이터가 비어있으면 빈 상태 표시
+  if (!isLoading && (!mapData ||
       (Array.isArray(mapData) && mapData.length === 0) ||
       (mapData.topicId && (!mapData.clusters || mapData.clusters.length === 0 ||
-        mapData.clusters.every(c => !c.thoughts || c.thoughts.length === 0)))) {
+        mapData.clusters.every(c => !c.thoughts || c.thoughts.length === 0))))) {
     return (
       <div className="thought-map-container">
         <div className="thought-map-empty">

@@ -33,6 +33,7 @@ const Hopperbox = () => {
   // 생각 맵 데이터 불러오기 (주제별 필터링)
   const fetchThoughtMap = async (topicId = null) => {
     setIsLoadingMap(true);
+    // mapData를 즉시 초기화하지 않고 로딩 중 표시만 함
     try {
       if (topicId) {
         // 주제 중심 계층 구조 맵 데이터 조회 (유사도 기반)
