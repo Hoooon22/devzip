@@ -161,6 +161,9 @@ const ThoughtMap = ({ mapData, isLoading }) => {
         const level = node.level || 0;
         const nodeId = `hierarchy-${node.id}`;
 
+        console.log(`%c🔹 Processing Node ID: ${node.id}, Level: ${level}, Children: ${node.children?.length || 0}`,
+          'color: #2196F3; font-weight: bold');
+
         let x, y;
 
         if (level === 0) {

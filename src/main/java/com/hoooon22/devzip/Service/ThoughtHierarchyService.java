@@ -262,20 +262,52 @@ public class ThoughtHierarchyService {
         }
 
         // 부모-자식 관계 설정
+        log.info("🔗 부모-자식 관계 설정 시작 (전체 노드: {}개)", nodeMap.size());
+
         for (Map.Entry<Integer, ThoughtHierarchyResponse.HierarchyNode> entry : nodeMap.entrySet()) {
+            Integer nodeIndex = entry.getKey();
             ThoughtHierarchyResponse.HierarchyNode node = entry.getValue();
             Integer parentIdx = node.getParentIndex();
 
+            log.debug("  노드[{}]: Level={}, ParentIndex={}", nodeIndex, node.getLevel(), parentIdx);
+
             if (parentIdx != null && parentIdx >= 0 && nodeMap.containsKey(parentIdx)) {
+                // 부모가 있는 노드: 부모의 children에 추가
                 ThoughtHierarchyResponse.HierarchyNode parent = nodeMap.get(parentIdx);
                 parent.addChild(node);
+                log.debug("    → 부모[{}](Level={})의 자식으로 추가", parentIdx, parent.getLevel());
             } else {
-                // 최상위 노드
+                // 최상위 노드 (Level 0만 여기 해당)
                 nodes.add(node);
+                log.debug("    → 최상위 노드로 추가");
             }
         }
 
+        log.info("✅ 계층 구조 완성 - 최상위 노드: {}개", nodes.size());
+
+        // 최상위 노드의 children 구조 로깅
+        for (ThoughtHierarchyResponse.HierarchyNode rootNode : nodes) {
+            logNodeStructure(rootNode, 0);
+        }
+
         return new ThoughtHierarchyResponse(nodes);
+    }
+
+    /**
+     * 노드 구조 재귀적 로깅 (디버깅용)
+     */
+    private void logNodeStructure(ThoughtHierarchyResponse.HierarchyNode node, int depth) {
+        String indent = "  ".repeat(depth);
+        log.info("{}└─ [Level {}] {} (자식: {}개)",
+            indent, node.getLevel(),
+            node.getContent().substring(0, Math.min(30, node.getContent().length())),
+            node.getChildren() != null ? node.getChildren().size() : 0);
+
+        if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+            for (ThoughtHierarchyResponse.HierarchyNode child : node.getChildren()) {
+                logNodeStructure(child, depth + 1);
+            }
+        }
     }
 
     /**
