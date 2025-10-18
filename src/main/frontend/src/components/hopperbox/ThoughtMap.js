@@ -148,50 +148,69 @@ const ThoughtMap = ({ mapData, isLoading }) => {
 
     // 계층 구조 맵 데이터인 경우 (nodes 필드 있고 배열의 첫 요소가 level을 가짐)
     if (Array.isArray(mapData.nodes) && mapData.nodes.length > 0 && mapData.nodes[0].level !== undefined) {
-      console.log('%c📐 렌더링 모드: 계층 구조', 'color: #9C27B0; font-weight: bold');
+      console.log('%c📐 렌더링 모드: 마인드맵 (방사형 계층 구조)', 'color: #9C27B0; font-weight: bold');
       console.log('%c📊 총 노드 수:', 'color: #673AB7; font-weight: bold', mapData.nodes.length);
-      // 계층 구조를 트리 형태로 시각화
-      const levelGap = 200; // 레벨 간 수직 거리
-      const siblingGap = 250; // 같은 레벨 내 노드 간 수평 거리
-      const startY = 100;
-      const levelCounts = [0, 0, 0, 0]; // 각 레벨별 노드 수
 
-      const processHierarchyNode = (node, parentX, parentY, nodeIndex) => {
+      // 마인드맵 중심점
+      const centerX = 600;
+      const centerY = 400;
+      const baseRadius = 180; // 첫 번째 레벨 거리
+      const radiusIncrement = 200; // 레벨당 거리 증가량
+
+      const processHierarchyNode = (node, parentX, parentY, angleStart, angleEnd, depth = 0) => {
         const level = node.level || 0;
         const nodeId = `hierarchy-${node.id}`;
 
-        // 같은 레벨 내에서 수평 위치 계산
-        const xOffset = levelCounts[level] * siblingGap - (levelCounts[level] * siblingGap / 2);
-        const x = parentX !== null ? parentX + xOffset : 400 + xOffset;
-        const y = startY + (level * levelGap);
+        let x, y;
 
-        levelCounts[level]++;
+        if (level === 0) {
+          // 레벨 0은 중앙에 배치
+          x = centerX;
+          y = centerY;
+        } else {
+          // 하위 레벨은 부모로부터 방사형으로 배치
+          const radius = baseRadius + (level - 1) * radiusIncrement;
+          const angle = (angleStart + angleEnd) / 2;
+          x = (parentX || centerX) + radius * Math.cos(angle);
+          y = (parentY || centerY) + radius * Math.sin(angle);
+        }
 
-        // 레벨별 색상
+        // 레벨별 색상 및 크기
         const levelColors = [
-          '#667eea', // Level 0 - 가장 핵심
-          '#f093fb', // Level 1
-          '#4facfe', // Level 2
-          '#43e97b', // Level 3
+          '#667eea', // Level 0 - 핵심 (보라)
+          '#f093fb', // Level 1 - 주요 (핑크)
+          '#4facfe', // Level 2 - 세부 (파랑)
+          '#43e97b', // Level 3 - 상세 (초록)
+          '#f5af19', // Level 4+ (주황)
         ];
-        const nodeColor = levelColors[level] || '#999';
+        const nodeColor = levelColors[Math.min(level, 4)] || '#999';
+
+        // 레벨별 크기 (중심이 가장 크고 멀어질수록 작아짐)
+        const nodeSizes = [
+          { width: '280px', fontSize: '16px', padding: '20px', borderWidth: '4px' }, // Level 0
+          { width: '240px', fontSize: '14px', padding: '16px', borderWidth: '3px' }, // Level 1
+          { width: '220px', fontSize: '13px', padding: '14px', borderWidth: '3px' }, // Level 2
+          { width: '200px', fontSize: '12px', padding: '12px', borderWidth: '2px' }, // Level 3+
+        ];
+        const nodeSize = nodeSizes[Math.min(level, 3)];
 
         newNodes.push({
           id: nodeId,
           type: 'default',
           data: {
             label: (
-              <div className="thought-node">
-                <div className="thought-node-level">Level {level}</div>
+              <div className="thought-node mindmap-node">
+                {level === 0 && <div className="mindmap-center-badge">💡 핵심 아이디어</div>}
+                {level > 0 && <div className="thought-node-level">Level {level}</div>}
                 <div className="thought-node-content">
-                  {node.content.length > 80
-                    ? node.content.substring(0, 80) + '...'
+                  {node.content.length > (level === 0 ? 100 : 70)
+                    ? node.content.substring(0, level === 0 ? 100 : 70) + '...'
                     : node.content}
                 </div>
                 {node.tags && node.tags.length > 0 && (
                   <div className="thought-tags">
-                    {node.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="tag-badge">{tag}</span>
+                    {node.tags.slice(0, level === 0 ? 4 : 3).map((tag, idx) => (
+                      <span key={idx} className="tag-badge" style={{ background: `${nodeColor}20`, color: nodeColor }}>{tag}</span>
                     ))}
                   </div>
                 )}
@@ -204,31 +223,50 @@ const ThoughtMap = ({ mapData, isLoading }) => {
             levelColor: nodeColor,
             thoughtId: node.id,
           },
-          position: { x, y },
+          position: { x: x - 110, y: y - 60 }, // 노드 중심 조정
           style: {
-            background: 'white',
-            border: `3px solid ${nodeColor}`,
-            borderRadius: '12px',
-            padding: '12px',
-            fontSize: '13px',
-            maxWidth: '220px',
+            background: level === 0 ? `linear-gradient(135deg, ${nodeColor} 0%, ${nodeColor}dd 100%)` : 'white',
+            color: level === 0 ? 'white' : '#333',
+            border: level === 0 ? 'none' : `${nodeSize.borderWidth} solid ${nodeColor}`,
+            borderRadius: level === 0 ? '24px' : '16px',
+            padding: nodeSize.padding,
+            fontSize: nodeSize.fontSize,
+            maxWidth: nodeSize.width,
+            boxShadow: level === 0
+              ? '0 8px 24px rgba(102, 126, 234, 0.3)'
+              : '0 4px 12px rgba(0, 0, 0, 0.1)',
+            fontWeight: level === 0 ? '600' : '400',
           },
         });
 
         // 자식 노드들 처리
         if (node.children && node.children.length > 0) {
-          node.children.forEach((child, childIdx) => {
-            const childNodeId = processHierarchyNode(child, x, y, childIdx);
+          const childCount = node.children.length;
+          const angleRange = level === 0 ? (2 * Math.PI) : (Math.PI / 3); // 레벨 0은 360도, 나머지는 60도 범위
+          const baseAngle = level === 0 ? 0 : (angleStart + angleEnd) / 2 - angleRange / 2;
 
-            // 부모-자식 간 엣지 연결
+          node.children.forEach((child, childIdx) => {
+            const childAngleStart = baseAngle + (angleRange * childIdx / childCount);
+            const childAngleEnd = baseAngle + (angleRange * (childIdx + 1) / childCount);
+            const childNodeId = processHierarchyNode(child, x, y, childAngleStart, childAngleEnd, depth + 1);
+
+            // 부모-자식 간 곡선 엣지 연결
             newEdges.push({
               id: `edge-${nodeId}-${childNodeId}`,
               source: nodeId,
               target: childNodeId,
-              animated: true,
+              type: 'smoothstep', // 부드러운 곡선
+              animated: false,
               style: {
                 stroke: nodeColor,
-                strokeWidth: 2,
+                strokeWidth: level === 0 ? 3 : 2,
+                opacity: 0.7,
+              },
+              markerEnd: {
+                type: 'arrowclosed',
+                color: nodeColor,
+                width: 20,
+                height: 20,
               },
             });
           });
@@ -238,9 +276,9 @@ const ThoughtMap = ({ mapData, isLoading }) => {
       };
 
       // 최상위 노드들 처리
-      console.log('%c🌳 노드 트리 구성 중...', 'color: #4CAF50; font-weight: bold');
+      console.log('%c🌳 마인드맵 트리 구성 중...', 'color: #4CAF50; font-weight: bold');
       mapData.nodes.forEach((rootNode, idx) => {
-        processHierarchyNode(rootNode, null, null, idx);
+        processHierarchyNode(rootNode, null, null, 0, 2 * Math.PI, 0);
       });
 
       console.log('%c✨ 렌더링 완료', 'color: #4CAF50; font-weight: bold; font-size: 13px');

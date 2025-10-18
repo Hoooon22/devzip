@@ -147,6 +147,25 @@
   max-width: 400px;
 }
 
+/* 마인드맵 노드 스타일 */
+.mindmap-node {
+  width: 100%;
+  position: relative;
+}
+
+.mindmap-center-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 /* 노드 스타일 */
 .tag-node {
   display: flex;
