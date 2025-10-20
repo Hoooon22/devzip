@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import MusicGrid from '../components/musicbox/MusicGrid';
 import PlaybackBar from '../components/musicbox/PlaybackBar';
+import ActiveUsers from '../components/musicbox/ActiveUsers';
 
 /**
  * 카오틱 뮤직박스 메인 페이지
@@ -13,6 +14,12 @@ const ChaoticMusicBox = () => {
     // MusicGrid에서 관리하는 grid 상태를 PlaybackBar에 전달하기 위한 상태
     const [gridState, setGridState] = useState(
         Array(8).fill(null).map(() => Array(16).fill(false))
+    );
+
+    // 현재 사용자명 생성 (랜덤)
+    const currentUsername = useMemo(() =>
+        `사용자${Math.floor(Math.random() * 1000)}`,
+        []
     );
 
     return (
@@ -30,15 +37,26 @@ const ChaoticMusicBox = () => {
             </Hero>
 
             <MainContent>
-                {/* 그리드 컴포넌트 */}
-                <MusicGridWrapper>
-                    <MusicGrid onGridChange={setGridState} />
-                </MusicGridWrapper>
+                {/* 메인 컨텐츠 영역: 그리드 + 사용자 목록 */}
+                <ContentGrid>
+                    {/* 왼쪽: 그리드 및 재생 컨트롤 */}
+                    <LeftSection>
+                        {/* 그리드 컴포넌트 */}
+                        <MusicGridWrapper>
+                            <MusicGrid onGridChange={setGridState} />
+                        </MusicGridWrapper>
 
-                {/* 재생 컨트롤 */}
-                <PlaybackBarWrapper>
-                    <PlaybackBar grid={gridState} gridWidth={16} />
-                </PlaybackBarWrapper>
+                        {/* 재생 컨트롤 */}
+                        <PlaybackBarWrapper>
+                            <PlaybackBar grid={gridState} gridWidth={16} />
+                        </PlaybackBarWrapper>
+                    </LeftSection>
+
+                    {/* 오른쪽: 활성 사용자 목록 */}
+                    <RightSection>
+                        <ActiveUsers currentUsername={currentUsername} />
+                    </RightSection>
+                </ContentGrid>
 
                 {/* 사용 가이드 */}
                 <GuideSection>
@@ -136,15 +154,37 @@ const HeroDescription = styled.p`
 `;
 
 const MainContent = styled.div`
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
+`;
+
+const ContentGrid = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    margin-bottom: 30px;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: 1fr;
+    }
+`;
+
+const LeftSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+`;
+
+const RightSection = styled.div`
+    @media (max-width: 1200px) {
+        order: -1; /* 모바일에서는 위로 이동 */
+    }
 `;
 
 const MusicGridWrapper = styled.div`
     background: white;
     border-radius: 15px;
     padding: 30px;
-    margin-bottom: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 
     @media (max-width: 768px) {
@@ -156,7 +196,6 @@ const PlaybackBarWrapper = styled.div`
     background: white;
     border-radius: 15px;
     padding: 20px;
-    margin-bottom: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 `;
 

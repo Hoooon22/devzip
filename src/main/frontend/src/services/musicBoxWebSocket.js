@@ -138,6 +138,34 @@ class MusicBoxWebSocketService {
     }
 
     /**
+     * 특정 토픽 구독
+     *
+     * @param {string} destination - 구독할 토픽 경로
+     * @param {Function} callback - 메시지 수신 시 호출될 콜백 함수
+     * @returns {Object} - 구독 객체 (unsubscribe 메서드 포함)
+     */
+    subscribe(destination, callback) {
+        if (!this.connected || !this.client) {
+            console.warn(`⚠️ WebSocket is not connected. Cannot subscribe to ${destination}`);
+            return null;
+        }
+
+        console.log(`📬 Subscribing to ${destination}`);
+
+        const subscription = this.client.subscribe(destination, (message) => {
+            const parsedMessage = JSON.parse(message.body);
+            console.log(`📨 Message received from ${destination}:`, parsedMessage);
+
+            if (callback) {
+                callback(parsedMessage);
+            }
+        });
+
+        this.subscriptions.push(subscription);
+        return subscription;
+    }
+
+    /**
      * WebSocket 연결 종료
      */
     disconnect() {

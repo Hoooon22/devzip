@@ -31,7 +31,8 @@ const MusicGrid = ({ onGridChange }) => {
     const loadInitialGrid = useCallback(async () => {
         try {
             const data = await fetchGridState();
-            console.log('📋 Initial grid state:', data);
+            console.log('📋 Initial grid state loaded:', data);
+            console.log('📋 Active cells count:', data.activeCells.length);
 
             // 새로운 그리드 생성
             const newGrid = Array(GRID_HEIGHT).fill(null)
@@ -41,17 +42,17 @@ const MusicGrid = ({ onGridChange }) => {
             data.activeCells.forEach(cell => {
                 if (cell.active && cell.y < GRID_HEIGHT && cell.x < GRID_WIDTH) {
                     newGrid[cell.y][cell.x] = true;
+                    console.log(`✅ Restored cell at (${cell.x}, ${cell.y})`);
                 }
             });
 
             setGrid(newGrid);
 
-            // 부모 컴포넌트에 그리드 상태 전달
-            if (onGridChange) {
-                onGridChange(newGrid);
-            }
+            // 부모 컴포넌트에 그리드 상태 전달 (항상 호출)
+            onGridChange(newGrid);
+            console.log('📤 Grid state sent to parent component');
         } catch (error) {
-            console.error('Failed to load initial grid state:', error);
+            console.error('❌ Failed to load initial grid state:', error);
         }
     }, [onGridChange]);
 

@@ -37,26 +37,46 @@ public class MusicBoxService {
         // 좌표 유효성 검증
         validateCoordinates(message.getX(), message.getY());
 
-        // 기존 셀 찾기 또는 새로 생성
-        MusicGridCell cell = repository.findByXAndY(message.getX(), message.getY())
-                .orElse(MusicGridCell.builder()
-                        .x(message.getX())
-                        .y(message.getY())
-                        .active(false)
-                        .build());
+        // 기존 셀 찾기
+        Optional<MusicGridCell> existingCell = repository.findByXAndY(message.getX(), message.getY());
 
-        // 상태 토글
-        cell.setActive(!cell.getActive());
-        cell.setModifiedBy(message.getUsername());
+        boolean newActiveState;
 
-        MusicGridCell saved = repository.save(cell);
+        if (existingCell.isPresent()) {
+            // 기존 셀이 있으면 토글
+            MusicGridCell cell = existingCell.get();
+            newActiveState = !cell.getActive();
+
+            if (newActiveState) {
+                // 활성화: DB에 저장
+                cell.setActive(true);
+                cell.setModifiedBy(message.getUsername());
+                repository.save(cell);
+                log.info("Cell activated and saved: ({}, {})", message.getX(), message.getY());
+            } else {
+                // 비활성화: DB에서 삭제 (불필요한 데이터 방지)
+                repository.delete(cell);
+                log.info("Cell deactivated and deleted: ({}, {})", message.getX(), message.getY());
+            }
+        } else {
+            // 새 셀: 활성화 상태로 저장
+            MusicGridCell newCell = MusicGridCell.builder()
+                    .x(message.getX())
+                    .y(message.getY())
+                    .active(true)
+                    .modifiedBy(message.getUsername())
+                    .build();
+            repository.save(newCell);
+            newActiveState = true;
+            log.info("New cell created and saved: ({}, {})", message.getX(), message.getY());
+        }
 
         // 응답 메시지 구성
         return GridCellMessage.builder()
-                .x(saved.getX())
-                .y(saved.getY())
-                .active(saved.getActive())
-                .username(saved.getModifiedBy())
+                .x(message.getX())
+                .y(message.getY())
+                .active(newActiveState)
+                .username(message.getUsername())
                 .type(GridCellMessage.MessageType.TOGGLE)
                 .build();
     }
