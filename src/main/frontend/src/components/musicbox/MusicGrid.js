@@ -126,13 +126,6 @@ const MusicGrid = ({ onGridChange }) => {
         musicBoxWebSocketService.sendToggleMessage(x, y, username);
     };
 
-    /**
-     * 전체 클리어 핸들러
-     */
-    const handleClear = () => {
-        musicBoxWebSocketService.sendClearMessage(username);
-    };
-
     return (
         <Container>
             <Header>
@@ -143,7 +136,7 @@ const MusicGrid = ({ onGridChange }) => {
             </Header>
 
             <Description>
-                셀을 클릭하여 노트를 추가/제거하세요. 변경사항이 모든 사용자에게 즉시 동기화됩니다!
+                셀을 클릭하여 노트를 추가/제거하세요. 변경사항이 모든 사용자에게 실시간으로 동기화되며, 재생 중인 음악에도 즉시 반영됩니다!
             </Description>
 
             <GridContainer>
@@ -183,9 +176,6 @@ const MusicGrid = ({ onGridChange }) => {
             </GridContainer>
 
             <Controls>
-                <ClearButton onClick={handleClear}>
-                    🗑️ 전체 삭제
-                </ClearButton>
                 <UserInfo>현재 사용자: {username}</UserInfo>
             </Controls>
         </Container>
@@ -296,23 +286,8 @@ const XLabel = styled.div`
 
 const Controls = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-`;
-
-const ClearButton = styled.button`
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-    &:hover {
-        background-color: #d32f2f;
-    }
 `;
 
 const UserInfo = styled.div`
