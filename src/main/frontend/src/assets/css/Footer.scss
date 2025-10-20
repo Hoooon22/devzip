@@ -1,8 +1,153 @@
 .footer {
     position: fixed;
-    bottom: 10px; /* 원하는 만큼의 여백 설정 */
-    right: 10px; /* 원하는 만큼의 여백 설정 */
-    width: auto; /* 너비 자동으로 설정 */
-    padding: 10px; /* 내부 여백 추가 */
-    z-index: 1000; /* 다른 요소 위로 배치 */
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+
+    // 배경 효과
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    // 스타일링
+    border-radius: 50px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.06);
+
+    // 애니메이션
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // 기본 상태 (축소)
+    &:not(.expanded) {
+        padding: 8px;
+
+        .footer-content {
+            gap: 8px;
+        }
+
+        .link-text {
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
+        }
+    }
+
+    // 확장 상태
+    &.expanded {
+        padding: 10px 16px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12),
+                    0 4px 12px rgba(0, 0, 0, 0.08);
+
+        .footer-content {
+            gap: 12px;
+        }
+
+        .link-text {
+            opacity: 1;
+            width: auto;
+            margin-left: 6px;
+        }
+
+        .footer-link {
+            padding: 8px 12px;
+        }
+    }
+
+    // 호버 효과
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s ease;
+}
+
+.footer-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 25px;
+    transition: all 0.2s ease;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        transform: scale(1.05);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.footer-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 3px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+
+    .footer-link:hover & {
+        border-color: rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.link-text {
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// 반응형 디자인
+@media (max-width: 768px) {
+    .footer {
+        bottom: 15px;
+        right: 15px;
+
+        &.expanded {
+            padding: 8px 14px;
+        }
+    }
+
+    .footer-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .link-text {
+        font-size: 13px;
+    }
+}
+
+// 다크 모드 대응 (필요시 사용)
+@media (prefers-color-scheme: dark) {
+    .footer {
+        background: rgba(30, 30, 30, 0.65);
+
+        .footer-link {
+            color: #e0e0e0;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .footer-icon {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+    }
 }
