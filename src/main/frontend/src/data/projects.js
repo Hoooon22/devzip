@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 11,
+        name: '카오틱 뮤직박스',
+        description: '실시간으로 함께 음악을 만드는 협업 시퀀서 (개발 중)',
+        link: '/chaotic-music-box',
+        active: true,
+        startDate: '2025-10-20',
+        endDate: '',
+        pinned: true,
+        category: '음악/협업',
+        requiresLogin: true,
+        isProduction: false // 실험용
+    },
+    {
         id: 10,
         name: 'Hopperbox',
         description: '생각한 무언가를 일단 넣어보세요! (응답속도 및 응답로직 개선 필요)',

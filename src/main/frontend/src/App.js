@@ -13,6 +13,7 @@ import PhysicsQuiz from './pages/PhysicsQuiz';
 import LiveChatListPage from "./pages/LiveChatListPage";
 import LiveChatRoomPage from "./pages/LiveChatRoomPage";
 import Hopperbox from './pages/Hopperbox';
+import ChaoticMusicBox from './pages/ChaoticMusicBox';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -111,6 +112,16 @@ function App() {
           element={
             <ProtectedRoute>
               <Hopperbox />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 카오틱 뮤직박스 페이지 - 로그인 필수 */}
+        <Route
+          path="/chaotic-music-box"
+          element={
+            <ProtectedRoute>
+              <ChaoticMusicBox />
             </ProtectedRoute>
           }
         />

@@ -25,8 +25,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // The endpoint for WebSocket connections
+        // The endpoint for WebSocket connections (LiveChat)
         registry.addEndpoint("/ws-livechat").setAllowedOriginPatterns("*").withSockJS();
+
+        // The endpoint for Music Box WebSocket connections
+        // Note: Using same endpoint for simplicity, but you can create separate endpoints
     }
 
     @Override
