@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import musicBoxWebSocketService from '../../services/musicBoxWebSocket';
 import { fetchGridState } from '../../services/musicBoxApi';
@@ -189,6 +190,10 @@ const MusicGrid = ({ onGridChange }) => {
             </Controls>
         </Container>
     );
+};
+
+MusicGrid.propTypes = {
+    onGridChange: PropTypes.func
 };
 
 export default MusicGrid;

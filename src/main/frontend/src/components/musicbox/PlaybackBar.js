@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import audioEngine from '../../utils/audioEngine';
 
@@ -156,6 +157,11 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
             </ProgressBarContainer>
         </Container>
     );
+};
+
+PlaybackBar.propTypes = {
+    grid: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.bool)).isRequired,
+    gridWidth: PropTypes.number
 };
 
 export default PlaybackBar;
