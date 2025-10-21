@@ -19,7 +19,6 @@ import java.util.List;
 @RequestMapping("/api/musicbox")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class MusicBoxController {
 
     private final MusicBoxService musicBoxService;
