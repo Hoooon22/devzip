@@ -46,7 +46,7 @@ public class WebSocketEventListener {
         String destination = headerAccessor.getDestination();
 
         // /topic/musicbox/updates 구독 시에만 처리
-        if (destination != null && destination.equals("/topic/musicbox/updates")) {
+        if (destination != null && (destination.equals("/topic/musicbox/updates") || destination.equals("/topic/musicbox/users"))) {
             // 사용자명 추출 (헤더에서 전달되거나 기본값 사용)
             String username = headerAccessor.getFirstNativeHeader("username");
             if (username == null || username.isEmpty()) {
