@@ -98,17 +98,19 @@ const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1 }) => {
         // 초기 그리드 상태 로드
         loadInitialGrid();
 
-        // WebSocket 연결
+        // WebSocket 연결 (사용자명과 함께)
         musicBoxWebSocketService.connect(
             handleMessageReceived,
             () => {
                 console.log('✅ WebSocket connected');
+                console.log('👤 Username:', username);
                 setConnected(true);
             },
             (error) => {
                 console.error('❌ WebSocket error:', error);
                 setConnected(false);
-            }
+            },
+            username // 사용자명 전달
         );
 
         // 컴포넌트 언마운트 시 연결 종료

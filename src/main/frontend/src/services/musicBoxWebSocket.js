@@ -20,8 +20,11 @@ class MusicBoxWebSocketService {
      * @param {Function} onMessageReceived - 메시지 수신 시 호출될 콜백 함수
      * @param {Function} onConnected - 연결 성공 시 호출될 콜백 함수
      * @param {Function} onError - 에러 발생 시 호출될 콜백 함수
+     * @param {string} username - 사용자명
      */
-    connect(onMessageReceived, onConnected, onError) {
+    connect(onMessageReceived, onConnected, onError, username = 'Anonymous') {
+        // 사용자명 저장
+        this.username = username;
         // SockJS를 통한 WebSocket 연결 생성
         const socket = new SockJS('/ws-livechat');
 
@@ -32,9 +35,10 @@ class MusicBoxWebSocketService {
             // 연결 성공 시
             onConnect: (frame) => {
                 console.log('🎵 Music Box WebSocket Connected:', frame);
+                console.log('👤 Username:', username);
                 this.connected = true;
 
-                // /topic/musicbox/updates 구독
+                // /topic/musicbox/updates 구독 (사용자명 헤더와 함께)
                 const subscription = this.client.subscribe(
                     '/topic/musicbox/updates',
                     (message) => {
@@ -46,7 +50,7 @@ class MusicBoxWebSocketService {
                             onMessageReceived(parsedMessage);
                         }
                     },
-                    { username: 'MusicBoxUser' } // 사용자명 헤더 추가
+                    { username: username } // 사용자명 헤더 추가
                 );
 
                 this.subscriptions.push(subscription);
