@@ -16,7 +16,7 @@ const NOTE_LABELS = ['C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4'];
  *
  * 사용자들이 실시간으로 노트를 추가/제거할 수 있는 그리드입니다.
  */
-const MusicGrid = ({ onGridChange }) => {
+const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1 }) => {
     // 그리드 상태: 2차원 배열 [y][x]
     const [grid, setGrid] = useState(
         Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(false))
@@ -157,6 +157,7 @@ const MusicGrid = ({ onGridChange }) => {
                                     key={`${x}-${y}`}
                                     active={active}
                                     beat={x % 4 === 0} // 4비트마다 강조
+                                    isPlaying={x === currentPlaybackPosition} // 재생 중인 열 하이라이트
                                     onClick={() => handleCellClick(x, y)}
                                 >
                                     {active && '●'}
@@ -184,7 +185,8 @@ const MusicGrid = ({ onGridChange }) => {
 };
 
 MusicGrid.propTypes = {
-    onGridChange: PropTypes.func
+    onGridChange: PropTypes.func,
+    currentPlaybackPosition: PropTypes.number
 };
 
 export default MusicGrid;
@@ -257,18 +259,30 @@ const GridCell = styled.div`
     width: 40px;
     height: 40px;
     border: 1px solid ${props => props.beat ? '#333' : '#ddd'};
-    background-color: ${props => props.active ? '#4CAF50' : '#fff'};
+    background-color: ${props => {
+        if (props.isPlaying) {
+            return props.active ? '#FFD700' : '#FFF8DC'; // 재생 중: 활성화=금색, 비활성화=연한 베이지
+        }
+        return props.active ? '#4CAF50' : '#fff';
+    }};
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    color: white;
-    transition: all 0.15s ease;
+    color: ${props => props.isPlaying && props.active ? '#333' : 'white'};
+    transition: all 0.1s ease;
+    box-shadow: ${props => props.isPlaying ? '0 0 10px rgba(255, 215, 0, 0.5)' : 'none'};
+    transform: ${props => props.isPlaying ? 'scale(1.1)' : 'scale(1)'};
 
     &:hover {
-        background-color: ${props => props.active ? '#45a049' : '#f0f0f0'};
-        transform: scale(1.05);
+        background-color: ${props => {
+            if (props.isPlaying) {
+                return props.active ? '#FFC700' : '#FFF0C0';
+            }
+            return props.active ? '#45a049' : '#f0f0f0';
+        }};
+        transform: scale(1.15);
     }
 `;
 

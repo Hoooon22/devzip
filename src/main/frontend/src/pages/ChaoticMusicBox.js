@@ -16,6 +16,9 @@ const ChaoticMusicBox = () => {
         Array(8).fill(null).map(() => Array(16).fill(false))
     );
 
+    // 현재 재생 위치 상태 (PlaybackBar -> MusicGrid)
+    const [playbackPosition, setPlaybackPosition] = useState(-1);
+
     // 현재 사용자명 생성 (랜덤)
     const currentUsername = useMemo(() =>
         `사용자${Math.floor(Math.random() * 1000)}`,
@@ -43,12 +46,19 @@ const ChaoticMusicBox = () => {
                     <LeftSection>
                         {/* 그리드 컴포넌트 */}
                         <MusicGridWrapper>
-                            <MusicGrid onGridChange={setGridState} />
+                            <MusicGrid
+                                onGridChange={setGridState}
+                                currentPlaybackPosition={playbackPosition}
+                            />
                         </MusicGridWrapper>
 
                         {/* 재생 컨트롤 */}
                         <PlaybackBarWrapper>
-                            <PlaybackBar grid={gridState} gridWidth={16} />
+                            <PlaybackBar
+                                grid={gridState}
+                                gridWidth={16}
+                                onPositionChange={setPlaybackPosition}
+                            />
                         </PlaybackBarWrapper>
                     </LeftSection>
 

@@ -10,7 +10,7 @@ import audioEngine from '../../utils/audioEngine';
  * requestAnimationFrame을 사용해 재생 바를 부드럽게 움직이고
  * 각 셀을 지날 때마다 사운드를 재생합니다.
  */
-const PlaybackBar = ({ grid, gridWidth = 16 }) => {
+const PlaybackBar = ({ grid, gridWidth = 16, onPositionChange }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPosition, setCurrentPosition] = useState(0);
     const [bpm, setBpm] = useState(120); // 기본 120 BPM
@@ -18,6 +18,12 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
     const animationFrameRef = useRef(null);
     const lastTimeRef = useRef(0);
     const positionRef = useRef(0);
+    const gridRef = useRef(grid); // 최신 grid 상태를 참조하기 위한 ref
+
+    // grid가 변경될 때마다 ref 업데이트
+    useEffect(() => {
+        gridRef.current = grid;
+    }, [grid]);
 
     // BPM에 따른 한 칸당 이동 시간 계산 (밀리초)
     const timePerStep = (60 / bpm) * 1000 / 4; // 16분음표 기준
@@ -31,10 +37,11 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
         }
 
         const activeNotes = [];
+        const currentGrid = gridRef.current; // ref를 통해 최신 grid 참조
 
         // 해당 X 좌표의 모든 Y를 검사
-        for (let y = 0; y < grid.length; y++) {
-            if (grid[y][x]) {
+        for (let y = 0; y < currentGrid.length; y++) {
+            if (currentGrid[y][x]) {
                 activeNotes.push(y);
             }
         }
@@ -44,7 +51,7 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
             audioEngine.playChord(activeNotes, 0.15);
             console.log(`🎵 Playing notes at x=${x}:`, activeNotes);
         }
-    }, [grid]);
+    }, []); // grid 의존성 제거 - gridRef로 대체
 
     /**
      * 재생 루프
@@ -64,6 +71,11 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
             // 상태 업데이트 (UI 렌더링용)
             setCurrentPosition(newPosition);
 
+            // 부모 컴포넌트에 재생 위치 전달 (MusicGrid 하이라이트용)
+            if (onPositionChange) {
+                onPositionChange(newPosition);
+            }
+
             // 해당 위치의 노트 재생
             playNotesAtPosition(newPosition);
 
@@ -72,7 +84,7 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
 
         // 다음 프레임 예약
         animationFrameRef.current = requestAnimationFrame(animate);
-    }, [timePerStep, gridWidth, playNotesAtPosition]);
+    }, [timePerStep, gridWidth, playNotesAtPosition, onPositionChange]);
 
     /**
      * 재생/정지 토글
@@ -98,6 +110,11 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
                 animationFrameRef.current = null;
+            }
+
+            // 재생 위치 초기화 알림
+            if (onPositionChange) {
+                onPositionChange(-1);
             }
 
             console.log('⏸️ 재생 일시정지');
@@ -161,7 +178,8 @@ const PlaybackBar = ({ grid, gridWidth = 16 }) => {
 
 PlaybackBar.propTypes = {
     grid: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.bool)).isRequired,
-    gridWidth: PropTypes.number
+    gridWidth: PropTypes.number,
+    onPositionChange: PropTypes.func
 };
 
 export default PlaybackBar;

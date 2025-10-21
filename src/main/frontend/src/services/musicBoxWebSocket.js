@@ -45,7 +45,8 @@ class MusicBoxWebSocketService {
                         if (onMessageReceived) {
                             onMessageReceived(parsedMessage);
                         }
-                    }
+                    },
+                    { username: 'MusicBoxUser' } // 사용자명 헤더 추가
                 );
 
                 this.subscriptions.push(subscription);
@@ -142,15 +143,22 @@ class MusicBoxWebSocketService {
      *
      * @param {string} destination - 구독할 토픽 경로
      * @param {Function} callback - 메시지 수신 시 호출될 콜백 함수
+     * @param {string} username - 사용자명 (선택사항)
      * @returns {Object} - 구독 객체 (unsubscribe 메서드 포함)
      */
-    subscribe(destination, callback) {
+    subscribe(destination, callback, username = null) {
         if (!this.connected || !this.client) {
             console.warn(`⚠️ WebSocket is not connected. Cannot subscribe to ${destination}`);
             return null;
         }
 
-        console.log(`📬 Subscribing to ${destination}`);
+        console.log(`📬 Subscribing to ${destination}`, username ? `with username: ${username}` : '');
+
+        // 구독 헤더 설정
+        const headers = {};
+        if (username) {
+            headers.username = username;
+        }
 
         const subscription = this.client.subscribe(destination, (message) => {
             const parsedMessage = JSON.parse(message.body);
@@ -159,7 +167,7 @@ class MusicBoxWebSocketService {
             if (callback) {
                 callback(parsedMessage);
             }
-        });
+        }, headers);
 
         this.subscriptions.push(subscription);
         return subscription;

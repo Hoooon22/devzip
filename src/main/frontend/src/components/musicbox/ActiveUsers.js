@@ -13,15 +13,29 @@ const ActiveUsers = ({ currentUsername }) => {
     const [totalCount, setTotalCount] = useState(0);
 
     useEffect(() => {
-        // /topic/musicbox/users 구독
-        const userListSubscription = musicBoxWebSocketService.subscribe(
-            '/topic/musicbox/users',
-            (message) => {
-                console.log('👥 User list updated:', message);
-                setUsers(message.users || []);
-                setTotalCount(message.totalCount || 0);
+        let userListSubscription = null;
+
+        // WebSocket 연결이 완료될 때까지 대기
+        const subscribeWhenConnected = () => {
+            if (!musicBoxWebSocketService.isConnected()) {
+                console.log('⏳ Waiting for WebSocket connection...');
+                setTimeout(subscribeWhenConnected, 100);
+                return;
             }
-        );
+
+            // /topic/musicbox/users 구독 (username 헤더와 함께)
+            userListSubscription = musicBoxWebSocketService.subscribe(
+                '/topic/musicbox/users',
+                (message) => {
+                    console.log('👥 User list updated:', message);
+                    setUsers(message.users || []);
+                    setTotalCount(message.totalCount || 0);
+                },
+                currentUsername // username 헤더 전달
+            );
+        };
+
+        subscribeWhenConnected();
 
         // 컴포넌트 언마운트 시 구독 해제
         return () => {
@@ -29,7 +43,7 @@ const ActiveUsers = ({ currentUsername }) => {
                 userListSubscription.unsubscribe();
             }
         };
-    }, []);
+    }, [currentUsername]);
 
     return (
         <Container>
