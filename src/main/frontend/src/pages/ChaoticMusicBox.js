@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import MusicGrid from '../components/musicbox/MusicGrid';
 import PlaybackBar from '../components/musicbox/PlaybackBar';
 import ActiveUsers from '../components/musicbox/ActiveUsers';
+import authService from '../services/AuthService';
 
 /**
  * 카오틱 뮤직박스 메인 페이지
@@ -19,11 +20,18 @@ const ChaoticMusicBox = () => {
     // 현재 재생 위치 상태 (PlaybackBar -> MusicGrid)
     const [playbackPosition, setPlaybackPosition] = useState(-1);
 
-    // 현재 사용자명 생성 (랜덤)
-    const currentUsername = useMemo(() =>
-        `사용자${Math.floor(Math.random() * 1000)}`,
-        []
-    );
+    // 현재 사용자명
+    const [currentUsername, setCurrentUsername] = useState('Anonymous');
+
+    useEffect(() => {
+        const username = authService.getCurrentUsername();
+        if (username) {
+            setCurrentUsername(username);
+        } else {
+            // 로그인하지 않은 경우 랜덤 사용자명 생성
+            setCurrentUsername(`익명${Math.floor(Math.random() * 1000)}`);
+        }
+    }, []);
 
     return (
         <PageContainer>
@@ -49,6 +57,7 @@ const ChaoticMusicBox = () => {
                             <MusicGrid
                                 onGridChange={setGridState}
                                 currentPlaybackPosition={playbackPosition}
+                                username={currentUsername}
                             />
                         </MusicGridWrapper>
 

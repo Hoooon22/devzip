@@ -16,14 +16,13 @@ const NOTE_LABELS = ['C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4'];
  *
  * 사용자들이 실시간으로 노트를 추가/제거할 수 있는 그리드입니다.
  */
-const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1 }) => {
+const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1, username }) => {
     // 그리드 상태: 2차원 배열 [y][x]
     const [grid, setGrid] = useState(
         Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(false))
     );
 
     const [connected, setConnected] = useState(false);
-    const [username] = useState(`사용자${Math.floor(Math.random() * 1000)}`);
 
     /**
      * 초기 그리드 상태 로드
@@ -117,7 +116,7 @@ const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1 }) => {
         return () => {
             musicBoxWebSocketService.disconnect();
         };
-    }, [loadInitialGrid, handleMessageReceived]);
+    }, [loadInitialGrid, handleMessageReceived, username]);
 
     /**
      * 셀 클릭 핸들러
@@ -188,7 +187,8 @@ const MusicGrid = ({ onGridChange, currentPlaybackPosition = -1 }) => {
 
 MusicGrid.propTypes = {
     onGridChange: PropTypes.func,
-    currentPlaybackPosition: PropTypes.number
+    currentPlaybackPosition: PropTypes.number,
+    username: PropTypes.string
 };
 
 export default MusicGrid;
