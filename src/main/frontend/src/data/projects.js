@@ -2,7 +2,7 @@ const projects = [
     {
         id: 11,
         name: '카오틱 뮤직박스',
-        description: '실시간으로 함께 음악을 만드는 참여형 시퀀서 (WebSocket, etc...)',
+        description: '실시간으로 함께 음악을 만드는 참여형 시퀀서 (WebSocket, gridRef)',
         link: '/chaotic-music-box',
         active: true,
         startDate: '2025-10-20',
