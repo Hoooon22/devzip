@@ -195,7 +195,6 @@ const AccessLogs = () => {
                             placeholder="관리자 비밀번호"
                             className="password-input"
                             required
-                            autoFocus
                         />
                         {authError && <div className="error-message">{authError}</div>}
                         <div className="modal-buttons">
@@ -248,24 +247,27 @@ const AccessLogs = () => {
                     <div className="filters">
                         <div className="filter-row">
                             <div className="filter-item">
-                                <label>시작 시간:</label>
+                                <label htmlFor="filter-start-time">시작 시간:</label>
                                 <input
+                                    id="filter-start-time"
                                     type="datetime-local"
                                     value={filters.startTime}
                                     onChange={(e) => handleFilterChange("startTime", e.target.value)}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>종료 시간:</label>
+                                <label htmlFor="filter-end-time">종료 시간:</label>
                                 <input
+                                    id="filter-end-time"
                                     type="datetime-local"
                                     value={filters.endTime}
                                     onChange={(e) => handleFilterChange("endTime", e.target.value)}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>IP 주소:</label>
+                                <label htmlFor="filter-ip-address">IP 주소:</label>
                                 <input
+                                    id="filter-ip-address"
                                     type="text"
                                     value={filters.ipAddress}
                                     onChange={(e) => handleFilterChange("ipAddress", e.target.value)}
@@ -273,8 +275,9 @@ const AccessLogs = () => {
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>사용자명:</label>
+                                <label htmlFor="filter-username">사용자명:</label>
                                 <input
+                                    id="filter-username"
                                     type="text"
                                     value={filters.username}
                                     onChange={(e) => handleFilterChange("username", e.target.value)}
@@ -282,8 +285,9 @@ const AccessLogs = () => {
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>HTTP 메서드:</label>
+                                <label htmlFor="filter-request-method">HTTP 메서드:</label>
                                 <select
+                                    id="filter-request-method"
                                     value={filters.requestMethod}
                                     onChange={(e) => handleFilterChange("requestMethod", e.target.value)}
                                 >
@@ -359,16 +363,18 @@ const AccessLogs = () => {
                 <div className="statistics-container">
                     <div className="stats-filters">
                         <div className="filter-item">
-                            <label>시작 날짜:</label>
+                            <label htmlFor="stats-start-time">시작 날짜:</label>
                             <input
+                                id="stats-start-time"
                                 type="datetime-local"
                                 value={statsFilters.startTime}
                                 onChange={(e) => setStatsFilters(prev => ({ ...prev, startTime: e.target.value }))}
                             />
                         </div>
                         <div className="filter-item">
-                            <label>종료 날짜:</label>
+                            <label htmlFor="stats-end-time">종료 날짜:</label>
                             <input
+                                id="stats-end-time"
                                 type="datetime-local"
                                 value={statsFilters.endTime}
                                 onChange={(e) => setStatsFilters(prev => ({ ...prev, endTime: e.target.value }))}
