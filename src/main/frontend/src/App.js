@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import TrendChat from './pages/TrendChat';
 import ChatRoomPage from "./pages/ChatRoomPage";
 import TraceBoard from './pages/traceboard/index.js';
+import AccessLogs from './pages/AccessLogs';
 import PhysicsQuiz from './pages/PhysicsQuiz';
 import LiveChatListPage from "./pages/LiveChatListPage";
 import LiveChatRoomPage from "./pages/LiveChatRoomPage";
@@ -72,13 +73,23 @@ function App() {
         </Route>
         
         {/* TraceBoard 로그 대시보드 페이지 - 관리자 전용 */}
-        <Route 
-          path="/traceboard" 
+        <Route
+          path="/traceboard"
           element={
             <ProtectedRoute requireAdmin={true}>
               <TraceBoard />
             </ProtectedRoute>
-          } 
+          }
+        />
+
+        {/* 접근 로그 페이지 - 관리자 전용 */}
+        <Route
+          path="/access-logs"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <AccessLogs />
+            </ProtectedRoute>
+          }
         />
 
         {/* Trend 채팅 페이지 */}
