@@ -4,6 +4,16 @@ import authService from "../services/AuthService";
 import "../assets/css/AccessLogs.scss";
 
 const AccessLogs = () => {
+    // 로컬 시간을 datetime-local 형식으로 변환하는 헬퍼 함수
+    const getLocalDateTimeString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState("");
     const [showPasswordModal, setShowPasswordModal] = useState(true);
@@ -15,8 +25,8 @@ const AccessLogs = () => {
 
     // 필터 상태
     const [filters, setFilters] = useState({
-        startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-        endTime: new Date().toISOString().slice(0, 16),
+        startTime: getLocalDateTimeString(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+        endTime: getLocalDateTimeString(new Date()),
         ipAddress: "",
         username: "",
         requestMethod: "",
@@ -27,8 +37,8 @@ const AccessLogs = () => {
 
     // 통계 기간 필터
     const [statsFilters, setStatsFilters] = useState({
-        startTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-        endTime: new Date().toISOString().slice(0, 16)
+        startTime: getLocalDateTimeString(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)),
+        endTime: getLocalDateTimeString(new Date())
     });
 
     const [activeTab, setActiveTab] = useState("logs"); // logs, stats, daily
@@ -142,8 +152,8 @@ const AccessLogs = () => {
     // 필터 리셋
     const handleResetFilters = () => {
         setFilters({
-            startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-            endTime: new Date().toISOString().slice(0, 16),
+            startTime: getLocalDateTimeString(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+            endTime: getLocalDateTimeString(new Date()),
             ipAddress: "",
             username: "",
             requestMethod: "",
