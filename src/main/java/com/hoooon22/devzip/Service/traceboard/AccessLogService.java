@@ -42,11 +42,12 @@ public class AccessLogService {
             String ipAddress,
             String username,
             String requestMethod,
+            String requestUri,
             int page,
             int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("accessTime").descending());
-        return accessLogRepository.findByFilters(startTime, endTime, ipAddress, username, requestMethod, pageable);
+        return accessLogRepository.findByFilters(startTime, endTime, ipAddress, username, requestMethod, requestUri, pageable);
     }
 
     /**
@@ -82,14 +83,14 @@ public class AccessLogService {
         List<Map<String, Object>> hourlyStats = accessLogRepository.getHourlyAccessStats(startTime, endTime);
         stats.put("hourlyAccessStats", hourlyStats);
 
-        // TOP 10 접근 페이지
+        // 전체 접근 페이지
         List<Map<String, Object>> topPages = accessLogRepository.getTopAccessedPages(
-            startTime, endTime, PageRequest.of(0, 10));
+            startTime, endTime, PageRequest.of(0, Integer.MAX_VALUE));
         stats.put("topAccessedPages", topPages);
 
-        // TOP 10 접근 IP
+        // 전체 접근 IP
         List<Map<String, Object>> topIps = accessLogRepository.getAccessCountByIp(
-            startTime, endTime, PageRequest.of(0, 10));
+            startTime, endTime, PageRequest.of(0, Integer.MAX_VALUE));
         stats.put("topAccessIps", topIps);
 
         return stats;

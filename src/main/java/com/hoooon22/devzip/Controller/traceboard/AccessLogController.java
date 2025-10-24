@@ -109,6 +109,7 @@ public class AccessLogController {
             @RequestParam(required = false) String ipAddress,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String requestMethod,
+            @RequestParam(required = false) String requestUri,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
 
@@ -128,7 +129,7 @@ public class AccessLogController {
             }
 
             Page<AccessLog> logs = accessLogService.getFilteredAccessLogs(
-                startTime, endTime, ipAddress, username, requestMethod, page, size);
+                startTime, endTime, ipAddress, username, requestMethod, requestUri, page, size);
 
             return ResponseEntity.ok(ApiResponse.success(logs));
 

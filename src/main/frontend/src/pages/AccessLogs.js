@@ -20,6 +20,7 @@ const AccessLogs = () => {
         ipAddress: "",
         username: "",
         requestMethod: "",
+        requestUri: "",
         page: 0,
         size: 50
     });
@@ -79,6 +80,7 @@ const AccessLogs = () => {
             if (filters.ipAddress) params.append("ipAddress", filters.ipAddress);
             if (filters.username) params.append("username", filters.username);
             if (filters.requestMethod) params.append("requestMethod", filters.requestMethod);
+            if (filters.requestUri) params.append("requestUri", filters.requestUri);
             params.append("page", filters.page);
             params.append("size", filters.size);
 
@@ -145,6 +147,7 @@ const AccessLogs = () => {
             ipAddress: "",
             username: "",
             requestMethod: "",
+            requestUri: "",
             page: 0,
             size: 50
         });
@@ -301,6 +304,16 @@ const AccessLogs = () => {
                                     <option value="PATCH">PATCH</option>
                                 </select>
                             </div>
+                            <div className="filter-item">
+                                <label htmlFor="filter-request-uri">요청 URL:</label>
+                                <input
+                                    id="filter-request-uri"
+                                    type="text"
+                                    value={filters.requestUri}
+                                    onChange={(e) => handleFilterChange("requestUri", e.target.value)}
+                                    placeholder="예: /api/users"
+                                />
+                            </div>
                         </div>
                         <div className="filter-actions">
                             <button onClick={fetchAccessLogs} className="btn-primary">
@@ -404,10 +417,10 @@ const AccessLogs = () => {
                                 <div className="stat-value error">{statistics.totalErrors?.toLocaleString() || 0}</div>
                             </div>
 
-                            {/* TOP 접근 페이지 */}
+                            {/* 접근 페이지 */}
                             {statistics.dailyStatistics?.topAccessedPages && (
                                 <div className="stat-card wide">
-                                    <h3>TOP 10 접근 페이지</h3>
+                                    <h3>접근 페이지</h3>
                                     <table className="mini-table">
                                         <thead>
                                             <tr>
@@ -427,10 +440,10 @@ const AccessLogs = () => {
                                 </div>
                             )}
 
-                            {/* TOP 접근 IP */}
+                            {/* 접근 IP */}
                             {statistics.dailyStatistics?.topAccessIps && (
                                 <div className="stat-card wide">
-                                    <h3>TOP 10 접근 IP</h3>
+                                    <h3>접근 IP</h3>
                                     <table className="mini-table">
                                         <thead>
                                             <tr>

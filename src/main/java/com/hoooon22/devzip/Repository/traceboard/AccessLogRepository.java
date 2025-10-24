@@ -36,14 +36,15 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
     Page<AccessLog> findByUsername(String username, Pageable pageable);
 
     /**
-     * 복합 필터링: 시간 범위 + IP + 사용자명
+     * 복합 필터링: 시간 범위 + IP + 사용자명 + 요청 URI
      */
     @Query("SELECT a FROM AccessLog a WHERE " +
            "(:startTime IS NULL OR a.accessTime >= :startTime) AND " +
            "(:endTime IS NULL OR a.accessTime <= :endTime) AND " +
            "(:ipAddress IS NULL OR a.ipAddress = :ipAddress) AND " +
            "(:username IS NULL OR a.username = :username) AND " +
-           "(:requestMethod IS NULL OR a.requestMethod = :requestMethod) " +
+           "(:requestMethod IS NULL OR a.requestMethod = :requestMethod) AND " +
+           "(:requestUri IS NULL OR a.requestUri LIKE CONCAT('%', :requestUri, '%')) " +
            "ORDER BY a.accessTime DESC")
     Page<AccessLog> findByFilters(
         @Param("startTime") LocalDateTime startTime,
@@ -51,6 +52,7 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
         @Param("ipAddress") String ipAddress,
         @Param("username") String username,
         @Param("requestMethod") String requestMethod,
+        @Param("requestUri") String requestUri,
         Pageable pageable
     );
 
