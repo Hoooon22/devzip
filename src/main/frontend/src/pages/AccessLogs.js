@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import authService from "../services/AuthService";
 import "../assets/css/AccessLogs.scss";
 
 const AccessLogs = () => {
@@ -37,7 +38,7 @@ const AccessLogs = () => {
         setAuthError("");
 
         try {
-            const token = localStorage.getItem("token");
+            const token = authService.getToken();
             if (!token) {
                 setAuthError("로그인이 필요합니다.");
                 return;
@@ -70,7 +71,7 @@ const AccessLogs = () => {
     const fetchAccessLogs = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("token");
+            const token = authService.getToken();
             const params = new URLSearchParams();
 
             if (filters.startTime) params.append("startTime", filters.startTime);
@@ -105,7 +106,7 @@ const AccessLogs = () => {
     const fetchStatistics = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("token");
+            const token = authService.getToken();
             const params = new URLSearchParams();
 
             if (statsFilters.startTime) params.append("startTime", statsFilters.startTime);
@@ -194,6 +195,7 @@ const AccessLogs = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="관리자 비밀번호"
                             className="password-input"
+                            autoComplete="current-password"
                             required
                         />
                         {authError && <div className="error-message">{authError}</div>}
