@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import EventLogTable from '../../components/traceboard/EventLogTable';
 import VisitorMetrics from '../../components/traceboard/VisitorMetrics';
 import UserBehaviorChart from '../../components/traceboard/UserBehaviorChart';
@@ -17,6 +18,15 @@ const PageContainer = styled.div`
 
 const Header = styled.header`
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+`;
+
+const HeaderContent = styled.div`
+  flex: 1;
 `;
 
 const Title = styled.h1`
@@ -24,7 +34,7 @@ const Title = styled.h1`
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 8px;
-  
+
   @media (min-width: 768px) {
     font-size: 32px;
   }
@@ -33,6 +43,36 @@ const Title = styled.h1`
 const Description = styled.p`
   color: #64748b;
   font-size: 16px;
+`;
+
+const AccessLogButton = styled.button`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (min-width: 768px) {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
 `;
 
 const GridContainer = styled.div`
@@ -103,6 +143,7 @@ const NoDataMessage = styled.div`
 `;
 
 const TraceBoard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState({
@@ -362,8 +403,13 @@ const TraceBoard = () => {
   return (
     <PageContainer>
       <Header>
-        <Title>TraceBoard</Title>
-        <Description>웹사이트 사용자 행동을 시각화하는 로그 대시보드</Description>
+        <HeaderContent>
+          <Title>TraceBoard</Title>
+          <Description>웹사이트 사용자 행동을 시각화하는 로그 대시보드</Description>
+        </HeaderContent>
+        <AccessLogButton onClick={() => navigate('/access-logs')}>
+          🔒 접근 로그
+        </AccessLogButton>
       </Header>
       
       <TimeRangeSelector>
