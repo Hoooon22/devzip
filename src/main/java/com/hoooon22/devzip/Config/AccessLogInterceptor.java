@@ -3,6 +3,7 @@ package com.hoooon22.devzip.Config;
 import com.hoooon22.devzip.Model.traceboard.AccessLog;
 import com.hoooon22.devzip.Service.JwtUtils;
 import com.hoooon22.devzip.Service.traceboard.AccessLogService;
+import com.hoooon22.devzip.Service.traceboard.GeoIPService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class AccessLogInterceptor implements HandlerInterceptor {
     @Autowired(required = false)
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private GeoIPService geoIPService;
+
     private static final ThreadLocal<Long> REQUEST_START_TIME = new ThreadLocal<>();
 
     @Override
@@ -55,9 +59,13 @@ public class AccessLogInterceptor implements HandlerInterceptor {
             Long startTime = REQUEST_START_TIME.get();
             long responseTime = (startTime != null) ? System.currentTimeMillis() - startTime : 0;
 
+            // IP 주소 및 국가 정보 조회
+            String clientIp = getClientIp(request);
+            GeoIPService.GeoLocation geoLocation = geoIPService.getCountryInfo(clientIp);
+
             // 접근 로그 생성
             AccessLog accessLog = AccessLog.builder()
-                .ipAddress(getClientIp(request))
+                .ipAddress(clientIp)
                 .username(getCurrentUsername(request))
                 .userRole(getCurrentUserRole(request))
                 .requestMethod(request.getMethod())
@@ -70,6 +78,8 @@ public class AccessLogInterceptor implements HandlerInterceptor {
                 .responseTimeMs(responseTime)
                 .accessTime(LocalDateTime.now())
                 .errorMessage(ex != null ? ex.getMessage() : null)
+                .countryCode(geoLocation.getCountryCode())
+                .countryName(geoLocation.getCountryName())
                 .build();
 
             // 비동기로 로그 저장 (성능 영향 최소화)

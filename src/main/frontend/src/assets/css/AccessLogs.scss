@@ -259,6 +259,13 @@
                             font-family: monospace;
                             color: #2196F3;
                             font-weight: 500;
+
+                            .country-flag {
+                                font-size: 1.2em;
+                                margin-right: 0.3rem;
+                                display: inline-block;
+                                vertical-align: middle;
+                            }
                         }
 
                         &.uri {
@@ -450,6 +457,13 @@
                                 &:first-child {
                                     font-family: monospace;
                                     color: #666;
+
+                                    .country-flag {
+                                        font-size: 1.1em;
+                                        margin-right: 0.3rem;
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                    }
                                 }
 
                                 &:last-child {

@@ -97,12 +97,12 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
     );
 
     /**
-     * IP별 접근 횟수
+     * IP별 접근 횟수 (국가 정보 포함)
      */
-    @Query("SELECT a.ipAddress as ip, COUNT(a) as count " +
+    @Query("SELECT a.ipAddress as ip, a.countryCode as countryCode, a.countryName as countryName, COUNT(a) as count " +
            "FROM AccessLog a " +
            "WHERE a.accessTime BETWEEN :startTime AND :endTime " +
-           "GROUP BY a.ipAddress " +
+           "GROUP BY a.ipAddress, a.countryCode, a.countryName " +
            "ORDER BY count DESC")
     List<Map<String, Object>> getAccessCountByIp(
         @Param("startTime") LocalDateTime startTime,

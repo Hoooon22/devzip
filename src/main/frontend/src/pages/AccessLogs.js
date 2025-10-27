@@ -186,6 +186,21 @@ const AccessLogs = () => {
         return "";
     };
 
+    // 국가 코드를 국기 이모지로 변환
+    const getCountryFlag = (countryCode) => {
+        if (!countryCode || countryCode === "XX") {
+            return "🌐"; // 알 수 없는 국가는 지구 이모지
+        }
+
+        // ISO 3166-1 alpha-2 코드를 국기 이모지로 변환
+        // 예: KR → 🇰🇷, US → 🇺🇸
+        const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt(0));
+        return String.fromCodePoint(...codePoints);
+    };
+
     useEffect(() => {
         if (isAuthenticated && activeTab === "logs") {
             fetchAccessLogs();
@@ -363,7 +378,13 @@ const AccessLogs = () => {
                                         logs.map((log) => (
                                             <tr key={log.id}>
                                                 <td>{formatDateTime(log.accessTime)}</td>
-                                                <td className="ip-address">{log.ipAddress}</td>
+                                                <td className="ip-address">
+                                                    <span className="country-flag" title={log.countryName || "Unknown"}>
+                                                        {getCountryFlag(log.countryCode)}
+                                                    </span>
+                                                    {" "}
+                                                    {log.ipAddress}
+                                                </td>
                                                 <td>{log.username || "익명"}</td>
                                                 <td className={`method-${log.requestMethod.toLowerCase()}`}>
                                                     {log.requestMethod}
@@ -464,7 +485,13 @@ const AccessLogs = () => {
                                         <tbody>
                                             {statistics.dailyStatistics.topAccessIps.map((ip, idx) => (
                                                 <tr key={idx}>
-                                                    <td>{ip.ip}</td>
+                                                    <td>
+                                                        <span className="country-flag" title={ip.countryName || "Unknown"}>
+                                                            {getCountryFlag(ip.countryCode)}
+                                                        </span>
+                                                        {" "}
+                                                        {ip.ip}
+                                                    </td>
                                                     <td>{ip.count?.toLocaleString()}</td>
                                                 </tr>
                                             ))}

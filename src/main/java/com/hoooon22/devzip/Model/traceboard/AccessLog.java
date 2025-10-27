@@ -83,4 +83,10 @@ public class AccessLog extends BaseTimeEntity {
 
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage; // 에러 메시지 (있는 경우)
+
+    @Column(name = "country_code", length = 2)
+    private String countryCode; // 국가 코드 (ISO 3166-1 alpha-2, 예: KR, US, JP)
+
+    @Column(name = "country_name", length = 100)
+    private String countryName; // 국가 이름 (예: South Korea, United States)
 }
