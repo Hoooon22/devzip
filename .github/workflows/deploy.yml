@@ -77,7 +77,7 @@ jobs:
         command_timeout: 30m
         debug: true
         script: |
-          cd ~/project/devzip
+          cd /home/ubuntu/project/devzip
           echo "🚀 Starting deployment process..."
 
           # Git 설정 및 최신 코드 가져오기 (재시도 로직 포함)
