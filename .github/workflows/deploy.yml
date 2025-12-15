@@ -70,7 +70,7 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
-        port: 3323
+        port: ${{ secrets.SERVER_SSH_PORT }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         timeout: 60s
