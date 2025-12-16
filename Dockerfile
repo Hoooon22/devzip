@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM eclipse-temurin:17-jre
 
 # curl 설치 (헬스체크용)
 RUN microdnf update && microdnf install -y curl && microdnf clean all
