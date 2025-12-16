@@ -14,9 +14,15 @@ public class WebController {
         "/lolPatch", 
         "/apiPage", 
         "/dashboard", 
+        "/dashboard/**", 
         "/trendchat", 
         "/traceboard/**", 
         "/chat/**",
+        "/livechat", 
+        "/livechat/**",
+        "/physics-quiz",
+        "/hopperbox",
+        "/chaotic-music-box",
         "/error"
     })
     public String index() {
