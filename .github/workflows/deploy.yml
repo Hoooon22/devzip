@@ -80,6 +80,12 @@ jobs:
           cd /home/ubuntu/project/devzip
           echo "🚀 Starting deployment..."
 
+          # Git 저장소 최신화
+          echo "📥 Updating git repository..."
+          git config pull.rebase false
+          git pull origin master
+          echo "✅ Git repository updated"
+
           # JAR 파일 확인
           if [ ! -f build/libs/*.jar ]; then
             echo "❌ JAR file not found!"
