@@ -1,4 +1,4 @@
-name: DevZip CI/CD Pipeline
+name: DevZip CI/CD Pipeline (Optimized)
 
 on:
   push:
@@ -8,24 +8,25 @@ on:
 
 env:
   JAVA_VERSION: '17'
-  NODE_VERSION: '20'
+  NODE_VERSION: '18'  # package.json과 일치
 
 jobs:
-  test-and-build:
-    name: Test & Build Application
+  build-and-deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
-    
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up JDK
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
 
-    - name: Set up Node.js
+    - name: Set up Node.js 18
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
@@ -42,31 +43,31 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Install Frontend Dependencies & Build
+    - name: Build Application
       env:
         CI: false
         GENERATE_SOURCEMAP: false
       run: |
-        cd src/main/frontend
-        npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-        npm run build
+        chmod +x gradlew
+        ./gradlew clean build -x test
 
-    - name: Build Application (includes frontend)
-      env:
-        CI: false
-      run: ./gradlew build -x test
+        # JAR 파일 확인
+        ls -lh build/libs/
+        echo "✅ Build completed"
 
-  deploy:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: test-and-build
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    - name: Deploy to Production Server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_SSH_PORT }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        source: "build/libs/*.jar"
+        target: "/home/ubuntu/project/devzip/"
+        strip_components: 2
+        timeout: 5m
 
-    steps:
-    - name: Deploy to server
+    - name: Restart Docker Services
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -74,100 +75,74 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         timeout: 60s
-        command_timeout: 30m
-        debug: true
+        command_timeout: 10m
         script: |
           cd /home/ubuntu/project/devzip
-          echo "🚀 Starting deployment process..."
+          echo "🚀 Starting deployment..."
 
-          # Git 설정 및 최신 코드 가져오기 (재시도 로직 포함)
-          git config pull.rebase false
-
-          # Git pull with retry mechanism
-          retry_count=0
-          max_retries=3
-
-          while [ $retry_count -lt $max_retries ]; do
-            echo "📥 Attempting git pull (attempt $((retry_count + 1))/$max_retries)..."
-            if git pull origin master; then
-              echo "✅ Git pull successful"
-              break
-            else
-              retry_count=$((retry_count + 1))
-              if [ $retry_count -lt $max_retries ]; then
-                echo "⚠️ Git pull failed, retrying in 10 seconds..."
-                sleep 10
-              else
-                echo "❌ Git pull failed after $max_retries attempts"
-                exit 1
-              fi
-            fi
-          done
-          
-          # 점검 페이지를 nginx 디렉토리로 복사
-          echo "🔧 Setting up maintenance page..."
-          sudo mkdir -p /var/www/html
-          sudo cp maintenance.html /var/www/html/ || echo "⚠️ Could not copy maintenance page"
-          sudo chown www-data:www-data /var/www/html/maintenance.html 2>/dev/null || echo "ℹ️ Maintenance page copied"
-          
-          # nginx 설정에 502 에러 페이지 처리 추가 (기존 설정이 없는 경우만)
-          if ! grep -q "error_page 502.*maintenance.html" /etc/nginx/sites-available/default 2>/dev/null; then
-            echo "🔧 Updating nginx configuration for maintenance page..."
-            sudo sed -i '/server {/a\\n\t# 502 에러 시 점검 페이지 표시\n\terror_page 502 503 504 /maintenance.html;\n\n\tlocation = /maintenance.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t\tadd_header Cache-Control "no-cache, no-store, must-revalidate";\n\t\tadd_header Pragma "no-cache";\n\t\tadd_header Expires "0";\n\t}' /etc/nginx/sites-available/default || echo "⚠️ Could not update nginx config"
-            sudo nginx -t && sudo systemctl reload nginx || echo "⚠️ Could not reload nginx"
-          fi
-          
-          # Gradle 빌드 및 Docker 작업 실행
-          echo "✅ Git pull successful, starting build..."
-          # 실행 권한 부여
-          chmod +x gradlew
-          # Spring Boot 애플리케이션 빌드 (프론트엔드 포함)
-          ./gradlew clean build -x test
-
-          if [ $? -eq 0 ]; then
-            echo "✅ Build successful, restarting services..."
-            # 효율적인 Docker 재시작 (캐시 활용)
-            docker compose down
-            docker compose build
-            docker compose up -d
-            echo "🎉 Deployment completed successfully!"
-          else
-            echo "❌ Build failed. Deployment stopped."
+          # JAR 파일 확인
+          if [ ! -f build/libs/*.jar ]; then
+            echo "❌ JAR file not found!"
             exit 1
           fi
 
+          echo "✅ JAR file verified"
+          ls -lh build/libs/
+
+          # Docker 재시작 (빌드 스킵)
+          echo "🐳 Restarting Docker containers..."
+          docker compose down
+          docker compose up -d --build
+
+          echo "⏳ Waiting for application to start..."
+          sleep 15
+
+          # 헬스체크
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
+              echo "✅ Application started successfully!"
+              exit 0
+            fi
+            echo "⏳ Waiting... ($i/10)"
+            sleep 3
+          done
+
+          echo "⚠️ Application might be starting slower than expected"
+          echo "🎉 Deployment completed!"
+
   health-check:
-    name: Health Check & Status Verification
+    name: Health Check & Verification
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: build-and-deploy
     if: github.ref == 'refs/heads/master' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip-health-check]')
 
     steps:
     - name: Wait for Application Startup
       run: |
-        echo "⏳ Waiting for application to start..."
+        echo "⏳ Waiting for application to fully start..."
         sleep 30
 
     - name: Health Check - Basic Connectivity
       run: |
         echo "🏥 Running health checks..."
-        
-        # Check if server is responding
+
         response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
-        
+
         if [ "$response" = "200" ]; then
           echo "✅ Health check endpoint: OK"
         else
           echo "❌ Health check endpoint failed (HTTP $response)"
+          exit 1
         fi
 
     - name: Authentication System Check
       run: |
         echo "🔐 Testing JWT authentication system..."
-        
-        # Test login endpoint availability (should return proper error format, not 404)
-        login_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://devzip.cloud/api/auth/signin -H "Content-Type: application/json" -d '{"username":"test","password":"test"}' || echo "000")
-        
+
+        login_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://devzip.cloud/api/auth/signin \
+          -H "Content-Type: application/json" \
+          -d '{"username":"test","password":"test"}' || echo "000")
+
         if [ "$login_response" = "403" ] || [ "$login_response" = "401" ] || [ "$login_response" = "400" ]; then
           echo "✅ Authentication endpoint: Responding properly"
         elif [ "$login_response" = "404" ]; then
@@ -179,10 +154,9 @@ jobs:
     - name: Frontend Loading Check
       run: |
         echo "🌐 Testing frontend loading..."
-        
-        # Check main page
+
         main_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/ || echo "000")
-        
+
         if [ "$main_response" = "200" ]; then
           echo "✅ Main page: Loading successfully"
         else
@@ -192,19 +166,16 @@ jobs:
     - name: Protected Routes Check
       run: |
         echo "🛡️ Testing protected routes..."
-        
-        # Test dashboard access (should redirect or show login)
+
         dashboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/dashboard || echo "000")
-        
+        traceboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/traceboard || echo "000")
+
         if [ "$dashboard_response" = "200" ] || [ "$dashboard_response" = "302" ] || [ "$dashboard_response" = "401" ]; then
           echo "✅ Dashboard protection: Working"
         else
           echo "⚠️ Dashboard protection: Unexpected response ($dashboard_response)"
         fi
-        
-        # Test traceboard access
-        traceboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/traceboard || echo "000")
-        
+
         if [ "$traceboard_response" = "200" ] || [ "$traceboard_response" = "302" ] || [ "$traceboard_response" = "401" ]; then
           echo "✅ Traceboard protection: Working"
         else

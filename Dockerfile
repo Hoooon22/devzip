@@ -1,7 +1,7 @@
 FROM eclipse-temurin:17-jre
 
 # curl 설치 (헬스체크용)
-RUN microdnf update && microdnf install -y curl && microdnf clean all
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
