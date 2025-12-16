@@ -127,20 +127,34 @@ jobs:
     - name: Wait for Application Startup
       run: |
         echo "⏳ Waiting for application to fully start..."
-        sleep 30
+        echo "📊 Docker start-period is 180s, waiting sufficiently..."
+        sleep 90
 
     - name: Health Check - Basic Connectivity
       run: |
-        echo "🏥 Running health checks..."
+        echo "🏥 Running health checks with retry logic..."
 
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
+        max_retries=10
+        retry_count=0
+        wait_time=10
 
-        if [ "$response" = "200" ]; then
-          echo "✅ Health check endpoint: OK"
-        else
-          echo "❌ Health check endpoint failed (HTTP $response)"
-          exit 1
-        fi
+        while [ $retry_count -lt $max_retries ]; do
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
+
+          if [ "$response" = "200" ]; then
+            echo "✅ Health check endpoint: OK (attempt $((retry_count + 1))/$max_retries)"
+            break
+          else
+            retry_count=$((retry_count + 1))
+            if [ $retry_count -lt $max_retries ]; then
+              echo "⏳ Health check failed (HTTP $response), retrying in ${wait_time}s... (attempt $retry_count/$max_retries)"
+              sleep $wait_time
+            else
+              echo "❌ Health check endpoint failed after $max_retries attempts (HTTP $response)"
+              exit 1
+            fi
+          fi
+        done
 
     - name: Authentication System Check
       run: |
