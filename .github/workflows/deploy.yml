@@ -71,14 +71,16 @@ jobs:
 
     - name: Build and Push Docker image
       env:
-        IMAGE_REPO: ghcr.io/${{ github.repository_owner }}/devzip
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        OWNER_LC="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+        IMAGE_REPO="ghcr.io/${OWNER_LC}/devzip"
         docker buildx build \
           --platform linux/amd64 \
           -t "${IMAGE_REPO}:${IMAGE_TAG}" \
           -t "${IMAGE_REPO}:latest" \
           --push .
+        echo "IMAGE_REPO=${IMAGE_REPO}" >> $GITHUB_ENV
         echo "IMAGE_FULL=${IMAGE_REPO}:${IMAGE_TAG}" >> $GITHUB_ENV
         echo "✅ Image pushed: ${IMAGE_REPO}:${IMAGE_TAG}"
 
@@ -100,8 +102,9 @@ jobs:
           cd /home/ubuntu/project/devzip
           echo "🚀 Starting deployment (pulling prebuilt image)..."
 
-          IMAGE_REPO="ghcr.io/${{ github.repository_owner }}/devzip"
-          IMAGE_TAG="${{ github.sha }}"
+          OWNER_LC="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          IMAGE_REPO="ghcr.io/${OWNER_LC}/devzip"
+          IMAGE_TAG="${GITHUB_SHA}"
           IMAGE_FULL="${IMAGE_REPO}:${IMAGE_TAG}"
 
           # Git 저장소 최신화
