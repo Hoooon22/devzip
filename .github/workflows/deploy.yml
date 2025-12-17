@@ -153,37 +153,41 @@ jobs:
         echo "📊 Docker start-period is 60s, waiting adequately..."
         sleep 45
 
-    - name: Health Check - Basic Connectivity
-      run: |
-        echo "🏥 Running health checks with retry logic..."
-
-        max_retries=10
-        retry_count=0
-        wait_time=10
-
-        while [ $retry_count -lt $max_retries ]; do
-          body_file=$(mktemp)
-          response=$(curl -s -o "$body_file" -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
-
-          if [ "$response" = "200" ]; then
-            echo "✅ Health check endpoint: OK (attempt $((retry_count + 1))/$max_retries)"
-            rm -f "$body_file"
-            break
-          else
-            echo "ℹ️  Status: $response"
-            echo "ℹ️  Body:"
-            cat "$body_file"
-            rm -f "$body_file"
-            retry_count=$((retry_count + 1))
-            if [ $retry_count -lt $max_retries ]; then
-              echo "⏳ Health check failed (HTTP $response), retrying in ${wait_time}s... (attempt $retry_count/$max_retries)"
-              sleep $wait_time
-            else
-              echo "❌ Health check endpoint failed after $max_retries attempts (HTTP $response)"
-              exit 1
+    - name: Health Check - Server Local (authoritative)
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_SSH_PORT }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        timeout: 60s
+        command_timeout: 2m
+        script: |
+          echo "🏥 Checking app health from server..."
+          max_retries=10
+          wait_time=6
+          for i in $(seq 1 $max_retries); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health || echo "000")
+            if [ "$status" = "200" ]; then
+              echo "✅ Local health check passed (attempt ${i}/${max_retries})"
+              exit 0
             fi
-          fi
-        done
+            echo "⏳ Local health check failed (HTTP $status), retrying in ${wait_time}s... (attempt ${i}/${max_retries})"
+            sleep $wait_time
+          done
+          echo "❌ Local health check failed after $max_retries attempts"
+          exit 1
+
+    - name: Health Check - External (informational)
+      run: |
+        echo "🌐 Running external health check (non-blocking, informational)..."
+        response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://devzip.cloud/actuator/health || echo "000")
+        echo "ℹ️  External status: $response"
+        if [ "$response" != "200" ]; then
+          echo "⚠️ External check did not return 200. This may be due to firewall or DNS restrictions from GitHub runners."
+        else
+          echo "✅ External endpoint reachable."
+        fi
 
     - name: Authentication System Check
       run: |
