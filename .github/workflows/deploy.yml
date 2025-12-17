@@ -55,18 +55,7 @@ jobs:
         ls -lh build/libs/
         echo "✅ Build completed"
 
-    - name: Deploy JAR to Production Server
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        port: ${{ secrets.SERVER_SSH_PORT }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        source: "build/libs/*.jar"
-        target: "/home/ubuntu/project/devzip/build/libs/"
-        timeout: 5m
-
-    - name: Restart Docker Services
+    - name: Build & Deploy on Production Server
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -85,14 +74,9 @@ jobs:
           git pull origin master
           echo "✅ Git repository updated"
 
-          # JAR 파일 확인 (개선된 로직)
-          JAR_COUNT=$(ls -1 build/libs/*.jar 2>/dev/null | wc -l)
-          if [ "$JAR_COUNT" -eq 0 ]; then
-            echo "❌ JAR file not found!"
-            exit 1
-          fi
-
-          echo "✅ JAR file verified ($JAR_COUNT files found)"
+          # 로컬에서 새 JAR 빌드 (프런트 포함)
+          echo "🔨 Building fresh JAR on server..."
+          ./gradlew clean build -x test
           ls -lh build/libs/
 
           # Docker 재시작 및 캐시 무효화 (sudo 권한으로 실행)
@@ -147,12 +131,18 @@ jobs:
         wait_time=10
 
         while [ $retry_count -lt $max_retries ]; do
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
+          body_file=$(mktemp)
+          response=$(curl -s -o "$body_file" -w "%{http_code}" https://devzip.cloud/actuator/health || echo "000")
 
           if [ "$response" = "200" ]; then
             echo "✅ Health check endpoint: OK (attempt $((retry_count + 1))/$max_retries)"
+            rm -f "$body_file"
             break
           else
+            echo "ℹ️  Status: $response"
+            echo "ℹ️  Body:"
+            cat "$body_file"
+            rm -f "$body_file"
             retry_count=$((retry_count + 1))
             if [ $retry_count -lt $max_retries ]; then
               echo "⏳ Health check failed (HTTP $response), retrying in ${wait_time}s... (attempt $retry_count/$max_retries)"
