@@ -15,6 +15,10 @@ jobs:
     name: Build & Deploy
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      deployments: write
 
     steps:
     - name: Checkout code
@@ -49,14 +53,41 @@ jobs:
         GENERATE_SOURCEMAP: false
       run: |
         chmod +x gradlew
-        ./gradlew clean build -x test
+        ./gradlew build -x test
 
         # JAR 파일 확인
         ls -lh build/libs/
         echo "✅ Build completed"
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Push Docker image
+      env:
+        IMAGE_REPO: ghcr.io/${{ github.repository_owner }}/devzip
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker buildx build \
+          --platform linux/amd64 \
+          -t "${IMAGE_REPO}:${IMAGE_TAG}" \
+          -t "${IMAGE_REPO}:latest" \
+          --push .
+        echo "IMAGE_FULL=${IMAGE_REPO}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "✅ Image pushed: ${IMAGE_REPO}:${IMAGE_TAG}"
+
     - name: Build & Deploy on Production Server
       uses: appleboy/ssh-action@v1.0.3
+      env:
+        GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        GITHUB_SHA: ${{ github.sha }}
       with:
         host: ${{ secrets.SERVER_HOST }}
         port: ${{ secrets.SERVER_SSH_PORT }}
@@ -64,9 +95,14 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         timeout: 60s
         command_timeout: 10m
+        envs: GHCR_TOKEN,GITHUB_REPOSITORY_OWNER,GITHUB_SHA
         script: |
           cd /home/ubuntu/project/devzip
-          echo "🚀 Starting deployment..."
+          echo "🚀 Starting deployment (pulling prebuilt image)..."
+
+          IMAGE_REPO="ghcr.io/${{ github.repository_owner }}/devzip"
+          IMAGE_TAG="${{ github.sha }}"
+          IMAGE_FULL="${IMAGE_REPO}:${IMAGE_TAG}"
 
           # Git 저장소 최신화
           echo "📥 Updating git repository..."
@@ -74,24 +110,16 @@ jobs:
           git pull origin master
           echo "✅ Git repository updated"
 
-          # 로컬에서 새 JAR 빌드 (프런트 포함)
-          echo "🔨 Building fresh JAR on server..."
-          ./gradlew clean build -x test
-          ls -lh build/libs/
+          # 컨테이너 레지스트리 로그인 (GHCR)
+          echo "🔑 Logging into GHCR..."
+          echo "${GHCR_TOKEN}" | sudo docker login ghcr.io -u "${GITHUB_REPOSITORY_OWNER}" --password-stdin
 
-          # Docker 재시작 및 캐시 무효화 (sudo 권한으로 실행)
-          echo "🐳 Stopping Docker containers..."
-          sudo docker compose down
+          # 최신 이미지 풀 및 컨테이너 교체
+          echo "🐳 Pulling image ${IMAGE_FULL}..."
+          APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose pull app
 
-          echo "🗑️ Removing old images to ensure fresh build..."
-          sudo docker compose rm -f
-          sudo docker images | grep devzip | awk '{print $3}' | xargs -r sudo docker rmi -f || true
-
-          echo "🔨 Building Docker images without cache..."
-          sudo docker compose build --no-cache
-
-          echo "🚀 Starting Docker containers with force recreate..."
-          sudo docker compose up -d --force-recreate
+          echo "🚀 Recreating containers with new image..."
+          APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose up -d --force-recreate app
 
           echo "⏳ Waiting for application to start (increased wait time due to fresh build)..."
           sleep 30
