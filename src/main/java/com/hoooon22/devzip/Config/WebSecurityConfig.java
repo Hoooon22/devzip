@@ -100,7 +100,9 @@ public class WebSecurityConfig {
             "http://192.168.*", // 포트 없는 경우 추가
             "https://192.168.*", // 포트 없는 경우 추가
             "https://devzip.cloud",
-            "http://devzip.cloud"
+            "http://devzip.cloud",
+            "https://www.devzip.cloud",
+            "http://www.devzip.cloud"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
