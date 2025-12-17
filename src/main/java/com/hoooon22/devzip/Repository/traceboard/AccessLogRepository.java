@@ -131,10 +131,8 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
     );
 
     /**
-     * 특정 IP의 오늘 접근 횟수
+     * 특정 IP의 특정 기간 내 접근 횟수
+     * 오늘 접근 횟수를 확인하려면 startTime에 오늘 00:00:00, endTime에 내일 00:00:00을 전달
      */
-    @Query("SELECT COUNT(a) FROM AccessLog a WHERE " +
-           "a.ipAddress = :ipAddress AND " +
-           "DATE(a.accessTime) = CURRENT_DATE")
-    long countTodayAccessByIp(@Param("ipAddress") String ipAddress);
+    long countByIpAddressAndAccessTimeBetween(String ipAddress, LocalDateTime startTime, LocalDateTime endTime);
 }

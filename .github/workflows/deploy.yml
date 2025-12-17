@@ -55,7 +55,7 @@ jobs:
         ls -lh build/libs/
         echo "✅ Build completed"
 
-    - name: Deploy to Production Server
+    - name: Deploy JAR to Production Server
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -63,8 +63,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         source: "build/libs/*.jar"
-        target: "/home/ubuntu/project/devzip/"
-        strip_components: 2
+        target: "/home/ubuntu/project/devzip/build/libs/"
         timeout: 5m
 
     - name: Restart Docker Services

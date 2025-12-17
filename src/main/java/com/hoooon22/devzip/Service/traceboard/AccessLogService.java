@@ -122,7 +122,9 @@ public class AccessLogService {
      */
     @Transactional(readOnly = true)
     public long getTodayAccessCountByIp(String ipAddress) {
-        return accessLogRepository.countTodayAccessByIp(ipAddress);
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextDay = startOfDay.plusDays(1);
+        return accessLogRepository.countByIpAddressAndAccessTimeBetween(ipAddress, startOfDay, startOfNextDay);
     }
 
     /**
