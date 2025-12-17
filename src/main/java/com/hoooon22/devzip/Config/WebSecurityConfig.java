@@ -2,7 +2,6 @@ package com.hoooon22.devzip.Config;
 
 import com.hoooon22.devzip.Service.AuthTokenFilter;
 import com.hoooon22.devzip.Service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,13 +29,14 @@ public class WebSecurityConfig {
     
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final AuthTokenFilter authTokenFilter;
 
-    @Autowired
-    private AuthTokenFilter authTokenFilter;
-
-    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+                           AuthEntryPointJwt unauthorizedHandler,
+                           AuthTokenFilter authTokenFilter) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
+        this.authTokenFilter = authTokenFilter;
     }
     
     @Bean
