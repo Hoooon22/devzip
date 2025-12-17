@@ -18,6 +18,14 @@ const Main = () => {
     const [showAllProjects, setShowAllProjects] = useState(false);
     const overlayRef = useRef(null);
 
+    // 메인 페이지에 있을 때만 바디 스크롤을 잠금 (클래스로 명시적으로 관리)
+    useEffect(() => {
+        document.body.classList.add('main-scroll-locked');
+        return () => {
+            document.body.classList.remove('main-scroll-locked');
+        };
+    }, []);
+
     // 테마 전환 효과
     useEffect(() => {
         const container = document.querySelector('.container');
