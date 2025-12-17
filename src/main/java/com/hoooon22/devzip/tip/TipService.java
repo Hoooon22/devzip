@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -21,13 +22,18 @@ public class TipService {
 
     private static final Logger logger = LoggerFactory.getLogger(TipService.class);
 
-    @Value("${google.api.key}")
+    @Value("${google.api.key:}")
     private String apiKey;
+
+    private final RestTemplate restTemplate;
 
     private String cachedTip;
     private LocalDate lastGeneratedDate;
 
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+    public TipService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     /**
      * 오늘의 CS 팁 가져오기 (동시성 안전)
@@ -44,7 +50,7 @@ public class TipService {
                 logger.info("✅ Successfully generated new CS tip for {}", today);
             } catch (Exception e) {
                 logger.error("❌ Error generating new CS tip from Gemini API", e);
-                return "CS 팁을 불러오는 데 실패했습니다. 내일 다시 시도해주세요!";
+                return "CS 팁을 불러오는 데 실패했습니다. (API 연결 오류)";
             }
         } else {
             logger.debug("📦 Using cached tip for {}", today);
@@ -59,7 +65,9 @@ public class TipService {
      * @throws Exception API 호출 실패 시
      */
     private String generateNewTip() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
+        if (!StringUtils.hasText(apiKey)) {
+            throw new IllegalStateException("Google API key is not configured");
+        }
 
         // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();

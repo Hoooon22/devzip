@@ -24,7 +24,7 @@ public class JokeService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${google.api.key}")
+    @Value("${google.api.key:}")
     private String googleApiKey;
 
     // 일일 농담 캐싱 필드
@@ -111,7 +111,7 @@ public class JokeService {
         try {
             if (googleApiKey == null || googleApiKey.isEmpty()) {
                 logger.warn("Google API key is not configured");
-                return "[번역 실패: API 키 없음] " + englishText;
+                return "[Gemini API 연결 실패]";
             }
 
             String geminiUrlWithKey = GEMINI_API_URL + "?key=" + googleApiKey;
@@ -155,11 +155,11 @@ public class JokeService {
             }
 
             logger.error("Failed to parse Gemini API response");
-            return "[번역 실패] " + englishText;
+            return "[Gemini API 연결 실패]";
 
         } catch (Exception e) {
             logger.error("Error during translation", e);
-            return "[번역 오류] " + englishText;
+            return "[Gemini API 연결 실패]";
         }
     }
 
