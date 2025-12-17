@@ -124,8 +124,8 @@ jobs:
           echo "🚀 Recreating containers with new image..."
           APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose up -d --force-recreate app
 
-          echo "⏳ Waiting for application to start (increased wait time due to fresh build)..."
-          sleep 30
+          echo "⏳ Waiting briefly for application to start..."
+          sleep 10
 
           # 헬스체크
           for i in {1..12}; do
@@ -149,9 +149,9 @@ jobs:
     steps:
     - name: Wait for Application Startup
       run: |
-        echo "⏳ Waiting for application to fully start..."
-        echo "📊 Docker start-period is 180s, waiting sufficiently..."
-        sleep 90
+        echo "⏳ Waiting briefly for application to fully start..."
+        echo "📊 Docker start-period is 60s, waiting adequately..."
+        sleep 45
 
     - name: Health Check - Basic Connectivity
       run: |
