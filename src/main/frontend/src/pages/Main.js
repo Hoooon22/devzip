@@ -119,7 +119,7 @@ const Main = () => {
         <div className="container production-mode">
             {/* 헤더 영역: 타이틀(왼쪽) + 로그인(오른쪽) */}
             <div className="main-header">
-                <h1>Hoooon22&apos;s DevZip?</h1>
+                <h1>Hoooon22&apos;s DevZip</h1>
                 <div className="auth-section">
                     <UserStatus />
                 </div>
