@@ -25,7 +25,10 @@ services:
 
   # Spring Boot 애플리케이션
   app:
-    image: ${APP_IMAGE:-ghcr.io/devzip/devzip:latest}
+    image: ${APP_IMAGE:-devzip:local}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: devzip-app
     ports:
       - "8080:8080"
