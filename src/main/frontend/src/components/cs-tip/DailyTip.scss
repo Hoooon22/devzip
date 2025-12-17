@@ -1,48 +1,49 @@
 .daily-tip-container {
-    background-color: #f0f8ff;
-    border-left: 5px solid #4a90e2;
+    background: linear-gradient(135deg, rgba(72, 215, 193, 0.12), rgba(79, 179, 255, 0.08));
+    border: 1px solid rgba(255, 255, 255, 0.08);
     margin: 0;
-    padding: 15px 20px;
-    border-radius: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
-    transition: all 0.3s ease;
-    width: 100%; // 부모의 너비에 맞춤
-    flex: 1; // 부모의 높이에 맞춤
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    transition: all 0.2s ease;
+    width: 100%;
+    flex: 1;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(74, 144, 226, 0.25);
+        box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+        border-color: rgba(72, 215, 193, 0.3);
     }
 
     .daily-tip-icon {
-        font-size: 1.8rem;
-        margin-right: 15px;
+        font-size: 1.6rem;
+        margin-right: 14px;
         flex-shrink: 0;
     }
 
     .daily-tip-text {
         margin: 0;
         font-size: 0.95rem;
-        color: #333;
+        color: #e7ecf3;
         line-height: 1.6;
         text-align: left;
 
         &.loading {
-            color: #4a90e2;
+            color: #48d7c1;
             font-style: italic;
         }
     }
 
     .loading-spinner {
-        width: 24px;
-        height: 24px;
-        border: 3px solid rgba(74, 144, 226, 0.2);
-        border-top: 3px solid #4a90e2;
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(72, 215, 193, 0.2);
+        border-top: 3px solid #48d7c1;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin-right: 15px;
+        margin-right: 14px;
         flex-shrink: 0;
     }
 }
@@ -52,19 +53,17 @@
     100% { transform: rotate(360deg); }
 }
 
-// 모바일 반응형
 @media (max-width: 768px) {
     .daily-tip-container {
-        padding: 12px 16px;
-        min-height: auto;
+        padding: 12px 14px;
 
         .daily-tip-icon {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-right: 12px;
         }
 
         .daily-tip-text {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
         }
     }
 }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import projects from '../data/projects';
-import Pagination from '../components/Pagination';
 import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
 import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
 import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
@@ -8,17 +7,16 @@ import ViewModeToggle from '../components/ViewModeToggle'; // ViewModeToggle 컴
 import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 임포트
 import DailyJoke from '../components/cs-tip/DailyJoke'; // DailyJoke 컴포넌트 임포트
 import csTipService from '../services/csTipService'; // CS Tip Service 임포트
-import { Link } from 'react-router-dom'; // Import Link
 import "../assets/css/Main.scss";
 
 const Main = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [projectsPerPage] = useState(6);
     const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
     const [dailyTip, setDailyTip] = useState('');
     const [isTipLoading, setIsTipLoading] = useState(true); // 로딩 상태 추가
     const [dailyJoke, setDailyJoke] = useState(null);
     const [isJokeLoading, setIsJokeLoading] = useState(true); // 농담 로딩 상태
+    const [showAllProjects, setShowAllProjects] = useState(false);
+    const overlayRef = useRef(null);
 
     // 테마 전환 효과
     useEffect(() => {
@@ -83,85 +81,129 @@ const Main = () => {
     // 모드 전환 핸들러
     const handleModeToggle = () => {
         setIsProductionMode(prev => !prev);
-        setCurrentPage(1); // 페이지를 1로 리셋
     };
+    const filteredProjects = projects
+        .filter(project => project.isProduction === isProductionMode);
 
-    // 현재 모드에 맞는 프로젝트 필터링
-    const filteredProjects = projects.filter(project =>
-        project.isProduction === isProductionMode
-    );
-
-    // Sort filtered projects by startDate in descending order
     const sortedProjects = [...filteredProjects].sort((a, b) => {
-        // Pinned projects first
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
-
-        // Admin projects second
         if (a.requiresAdmin && !b.requiresAdmin) return -1;
         if (!a.requiresAdmin && b.requiresAdmin) return 1;
-
-        // Then sort by date
         if (!a.startDate) return 1;
         if (!b.startDate) return -1;
         return new Date(b.startDate) - new Date(a.startDate);
     });
 
-    // 현재 페이지에 표시할 프로젝트 계산
-    const indexOfLastProject = currentPage * projectsPerPage;
-    const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-    const currentProjects = sortedProjects.slice(indexOfFirstProject, indexOfLastProject);
-
-    // 페이지 변경
-    const paginate = pageNumber => setCurrentPage(pageNumber);
-
     return (
-        <div className="container production-mode">
-            {/* 헤더 영역: 타이틀(왼쪽) + 로그인(오른쪽) */}
-            <div className="main-header">
-                <h1>Hoooon22&apos;s DevZip</h1>
-                <div className="auth-section">
-                    <UserStatus />
+        <div className={`page-shell ${isProductionMode ? 'mode-production' : 'mode-experiment'}`}>
+            <div className="noise-layer" aria-hidden="true"></div>
+
+            <header className="hero">
+                <div className="hero__text">
+                    <p className="eyebrow">Hoooon22&apos;s DevZip</p>
+                    <h1>빌드하고 실험하며 기록하는 개발 랩</h1>
+                    <p className="lede">
+                        사이드 프로젝트와 실험적인 아이디어를 한 곳에서 모았습니다. 운영 중인 서비스와 실험실 프로젝트를 모드 전환으로 빠르게 오가며 확인하세요.
+                    </p>
+                    <div className="hero__actions">
+                        <ViewModeToggle
+                            isProductionMode={isProductionMode}
+                            onToggle={handleModeToggle}
+                        />
+                    </div>
+                    <div className="deck-window">
+                        <div className="deck-window__header">
+                            <div>
+                                <p className="eyebrow">Project Deck</p>
+                                <h3>{isProductionMode ? '운영 중인 프로젝트' : '실험 중인 프로젝트'}</h3>
+                            </div>
+                            <button className="view-all-btn" onClick={() => setShowAllProjects(true)}>전체 보기</button>
+                        </div>
+                        {sortedProjects.length === 0 ? (
+                            <div className="empty-projects compact">
+                                <p>🚧 {isProductionMode ? '현재 서비스 중인' : '현재 실험'} 프로젝트가 없습니다.</p>
+                            </div>
+                        ) : (
+                            <div className="deck-window__body">
+                                <div className="carousel-wrapper">
+                                    <div className="carousel-track">
+                                        {sortedProjects.map(project => (
+                                            <div className="carousel-item" key={project.id}>
+                                                <ProjectBox project={project} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-
-            {/* CS 팁 영역 */}
-            <div className="tip-section">
-                <DailyTip tip={dailyTip} isLoading={isTipLoading} />
-            </div>
-
-            {/* 농담 영역 */}
-            <div className="joke-section">
-                <DailyJoke joke={dailyJoke} isLoading={isJokeLoading} />
-            </div>
-
-            {/* 모드 전환 버튼 */}
-            <ViewModeToggle
-                isProductionMode={isProductionMode}
-                onToggle={handleModeToggle}
-            />
-
-            {/* 프로젝트가 없을 때 메시지 표시 */}
-            {sortedProjects.length === 0 ? (
-                <div className="empty-projects">
-                    <p>🚧 {isProductionMode ? '현재 서비스 중인' : '현재 실험'} 프로젝트가 없습니다.</p>
-                    <p>곧 추가될 예정입니다!</p>
+                <div className="hero__panel hero__panel--stack">
+                    <div className="meta-card">
+                        <span className="meta-label">현재 모드</span>
+                        <strong className="meta-value">{isProductionMode ? 'Production' : 'Experiment'}</strong>
+                        <p className="meta-desc">
+                            {isProductionMode ? '실서비스 상태의 안정된 프로젝트' : '새 기능과 디자인을 실험하는 공간'}
+                        </p>
+                        <div className="meta-embedded">
+                            <div className="card-heading tight">
+                                <span className="pill">Daily</span>
+                                <p>오늘의 CS 팁</p>
+                            </div>
+                            <DailyTip tip={dailyTip} isLoading={isTipLoading} />
+                        </div>
+                        <div className="meta-embedded">
+                            <div className="card-heading tight">
+                                <span className="pill pill--warm">Break</span>
+                                <p>오늘의 농담</p>
+                            </div>
+                            <DailyJoke joke={dailyJoke} isLoading={isJokeLoading} />
+                        </div>
+                        <div className="meta-embedded">
+                            <span className="meta-label">계정</span>
+                            <UserStatus />
+                        </div>
+                    </div>
                 </div>
-            ) : (
-                <>
-                    <ul className="project-list">
-                        {currentProjects.map(project => (
-                            <li key={project.id} className="project-item">
-                                <ProjectBox project={project} />
-                            </li>
-                        ))}
-                    </ul>
-                    <Pagination
-                        projectsPerPage={projectsPerPage}
-                        totalProjects={sortedProjects.length}
-                        paginate={paginate}
-                    />
-                </>
+            </header>
+
+            {showAllProjects && (
+                <div
+                    className="modal-overlay"
+                    role="presentation"
+                    ref={overlayRef}
+                    onClick={(e) => {
+                        if (overlayRef.current && e.target === overlayRef.current) {
+                            setShowAllProjects(false);
+                        }
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape') setShowAllProjects(false);
+                    }}
+                    tabIndex={-1}
+                >
+                    <div
+                        className="modal"
+                        role="dialog"
+                        aria-modal="true"
+                    >
+                        <div className="modal-header">
+                            <div>
+                                <p className="eyebrow">Project Deck</p>
+                                <h3>{isProductionMode ? '전체 운영 프로젝트' : '전체 실험 프로젝트'}</h3>
+                            </div>
+                            <button className="close-btn" onClick={() => setShowAllProjects(false)}>닫기</button>
+                        </div>
+                        <ul className="project-grid">
+                            {sortedProjects.map(project => (
+                                <li key={`grid-${project.id}`} className="project-item">
+                                    <ProjectBox project={project} />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
             )}
             <Footer />
         </div>

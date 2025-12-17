@@ -1,0 +1,42 @@
+# Docker Production Configuration (sample)
+# Fill in real secrets via environment variables or deployment-time overrides.
+
+# MySQL Database Settings
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/devzip?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:devzip_user}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:change-me}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA Settings for MySQL
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.properties.hibernate.dialect.storage_engine=InnoDB
+
+# Show SQL in docker environment for debugging
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logging configuration for Docker
+logging.level.com.hoooon22.devzip=DEBUG
+logging.level.org.springframework.web.client=DEBUG
+
+# CORS Settings for Docker environment
+app.cors.allowed-origins=${CORS_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.cloud,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
+app.cors.max-age=${CORS_MAX_AGE:3600}
+
+# WebSocket Settings for Docker environment
+app.websocket.allowed-origins=${WEBSOCKET_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.cloud,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
+
+# Spring Security Settings for Docker environment
+spring.security.csrf.enabled=false
+
+# Admin Account Configuration
+app.admin.username=${APP_ADMIN_USERNAME:admin}
+app.admin.email=${APP_ADMIN_EMAIL:admin@devzip.cloud}
+app.admin.password=${APP_ADMIN_PASSWORD:change-me}
+app.admin.auto-create=${APP_ADMIN_AUTO_CREATE:true}
+
+# JWT Configuration
+app.jwtSecret=${JWT_SECRET:replace-with-strong-secret}
+app.jwtExpirationInMs=${JWT_EXPIRATION_MS:86400000}

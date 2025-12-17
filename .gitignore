@@ -511,3 +511,4 @@ src/main/resources/trending_keywords.json
 
 # 도커 관련
 docker-compose.override.yml
+src/main/resources/application-docker.properties
