@@ -1,19 +1,21 @@
 package com.hoooon22.devzip.Service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoooon22.devzip.Model.JokeResponse;
 import com.hoooon22.devzip.Model.TranslatedJoke;
+import com.hoooon22.devzip.tip.dto.GeminiRequest;
+import com.hoooon22.devzip.tip.dto.GeminiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class JokeService {
@@ -22,7 +24,6 @@ public class JokeService {
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
 
     @Value("${google.api.key:}")
     private String googleApiKey;
@@ -32,9 +33,8 @@ public class JokeService {
     private LocalDate lastGeneratedDate;
 
     @Autowired
-    public JokeService(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public JokeService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
     }
 
     /**
@@ -108,59 +108,68 @@ public class JokeService {
      * Gemini API를 사용하여 영어 텍스트를 한국어로 번역
      */
     private String translateToKorean(String englishText) {
-        try {
-            if (googleApiKey == null || googleApiKey.isEmpty()) {
-                logger.warn("Google API key is not configured");
-                return "[Gemini API 연결 실패]";
-            }
+        if (!StringUtils.hasText(googleApiKey)) {
+            logger.warn("Google API key is not configured. Returning original text.");
+            return englishText;
+        }
 
-            String geminiUrlWithKey = GEMINI_API_URL + "?key=" + googleApiKey;
+        String geminiUrlWithKey = GEMINI_API_URL + "?key=" + googleApiKey;
 
-            // Gemini API 요청 바디 구성
-            String prompt = "다음 영어 농담을 자연스러운 한국어로 번역해주세요. 농담의 뉘앙스와 유머를 최대한 살려서 번역해주세요. 번역만 출력하고 추가 설명은 하지 마세요:\n\n" + englishText;
+        // Gemini API 요청 바디 구성 (TipService와 동일한 DTO 사용)
+        String prompt = "다음 영어 농담을 자연스러운 한국어로 번역해주세요. 농담의 뉘앙스와 유머를 최대한 살려서 번역해주세요. 번역만 출력하고 추가 설명은 하지 마세요:\n\n" + englishText;
+        GeminiRequest.Part part = new GeminiRequest.Part(prompt);
+        GeminiRequest.Content content = new GeminiRequest.Content(Collections.singletonList(part));
+        GeminiRequest request = new GeminiRequest(Collections.singletonList(content));
 
-            Map<String, Object> requestBody = Map.of(
-                    "contents", new Object[]{
-                            Map.of("parts", new Object[]{
-                                    Map.of("text", prompt)
-                            })
-                    }
-            );
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<GeminiRequest> entity = new HttpEntity<>(request, headers);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        // 잠깐의 네트워크 오류를 흡수하기 위해 2회까지 재시도
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            try {
+                ResponseEntity<GeminiResponse> response = restTemplate.exchange(
+                        geminiUrlWithKey,
+                        HttpMethod.POST,
+                        entity,
+                        GeminiResponse.class
+                );
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-            // API 호출
-            ResponseEntity<String> response = restTemplate.exchange(
-                    geminiUrlWithKey,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
-            );
-
-            // 응답 파싱
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                JsonNode root = objectMapper.readTree(response.getBody());
-                JsonNode candidates = root.path("candidates");
-                if (candidates.isArray() && candidates.size() > 0) {
-                    JsonNode content = candidates.get(0).path("content");
-                    JsonNode parts = content.path("parts");
-                    if (parts.isArray() && parts.size() > 0) {
-                        String translatedText = parts.get(0).path("text").asText();
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    String translatedText = extractTextFromGeminiResponse(response.getBody());
+                    if (StringUtils.hasText(translatedText)) {
                         return translatedText.trim();
                     }
+                    logger.warn("Gemini translation attempt {} returned empty text", attempt);
+                } else {
+                    logger.warn("Gemini translation attempt {} failed with status {}", attempt, response.getStatusCode());
                 }
+            } catch (Exception e) {
+                logger.warn("Gemini translation attempt {} failed: {}", attempt, e.getMessage());
             }
-
-            logger.error("Failed to parse Gemini API response");
-            return "[Gemini API 연결 실패]";
-
-        } catch (Exception e) {
-            logger.error("Error during translation", e);
-            return "[Gemini API 연결 실패]";
         }
+
+        logger.warn("Gemini translation failed; returning original text");
+        return englishText;
+    }
+
+    /**
+     * Gemini API 응답에서 번역 텍스트 추출
+     */
+    private String extractTextFromGeminiResponse(GeminiResponse response) {
+        List<GeminiResponse.Candidate> candidates = response.getCandidates();
+        if (candidates == null || candidates.isEmpty()) {
+            return null;
+        }
+
+        GeminiResponse.Candidate candidate = candidates.get(0);
+        if (candidate.getContent() == null ||
+                candidate.getContent().getParts() == null ||
+                candidate.getContent().getParts().isEmpty()) {
+            return null;
+        }
+
+        return candidate.getContent().getParts().get(0).getText();
     }
 
     /**
