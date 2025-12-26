@@ -10,7 +10,8 @@ const projects = [
         pinned: true,
         category: '음악/협업',
         requiresLogin: true,
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '🎵'
     },
     {
         id: 10,
@@ -22,7 +23,8 @@ const projects = [
         endDate: '',
         pinned: true,
         category: '생산성/AI',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '🤖'
     },
     {
         id: 9,
@@ -33,7 +35,8 @@ const projects = [
         startDate: '2025-09-12',
         endDate: '2025-09-25',
         pinned: true,
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '💬'
     },
     {
         id: 5,
@@ -45,7 +48,8 @@ const projects = [
         endDate: '',
         category: '프로젝트/관리자용',
         requiresAdmin: true,
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '📊'
     },
     {
         id: 2,
@@ -56,7 +60,8 @@ const projects = [
         startDate: '2024-07-10',
         endDate: '2024-12-30',
         pinned: true,
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '📝'
     },
     {
         id: 7,
@@ -68,7 +73,8 @@ const projects = [
         endDate: '',
         category: '프로젝트/관리자용',
         requiresAdmin: true,
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '📈'
     },
     {
         id: 3,
@@ -78,7 +84,8 @@ const projects = [
         active: true,
         startDate: '2024-09-05',
         endDate: '2024-09-06',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '😂'
     },
     {
         id: 4,
@@ -88,7 +95,8 @@ const projects = [
         active: true,
         startDate: '2024-10-14',
         endDate: '',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '🔌'
     },
     {
         id: 6,
@@ -98,7 +106,8 @@ const projects = [
         active: true,
         startDate: '2025-02-11',
         endDate: '',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '🔥'
     },
     {
         id: 8,
@@ -109,7 +118,8 @@ const projects = [
         startDate: '2025-09-01',
         endDate: '',
         category: '교육/게임',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '🔬'
     },
     {
         id: 1,
@@ -119,7 +129,8 @@ const projects = [
         active: false,
         startDate: '2023-01-01',
         endDate: '2023-06-30',
-        isProduction: false // 실험용
+        isProduction: false, // 실험용
+        thumbnail: '📰'
     },
     // { 
     //     id: 4, 

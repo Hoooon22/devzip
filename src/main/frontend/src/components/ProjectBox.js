@@ -5,17 +5,18 @@ import { FaCalendarAlt, FaLink, FaInfoCircle, FaTags, FaLock } from 'react-icons
 import authService from '../services/AuthService';
 
 const ProjectBox = ({ project }) => {
-    const { 
-        name, 
-        description, 
-        link, 
-        active, 
-        startDate, 
-        endDate, 
+    const {
+        name,
+        description,
+        link,
+        active,
+        startDate,
+        endDate,
         category = '프로젝트', // 기본값 설정
         techStack = [], // 기본값 설정
         status = active ? '활성' : '비활성', // 기본값 설정
-        requiresAdmin = false // 관리자 권한 필요 여부
+        requiresAdmin = false, // 관리자 권한 필요 여부
+        thumbnail = '📦' // 기본 썸네일 이모지
     } = project;
     
     const [isHovered, setIsHovered] = useState(false);
@@ -81,9 +82,9 @@ const ProjectBox = ({ project }) => {
     };
 
     return (
-        <a 
-            href={link} 
-            className={`project-box ${getStatusClass()} ${requiresAdmin ? 'admin-project' : ''}`} 
+        <a
+            href={link}
+            className={`project-box ${getStatusClass()} ${requiresAdmin ? 'admin-project' : ''}`}
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -91,12 +92,17 @@ const ProjectBox = ({ project }) => {
             onBlur={() => setIsHovered(false)}
             aria-label={`${name} 프로젝트: ${description}`}
         >
+            {/* 썸네일 이미지 영역 */}
+            <div className="project-thumbnail" aria-hidden="true">
+                <span className="thumbnail-icon">{thumbnail}</span>
+            </div>
+
             {/* 카테고리 표시 */}
             <div className="project-category">
                 {requiresAdmin && <FaLock className="admin-lock-icon" aria-hidden="true" />}
                 <span>{category}</span>
             </div>
-            
+
             {/* 상태 배지 */}
             {renderStatusBadge()}
             
@@ -148,7 +154,8 @@ ProjectBox.propTypes = {
         category: PropTypes.string,
         techStack: PropTypes.arrayOf(PropTypes.string),
         status: PropTypes.string,
-        requiresAdmin: PropTypes.bool
+        requiresAdmin: PropTypes.bool,
+        thumbnail: PropTypes.string
     }).isRequired,
 };
 

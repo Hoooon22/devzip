@@ -33,7 +33,7 @@ body {
 }
 
 body.main-scroll-locked {
-    overflow-y: hidden;
+    overflow-y: auto; // 스크롤 허용으로 변경
 }
 
 a {
@@ -44,9 +44,9 @@ a {
     position: relative;
     min-height: 100vh;
     padding: 1.5rem;
-    overflow: hidden;
+    overflow: visible; // overflow hidden 제거
     display: flex;
-    align-items: center;
+    align-items: flex-start; // center에서 flex-start로 변경
     justify-content: center;
     background: radial-gradient(circle at 20% 20%, rgba(72, 215, 193, 0.08), transparent 26%),
                 radial-gradient(circle at 80% 0%, rgba(79, 179, 255, 0.09), transparent 22%),
@@ -84,7 +84,7 @@ a {
     backdrop-filter: var(--glass);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto; // height 100% 제거
 }
 
 .hero__text h1 {
@@ -407,7 +407,7 @@ a {
     flex-direction: column;
     flex: 1;
     min-height: 320px;
-    max-height: 420px;
+    max-height: none; // 높이 제한 제거
 }
 
 .deck-window__header {
@@ -425,20 +425,15 @@ a {
 .deck-window__body {
     flex: 1;
     display: flex;
-}
+    overflow: visible; // overflow 제한 제거
 
-.deck-window .carousel-wrapper {
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-.deck-window .carousel-track {
-    grid-auto-columns: minmax(260px, 320px);
-}
-
-.deck-window .carousel-item {
-    min-width: 260px;
+    .project-grid.compact {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+        padding: 4px;
+    }
 }
 
 /* Scrollbar styling for dark theme areas */
@@ -489,7 +484,7 @@ body::-webkit-scrollbar-thumb:hover,
 @media (max-width: 960px) {
     body {
         overflow-y: auto;
-        overflow-x: auto;
+        overflow-x: hidden;
     }
 
     .page-shell {
@@ -497,7 +492,6 @@ body::-webkit-scrollbar-thumb:hover,
         align-items: flex-start;
         min-height: auto;
         overflow: visible;
-        overflow-x: auto;
     }
 
     .hero {
@@ -512,6 +506,11 @@ body::-webkit-scrollbar-thumb:hover,
     .deck-window {
         max-height: none;
         min-height: auto;
+
+        .project-grid.compact {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
     }
 
     .modal {
@@ -538,6 +537,11 @@ body::-webkit-scrollbar-thumb:hover,
 
     .deck-window {
         padding: 0.85rem;
+
+        .project-grid.compact {
+            grid-template-columns: 1fr; // 작은 화면에서는 1열
+            gap: 10px;
+        }
     }
 }
 

@@ -134,15 +134,13 @@ const Main = () => {
                             </div>
                         ) : (
                             <div className="deck-window__body">
-                                <div className="carousel-wrapper">
-                                    <div className="carousel-track">
-                                        {sortedProjects.map(project => (
-                                            <div className="carousel-item" key={project.id}>
-                                                <ProjectBox project={project} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <ul className="project-grid compact">
+                                    {sortedProjects.map(project => (
+                                        <li key={project.id} className="project-item">
+                                            <ProjectBox project={project} />
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
                     </div>
