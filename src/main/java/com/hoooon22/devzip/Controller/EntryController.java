@@ -18,6 +18,7 @@ import com.hoooon22.devzip.Exception.TraceBoardException;
 import com.hoooon22.devzip.Model.Entry;
 import com.hoooon22.devzip.Model.common.ApiResponse;
 import com.hoooon22.devzip.Service.EntryService;
+import com.hoooon22.devzip.Service.WebhookService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,9 @@ public class EntryController {
 
     @Autowired
     private EntryService entryService;
+
+    @Autowired
+    private WebhookService webhookService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Entry>>> getAllEntries() {
@@ -70,6 +74,10 @@ public class EntryController {
             
             Entry savedEntry = entryService.addEntry(entry);
             log.info("방명록 등록 성공: ID={}, 이름={}", savedEntry.getId(), savedEntry.getName());
+
+            // 웹훅 전송 (비동기)
+            webhookService.sendEntryCreatedWebhook(savedEntry);
+
             return ResponseEntity.ok(ApiResponse.success(savedEntry));
         } catch (TraceBoardException e) {
             throw e; // TraceBoardException은 GlobalExceptionHandler에서 처리
@@ -87,6 +95,10 @@ public class EntryController {
             boolean deleted = entryService.deleteEntry(id);
             if (deleted) {
                 log.info("방명록 삭제 성공: ID={}", id);
+
+                // 웹훅 전송 (비동기)
+                webhookService.sendEntryDeletedWebhook(id);
+
                 return ResponseEntity.ok(ApiResponse.success("방명록이 삭제되었습니다"));
             } else {
                 log.warn("방명록 삭제 실패: 권한 없음 또는 존재하지 않는 게시글 - ID={}", id);
