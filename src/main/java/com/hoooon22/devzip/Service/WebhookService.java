@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.hoooon22.devzip.Model.Entry;
+import com.hoooon22.devzip.dto.webhook.ConfluxWebhookPayload;
+import com.hoooon22.devzip.dto.webhook.GitHubActionsResult;
 import com.hoooon22.devzip.dto.webhook.WebhookEntryPayload;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,12 @@ public class WebhookService {
 
     @Value("${webhook.entry.enabled:false}")
     private boolean webhookEnabled;
+
+    @Value("${webhook.conflux.url:}")
+    private String confluxWebhookUrl;
+
+    @Value("${webhook.conflux.enabled:false}")
+    private boolean confluxWebhookEnabled;
 
     private final RestTemplate restTemplate;
 
@@ -148,6 +156,79 @@ public class WebhookService {
         } catch (Exception e) {
             log.error("웹훅 전송 중 오류 발생: EntryId={}, URL={}",
                 entryId, webhookUrl, e);
+        }
+    }
+
+    /**
+     * GitHub Actions 결과를 Conflux로 전송 (비동기)
+     * @param result GitHub Actions 실행 결과
+     */
+    @Async
+    public void sendToConflux(GitHubActionsResult result) {
+        if (!confluxWebhookEnabled) {
+            log.debug("Conflux 웹훅이 비활성화되어 있습니다");
+            return;
+        }
+
+        if (confluxWebhookUrl == null || confluxWebhookUrl.trim().isEmpty()) {
+            log.warn("Conflux 웹훅 URL이 설정되지 않았습니다");
+            return;
+        }
+
+        try {
+            // Conflux 페이로드 생성
+            String title = String.format("🚀 %s - %s",
+                result.getWorkflowName(),
+                "success".equalsIgnoreCase(result.getStatus()) ? "배포 성공" : "배포 실패");
+
+            String message = String.format(
+                "저장소: %s\n브랜치: %s\n커밋: %s\n작성자: %s\n메시지: %s",
+                result.getRepository(),
+                result.getBranch(),
+                result.getCommitSha(),
+                result.getAuthor(),
+                result.getCommitMessage()
+            );
+
+            if ("failure".equalsIgnoreCase(result.getStatus())) {
+                message += String.format("\n\n❌ 실패 Job: %s\n실패 이유: %s",
+                    result.getFailedJob(),
+                    result.getFailureReason());
+            }
+
+            ConfluxWebhookPayload payload = ConfluxWebhookPayload.builder()
+                .title(title)
+                .message(message)
+                .status(result.getStatus())
+                .url(result.getRunUrl())
+                .source("DevZip CI/CD")
+                .build();
+
+            // HTTP 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // HTTP 요청 생성
+            HttpEntity<ConfluxWebhookPayload> request = new HttpEntity<>(payload, headers);
+
+            // Conflux 웹훅 전송
+            log.info("Conflux 웹훅 전송 시작: URL={}, Status={}", confluxWebhookUrl, result.getStatus());
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                confluxWebhookUrl,
+                request,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("✅ Conflux 웹훅 전송 성공: Status={}, Response={}",
+                    response.getStatusCode(), response.getBody());
+            } else {
+                log.warn("⚠️ Conflux 웹훅 전송 실패: Status={}, Body={}",
+                    response.getStatusCode(), response.getBody());
+            }
+
+        } catch (Exception e) {
+            log.error("❌ Conflux 웹훅 전송 중 오류 발생: URL={}", confluxWebhookUrl, e);
         }
     }
 }

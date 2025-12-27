@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoooon22.devzip.Model.common.ApiResponse;
+import com.hoooon22.devzip.Service.WebhookService;
 import com.hoooon22.devzip.dto.webhook.GitHubActionsResult;
 import com.hoooon22.devzip.dto.webhook.WebhookEntryPayload;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,7 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/webhook")
+@RequiredArgsConstructor
 public class WebhookTestController {
+
+    private final WebhookService webhookService;
 
     /**
      * 웹훅 테스트 엔드포인트
@@ -56,6 +61,7 @@ public class WebhookTestController {
 
     /**
      * GitHub Actions 워크플로우 결과 웹훅 수신
+     * 받은 즉시 Conflux로 재전송합니다
      *
      * @param result GitHub Actions 실행 결과
      * @return 성공 응답
@@ -89,6 +95,10 @@ public class WebhookTestController {
 
         log.info("=== GitHub Actions 웹훅 수신 완료 ===");
 
-        return ResponseEntity.ok(ApiResponse.success("GitHub Actions 웹훅 수신 성공"));
+        // Conflux로 재전송
+        log.info("🔄 Conflux로 웹훅 재전송 중...");
+        webhookService.sendToConflux(result);
+
+        return ResponseEntity.ok(ApiResponse.success("GitHub Actions 웹훅 수신 성공 및 Conflux 전송 완료"));
     }
 }

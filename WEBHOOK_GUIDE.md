@@ -337,9 +337,185 @@ GitHub Actions 워크플로우 파일(`.github/workflows/deploy.yml`)에서 직�
 - 방명록 API: `http://localhost:8080/api/entry`
 
 ### 소스 코드
-- `WebhookService.java` - 방명록 웹훅 전송 로직
+- `WebhookService.java` - 방명록 웹훅 전송 로직 + Conflux 연동
 - `WebhookEntryPayload.java` - 방명록 웹훅 페이로드 DTO
 - `GitHubActionsResult.java` - GitHub Actions 웹훅 페이로드 DTO
+- `ConfluxWebhookPayload.java` - Conflux 웹훅 페이로드 DTO
 - `EntryController.java` - 방명록 웹훅 트리거
-- `WebhookTestController.java` - 웹훅 수신 엔드포인트
+- `WebhookTestController.java` - 웹훅 수신 엔드포인트 (Conflux 재전송 포함)
 - `.github/workflows/deploy.yml` - GitHub Actions 워크플로우 (웹훅 호출 포함)
+
+---
+
+## Conflux 통합
+
+### 개요
+
+GitHub Actions 배포 결과를 자동으로 Conflux Inbox로 전송하여 실시간 알림을 받을 수 있습니다.
+
+**전체 흐름**:
+```
+GitHub Actions → devzip.cloud → Conflux (ngrok)
+```
+
+### 설정 방법
+
+#### 1. Conflux 백엔드 실행
+
+```bash
+cd conflux-backend
+./gradlew bootRun
+```
+
+#### 2. ngrok 터널 생성
+
+```bash
+ngrok http 8080
+```
+
+출력 예시:
+```
+Forwarding  https://lushiest-discordantly-lacey.ngrok-free.dev -> http://localhost:8080
+```
+
+#### 3. application.properties 설정
+
+devzip.cloud 서버의 `application.properties`에 다음 설정 추가:
+
+```properties
+# Conflux Integration
+webhook.conflux.enabled=true
+webhook.conflux.url=https://[your-ngrok-url].ngrok-free.dev/api/webhook/custom
+```
+
+**실제 예시**:
+```properties
+webhook.conflux.enabled=true
+webhook.conflux.url=https://lushiest-discordantly-lacey.ngrok-free.dev/api/webhook/custom
+```
+
+### Conflux로 전송되는 페이로드
+
+```json
+{
+  "title": "🚀 DevZip CI/CD Pipeline - 배포 성공",
+  "message": "저장소: hoooon22/devzip\n브랜치: master\n커밋: abc1234\n작성자: hoooon22\n메시지: Fix bug in authentication",
+  "status": "success",
+  "url": "https://github.com/hoooon22/devzip/actions/runs/12345",
+  "source": "DevZip CI/CD"
+}
+```
+
+### 동작 방식
+
+1. **GitHub에 Push** → GitHub Actions 워크플로우 실행
+2. **빌드 & 배포 완료** → `devzip.cloud/api/webhook/github-actions`로 결과 전송
+3. **devzip.cloud 수신** → 웹훅 로그 기록
+4. **Conflux로 재전송** → `WebhookService.sendToConflux()` 자동 호출
+5. **ngrok 터널 통과** → Conflux 백엔드로 전달
+6. **Conflux Inbox에 알림 표시** ✅
+
+### 테스트 방법
+
+#### 로컬 테스트 (curl)
+
+```bash
+# devzip.cloud로 직접 전송 테스트
+curl -X POST https://devzip.cloud/api/webhook/github-actions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflow_name": "Test Workflow",
+    "status": "success",
+    "repository": "hoooon22/devzip",
+    "branch": "master",
+    "commit_sha": "abc1234",
+    "commit_message": "Test commit",
+    "author": "hoooon22",
+    "run_number": "999",
+    "run_url": "https://github.com/hoooon22/devzip/actions/runs/999",
+    "timestamp": "2024-01-15T10:30:00",
+    "environment": "test"
+  }'
+```
+
+성공하면:
+1. devzip.cloud 로그에 웹훅 수신 메시지 출력
+2. Conflux로 자동 재전송
+3. Conflux Inbox에 알림 표시
+
+#### 실제 배포 테스트
+
+1. devzip.cloud 저장소에 커밋 & 푸시
+2. GitHub Actions 워크플로우 자동 실행
+3. 배포 완료 후 자동으로 웹훅 전송
+4. Conflux Inbox 확인
+
+### 로그 확인
+
+#### devzip.cloud 서버 로그
+
+```
+=== GitHub Actions 웹훅 수신 시작 ===
+워크플로우: DevZip CI/CD Pipeline (Optimized)
+상태: success
+✅ 배포 성공!
+=== GitHub Actions 웹훅 수신 완료 ===
+🔄 Conflux로 웹훅 재전송 중...
+Conflux 웹훅 전송 시작: URL=https://lushiest-discordantly-lacey.ngrok-free.dev/api/webhook/custom
+✅ Conflux 웹훅 전송 성공: Status=200 OK
+```
+
+#### Conflux 백엔드 로그
+
+```
+Received webhook: DevZip CI/CD
+Creating notification for inbox...
+✅ Notification created successfully
+```
+
+### 문제 해결
+
+#### Conflux로 웹훅이 전달되지 않는 경우
+
+1. **Conflux 백엔드 실행 확인**
+   ```bash
+   # Conflux가 실행 중인지 확인
+   curl http://localhost:8080/actuator/health
+   ```
+
+2. **ngrok 터널 확인**
+   ```bash
+   # ngrok이 실행 중인지 확인
+   curl https://[your-ngrok-url].ngrok-free.dev/api/webhook/custom \
+     -X POST -H "Content-Type: application/json" -d '{"title":"test","message":"test","status":"info"}'
+   ```
+
+3. **application.properties 설정 확인**
+   - `webhook.conflux.enabled=true` 설정 확인
+   - `webhook.conflux.url`에 올바른 ngrok URL 입력 확인
+
+4. **devzip.cloud 서버 로그 확인**
+   - Conflux 전송 관련 오류 메시지 확인
+   - 네트워크 연결 문제 확인
+
+#### ngrok URL이 변경된 경우
+
+ngrok을 재시작하면 URL이 변경됩니다. 변경된 URL로 `application.properties`를 업데이트하고 devzip.cloud 서버를 재시작하세요.
+
+```bash
+# 서버 재시작 (Ubuntu 서버)
+sudo systemctl restart devzip
+```
+
+또는 Docker Compose 사용 시:
+```bash
+cd /home/ubuntu/project/devzip
+sudo docker compose restart app
+```
+
+### 영구 URL 사용 (선택사항)
+
+ngrok 유료 플랜을 사용하면 고정 URL을 사용할 수 있습니다:
+```bash
+ngrok http 8080 --domain=your-permanent-domain.ngrok-free.app
+```
