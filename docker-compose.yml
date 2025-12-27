@@ -64,3 +64,4 @@ volumes:
 networks:
   devzip-network:
     driver: bridge
+    
