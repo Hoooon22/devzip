@@ -253,7 +253,7 @@ jobs:
     - name: Send Success Webhook
       if: success()
       run: |
-        curl -X POST https://devzip.cloud/api/webhook/github-actions \
+        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
           -H "Content-Type: application/json" \
           -d '{
             "workflow_name": "${{ github.workflow }}",
@@ -272,7 +272,7 @@ jobs:
     - name: Send Failure Webhook
       if: failure()
       run: |
-        curl -X POST https://devzip.cloud/api/webhook/github-actions \
+        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
           -H "Content-Type: application/json" \
           -d '{
             "workflow_name": "${{ github.workflow }}",
