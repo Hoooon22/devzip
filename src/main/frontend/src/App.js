@@ -15,6 +15,7 @@ import LiveChatListPage from "./pages/LiveChatListPage";
 import LiveChatRoomPage from "./pages/LiveChatRoomPage";
 import Hopperbox from './pages/Hopperbox';
 import ChaoticMusicBox from './pages/ChaoticMusicBox';
+import Conflux from './pages/Conflux';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -136,6 +137,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Conflux 소개 페이지 */}
+        <Route path="/conflux" element={<Conflux />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}

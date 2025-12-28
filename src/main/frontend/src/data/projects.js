@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 12,
+        name: 'Conflux',
+        description: '개발자를 위한 통합 알림 관제 센터 - 모든 스트림이 하나로 합쳐지는 곳',
+        link: '/conflux',
+        active: true,
+        startDate: '2025-12-28',
+        endDate: '',
+        pinned: true,
+        category: '프로젝트/개발도구',
+        isProduction: false, // 실험용
+        thumbnail: '🌊'
+    },
+    {
         id: 11,
         name: '카오틱 뮤직박스',
         description: '실시간으로 함께 음악을 만드는 참여형 시퀀서 (WebSocket, gridRef)',

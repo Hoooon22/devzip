@@ -1,0 +1,592 @@
+/* Conflux Page - Dark Theme */
+.conflux-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+/* Hero Section */
+.conflux-hero {
+    padding: 120px 20px 80px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(41, 128, 185, 0.15) 0%, transparent 70%);
+}
+
+.hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(41, 128, 185, 0.1);
+    border: 1px solid rgba(41, 128, 185, 0.3);
+    border-radius: 20px;
+    color: #5dade2;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+.hero-title {
+    font-size: 56px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 24px;
+    color: #b0b0b0;
+    margin: 0 0 24px 0;
+    font-weight: 400;
+}
+
+.hero-description {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #888;
+    margin: 0 0 40px 0;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.btn-primary,
+.btn-primary-large {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-primary:hover,
+.btn-primary-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(41, 128, 185, 0.3);
+}
+
+.btn-primary-large {
+    padding: 18px 48px;
+    font-size: 18px;
+}
+
+.btn-secondary {
+    padding: 14px 32px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hero-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #666;
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    background: rgba(52, 152, 219, 0.2);
+    border-radius: 12px;
+    color: #5dade2;
+    font-weight: 600;
+}
+
+.status-divider {
+    color: #444;
+}
+
+.status-text {
+    color: #888;
+}
+
+/* Problem Statement */
+.conflux-problem {
+    padding: 80px 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 40px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+}
+
+.section-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #888;
+    margin: 0;
+}
+
+.section-description strong {
+    color: #5dade2;
+    font-weight: 600;
+}
+
+/* Features */
+.conflux-features {
+    padding: 100px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+    margin-top: 48px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 40px 32px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(41, 128, 185, 0.3);
+    transform: translateY(-4px);
+}
+
+.feature-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+}
+
+.feature-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.feature-subtitle {
+    font-size: 14px;
+    color: #5dade2;
+    margin: 0 0 16px 0;
+    font-weight: 500;
+}
+
+.feature-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #888;
+    margin: 0 0 24px 0;
+}
+
+.feature-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-details li {
+    padding: 8px 0;
+    color: #999;
+    font-size: 14px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.feature-details li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #5dade2;
+}
+
+/* Usage Examples */
+.conflux-usage {
+    padding: 100px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.usage-grid {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 32px;
+}
+
+.usage-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.usage-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 20px 0;
+}
+
+.usage-code {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 0 16px 0;
+    overflow-x: auto;
+}
+
+.usage-code code {
+    color: #e0e0e0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.usage-config {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 0 16px 0;
+}
+
+.config-line {
+    padding: 6px 0;
+    color: #e0e0e0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+}
+
+.config-bullet {
+    color: #5dade2;
+    margin-right: 8px;
+}
+
+.usage-description {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Tech Stack */
+.conflux-tech {
+    padding: 100px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+}
+
+.tech-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 32px 24px;
+    transition: all 0.3s ease;
+}
+
+.tech-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(41, 128, 185, 0.3);
+}
+
+.tech-category {
+    font-size: 12px;
+    color: #5dade2;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.tech-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.tech-version {
+    font-size: 14px;
+    color: #888;
+}
+
+/* Getting Started */
+.conflux-start {
+    padding: 100px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.start-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.start-steps {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.step-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: left;
+}
+
+.step-number {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.step-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 12px 0;
+}
+
+.step-description {
+    font-size: 16px;
+    color: #888;
+    margin: 0 0 20px 0;
+}
+
+.step-code {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.step-code code {
+    color: #e0e0e0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.step-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.option {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.option strong {
+    display: block;
+    color: #ffffff;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+/* CTA Section */
+.conflux-cta {
+    padding: 100px 20px;
+    text-align: center;
+    background: radial-gradient(ellipse at center, rgba(41, 128, 185, 0.1) 0%, transparent 70%);
+}
+
+.cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 16px 0;
+}
+
+.cta-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #888;
+    margin: 0 0 40px 0;
+}
+
+.cta-actions {
+    margin-bottom: 48px;
+}
+
+.cta-contact {
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cta-contact p {
+    color: #888;
+    margin: 0 0 12px 0;
+}
+
+.contact-link {
+    color: #5dade2;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: #3498db;
+    text-decoration: underline;
+}
+
+/* Footer */
+.conflux-footer {
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #666;
+}
+
+.conflux-footer p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.footer-subtitle {
+    font-size: 12px;
+    color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 40px;
+    }
+
+    .hero-subtitle {
+        font-size: 20px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .section-title {
+        font-size: 32px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .usage-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .step-options {
+        grid-template-columns: 1fr;
+    }
+
+    .tech-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .cta-title {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .conflux-hero {
+        padding: 80px 20px 60px;
+    }
+
+    .hero-title {
+        font-size: 32px;
+    }
+
+    .hero-subtitle {
+        font-size: 18px;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .feature-card,
+    .usage-card,
+    .step-card {
+        padding: 24px;
+    }
+
+    .cta-title {
+        font-size: 28px;
+    }
+}
