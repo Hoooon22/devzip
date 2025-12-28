@@ -140,6 +140,27 @@ jobs:
           echo "⚠️ Application might be starting slower than expected"
           echo "🎉 Deployment completed!"
 
+    - name: Send Build Failure Webhook
+      if: failure()
+      run: |
+        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
+          -H "Content-Type: application/json" \
+          -d '{
+            "workflow_name": "${{ github.workflow }}",
+            "status": "failure",
+            "repository": "${{ github.repository }}",
+            "branch": "${{ github.ref_name }}",
+            "commit_sha": "${{ github.sha }}",
+            "commit_message": "${{ github.event.head_commit.message }}",
+            "author": "${{ github.actor }}",
+            "run_number": "${{ github.run_number }}",
+            "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "failed_job": "build-and-deploy",
+            "failure_reason": "Build or deployment failed",
+            "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S)'",
+            "environment": "production"
+          }' || echo "⚠️ Webhook notification failed (non-blocking)"
+
   health-check:
     name: Health Check & Verification
     runs-on: ubuntu-latest
