@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 13,
+        name: 'Command Stack',
+        description: '개발자를 위한 개인 일정 관리 시스템 - 명령어로 빠르게 일정 추가 및 관리',
+        link: '/commandstack',
+        active: true,
+        startDate: '2026-01-05',
+        endDate: '',
+        pinned: true,
+        category: '프로젝트/생산성도구',
+        isProduction: false, // 실험용
+        thumbnail: '⚡'
+    },
+    {
         id: 12,
         name: 'Conflux',
         description: '개발자를 위한 통합 알림 관제 센터 - 모든 스트림이 하나로 합쳐지는 곳',

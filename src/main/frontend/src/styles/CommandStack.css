@@ -1,0 +1,1071 @@
+/* CommandStack Page - Terminal Dark Theme */
+.commandstack-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a0f0a 0%, #0f1a0f 100%);
+    color: #e0ffe0;
+    font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+}
+
+/* Hero Section */
+.commandstack-hero {
+    padding: 120px 20px 80px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(34, 139, 34, 0.15) 0%, transparent 70%);
+}
+
+.hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(34, 139, 34, 0.15);
+    border: 1px solid rgba(34, 139, 34, 0.4);
+    border-radius: 4px;
+    color: #4ade80;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.hero-title {
+    font-size: 56px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 24px;
+    color: #86efac;
+    margin: 0 0 24px 0;
+    font-weight: 400;
+}
+
+.hero-description {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #9ca3af;
+    margin: 0 0 40px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-primary-large {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.btn-primary:hover,
+.btn-primary-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+}
+
+.btn-primary-large {
+    padding: 18px 48px;
+    font-size: 18px;
+}
+
+.btn-secondary {
+    padding: 14px 32px;
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.btn-secondary:hover {
+    background: rgba(74, 222, 128, 0.15);
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.hero-status {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 12px;
+    font-size: 12px;
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+}
+
+.status-divider {
+    color: #4b5563;
+}
+
+.status-text {
+    font-size: 13px;
+    color: #9ca3af;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Problem Statement */
+.commandstack-problem {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.section-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.section-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #9ca3af;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.section-description strong {
+    color: #4ade80;
+    font-weight: 600;
+}
+
+/* Features Showcase */
+.commandstack-features {
+    padding: 80px 20px;
+    background: rgba(15, 26, 15, 0.5);
+}
+
+.features-showcase {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.feature-showcase-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.feature-showcase-card.reverse {
+    grid-template-columns: 1fr 1fr;
+}
+
+.feature-showcase-card.reverse .feature-content {
+    order: 2;
+}
+
+.feature-showcase-card.reverse .feature-image {
+    order: 1;
+}
+
+.feature-content {
+    padding: 20px;
+}
+
+.feature-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.feature-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #f0fdf4;
+}
+
+.feature-subtitle {
+    font-size: 16px;
+    color: #86efac;
+    margin: 0 0 16px 0;
+}
+
+.feature-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #9ca3af;
+    margin: 0 0 24px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.feature-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-details li {
+    padding: 8px 0;
+    color: #d1d5db;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.detail-bullet {
+    color: #4ade80;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.feature-image {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.feature-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Timeline Section */
+.commandstack-timeline-section {
+    padding: 80px 20px;
+}
+
+.timeline-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.timeline-image {
+    margin-top: 40px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.timeline-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Use Cases */
+.commandstack-usage {
+    padding: 80px 20px;
+    background: rgba(15, 26, 15, 0.5);
+}
+
+.usage-grid {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+}
+
+.usage-card {
+    background: rgba(34, 139, 34, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.3s ease;
+}
+
+.usage-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(74, 222, 128, 0.4);
+    box-shadow: 0 12px 32px rgba(34, 197, 94, 0.15);
+}
+
+.usage-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.usage-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.usage-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.usage-items li {
+    padding: 10px 0;
+    color: #d1d5db;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.usage-bullet {
+    color: #4ade80;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+/* Tech Stack */
+.commandstack-tech {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.tech-grid {
+    max-width: 900px;
+    margin: 40px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.tech-card {
+    background: rgba(34, 139, 34, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.tech-card:hover {
+    border-color: rgba(74, 222, 128, 0.4);
+    background: rgba(34, 139, 34, 0.08);
+}
+
+.tech-indicator {
+    width: 8px;
+    height: 48px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.tech-info {
+    flex: 1;
+    text-align: left;
+}
+
+.tech-category {
+    font-size: 11px;
+    color: #86efac;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.tech-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f0fdf4;
+    margin-bottom: 2px;
+}
+
+.tech-version {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+/* CTA Section */
+.commandstack-cta {
+    padding: 100px 20px;
+    text-align: center;
+    background: radial-gradient(ellipse at center, rgba(34, 139, 34, 0.1) 0%, transparent 70%);
+}
+
+.cta-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.cta-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #9ca3af;
+    margin: 0 0 40px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.cta-actions {
+    margin-bottom: 32px;
+}
+
+.cta-contact {
+    padding-top: 32px;
+    border-top: 1px solid rgba(74, 222, 128, 0.1);
+}
+
+.cta-contact p {
+    margin: 0 0 8px 0;
+    color: #9ca3af;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.contact-link {
+    color: #4ade80;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.contact-link:hover {
+    color: #22c55e;
+}
+
+/* Footer */
+.commandstack-footer {
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(74, 222, 128, 0.1);
+}
+
+.commandstack-footer p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.footer-subtitle {
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    color: #4b5563 !important;
+}
+
+/* Download Page Styles */
+.download-header {
+    padding: 80px 20px 60px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(34, 139, 34, 0.15) 0%, transparent 70%);
+    position: relative;
+}
+
+.download-header-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.back-button {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    padding: 10px 20px;
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.back-button:hover {
+    background: rgba(74, 222, 128, 0.15);
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.download-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(34, 139, 34, 0.15);
+    border: 1px solid rgba(34, 139, 34, 0.4);
+    border-radius: 4px;
+    color: #4ade80;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.download-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.download-subtitle {
+    font-size: 18px;
+    color: #9ca3af;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* OS Selection */
+.download-selection {
+    padding: 40px 20px;
+}
+
+.os-selector {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.os-button {
+    padding: 16px 32px;
+    background: rgba(34, 139, 34, 0.05);
+    border: 2px solid rgba(74, 222, 128, 0.2);
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.os-button:hover {
+    border-color: rgba(74, 222, 128, 0.4);
+    background: rgba(34, 139, 34, 0.08);
+}
+
+.os-button.active {
+    border-color: #4ade80;
+    background: rgba(34, 139, 34, 0.15);
+    color: #4ade80;
+}
+
+.os-icon {
+    font-size: 20px;
+}
+
+/* Download Card */
+.download-card-section {
+    padding: 40px 20px 80px;
+}
+
+.download-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(34, 139, 34, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.download-card-header {
+    padding: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+    flex-wrap: wrap;
+}
+
+.download-info {
+    flex: 1;
+}
+
+.download-os-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.os-icon-large {
+    font-size: 36px;
+}
+
+.download-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    font-size: 14px;
+    color: #9ca3af;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.meta-item strong {
+    color: #d1d5db;
+}
+
+.meta-divider {
+    color: #4b5563;
+}
+
+.download-requirements {
+    font-size: 14px;
+    color: #9ca3af;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.download-requirements strong {
+    color: #d1d5db;
+}
+
+.download-action {
+    flex-shrink: 0;
+}
+
+.btn-download {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+}
+
+.download-icon {
+    font-size: 20px;
+}
+
+.coming-soon-badge {
+    padding: 12px 24px;
+    background: rgba(156, 163, 175, 0.1);
+    border: 1px solid rgba(156, 163, 175, 0.3);
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.download-card-body {
+    padding: 40px;
+}
+
+.instructions-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    color: #f0fdf4;
+}
+
+.instructions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: instruction;
+}
+
+.instruction-item {
+    padding: 16px 0;
+    color: #d1d5db;
+    font-size: 15px;
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.instruction-item:last-child {
+    border-bottom: none;
+}
+
+/* Build from Source */
+.build-from-source {
+    padding: 80px 20px;
+    background: rgba(15, 26, 15, 0.5);
+}
+
+.build-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.build-steps {
+    margin: 40px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.build-step {
+    display: flex;
+    gap: 24px;
+    text-align: left;
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #f0fdf4;
+}
+
+.code-block {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.code-block code {
+    color: #4ade80;
+    font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.github-link {
+    margin-top: 40px;
+}
+
+.btn-github {
+    padding: 16px 40px;
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.btn-github:hover {
+    background: rgba(74, 222, 128, 0.15);
+    border-color: rgba(74, 222, 128, 0.5);
+    transform: translateY(-2px);
+}
+
+.github-icon {
+    font-size: 18px;
+}
+
+/* System Requirements */
+.system-requirements {
+    padding: 80px 20px;
+}
+
+.requirements-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.requirements-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.requirement-card {
+    background: rgba(34, 139, 34, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: left;
+}
+
+.requirement-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #f0fdf4;
+}
+
+.requirement-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirement-list li {
+    padding: 8px 0;
+    color: #d1d5db;
+    font-size: 14px;
+    position: relative;
+    padding-left: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.requirement-list li:before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+    font-weight: bold;
+}
+
+/* Release Notes */
+.release-notes {
+    padding: 80px 20px;
+    background: rgba(15, 26, 15, 0.5);
+}
+
+.notes-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.release-card {
+    margin-top: 40px;
+    background: rgba(34, 139, 34, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.release-header {
+    padding: 24px 32px;
+    background: rgba(34, 139, 34, 0.08);
+    border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.release-version {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+}
+
+.release-date {
+    font-size: 14px;
+    color: #9ca3af;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.release-body {
+    padding: 32px;
+}
+
+.release-section {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #f0fdf4;
+}
+
+.release-section:not(:first-child) {
+    margin-top: 24px;
+}
+
+.release-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.release-list li {
+    padding: 6px 0;
+    color: #d1d5db;
+    font-size: 14px;
+    position: relative;
+    padding-left: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.release-list li:before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 18px;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .feature-showcase-card,
+    .feature-showcase-card.reverse {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-showcase-card.reverse .feature-content,
+    .feature-showcase-card.reverse .feature-image {
+        order: unset;
+    }
+
+    .download-card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .download-action {
+        width: 100%;
+    }
+
+    .btn-download {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .back-button {
+        position: static;
+        margin-bottom: 20px;
+    }
+
+    .build-step {
+        flex-direction: column;
+    }
+
+    .usage-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .requirements-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .cta-title {
+        font-size: 32px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-actions {
+        width: 100%;
+    }
+}
