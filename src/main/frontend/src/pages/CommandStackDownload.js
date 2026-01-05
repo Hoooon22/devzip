@@ -5,56 +5,81 @@ import '../styles/CommandStack.css';
 const CommandStackDownload = () => {
     const navigate = useNavigate();
     const [selectedOS, setSelectedOS] = useState('macos');
+    const [selectedMacArch, setSelectedMacArch] = useState('arm64'); // 'arm64' or 'intel'
 
     const downloads = {
         macos: {
             name: 'macOS',
             icon: '',
             version: 'v1.0.1',
-            size: 'Build Required',
             requirements: 'macOS 10.15 or later',
-            downloadUrl: 'https://github.com/Hoooon22/Command_Stack/releases/latest',
+            architectures: {
+                arm64: {
+                    name: 'Apple Silicon (M1/M2/M3)',
+                    size: '~85 MB',
+                    downloadUrl: 'https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.1/CommandStack-1.0.1-arm64.dmg',
+                    fileName: 'CommandStack-1.0.1-arm64.dmg'
+                },
+                intel: {
+                    name: 'Intel Processor',
+                    size: '~88 MB',
+                    downloadUrl: 'https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.1/CommandStack-1.0.1.dmg',
+                    fileName: 'CommandStack-1.0.1.dmg'
+                }
+            },
             instructions: [
-                '1. GitHub 릴리즈 페이지에서 소스 코드를 다운로드하세요',
-                '2. 프로젝트 루트에서 build.sh 스크립트를 실행하세요',
-                '3. 빌드된 앱을 Applications 폴더로 이동하세요',
-                '4. 앱을 실행하고 Command Stack을 시작하세요'
+                '1. 다운로드한 DMG 파일을 열어주세요',
+                '2. Command Stack 아이콘을 Applications 폴더로 드래그하세요',
+                '3. Applications 폴더에서 Command Stack을 실행하세요',
+                '4. 보안 설정에서 "확인 없이 열기"를 선택해야 할 수 있습니다'
             ]
         },
         windows: {
             name: 'Windows',
             icon: '🪟',
             version: 'v1.0.1',
-            size: 'Coming Soon',
+            size: '~92 MB',
             requirements: 'Windows 10 or later',
-            downloadUrl: null,
+            downloadUrl: 'https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.1/CommandStack.Setup.1.0.1.exe',
+            fileName: 'CommandStack.Setup.1.0.1.exe',
             instructions: [
-                'Windows 버전은 현재 개발 중입니다.',
-                'GitHub에서 소스 코드를 다운로드하여 직접 빌드할 수 있습니다.',
-                '빌드 방법은 README.md를 참고하세요.'
+                '1. 다운로드한 설치 파일(.exe)을 실행하세요',
+                '2. 설치 마법사의 안내를 따라 진행하세요',
+                '3. 설치가 완료되면 시작 메뉴에서 Command Stack을 찾을 수 있습니다',
+                '4. Windows Defender에서 경고가 나타날 수 있습니다. "추가 정보"를 클릭한 후 "실행"을 선택하세요'
             ]
         },
         linux: {
             name: 'Linux',
             icon: '🐧',
             version: 'v1.0.1',
-            size: 'Coming Soon',
-            requirements: 'Ubuntu 20.04+ or equivalent',
-            downloadUrl: null,
+            size: '~89 MB',
+            requirements: 'Ubuntu 20.04+ or equivalent (Debian-based)',
+            downloadUrl: 'https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.1/commandstack-electron_1.0.1_amd64.deb',
+            fileName: 'commandstack-electron_1.0.1_amd64.deb',
             instructions: [
-                'Linux 버전은 현재 개발 중입니다.',
-                'GitHub에서 소스 코드를 다운로드하여 직접 빌드할 수 있습니다.',
-                '빌드 방법은 README.md를 참고하세요.'
+                '1. 다운로드한 .deb 파일이 있는 디렉토리로 이동하세요',
+                '2. 터미널에서 다음 명령어를 실행하세요:',
+                '   sudo dpkg -i commandstack-electron_1.0.1_amd64.deb',
+                '3. 의존성 문제가 발생하면: sudo apt-get install -f',
+                '4. 애플리케이션 메뉴에서 Command Stack을 실행하세요'
             ]
         }
     };
 
     const currentDownload = downloads[selectedOS];
 
-    const handleDownload = () => {
-        if (currentDownload.downloadUrl) {
-            window.open(currentDownload.downloadUrl, '_blank');
+    const handleDownload = (url) => {
+        if (url) {
+            window.open(url, '_blank');
         }
+    };
+
+    const getMacDownloadInfo = () => {
+        if (selectedOS === 'macos') {
+            return currentDownload.architectures[selectedMacArch];
+        }
+        return null;
     };
 
     return (
@@ -101,31 +126,62 @@ const CommandStackDownload = () => {
                                 <span className="os-icon-large">{currentDownload.icon}</span>
                                 {currentDownload.name}
                             </h2>
+
+                            {/* macOS Architecture Selection */}
+                            {selectedOS === 'macos' && (
+                                <div className="mac-arch-selector">
+                                    <button
+                                        className={`arch-button ${selectedMacArch === 'arm64' ? 'active' : ''}`}
+                                        onClick={() => setSelectedMacArch('arm64')}
+                                    >
+                                        <span className="arch-icon">🍎</span>
+                                        Apple Silicon
+                                    </button>
+                                    <button
+                                        className={`arch-button ${selectedMacArch === 'intel' ? 'active' : ''}`}
+                                        onClick={() => setSelectedMacArch('intel')}
+                                    >
+                                        <span className="arch-icon">⚙️</span>
+                                        Intel
+                                    </button>
+                                </div>
+                            )}
+
                             <div className="download-meta">
                                 <span className="meta-item">
                                     <strong>Version:</strong> {currentDownload.version}
                                 </span>
                                 <span className="meta-divider">•</span>
                                 <span className="meta-item">
-                                    <strong>Size:</strong> {currentDownload.size}
+                                    <strong>Size:</strong> {selectedOS === 'macos' ? getMacDownloadInfo().size : currentDownload.size}
                                 </span>
                             </div>
                             <p className="download-requirements">
                                 <strong>Requirements:</strong> {currentDownload.requirements}
                             </p>
+                            {selectedOS === 'macos' && (
+                                <p className="download-filename">
+                                    <strong>File:</strong> {getMacDownloadInfo().fileName}
+                                </p>
+                            )}
+                            {selectedOS !== 'macos' && currentDownload.fileName && (
+                                <p className="download-filename">
+                                    <strong>File:</strong> {currentDownload.fileName}
+                                </p>
+                            )}
                         </div>
                         <div className="download-action">
-                            {currentDownload.downloadUrl ? (
-                                <button
-                                    onClick={handleDownload}
-                                    className="btn-download"
-                                >
-                                    <span className="download-icon">⬇</span>
-                                    다운로드
-                                </button>
-                            ) : (
-                                <div className="coming-soon-badge">Coming Soon</div>
-                            )}
+                            <button
+                                onClick={() => handleDownload(
+                                    selectedOS === 'macos'
+                                        ? getMacDownloadInfo().downloadUrl
+                                        : currentDownload.downloadUrl
+                                )}
+                                className="btn-download"
+                            >
+                                <span className="download-icon">⬇</span>
+                                다운로드
+                            </button>
                         </div>
                     </div>
 
@@ -142,12 +198,30 @@ const CommandStackDownload = () => {
                 </div>
             </section>
 
+            {/* All Releases Link */}
+            <section className="all-releases-section">
+                <div className="all-releases-content">
+                    <h3 className="all-releases-title">모든 릴리즈 보기</h3>
+                    <p className="all-releases-description">
+                        이전 버전이나 다른 플랫폼용 빌드가 필요하신가요?
+                    </p>
+                    <a
+                        href="https://github.com/Hoooon22/Command_Stack/releases"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-all-releases"
+                    >
+                        GitHub 릴리즈 페이지 방문
+                    </a>
+                </div>
+            </section>
+
             {/* Build from Source */}
             <section className="build-from-source">
                 <div className="build-content">
                     <h2 className="section-title">소스에서 빌드하기</h2>
                     <p className="section-description">
-                        최신 버전을 직접 빌드하거나 개발에 참여하고 싶으신가요?
+                        최신 개발 버전을 직접 빌드하거나 개발에 참여하고 싶으신가요?
                     </p>
 
                     <div className="build-steps">
@@ -251,6 +325,12 @@ const CommandStackDownload = () => {
                                 <li>다크 테마 UI 개선</li>
                                 <li>반응형 레이아웃 최적화</li>
                                 <li>키보드 단축키 지원</li>
+                            </ul>
+                            <h4 className="release-section">📦 Downloads</h4>
+                            <ul className="release-list">
+                                <li>macOS (Apple Silicon & Intel)</li>
+                                <li>Windows (x64)</li>
+                                <li>Linux (Debian/Ubuntu)</li>
                             </ul>
                         </div>
                     </div>
