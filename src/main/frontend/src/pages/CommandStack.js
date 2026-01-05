@@ -94,7 +94,7 @@ const CommandStack = () => {
                 <div className="hero-content">
                     <div className="hero-badge">$ COMMAND_STACK</div>
                     <h1 className="hero-title">
-                        Control your life's runtime.
+                        Control your life&apos;s runtime.
                     </h1>
                     <p className="hero-subtitle">
                         개발자를 위한 터미널 메타포 기반 개인 관리 시스템
