@@ -24,6 +24,8 @@ public class WebController {
         "/hopperbox",
         "/chaotic-music-box",
         "/conflux",
+        "/commandstack",
+        "/commandstack/**",
         "/error"
     })
     public String index() {
