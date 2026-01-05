@@ -9,7 +9,7 @@ const projects = [
         endDate: '',
         pinned: true,
         category: '프로젝트/생산성도구',
-        isProduction: false, // 실험용
+        isProduction: true, // 프로덕션
         thumbnail: '⚡'
     },
     {
@@ -22,7 +22,7 @@ const projects = [
         endDate: '',
         pinned: true,
         category: '프로젝트/개발도구',
-        isProduction: false, // 실험용
+        isProduction: true, // 프로덕션
         thumbnail: '🌊'
     },
     {
