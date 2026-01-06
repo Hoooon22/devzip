@@ -40,7 +40,7 @@ const ApiExperiment = () => {
         <div className="api-experiment-container">
             <header className="experiment-header">
                 <h1>🧪 API 실험실</h1>
-                <p>다양한 API 타입을 실험하고 테스트해볼 수 있는 공간입니다.</p>
+                <p>다양한 API 타입을 공부해본 공간입니다.</p>
             </header>
 
             <main className="experiment-content">
