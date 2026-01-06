@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 14,
+        name: 'API 실험실',
+        description: 'REST, JSON, SOAP, gRPC, GraphQL 등 다양한 API를 실험해볼 수 있는 공간',
+        link: '/api-experiment',
+        active: true,
+        startDate: '2026-01-06',
+        endDate: '',
+        pinned: true,
+        category: '프로젝트/개발도구',
+        isProduction: false, // 실험용
+        thumbnail: '🧪'
+    },
+    {
         id: 13,
         name: 'Command Stack',
         description: '개발자를 위한 개인 일정 관리 시스템 - 명령어로 빠르게 일정 추가 및 관리',
