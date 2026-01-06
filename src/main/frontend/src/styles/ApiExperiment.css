@@ -1,0 +1,101 @@
+/* API 실험실 메인 컨테이너 */
+.api-experiment-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+}
+
+/* 헤더 스타일 */
+.experiment-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.experiment-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.experiment-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* 콘텐츠 영역 */
+.experiment-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* API 타입 그리드 */
+.api-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+/* API 타입 카드 */
+.api-type-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.api-type-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.api-type-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #667eea;
+}
+
+.api-type-card p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .api-experiment-container {
+        padding: 1rem;
+    }
+
+    .experiment-header h1 {
+        font-size: 2rem;
+    }
+
+    .experiment-header p {
+        font-size: 1rem;
+    }
+
+    .api-types-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .card-icon {
+        font-size: 3rem;
+    }
+
+    .api-type-card h2 {
+        font-size: 1.3rem;
+    }
+}

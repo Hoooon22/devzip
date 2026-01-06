@@ -26,6 +26,8 @@ public class WebController {
         "/conflux",
         "/commandstack",
         "/commandstack/**",
+        "/api-experiment",
+        "/api-experiment/**",
         "/error"
     })
     public String index() {

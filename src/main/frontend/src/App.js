@@ -18,6 +18,12 @@ import ChaoticMusicBox from './pages/ChaoticMusicBox';
 import Conflux from './pages/Conflux';
 import CommandStack from './pages/CommandStack';
 import CommandStackDownload from './pages/CommandStackDownload';
+import ApiExperiment from './pages/ApiExperiment';
+import RestApi from './pages/experiments/RestApi';
+import JsonApi from './pages/experiments/JsonApi';
+import SoapApi from './pages/experiments/SoapApi';
+import GrpcApi from './pages/experiments/GrpcApi';
+import GraphQLApi from './pages/experiments/GraphQLApi';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -146,6 +152,14 @@ function App() {
         {/* Command Stack 소개 및 다운로드 페이지 */}
         <Route path="/commandstack" element={<CommandStack />} />
         <Route path="/commandstack/download" element={<CommandStackDownload />} />
+
+        {/* API 실험실 페이지 */}
+        <Route path="/api-experiment" element={<ApiExperiment />} />
+        <Route path="/api-experiment/rest" element={<RestApi />} />
+        <Route path="/api-experiment/json" element={<JsonApi />} />
+        <Route path="/api-experiment/soap" element={<SoapApi />} />
+        <Route path="/api-experiment/grpc" element={<GrpcApi />} />
+        <Route path="/api-experiment/graphql" element={<GraphQLApi />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
