@@ -65,8 +65,7 @@ const JsonApi = () => {
 
         try {
             const parsed = JSON.parse(inputJson);
-            JSON.stringify(parsed);
-            const result = setInputJson(parsed);
+            const result = JSON.stringify(parsed);
             setInputJson(result);
         } catch (err) {
             setError(`오류: ${err.message}`);
