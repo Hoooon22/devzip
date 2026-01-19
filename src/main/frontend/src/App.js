@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import './App.css';
 import Main from "./pages/Main";
 import Guestbook from "./pages/Guestbook";
@@ -48,9 +49,10 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      {/* 반응형 뷰포트 설정 컴포넌트 */}
-      <ViewportMeta />
+    <HelmetProvider>
+      <BrowserRouter>
+        {/* 반응형 뷰포트 설정 컴포넌트 */}
+        <ViewportMeta />
       
       {/* 라우트 추적 컴포넌트 */}
       <RouteTracker />
@@ -164,8 +166,9 @@ function App() {
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
 
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

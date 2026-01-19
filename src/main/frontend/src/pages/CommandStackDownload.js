@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import '../styles/CommandStack.css';
 
@@ -150,6 +151,16 @@ const CommandStackDownload = () => {
 
     return (
         <div className="commandstack-container">
+            <Helmet>
+                <title>Command Stack 다운로드 - macOS, Windows, Linux | DevZip</title>
+                <meta name="description" content="Command Stack을 무료로 다운로드하세요. macOS (Apple Silicon, Intel), Windows, Linux를 지원합니다. 개발자를 위한 터미널 기반 작업 관리 앱." />
+                <meta property="og:title" content="Command Stack 다운로드" />
+                <meta property="og:description" content="macOS, Windows, Linux용 Command Stack을 무료로 다운로드하세요. 터미널 메타포 기반 개인 관리 시스템." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://devzip.cloud/commandstack/download" />
+                <meta name="keywords" content="Command Stack 다운로드, macOS앱, Windows앱, Linux앱, 작업관리앱, 개발자도구, DevZip" />
+            </Helmet>
+
             {/* Header */}
             <section className="download-header">
                 <div className="download-header-content">

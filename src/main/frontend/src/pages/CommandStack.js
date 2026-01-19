@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import '../styles/CommandStack.css';
 import calendarView from '../assets/imgs/calendar-view.png';
@@ -89,6 +90,16 @@ const CommandStack = () => {
 
     return (
         <div className="commandstack-container">
+            <Helmet>
+                <title>Command Stack - 개발자를 위한 터미널 기반 작업 관리 앱 | DevZip</title>
+                <meta name="description" content="Command Stack은 터미널과 OS의 메타포를 활용한 개발자 친화적 작업 관리 앱입니다. Schedule Mode와 Context Mode로 프로젝트와 일정을 효율적으로 관리하세요." />
+                <meta property="og:title" content="Command Stack - 터미널 기반 작업 관리 앱" />
+                <meta property="og:description" content="개발자를 위한 터미널 메타포 기반 개인 관리 시스템. 작업을 Command로, 프로젝트를 Context로 관리하세요." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://devzip.cloud/commandstack" />
+                <meta name="keywords" content="Command Stack, 작업관리, 할일관리, 개발자도구, 터미널, 프로젝트관리, 일정관리, DevZip" />
+            </Helmet>
+
             {/* Hero Section */}
             <section className="commandstack-hero">
                 <div className="hero-content">
