@@ -121,7 +121,7 @@ const CommandStack = () => {
                         </a>
                     </div>
                     <div className="hero-status">
-                        <span className="status-badge">v1.0.2</span>
+                        <span className="status-badge">v1.0.7</span>
                         <span className="status-divider">•</span>
                         <span className="status-text">macOS • Windows • Linux</span>
                         <span className="status-divider">•</span>
