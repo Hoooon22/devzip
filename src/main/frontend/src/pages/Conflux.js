@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import '../styles/Conflux.css';
 
 const Conflux = () => {
@@ -71,6 +72,16 @@ const Conflux = () => {
 
     return (
         <div className="conflux-container">
+            <Helmet>
+                <title>Conflux - 개발자를 위한 통합 알림 관제 센터 | DevZip</title>
+                <meta name="description" content="Conflux는 GitHub, Jira, Slack, Sentry 등 개발 도구의 알림을 하나로 통합하는 관제 센터입니다. Private 서버 모니터링과 배치 작업 알림을 지원합니다." />
+                <meta property="og:title" content="Conflux - 통합 알림 관제 센터" />
+                <meta property="og:description" content="개발자를 위한 개인화된 통합 알림 관제 센터. GitHub, Jira, Sentry 알림을 하나의 타임라인으로." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://devzip.cloud/conflux" />
+                <meta name="keywords" content="Conflux, 알림관리, 개발자도구, GitHub알림, Jira알림, 서버모니터링, 통합알림, DevZip" />
+            </Helmet>
+
             {/* Hero Section */}
             <section className="conflux-hero">
                 <div className="hero-content">
