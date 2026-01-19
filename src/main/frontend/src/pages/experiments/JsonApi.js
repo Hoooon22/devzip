@@ -16,63 +16,60 @@ const JsonApi = () => {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
 
-    // 1. JSON 유효성 검사
+    // TODO(human): 1. JSON 유효성 검사 구현
+    // JSON.parse()로 inputJson이 유효한지 확인하세요
     const validateJson = () => {
         setError(null);
         setResult(null);
 
+        // 여기에 구현하세요
+        // 힌트: try/catch로 JSON.parse(inputJson) 감싸기
+        // 성공: setResult({ type: 'validate', message: '✅ 유효한 JSON입니다!' })
+        // 실패: setError(`❌ 오류: ${err.message}`)
         try {
-            const parsed = JSON.parse(inputJson);
-            setResult({
-                type: 'validate',
-                success: true,
-                message: '✅ 유효한 JSON입니다!',
-                dataType: Array.isArray(parsed) ? 'Array' : typeof parsed
-            });
+            JSON.parse(inputJson);
+            setResult({ type: 'validate', message: '유효한 JSON입니다.'})
         } catch (err) {
-            setError(`❌ JSON 파싱 오류: ${err.message}`);
+            setError(`오류: ${err.message}`);
         }
     };
 
-    // 2. JSON 포맷터 (보기 좋게)
+    // TODO(human): 2. JSON 포맷터 구현
+    // JSON.stringify(obj, null, 2)로 보기 좋게 정리하세요
     const formatJson = () => {
         setError(null);
         setResult(null);
 
+        // 여기에 구현하세요
+        // 1. JSON.parse()로 파싱
+        // 2. JSON.stringify(parsed, null, 2)로 포맷
+        // 3. setInputJson()으로 입력창 업데이트
+        
         try {
             const parsed = JSON.parse(inputJson);
             const formatted = JSON.stringify(parsed, null, 2);
             setInputJson(formatted);
-            setResult({
-                type: 'format',
-                message: '✅ 포맷 완료!'
-            });
         } catch (err) {
-            setError(`❌ JSON 파싱 오류: ${err.message}`);
+            setError(`오류: ${err.message}`);
         }
     };
 
-    // 3. JSON 압축 (미니파이)
+    // TODO(human): 3. JSON 압축 구현
+    // JSON.stringify(obj)로 공백 없이 압축하세요
     const minifyJson = () => {
         setError(null);
         setResult(null);
 
-        try {
-            const beforeLength = inputJson.length;
-            const parsed = JSON.parse(inputJson);
-            const minified = JSON.stringify(parsed);
-            const afterLength = minified.length;
+        // 여기에 구현하세요
+        // 보너스: 압축 전/후 길이를 비교해서 결과에 표시해보세요
 
-            setInputJson(minified);
-            setResult({
-                type: 'minify',
-                message: '✅ 압축 완료!',
-                before: beforeLength,
-                after: afterLength,
-                saved: beforeLength - afterLength
-            });
+        try {
+            const parsed = JSON.parse(inputJson);
+            JSON.stringify(parsed);
+            const result = setInputJson(parsed);
+            setInputJson(result);
         } catch (err) {
-            setError(`❌ JSON 파싱 오류: ${err.message}`);
+            setError(`오류: ${err.message}`);
         }
     };
 
@@ -82,19 +79,19 @@ const JsonApi = () => {
             simple: `{"name": "홍길동", "age": 30}`,
             array: `["사과", "바나나", "오렌지"]`,
             nested: `{
-  "user": {
-    "id": 1,
-    "name": "김철수",
-    "contacts": {
-      "email": "kim@example.com",
-      "phone": "010-1234-5678"
-    }
-  },
-  "posts": [
-    {"id": 1, "title": "첫 번째 글"},
-    {"id": 2, "title": "두 번째 글"}
-  ]
-}`
+                    "user": {
+                        "id": 1,
+                        "name": "김철수",
+                        "contacts": {
+                        "email": "kim@example.com",
+                        "phone": "010-1234-5678"
+                        }
+                    },
+                    "posts": [
+                        {"id": 1, "title": "첫 번째 글"},
+                        {"id": 2, "title": "두 번째 글"}
+                    ]
+                    }`
         };
         setInputJson(samples[type]);
         setResult(null);
