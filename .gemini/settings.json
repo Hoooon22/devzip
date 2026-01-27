@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    // "github": {
+    //   "url": "https://server.smithery.ai/github/mcp",
+    //   "type": "http"
+    // },
+    "context7-mcp": {
+      "url": "https://server.smithery.ai/@upstash/context7-mcp/mcp",
+      "type": "http"
+    }
+  }
+}
