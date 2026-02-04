@@ -141,6 +141,34 @@ const CommandStack = () => {
                 </div>
             </section>
 
+            {/* Latest Release Update */}
+            <section className="commandstack-release-update">
+                <div className="release-update-content">
+                    <div className="release-badge">
+                        <span className="release-new-tag">NEW</span>
+                        <span className="release-version">v1.0.11</span>
+                    </div>
+                    <h3 className="release-title">🎉 Terminal-style Memo Mode</h3>
+                    <p className="release-description">
+                        터미널 명령어 스타일로 자유롭게 메모를 관리할 수 있는 Memo Mode가 추가되었습니다!
+                    </p>
+                    <div className="release-features">
+                        <code className="release-command">vi &lt;파일명&gt;</code>
+                        <code className="release-command">cat &lt;파일명&gt;</code>
+                        <code className="release-command">ls</code>
+                        <code className="release-command">rm &lt;파일명&gt;</code>
+                    </div>
+                    <a
+                        href="https://github.com/Hoooon22/Command_Stack/releases/tag/1.0.11"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="release-link"
+                    >
+                        전체 릴리즈 노트 보기 →
+                    </a>
+                </div>
+            </section>
+
             {/* Problem Statement */}
             <section className="commandstack-problem">
                 <div className="section-content">
