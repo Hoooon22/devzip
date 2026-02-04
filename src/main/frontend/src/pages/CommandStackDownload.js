@@ -103,6 +103,28 @@ const CommandStackDownload = () => {
       version: "v1.0.10",
       date: "2026년 1월 28일",
       isLatest: false,
+      features: [
+        "Google Calendar 양방향 동기화 지원",
+        "앱 실행 시 자동 캘린더 동기화",
+        "로그인 세션 유지 기간 14일로 연장",
+        "프로필 메뉴에 로그아웃 기능 추가",
+      ],
+      improvements: [
+        "사용자 아바타 및 로그인 UI 위치 개선 (상단 우측)",
+        "동기화 상태 피드백 개선",
+      ],
+      downloads: {
+        macArm:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.10/CommandStack-1.0.10-arm64.dmg",
+        macIntel:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.10/CommandStack-1.0.10.dmg",
+        windows:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.10/CommandStack.Setup.1.0.10.exe",
+        linux:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.10/commandstack-electron_1.0.10_amd64.deb",
+      },
+    },
+    {
       version: "v1.0.9",
       date: "2026년 1월 22일",
       isLatest: false,
