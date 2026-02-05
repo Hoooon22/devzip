@@ -10,7 +10,7 @@ public class RobotsController {
     @GetMapping(value = "/robots.txt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String getRobots() {
         return "User-agent: *\n" +
-               "Allow: /\n" +
-               "Sitemap: https://devzip.site/sitemap.xml";
+                "Allow: /\n" +
+                "Sitemap: https://devzip.cloud/sitemap.xml";
     }
 }
