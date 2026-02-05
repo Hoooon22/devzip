@@ -73,13 +73,54 @@ const Conflux = () => {
     return (
         <div className="conflux-container">
             <Helmet>
-                <title>Conflux - 개발자를 위한 통합 알림 관제 센터 | DevZip</title>
-                <meta name="description" content="Conflux는 GitHub, Jira, Slack, Sentry 등 개발 도구의 알림을 하나로 통합하는 관제 센터입니다. Private 서버 모니터링과 배치 작업 알림을 지원합니다." />
-                <meta property="og:title" content="Conflux - 통합 알림 관제 센터" />
-                <meta property="og:description" content="개발자를 위한 개인화된 통합 알림 관제 센터. GitHub, Jira, Sentry 알림을 하나의 타임라인으로." />
+                {/* 기본 메타 태그 - 한영 병기 */}
+                <title>Conflux - 개발자를 위한 통합 알림 관제 센터 | Unified Notification Hub</title>
+                <meta name="description" content="Conflux는 GitHub, Jira, Slack, Sentry 등 개발 도구의 알림을 하나로 통합하는 관제 센터입니다. Conflux is a unified notification hub that aggregates alerts from GitHub, Jira, Slack, and Sentry." />
+                <meta name="keywords" content="Conflux, conflux, 알림관리, notification hub, 개발자도구, developer tools, GitHub알림, GitHub notifications, Jira알림, 서버모니터링, server monitoring, 통합알림, DevZip" />
+                
+                {/* Open Graph */}
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content="https://devzip.cloud/conflux" />
-                <meta name="keywords" content="Conflux, 알림관리, 개발자도구, GitHub알림, Jira알림, 서버모니터링, 통합알림, DevZip" />
+                <meta property="og:title" content="Conflux - Unified Notification Hub for Developers" />
+                <meta property="og:description" content="Where all streams merge. A personalized notification control center that aggregates GitHub, Jira, Sentry alerts into one timeline." />
+                <meta property="og:locale" content="ko_KR" />
+                <meta property="og:locale:alternate" content="en_US" />
+                
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:title" content="Conflux - Unified Notification Hub" />
+                <meta property="twitter:description" content="Where all streams merge. Aggregate your development tool notifications in one place." />
+                
+                {/* hreflang */}
+                <link rel="alternate" hreflang="ko" href="https://devzip.cloud/conflux" />
+                <link rel="alternate" hreflang="en" href="https://devzip.cloud/conflux" />
+                <link rel="alternate" hreflang="x-default" href="https://devzip.cloud/conflux" />
+                
+                {/* Canonical */}
+                <link rel="canonical" href="https://devzip.cloud/conflux" />
+                
+                {/* JSON-LD 구조화된 데이터 */}
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "SoftwareApplication",
+                        "name": "Conflux",
+                        "alternateName": ["conflux", "컨플럭스"],
+                        "applicationCategory": "DeveloperApplication",
+                        "operatingSystem": "macOS, Windows, Web",
+                        "description": "A unified notification hub for developers. Aggregate GitHub, Jira, Sentry alerts into one timeline. 개발 도구 알림을 하나로 통합하는 관제 센터.",
+                        "url": "https://devzip.cloud/conflux",
+                        "author": {
+                            "@type": "Person",
+                            "name": "Hoooon22"
+                        },
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "0",
+                            "priceCurrency": "USD"
+                        }
+                    })}
+                </script>
             </Helmet>
 
             {/* Hero Section */}

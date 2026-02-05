@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
 import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
@@ -8,6 +9,32 @@ import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 �
 import DailyJoke from '../components/cs-tip/DailyJoke'; // DailyJoke 컴포넌트 임포트
 import csTipService from '../services/csTipService'; // CS Tip Service 임포트
 import "../assets/css/Main.scss";
+
+// JSON-LD 구조화된 데이터
+const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "DevZip",
+    "alternateName": ["devzip", "데브집"],
+    "url": "https://devzip.cloud",
+    "description": "Developer's Side Project Hub - 개발자의 사이드 프로젝트 허브",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://devzip.cloud/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+};
+
+const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "DevZip",
+    "url": "https://devzip.cloud",
+    "logo": "https://devzip.cloud/logo192.png",
+    "sameAs": [
+        "https://github.com/Hoooon22"
+    ]
+};
 
 const Main = () => {
     const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
@@ -105,6 +132,37 @@ const Main = () => {
 
     return (
         <div className={`page-shell ${isProductionMode ? 'mode-production' : 'mode-experiment'}`}>
+            <Helmet>
+                {/* 기본 메타 태그 */}
+                <title>DevZip - 개발자의 사이드 프로젝트 허브 | Developer&apos;s Side Project Hub</title>
+                <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요. DevZip is a hub for developer side projects." />
+                <meta name="keywords" content="DevZip, devzip, Command Stack, commandstack, Conflux, conflux, 개발자도구, developer tools, side project, 사이드프로젝트" />
+                
+                {/* Open Graph */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://devzip.cloud/" />
+                <meta property="og:title" content="DevZip - Developer's Side Project Hub" />
+                <meta property="og:description" content="A hub for developer side projects. Discover Command Stack, Conflux, and more experimental tools." />
+                <meta property="og:locale" content="ko_KR" />
+                <meta property="og:locale:alternate" content="en_US" />
+                
+                {/* hreflang */}
+                <link rel="alternate" hreflang="ko" href="https://devzip.cloud/" />
+                <link rel="alternate" hreflang="en" href="https://devzip.cloud/" />
+                <link rel="alternate" hreflang="x-default" href="https://devzip.cloud/" />
+                
+                {/* Canonical */}
+                <link rel="canonical" href="https://devzip.cloud/" />
+                
+                {/* JSON-LD 구조화된 데이터 */}
+                <script type="application/ld+json">
+                    {JSON.stringify(websiteSchema)}
+                </script>
+                <script type="application/ld+json">
+                    {JSON.stringify(organizationSchema)}
+                </script>
+            </Helmet>
+            
             <div className="noise-layer" aria-hidden="true"></div>
 
             <header className="hero">

@@ -91,13 +91,56 @@ const CommandStack = () => {
     return (
         <div className="commandstack-container">
             <Helmet>
-                <title>Command Stack - 개발자를 위한 터미널 기반 작업 관리 앱 | DevZip</title>
-                <meta name="description" content="Command Stack은 터미널과 OS의 메타포를 활용한 개발자 친화적 작업 관리 앱입니다. Schedule Mode와 Context Mode로 프로젝트와 일정을 효율적으로 관리하세요." />
-                <meta property="og:title" content="Command Stack - 터미널 기반 작업 관리 앱" />
-                <meta property="og:description" content="개발자를 위한 터미널 메타포 기반 개인 관리 시스템. 작업을 Command로, 프로젝트를 Context로 관리하세요." />
+                {/* 기본 메타 태그 - 한국어 */}
+                <title>Command Stack - 개발자를 위한 터미널 기반 작업 관리 앱 | Terminal-style Task Manager</title>
+                <meta name="description" content="Command Stack은 터미널과 OS의 메타포를 활용한 개발자 친화적 작업 관리 앱입니다. Command Stack is a developer-friendly task management app using terminal and OS metaphors." />
+                <meta name="keywords" content="Command Stack, commandstack, 작업관리, task manager, 할일관리, todo app, 개발자도구, developer tools, 터미널, terminal, 프로젝트관리, project management, DevZip" />
+                
+                {/* Open Graph */}
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content="https://devzip.cloud/commandstack" />
-                <meta name="keywords" content="Command Stack, 작업관리, 할일관리, 개발자도구, 터미널, 프로젝트관리, 일정관리, DevZip" />
+                <meta property="og:title" content="Command Stack - Terminal-style Task Manager for Developers" />
+                <meta property="og:description" content="A developer-friendly personal management system using terminal metaphors. Manage your tasks as Commands, projects as Contexts." />
+                <meta property="og:locale" content="ko_KR" />
+                <meta property="og:locale:alternate" content="en_US" />
+                
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:title" content="Command Stack - Terminal-style Task Manager" />
+                <meta property="twitter:description" content="Control your life's runtime. A terminal-based task management app for developers." />
+                
+                {/* hreflang */}
+                <link rel="alternate" hreflang="ko" href="https://devzip.cloud/commandstack" />
+                <link rel="alternate" hreflang="en" href="https://devzip.cloud/commandstack" />
+                <link rel="alternate" hreflang="x-default" href="https://devzip.cloud/commandstack" />
+                
+                {/* Canonical */}
+                <link rel="canonical" href="https://devzip.cloud/commandstack" />
+                
+                {/* JSON-LD 구조화된 데이터 */}
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "SoftwareApplication",
+                        "name": "Command Stack",
+                        "alternateName": ["commandstack", "커맨드스택"],
+                        "applicationCategory": "ProductivityApplication",
+                        "operatingSystem": "macOS, Windows, Linux",
+                        "description": "A developer-friendly task management app using terminal and OS metaphors. 터미널 메타포를 활용한 개발자 친화적 작업 관리 앱.",
+                        "url": "https://devzip.cloud/commandstack",
+                        "downloadUrl": "https://devzip.cloud/commandstack/download",
+                        "softwareVersion": "1.0.11",
+                        "author": {
+                            "@type": "Person",
+                            "name": "Hoooon22"
+                        },
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "0",
+                            "priceCurrency": "USD"
+                        }
+                    })}
+                </script>
             </Helmet>
 
             {/* Hero Section */}
