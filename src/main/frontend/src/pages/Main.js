@@ -146,10 +146,10 @@ const Main = () => {
                 <meta property="og:locale" content="ko_KR" />
                 <meta property="og:locale:alternate" content="en_US" />
                 
-                {/* hreflang */}
-                <link rel="alternate" hreflang="ko" href="https://devzip.cloud/" />
-                <link rel="alternate" hreflang="en" href="https://devzip.cloud/" />
-                <link rel="alternate" hreflang="x-default" href="https://devzip.cloud/" />
+                {/* hrefLang */}
+                <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/" />
+                <link rel="alternate" hrefLang="en" href="https://devzip.cloud/" />
+                <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/" />
                 
                 {/* Canonical */}
                 <link rel="canonical" href="https://devzip.cloud/" />

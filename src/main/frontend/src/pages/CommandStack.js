@@ -109,10 +109,10 @@ const CommandStack = () => {
                 <meta property="twitter:title" content="Command Stack - Terminal-style Task Manager" />
                 <meta property="twitter:description" content="Control your life's runtime. A terminal-based task management app for developers." />
                 
-                {/* hreflang */}
-                <link rel="alternate" hreflang="ko" href="https://devzip.cloud/commandstack" />
-                <link rel="alternate" hreflang="en" href="https://devzip.cloud/commandstack" />
-                <link rel="alternate" hreflang="x-default" href="https://devzip.cloud/commandstack" />
+                {/* hrefLang */}
+                <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/commandstack" />
+                <link rel="alternate" hrefLang="en" href="https://devzip.cloud/commandstack" />
+                <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/commandstack" />
                 
                 {/* Canonical */}
                 <link rel="canonical" href="https://devzip.cloud/commandstack" />
