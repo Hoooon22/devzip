@@ -1,45 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
       xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w_3.org/2001/XMLSchema-instance"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Gemini -->
+<!-- created with Gemini - Updated 2026-02-05 -->
 
 <url>
   <loc>https://devzip.cloud/</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>weekly</changefreq>
   <priority>1.00</priority>
 </url>
+
 <url>
   <loc>https://devzip.cloud/Guestbook</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>weekly</changefreq>
   <priority>0.80</priority>
 </url>
+
 <url>
   <loc>https://devzip.cloud/Joke</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>weekly</changefreq>
   <priority>0.80</priority>
 </url>
+
 <url>
   <loc>https://devzip.cloud/apiPage</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
   <priority>0.80</priority>
 </url>
+
 <url>
   <loc>https://devzip.cloud/trendchat</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>daily</changefreq>
   <priority>0.80</priority>
 </url>
-<url>
-  <loc>https://devzip.cloud/livechat</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
+
 <url>
   <loc>https://devzip.cloud/physics-quiz</loc>
-  <lastmod>2025-09-15T00:00:00+00:00</lastmod>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
   <priority>0.80</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/conflux</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.70</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/commandstack</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.90</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/commandstack/download</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.85</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.70</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment/rest</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.60</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment/json</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.60</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment/soap</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.60</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment/grpc</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.60</priority>
+</url>
+
+<url>
+  <loc>https://devzip.cloud/api-experiment/graphql</loc>
+  <lastmod>2026-02-05T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.60</priority>
 </url>
 
 </urlset>
