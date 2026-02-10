@@ -40,6 +40,7 @@ public class JokeService {
     /**
      * 오늘의 농담 가져오기 (캐싱 적용 - TipService 패턴)
      * 자정에 초기화되어 하루 동안 동일한 농담 반환
+     * 
      * @return 캐시된 또는 새로 생성된 TranslatedJoke
      */
     public synchronized TranslatedJoke getDailyJoke() {
@@ -100,8 +101,7 @@ public class JokeService {
                 jokeResponse.getPunchline(),
                 translatedSetup,
                 translatedPunchline,
-                jokeResponse.getType()
-        );
+                jokeResponse.getType());
     }
 
     /**
@@ -116,7 +116,8 @@ public class JokeService {
         String geminiUrlWithKey = GEMINI_API_URL + "?key=" + googleApiKey;
 
         // Gemini API 요청 바디 구성 (TipService와 동일한 DTO 사용)
-        String prompt = "다음 영어 농담을 자연스러운 한국어로 번역해주세요. 농담의 뉘앙스와 유머를 최대한 살려서 번역해주세요. 번역만 출력하고 추가 설명은 하지 마세요:\n\n" + englishText;
+        String prompt = "Translate the following joke into natural Korean. Output ONLY the translated text. Do not include any internal thoughts, explanations, or [THOUGHT] blocks. Just the translation:\n\n"
+                + englishText;
         GeminiRequest.Part part = new GeminiRequest.Part(prompt);
         GeminiRequest.Content content = new GeminiRequest.Content(Collections.singletonList(part));
         GeminiRequest request = new GeminiRequest(Collections.singletonList(content));
@@ -132,17 +133,22 @@ public class JokeService {
                         geminiUrlWithKey,
                         HttpMethod.POST,
                         entity,
-                        GeminiResponse.class
-                );
+                        GeminiResponse.class);
 
                 if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                     String translatedText = extractTextFromGeminiResponse(response.getBody());
                     if (StringUtils.hasText(translatedText)) {
-                        return translatedText.trim();
+                        // [THOUGHT] 블록이 포함된 경우 제거
+                        String cleanedText = translatedText.replaceAll("\\[THOUGHT\\][\\s\\S]*?(\n\n|\n|$)", "").trim();
+                        // 만약 제거 후에도 [THOUGHT]가 남아있거나 빈 문자열이면 원문 반환 고려 (여기선 빈 문자열 체크만)
+                        if (StringUtils.hasText(cleanedText)) {
+                            return cleanedText;
+                        }
                     }
-                    logger.warn("Gemini translation attempt {} returned empty text", attempt);
+                    logger.warn("Gemini translation attempt {} returned empty or invalid text", attempt);
                 } else {
-                    logger.warn("Gemini translation attempt {} failed with status {}", attempt, response.getStatusCode());
+                    logger.warn("Gemini translation attempt {} failed with status {}", attempt,
+                            response.getStatusCode());
                 }
             } catch (Exception e) {
                 logger.warn("Gemini translation attempt {} failed: {}", attempt, e.getMessage());
@@ -181,7 +187,6 @@ public class JokeService {
                 "Because light attracts bugs!",
                 "왜 프로그래머들은 다크 모드를 선호할까요?",
                 "빛이 버그를 끌어들이기 때문이죠!",
-                "programming"
-        );
+                "programming");
     }
 }
