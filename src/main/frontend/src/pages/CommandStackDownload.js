@@ -19,14 +19,14 @@ const CommandStackDownload = () => {
           name: "Apple Silicon (M1/M2/M3)",
           size: "~85 MB",
           downloadUrl:
-            "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack-1.0.11-arm64.dmg",
+            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.11-arm64.dmg",
           fileName: "CommandStack-1.0.11-arm64.dmg",
         },
         intel: {
           name: "Intel Processor",
           size: "~88 MB",
           downloadUrl:
-            "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack-1.0.11.dmg",
+            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.11.dmg",
           fileName: "CommandStack-1.0.11.dmg",
         },
       },
@@ -44,7 +44,7 @@ const CommandStackDownload = () => {
       size: "~92 MB",
       requirements: "Windows 10 or later",
       downloadUrl:
-        "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack.Setup.1.0.11.exe",
+        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack.Setup.1.0.11.exe",
       fileName: "CommandStack.Setup.1.0.11.exe",
       instructions: [
         "1. 다운로드한 설치 파일(.exe)을 실행하세요",
@@ -60,7 +60,7 @@ const CommandStackDownload = () => {
       size: "~89 MB",
       requirements: "Ubuntu 20.04+ or equivalent (Debian-based)",
       downloadUrl:
-        "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/commandstack-electron_1.0.11_amd64.deb",
+        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/commandstack-electron_1.0.11_amd64.deb",
       fileName: "commandstack-electron_1.0.11_amd64.deb",
       instructions: [
         "1. 다운로드한 .deb 파일이 있는 디렉토리로 이동하세요",
@@ -90,13 +90,13 @@ const CommandStackDownload = () => {
       ],
       downloads: {
         macArm:
-          "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack-1.0.11-arm64.dmg",
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.11-arm64.dmg",
         macIntel:
-          "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack-1.0.11.dmg",
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.11.dmg",
         windows:
-          "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/CommandStack.Setup.1.0.11.exe",
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack.Setup.1.0.11.exe",
         linux:
-          "https://github.com/Hoooon22/Command_Stack/releases/download/1.0.11/commandstack-electron_1.0.11_amd64.deb",
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/commandstack-electron_1.0.11_amd64.deb",
       },
     },
     {
