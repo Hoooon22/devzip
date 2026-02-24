@@ -12,71 +12,96 @@ const CommandStackDownload = () => {
     macos: {
       name: "macOS",
       icon: "🍎",
-      version: "v1.0.12",
+      version: "v1.0.13",
       requirements: "macOS 10.15 or later",
       architectures: {
         arm64: {
           name: "Apple Silicon (M1/M2/M3)",
           size: "~85 MB",
           downloadUrl:
-            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.12-arm64.dmg",
-          fileName: "CommandStack-1.0.12-arm64.dmg",
+            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack-1.0.13-arm64.dmg",
+          fileName: "CommandStack-1.0.13-arm64.dmg",
         },
         intel: {
           name: "Intel Processor",
           size: "~88 MB",
           downloadUrl:
-            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack-1.0.12.dmg",
-          fileName: "CommandStack-1.0.12.dmg",
+            "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack-1.0.13.dmg",
+          fileName: "CommandStack-1.0.13.dmg",
         },
       },
       instructions: [
-        "1. 다운로드한 DMG 파일을 열어주세요",
-        "2. Command Stack 아이콘을 Applications 폴더로 드래그하세요",
-        "3. Applications 폴더에서 Command Stack을 실행하세요",
-        '4. 보안 설정에서 "확인 없이 열기"를 선택해야 할 수 있습니다',
+        "1. 원활한 애플리케이션 실행을 위해 반드시 Java 17 이상이 설치되어 있어야 합니다.",
+        "2. 다운로드한 DMG 파일을 열어주세요",
+        "3. Command Stack 아이콘을 Applications 폴더로 드래그하세요",
+        "4. Applications 폴더에서 Command Stack을 실행하세요",
+        '5. 보안 설정에서 "확인 없이 열기"를 선택해야 할 수 있습니다',
       ],
     },
     windows: {
       name: "Windows",
       icon: "🪟",
-      version: "v1.0.12",
+      version: "v1.0.13",
       size: "~92 MB",
       requirements: "Windows 10 or later",
       downloadUrl:
-        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/CommandStack.Setup.1.0.12.exe",
-      fileName: "CommandStack.Setup.1.0.12.exe",
+        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack.Setup.1.0.13.exe",
+      fileName: "CommandStack.Setup.1.0.13.exe",
       instructions: [
-        "1. 다운로드한 설치 파일(.exe)을 실행하세요",
-        "2. 설치 마법사의 안내를 따라 진행하세요",
-        "3. 설치가 완료되면 시작 메뉴에서 Command Stack을 찾을 수 있습니다",
-        '4. Windows Defender에서 경고가 나타날 수 있습니다. "추가 정보"를 클릭한 후 "실행"을 선택하세요',
+        "1. 원활한 애플리케이션 실행을 위해 반드시 Java 17 이상이 설치되어 있어야 합니다.",
+        "2. 다운로드한 설치 파일(.exe)을 실행하세요",
+        "3. 설치 마법사의 안내를 따라 진행하세요",
+        "4. 설치가 완료되면 시작 메뉴에서 Command Stack을 찾을 수 있습니다",
+        '5. Windows Defender에서 경고가 나타날 수 있습니다. "추가 정보"를 클릭한 후 "실행"을 선택하세요',
       ],
     },
     linux: {
       name: "Linux",
       icon: "🐧",
-      version: "v1.0.12",
+      version: "v1.0.13",
       size: "~89 MB",
       requirements: "Ubuntu 20.04+ or equivalent (Debian-based)",
       downloadUrl:
-        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.12/commandstack-electron_1.0.12_amd64.deb",
-      fileName: "commandstack-electron_1.0.12_amd64.deb",
+        "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/commandstack-electron_1.0.13_amd64.deb",
+      fileName: "commandstack-electron_1.0.13_amd64.deb",
       instructions: [
-        "1. 다운로드한 .deb 파일이 있는 디렉토리로 이동하세요",
-        "2. 터미널에서 다음 명령어를 실행하세요:",
-        "   sudo dpkg -i commandstack-electron_1.0.12_amd64.deb",
-        "3. 의존성 문제가 발생하면: sudo apt-get install -f",
-        "4. 애플리케이션 메뉴에서 Command Stack을 실행하세요",
+        "1. 원활한 애플리케이션 실행을 위해 반드시 Java 17 이상이 설치되어 있어야 합니다.",
+        "2. 다운로드한 .deb 파일이 있는 디렉토리로 이동하세요",
+        "3. 터미널에서 다음 명령어를 실행하세요:",
+        "   sudo dpkg -i commandstack-electron_1.0.13_amd64.deb",
+        "4. 의존성 문제가 발생하면: sudo apt-get install -f",
+        "5. 애플리케이션 메뉴에서 Command Stack을 실행하세요",
       ],
     },
   };
 
   const releaseHistory = [
     {
-      version: "v1.0.12",
+      version: "v1.0.13",
       date: "2026년 2월 24일",
       isLatest: true,
+      features: [
+        "Windows 환경에서 빈 화면이 표시되는 문제 해결",
+        "로컬 백엔드 서버 실행 버그 핫픽스 적용",
+      ],
+      instructions: [
+        "주의: 기능이 정상적으로 동작하려면 시스템에 반드시 Java 17 이상이 설치되어 있어야 합니다.",
+      ],
+      downloads: {
+        macArm:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack-1.0.13-arm64.dmg",
+        macIntel:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack-1.0.13.dmg",
+        windows:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/CommandStack.Setup.1.0.13.exe",
+        linux:
+          "https://github.com/Hoooon22/Command_Stack/releases/download/v1.0.13/commandstack-electron_1.0.13_amd64.deb",
+      },
+    },
+    {
+      version: "v1.0.12",
+      date: "2026년 2월 24일",
+      isLatest: false,
       features: [
         "macOS 환경에서 창 제어 UI 개선 (titleBarStyle: hiddenInset 적용)",
         "클라이언트, 서버, 일렉트론 등 전체 컴포넌트 버전 동기화 및 안정성 향상",
@@ -467,9 +492,9 @@ const CommandStackDownload = () => {
               </ul>
             </div>
             <div className="requirement-card">
-              <h3 className="requirement-title">Backend (Optional)</h3>
+              <h3 className="requirement-title" style={{ color: "#ef4444" }}>필수 환경 (Backend)</h3>
               <ul className="requirement-list">
-                <li>Java 17 이상</li>
+                <li style={{ fontWeight: "bold" }}>Java 17 이상 (필수 설치)</li>
                 <li>Gradle 8.x</li>
                 <li>Spring Boot 3.x 호환 환경</li>
               </ul>

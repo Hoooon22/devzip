@@ -129,7 +129,7 @@ const CommandStack = () => {
                         "description": "A developer-friendly task management app using terminal and OS metaphors. 터미널 메타포를 활용한 개발자 친화적 작업 관리 앱.",
                         "url": "https://devzip.cloud/commandstack",
                         "downloadUrl": "https://devzip.cloud/commandstack/download",
-                        "softwareVersion": "1.0.12",
+                        "softwareVersion": "1.0.13",
                         "author": {
                             "@type": "Person",
                             "name": "Hoooon22"
@@ -175,7 +175,7 @@ const CommandStack = () => {
                         </a>
                     </div>
                     <div className="hero-status">
-                        <span className="status-badge">v1.0.12</span>
+                        <span className="status-badge">v1.0.13</span>
                         <span className="status-divider">•</span>
                         <span className="status-text">macOS • Windows • Linux</span>
                         <span className="status-divider">•</span>
@@ -189,16 +189,17 @@ const CommandStack = () => {
                 <div className="release-update-content">
                     <div className="release-badge">
                         <span className="release-new-tag">NEW</span>
-                        <span className="release-version">v1.0.12</span>
+                        <span className="release-version">v1.0.13</span>
                     </div>
-                    <h3 className="release-title">✨ macOS UI 개선 및 안정화</h3>
+                    <h3 className="release-title">🚨 시스템 안정화 핫픽스 (v1.0.13)</h3>
                     <p className="release-description">
-                        macOS 환경에서의 원활한 창 제어를 위해 타이틀 바 스타일 개선(hiddenInset) 및 주요 컴포넌트 버전 동기화가 이루어졌습니다.
+                        Windows 환경에서의 빈 화면 표시 버그 및 백엔드 서버 로컬 실행 문제가 해결되었습니다. <br />
+                        <strong style={{ color: "#ef4444" }}>※ 중요: 원활한 사용을 위해 백엔드 서버는 반드시 Java 17 이상 버전을 필요로 합니다.</strong>
                     </p>
                     <div className="release-features">
-                        <code className="release-command">UI/UX 개선</code>
-                        <code className="release-command">버전 안정화</code>
-                        <code className="release-command">Terminal Memo Mode (1.0.11)</code>
+                        <code className="release-command">Windows 디스플레이 핫픽스</code>
+                        <code className="release-command">로컬 서버 실행 안정화</code>
+                        <code className="release-command">macOS UI 개선 (1.0.12)</code>
                     </div>
                     <a
                         href="https://github.com/Hoooon22/Command_Stack/releases"
