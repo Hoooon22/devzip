@@ -129,7 +129,7 @@ const CommandStack = () => {
                         "description": "A developer-friendly task management app using terminal and OS metaphors. 터미널 메타포를 활용한 개발자 친화적 작업 관리 앱.",
                         "url": "https://devzip.cloud/commandstack",
                         "downloadUrl": "https://devzip.cloud/commandstack/download",
-                        "softwareVersion": "1.0.11",
+                        "softwareVersion": "1.0.12",
                         "author": {
                             "@type": "Person",
                             "name": "Hoooon22"
@@ -175,7 +175,7 @@ const CommandStack = () => {
                         </a>
                     </div>
                     <div className="hero-status">
-                        <span className="status-badge">v1.0.11</span>
+                        <span className="status-badge">v1.0.12</span>
                         <span className="status-divider">•</span>
                         <span className="status-text">macOS • Windows • Linux</span>
                         <span className="status-divider">•</span>
@@ -189,20 +189,19 @@ const CommandStack = () => {
                 <div className="release-update-content">
                     <div className="release-badge">
                         <span className="release-new-tag">NEW</span>
-                        <span className="release-version">v1.0.11</span>
+                        <span className="release-version">v1.0.12</span>
                     </div>
-                    <h3 className="release-title">🎉 Terminal-style Memo Mode</h3>
+                    <h3 className="release-title">✨ macOS UI 개선 및 안정화</h3>
                     <p className="release-description">
-                        터미널 명령어 스타일로 자유롭게 메모를 관리할 수 있는 Memo Mode가 추가되었습니다!
+                        macOS 환경에서의 원활한 창 제어를 위해 타이틀 바 스타일 개선(hiddenInset) 및 주요 컴포넌트 버전 동기화가 이루어졌습니다.
                     </p>
                     <div className="release-features">
-                        <code className="release-command">vi &lt;파일명&gt;</code>
-                        <code className="release-command">cat &lt;파일명&gt;</code>
-                        <code className="release-command">ls</code>
-                        <code className="release-command">rm &lt;파일명&gt;</code>
+                        <code className="release-command">UI/UX 개선</code>
+                        <code className="release-command">버전 안정화</code>
+                        <code className="release-command">Terminal Memo Mode (1.0.11)</code>
                     </div>
                     <a
-                        href="https://github.com/Hoooon22/Command_Stack/releases/tag/1.0.11"
+                        href="https://github.com/Hoooon22/Command_Stack/releases"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="release-link"
