@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
-import ProjectBox from '../components/ProjectBox'; // ProjectBox 컴포넌트 임포트
-import Footer from '../components/Footer'; // Footer 컴포넌트 임포트
-import UserStatus from '../components/auth/UserStatus'; // UserStatus 컴포넌트 임포트
-import ViewModeToggle from '../components/ViewModeToggle'; // ViewModeToggle 컴포넌트 임포트
-import DailyTip from '../components/cs-tip/DailyTip'; // DailyTip 컴포넌트 임포트
-import DailyJoke from '../components/cs-tip/DailyJoke'; // DailyJoke 컴포넌트 임포트
-import csTipService from '../services/csTipService'; // CS Tip Service 임포트
+import Footer from '../components/Footer';
+import UserStatus from '../components/auth/UserStatus';
+import csTipService from '../services/csTipService';
+import authService from '../services/AuthService';
 import "../assets/css/Main.scss";
 
-// JSON-LD 구조화된 데이터
 const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -31,244 +27,326 @@ const organizationSchema = {
     "name": "DevZip",
     "url": "https://devzip.cloud",
     "logo": "https://devzip.cloud/logo192.png",
-    "sameAs": [
-        "https://github.com/Hoooon22"
-    ]
+    "sameAs": ["https://github.com/Hoooon22"]
+};
+
+const STORAGE_KEYS = {
+    dark: 'devzip.mono.dark',
+    layout: 'devzip.mono.layout',
+};
+
+const readPref = (key, fallback) => {
+    if (typeof window === 'undefined') return fallback;
+    const raw = window.localStorage.getItem(key);
+    if (raw === null) return fallback;
+    try { return JSON.parse(raw); } catch { return fallback; }
+};
+
+const writePref = (key, value) => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(key, JSON.stringify(value));
+};
+
+const TODAY_ISO = new Date().toISOString().slice(0, 10);
+
+// Calculate hero stats for the two stat cards.
+// Returns:
+//   {
+//     production: { active: number, total: number, names: string[] },
+//     experiments: { total: number, running: number, archived: number },
+//   }
+//
+// "Active" production = isProduction && active !== false.
+// "Archived" experiment = !isProduction && (active === false || endDate truthy).
+// "Running" experiment = !isProduction && not archived.
+const buildHeroStats = (allProjects) => {
+    // TODO(human): implement the reducer that walks `allProjects` once and returns
+    // the shape above. See VariantMono in the design — the Production stat shows
+    // "02 / 02 · Command Stack · Conflux" and the Lab stat shows total + a "11 running, 2 archived" sub line.
+    return {
+        production: { active: 0, total: 0, names: [] },
+        experiments: { total: 0, running: 0, archived: 0 },
+    };
 };
 
 const Main = () => {
-    const [isProductionMode, setIsProductionMode] = useState(true); // 기본값: 실서비스 모드
+    const [mode, setMode] = useState('production'); // 'production' | 'experiment'
+    const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'table'));
+    const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
     const [dailyTip, setDailyTip] = useState('');
-    const [isTipLoading, setIsTipLoading] = useState(true); // 로딩 상태 추가
+    const [isTipLoading, setIsTipLoading] = useState(true);
     const [dailyJoke, setDailyJoke] = useState(null);
-    const [isJokeLoading, setIsJokeLoading] = useState(true); // 농담 로딩 상태
-    const [showAllProjects, setShowAllProjects] = useState(false);
-    const overlayRef = useRef(null);
+    const [isJokeLoading, setIsJokeLoading] = useState(true);
 
-    // 메인 페이지에 있을 때만 바디 스크롤을 잠금 (클래스로 명시적으로 관리)
     useEffect(() => {
         document.body.classList.add('main-scroll-locked');
-        return () => {
-            document.body.classList.remove('main-scroll-locked');
-        };
+        return () => document.body.classList.remove('main-scroll-locked');
     }, []);
 
-    // 테마 전환 효과
-    useEffect(() => {
-        const container = document.querySelector('.container');
-        if (container) {
-            if (isProductionMode) {
-                container.classList.remove('experimental-mode');
-                container.classList.add('production-mode');
-            } else {
-                container.classList.remove('production-mode');
-                container.classList.add('experimental-mode');
-            }
-        }
-    }, [isProductionMode]);
+    useEffect(() => { writePref(STORAGE_KEYS.dark, dark); }, [dark]);
+    useEffect(() => { writePref(STORAGE_KEYS.layout, layout); }, [layout]);
 
-    // 페이지 로드 시 production 프로젝트 확인 및 자동 모드 전환
     useEffect(() => {
-        const productionProjects = projects.filter(project => project.isProduction === true);
-        if (productionProjects.length === 0) {
-            setIsProductionMode(false); // production이 없으면 experiment 모드로 전환
-        }
-    }, []);
-
-    // 일일 CS 팁 가져오기 (Hopperbox 패턴 적용)
-    useEffect(() => {
-        const fetchDailyTip = async () => {
+        let cancelled = false;
+        (async () => {
             setIsTipLoading(true);
             try {
                 const response = await csTipService.getDailyTip();
-                // 백엔드에서 ResponseEntity<String>으로 반환하므로 response.data가 직접 문자열
-                setDailyTip(response.data || '');
-            } catch (error) {
-                console.error('Failed to load daily tip:', error);
-                setDailyTip('팁을 불러오는 중 오류가 발생했습니다. 😥');
+                if (!cancelled) setDailyTip(response.data || '');
+            } catch (err) {
+                if (!cancelled) setDailyTip('팁을 불러오는 중 오류가 발생했습니다. 😥');
             } finally {
-                setIsTipLoading(false);
+                if (!cancelled) setIsTipLoading(false);
             }
-        };
+        })();
+        return () => { cancelled = true; };
+    }, []);
 
-        fetchDailyTip();
-    }, []); // 페이지 로드 시 한 번만 실행
-
-    // 일일 농담 가져오기 (자정에 초기화되는 캐시된 농담)
     useEffect(() => {
-        const fetchDailyJoke = async () => {
+        let cancelled = false;
+        (async () => {
             setIsJokeLoading(true);
             try {
                 const response = await csTipService.getDailyJoke();
-                // 백엔드에서 ResponseEntity<TranslatedJoke>로 반환
-                setDailyJoke(response.data || null);
-            } catch (error) {
-                console.error('Failed to load daily joke:', error);
-                setDailyJoke(null);
+                if (!cancelled) setDailyJoke(response.data || null);
+            } catch (err) {
+                if (!cancelled) setDailyJoke(null);
             } finally {
-                setIsJokeLoading(false);
+                if (!cancelled) setIsJokeLoading(false);
             }
-        };
+        })();
+        return () => { cancelled = true; };
+    }, []);
 
-        fetchDailyJoke();
-    }, []); // 페이지 로드 시 한 번만 실행
+    const heroStats = useMemo(() => buildHeroStats(projects), []);
 
-    // 모드 전환 핸들러
-    const handleModeToggle = () => {
-        setIsProductionMode(prev => !prev);
+    const filtered = useMemo(() => {
+        const matches = projects.filter(p =>
+            mode === 'production' ? p.isProduction : !p.isProduction
+        );
+        return [...matches].sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            if (!a.startDate) return 1;
+            if (!b.startDate) return -1;
+            return new Date(b.startDate) - new Date(a.startDate);
+        });
+    }, [mode]);
+
+    const handleProjectClick = (e, project) => {
+        if (project.requiresAdmin && !authService.isAdmin()) {
+            e.preventDefault();
+            alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
+            return;
+        }
+        if (project.link?.startsWith('http://') || project.link?.startsWith('https://')) {
+            e.preventDefault();
+            window.open(project.link, '_blank', 'noopener,noreferrer');
+        }
     };
-    const filteredProjects = projects
-        .filter(project => project.isProduction === isProductionMode);
 
-    const sortedProjects = [...filteredProjects].sort((a, b) => {
-        if (a.pinned && !b.pinned) return -1;
-        if (!a.pinned && b.pinned) return 1;
-        if (a.requiresAdmin && !b.requiresAdmin) return -1;
-        if (!a.requiresAdmin && b.requiresAdmin) return 1;
-        if (!a.startDate) return 1;
-        if (!b.startDate) return -1;
-        return new Date(b.startDate) - new Date(a.startDate);
-    });
+    const renderTechStack = (project) => {
+        const stack = project.techStack || project.tech || [];
+        if (stack.length === 0) {
+            const fallback = project.category?.split('/').filter(Boolean).slice(0, 2) || [];
+            return fallback.map(tag => <span key={`cat-${tag}`}>{tag}</span>);
+        }
+        return stack.slice(0, 2).map(tag => <span key={`tech-${tag}`}>{tag}</span>);
+    };
 
     return (
-        <div className={`page-shell ${isProductionMode ? 'mode-production' : 'mode-experiment'}`}>
+        <div
+            className="mono-root"
+            data-theme={dark ? 'dark' : 'light'}
+        >
             <Helmet>
-                {/* 기본 메타 태그 */}
                 <title>DevZip - 개발자의 사이드 프로젝트 허브 | Developer&apos;s Side Project Hub</title>
-                <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요. DevZip is a hub for developer side projects." />
+                <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요." />
                 <meta name="keywords" content="DevZip, devzip, Command Stack, commandstack, Conflux, conflux, 개발자도구, developer tools, side project, 사이드프로젝트" />
-                
-                {/* Open Graph */}
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content="https://devzip.cloud/" />
                 <meta property="og:title" content="DevZip - Developer's Side Project Hub" />
                 <meta property="og:description" content="A hub for developer side projects. Discover Command Stack, Conflux, and more experimental tools." />
                 <meta property="og:locale" content="ko_KR" />
                 <meta property="og:locale:alternate" content="en_US" />
-                
-                {/* hrefLang */}
                 <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/" />
                 <link rel="alternate" hrefLang="en" href="https://devzip.cloud/" />
                 <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/" />
-                
-                {/* Canonical */}
                 <link rel="canonical" href="https://devzip.cloud/" />
-                
-                {/* JSON-LD 구조화된 데이터 */}
-                <script type="application/ld+json">
-                    {JSON.stringify(websiteSchema)}
-                </script>
-                <script type="application/ld+json">
-                    {JSON.stringify(organizationSchema)}
-                </script>
+                <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
+                <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
             </Helmet>
-            
-            <div className="noise-layer" aria-hidden="true"></div>
 
-            <header className="hero">
-                <div className="hero__text">
-                    <p className="eyebrow">Hoooon22&apos;s DevZip</p>
-                    <h1>빌드하고 실험하며 기록하는 개발 랩</h1>
-                    <p className="lede">
-                        사이드 프로젝트와 실험적인 아이디어를 한 곳에서 모았습니다. 운영 중인 서비스와 실험실 프로젝트를 모드 전환으로 빠르게 오가며 확인하세요.
-                    </p>
-                    <div className="hero__actions">
-                        <ViewModeToggle
-                            isProductionMode={isProductionMode}
-                            onToggle={handleModeToggle}
-                        />
+            <div className="mono-wrap">
+                <div className="mono-bar">
+                    <div className="lhs">
+                        <span className="dot" aria-hidden="true"></span>
+                        <span className="path">~ / devzip / index</span>
                     </div>
-                    <div className="deck-window">
-                        <div className="deck-window__header">
-                            <div>
-                                <p className="eyebrow">Project Deck</p>
-                                <h3>{isProductionMode ? '운영 중인 프로젝트' : '실험 중인 프로젝트'}</h3>
-                            </div>
-                            <button className="view-all-btn" onClick={() => setShowAllProjects(true)}>전체 보기</button>
-                        </div>
-                        {sortedProjects.length === 0 ? (
-                            <div className="empty-projects compact">
-                                <p>🚧 {isProductionMode ? '현재 서비스 중인' : '현재 실험'} 프로젝트가 없습니다.</p>
-                            </div>
-                        ) : (
-                            <div className="deck-window__body">
-                                <ul className="project-grid compact">
-                                    {sortedProjects.map(project => (
-                                        <li key={project.id} className="project-item">
-                                            <ProjectBox project={project} />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    <div className="meta">
+                        last build: {TODAY_ISO} · {projects.length} projects · v3.2
                     </div>
                 </div>
-                <div className="hero__panel hero__panel--stack">
-                    <div className="meta-card">
-                        <span className="meta-label">현재 모드</span>
-                        <strong className="meta-value">{isProductionMode ? 'Production' : 'Experiment'}</strong>
-                        <p className="meta-desc">
-                            {isProductionMode ? '실서비스 상태의 안정된 프로젝트' : '새 기능과 디자인을 실험하는 공간'}
-                        </p>
-                        <div className="meta-embedded">
-                            <div className="card-heading tight">
-                                <span className="pill">Daily</span>
-                                <p>오늘의 CS 팁</p>
-                            </div>
-                            <DailyTip tip={dailyTip} isLoading={isTipLoading} />
-                        </div>
-                        <div className="meta-embedded">
-                            <div className="card-heading tight">
-                                <span className="pill pill--warm">Break</span>
-                                <p>오늘의 농담</p>
-                            </div>
-                            <DailyJoke joke={dailyJoke} isLoading={isJokeLoading} />
-                        </div>
-                        <div className="meta-embedded">
-                            <span className="meta-label">계정</span>
-                            <UserStatus />
-                        </div>
-                    </div>
-                </div>
-            </header>
 
-            {showAllProjects && (
-                <div
-                    className="modal-overlay"
-                    role="presentation"
-                    ref={overlayRef}
-                    onClick={(e) => {
-                        if (overlayRef.current && e.target === overlayRef.current) {
-                            setShowAllProjects(false);
-                        }
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Escape') setShowAllProjects(false);
-                    }}
-                    tabIndex={-1}
-                >
-                    <div
-                        className="modal"
-                        role="dialog"
-                        aria-modal="true"
-                    >
-                        <div className="modal-header">
-                            <div>
-                                <p className="eyebrow">Project Deck</p>
-                                <h3>{isProductionMode ? '전체 운영 프로젝트' : '전체 실험 프로젝트'}</h3>
+                <div className="mono-hero">
+                    <div className="mono-headline">
+                        <p className="pre">// developer side project hub</p>
+                        <h1>한 사람이 만드는 <span className="mark">제품</span>의 모든 단계.</h1>
+                        <p>기획부터 운영까지 — 운영 중인 서비스와 실험실의 프로토타입을 한 곳에서 인덱싱합니다. 모드를 전환해 두 세계를 넘나드세요.</p>
+                    </div>
+                    <div className="mono-stat-stack">
+                        <div className="mono-stat">
+                            <span className="lbl">Active Production</span>
+                            <div className="big">
+                                <span className="acc">
+                                    {String(heroStats.production.active).padStart(2, '0')}
+                                </span>
+                                {' / '}
+                                {String(heroStats.production.total).padStart(2, '0')}
                             </div>
-                            <button className="close-btn" onClick={() => setShowAllProjects(false)}>닫기</button>
+                            <span className="sub">
+                                {heroStats.production.names.join(' · ') || '—'}
+                            </span>
                         </div>
-                        <ul className="project-grid">
-                            {sortedProjects.map(project => (
-                                <li key={`grid-${project.id}`} className="project-item">
-                                    <ProjectBox project={project} />
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="mono-stat invert">
+                            <span className="lbl">Lab Experiments</span>
+                            <div className="big">{heroStats.experiments.total}</div>
+                            <span className="sub">
+                                {heroStats.experiments.running} running, {heroStats.experiments.archived} archived
+                            </span>
+                        </div>
                     </div>
                 </div>
-            )}
+
+                <div className="mono-toolbar">
+                    <span className="crumb">
+                        $ ls projects/ --filter={mode} --view={layout}
+                    </span>
+                    <div className="right">
+                        <div className="lay">
+                            <button
+                                className={layout === 'table' ? 'on' : ''}
+                                onClick={() => setLayout('table')}
+                            >[table]</button>
+                            <button
+                                className={layout === 'cards' ? 'on' : ''}
+                                onClick={() => setLayout('cards')}
+                            >[cards]</button>
+                        </div>
+                        <div className="seg">
+                            <button
+                                className={mode === 'production' ? 'on' : ''}
+                                onClick={() => setMode('production')}
+                            >production</button>
+                            <button
+                                className={mode === 'experiment' ? 'on' : ''}
+                                onClick={() => setMode('experiment')}
+                            >experiment</button>
+                        </div>
+                        <button
+                            className="theme-btn"
+                            onClick={() => setDark(d => !d)}
+                            aria-label="Toggle theme"
+                        >{dark ? '☀ light' : '☾ dark'}</button>
+                    </div>
+                </div>
+
+                {filtered.length === 0 ? (
+                    <div className="mono-empty">
+                        🚧 {mode === 'production' ? '운영 중인' : '실험 중인'} 프로젝트가 없습니다.
+                    </div>
+                ) : layout === 'table' ? (
+                    <div className="mono-table">
+                        <div className="mono-row head">
+                            <div>#</div>
+                            <div></div>
+                            <div>Name</div>
+                            <div>Description</div>
+                            <div>Stack</div>
+                            <div>Started</div>
+                            <div></div>
+                        </div>
+                        {filtered.map((p, i) => (
+                            <a
+                                key={p.id}
+                                href={p.link}
+                                className="mono-row data"
+                                onClick={(e) => handleProjectClick(e, p)}
+                                aria-label={`${p.name} — ${p.description}`}
+                            >
+                                <div className="idx">{String(i + 1).padStart(2, '0')}</div>
+                                <div className="glyph">{p.thumbnail || '📦'}</div>
+                                <div className="name">{p.name}</div>
+                                <div className="desc">{p.description}</div>
+                                <div className="stack">{renderTechStack(p)}</div>
+                                <div className="date">{p.startDate || '—'}</div>
+                                <div className="arrow">→</div>
+                            </a>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="mono-cardgrid">
+                        {filtered.map((p, i) => (
+                            <a
+                                key={p.id}
+                                href={p.link}
+                                className="mono-cell"
+                                onClick={(e) => handleProjectClick(e, p)}
+                                aria-label={`${p.name} — ${p.description}`}
+                            >
+                                <div className="top">
+                                    <span className="num">№ {String(i + 1).padStart(2, '0')}</span>
+                                    <span className="cat">{p.category || '—'}</span>
+                                </div>
+                                <div className="glyph">{p.thumbnail || '📦'}</div>
+                                <h3 className="name">{p.name}</h3>
+                                <p className="desc">{p.description}</p>
+                                <div className="foot">
+                                    <div className="stack">{renderTechStack(p)}</div>
+                                    <span className="arrow">→</span>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                )}
+
+                <div className="mono-bottom">
+                    <div className="mono-mini">
+                        <div className="lbl">[daily/cs-tip]</div>
+                        <div className="body">
+                            {isTipLoading
+                                ? <span className="skeleton" aria-label="loading">&nbsp;</span>
+                                : (dailyTip || '오늘의 팁이 없습니다.')}
+                        </div>
+                    </div>
+                    <div className="mono-mini">
+                        <div className="lbl">[break/joke]</div>
+                        <div className="body">
+                            {isJokeLoading ? (
+                                <span className="skeleton" aria-label="loading">&nbsp;</span>
+                            ) : dailyJoke ? (
+                                <>
+                                    <div>{dailyJoke.translatedSetup}</div>
+                                    <div style={{ marginTop: 8, opacity: 0.75 }}>
+                                        — {dailyJoke.translatedPunchline}
+                                    </div>
+                                </>
+                            ) : '농담을 불러오지 못했습니다.'}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mono-account">
+                    <span className="label">[ account ]</span>
+                    <UserStatus />
+                </div>
+
+                <div className="mono-foot">
+                    <span>© {new Date().getFullYear()} hoooon22</span>
+                    <span>devzip.cloud</span>
+                </div>
+            </div>
+
             <Footer />
         </div>
     );
