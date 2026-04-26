@@ -47,106 +47,6 @@ const writePref = (key, value) => {
     window.localStorage.setItem(key, JSON.stringify(value));
 };
 
-const TODAY_ISO = new Date().toISOString().slice(0, 10);
-
-const MonoAccount = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState('login');
-
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                if (authService.isAuthenticated()) {
-                    const isValid = await authService.validateToken();
-                    if (!cancelled && isValid) setUser(authService.getUserInfo());
-                }
-            } catch (e) {
-                /* ignore — guest state */
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, []);
-
-    const open = (mode) => { setModalMode(mode); setModalOpen(true); };
-    const handleLogout = () => { authService.logout(); setUser(null); };
-    const handleLoginSuccess = (userData) => setUser(userData);
-
-    if (loading) {
-        return (
-            <div className="mono-account">
-                <span className="label">[ account ]</span>
-                <span className="prompt">
-                    <span className="prompt-host">guest@devzip</span>
-                    <span className="prompt-sep">:</span>
-                    <span className="prompt-path">~$</span>
-                    <span className="cursor blink">_</span>
-                </span>
-            </div>
-        );
-    }
-
-    if (user) {
-        const isAdmin = user.role === 'ROLE_ADMIN';
-        return (
-            <div className="mono-account">
-                <span className="label">[ account ]</span>
-                <span className="prompt">
-                    <span className="prompt-host">{user.username}@devzip</span>
-                    <span className="prompt-sep">:</span>
-                    <span className="prompt-path">~$</span>
-                    <span className="prompt-badge">{isAdmin ? 'ROLE=admin' : 'ROLE=user'}</span>
-                </span>
-                <div className="actions">
-                    <button className="ghost" onClick={handleLogout}>$ logout</button>
-                </div>
-                <AuthModal
-                    isOpen={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    onLoginSuccess={handleLoginSuccess}
-                    initialMode={modalMode}
-                />
-            </div>
-        );
-    }
-
-    return (
-        <div className="mono-account">
-            <span className="label">[ account ]</span>
-            <span className="prompt">
-                <span className="prompt-host">guest@devzip</span>
-                <span className="prompt-sep">:</span>
-                <span className="prompt-path">~$</span>
-                <span className="prompt-hint">authentication required</span>
-            </span>
-            <div className="actions">
-                <button className="ghost primary" onClick={() => open('login')}>$ login</button>
-                <button className="ghost" onClick={() => open('signup')}>$ signup</button>
-            </div>
-            <AuthModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onLoginSuccess={handleLoginSuccess}
-                initialMode={modalMode}
-            />
-        </div>
-    );
-};
-
-// Calculate hero stats for the two stat cards.
-// Returns:
-//   {
-//     production: { active: number, total: number, names: string[] },
-//     experiments: { total: number, running: number, archived: number },
-//   }
-//
-// "Active" production = isProduction && active !== false.
-// "Archived" experiment = !isProduction && (active === false || endDate truthy).
-// "Running" experiment = !isProduction && not archived.
 const buildHeroStats = (allProjects) => allProjects.reduce((acc, p) => {
     if (p.isProduction) {
         acc.production.total += 1;
@@ -166,8 +66,89 @@ const buildHeroStats = (allProjects) => allProjects.reduce((acc, p) => {
     experiments: { total: 0, running: 0, archived: 0 },
 });
 
+// Categories often arrive as "프로젝트/생산성도구" — show only the trailing label.
+const cleanCategory = (raw) => {
+    if (!raw) return '기타';
+    const parts = raw.split('/').filter(Boolean);
+    return parts[parts.length - 1];
+};
+
+const MonoAuth = () => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('login');
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                if (authService.isAuthenticated()) {
+                    const ok = await authService.validateToken();
+                    if (!cancelled && ok) setUser(authService.getUserInfo());
+                }
+            } catch {
+                /* guest */
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, []);
+
+    const open = (mode) => { setModalMode(mode); setModalOpen(true); };
+    const handleLogout = () => { authService.logout(); setUser(null); };
+
+    if (loading) {
+        return (
+            <div className="mono-auth">
+                <span className="who">
+                    <span className="host">guest</span>
+                    <span className="at">@</span>
+                    <span className="host">devzip</span>
+                    <span className="cursor">_</span>
+                </span>
+            </div>
+        );
+    }
+
+    if (user) {
+        const isAdmin = user.role === 'ROLE_ADMIN';
+        return (
+            <div className="mono-auth">
+                <span className="who">
+                    <span className="host">{user.username}</span>
+                    <span className="at">@</span>
+                    <span className="host">devzip</span>
+                    {isAdmin && <span className="role">admin</span>}
+                </span>
+                <button className="auth-btn" onClick={handleLogout}>$ logout</button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mono-auth">
+            <span className="who">
+                <span className="host">guest</span>
+                <span className="at">@</span>
+                <span className="host">devzip</span>
+                <span className="cursor">_</span>
+            </span>
+            <button className="auth-btn primary" onClick={() => open('login')}>$ login</button>
+            <button className="auth-btn" onClick={() => open('signup')}>$ signup</button>
+            <AuthModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onLoginSuccess={(u) => setUser(u)}
+                initialMode={modalMode}
+            />
+        </div>
+    );
+};
+
 const Main = () => {
-    const [mode, setMode] = useState('production'); // 'production' | 'experiment'
+    const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
     const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'table'));
     const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
     const [dailyTip, setDailyTip] = useState('');
@@ -188,10 +169,10 @@ const Main = () => {
         (async () => {
             setIsTipLoading(true);
             try {
-                const response = await csTipService.getDailyTip();
-                if (!cancelled) setDailyTip(response.data || '');
-            } catch (err) {
-                if (!cancelled) setDailyTip('팁을 불러오는 중 오류가 발생했습니다. 😥');
+                const r = await csTipService.getDailyTip();
+                if (!cancelled) setDailyTip(r.data || '');
+            } catch {
+                if (!cancelled) setDailyTip('팁을 불러오는 중 오류가 발생했습니다.');
             } finally {
                 if (!cancelled) setIsTipLoading(false);
             }
@@ -204,9 +185,9 @@ const Main = () => {
         (async () => {
             setIsJokeLoading(true);
             try {
-                const response = await csTipService.getDailyJoke();
-                if (!cancelled) setDailyJoke(response.data || null);
-            } catch (err) {
+                const r = await csTipService.getDailyJoke();
+                if (!cancelled) setDailyJoke(r.data || null);
+            } catch {
                 if (!cancelled) setDailyJoke(null);
             } finally {
                 if (!cancelled) setIsJokeLoading(false);
@@ -216,12 +197,17 @@ const Main = () => {
     }, []);
 
     const heroStats = useMemo(() => buildHeroStats(projects), []);
+    const totalCount = projects.length;
+    const prodCount = heroStats.production.total;
+    const expCount  = heroStats.experiments.total;
 
     const filtered = useMemo(() => {
-        const matches = projects.filter(p =>
-            mode === 'production' ? p.isProduction : !p.isProduction
-        );
-        return [...matches].sort((a, b) => {
+        let pool;
+        if (mode === 'all') pool = projects;
+        else if (mode === 'production') pool = projects.filter(p => p.isProduction);
+        else pool = projects.filter(p => !p.isProduction);
+
+        return [...pool].sort((a, b) => {
             if (a.pinned && !b.pinned) return -1;
             if (!a.pinned && b.pinned) return 1;
             if (!a.startDate) return 1;
@@ -242,20 +228,21 @@ const Main = () => {
         }
     };
 
-    const renderTechStack = (project) => {
+    const renderTechTags = (project, max = 2) => {
         const stack = project.techStack || project.tech || [];
-        if (stack.length === 0) {
-            const fallback = project.category?.split('/').filter(Boolean).slice(0, 2) || [];
-            return fallback.map(tag => <span key={`cat-${tag}`}>{tag}</span>);
-        }
-        return stack.slice(0, 2).map(tag => <span key={`tech-${tag}`}>{tag}</span>);
+        const list = stack.length > 0
+            ? stack.slice(0, max)
+            : (project.category?.split('/').filter(Boolean).slice(0, max) || []);
+        return list.map(tag => <span key={`tech-${tag}`}>{tag}</span>);
+    };
+
+    const browseProjects = () => {
+        document.getElementById('mono-projects')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     return (
-        <div
-            className="mono-root"
-            data-theme={dark ? 'dark' : 'light'}
-        >
+        <div className="mono-root" data-theme={dark ? 'dark' : 'light'}>
             <Helmet>
                 <title>DevZip - 개발자의 사이드 프로젝트 허브 | Developer&apos;s Side Project Hub</title>
                 <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요." />
@@ -275,70 +262,100 @@ const Main = () => {
             </Helmet>
 
             <div className="mono-wrap">
-                <div className="mono-bar">
-                    <div className="lhs">
-                        <span className="dot" aria-hidden="true"></span>
-                        <span className="path">~ / devzip / index</span>
+                <header className="mono-top">
+                    <div className="mono-brand">
+                        <div className="mark">D</div>
+                        <div>
+                            <div className="name">DevZip</div>
+                            <div className="tag">개발자 사이드 프로젝트 허브</div>
+                        </div>
                     </div>
-                    <div className="meta">
-                        last build: {TODAY_ISO} · {projects.length} projects · v3.2
-                    </div>
-                </div>
+                    <nav className="mono-nav">
+                        <a className="on" href="#">홈</a>
+                        <a href="#mono-projects">프로젝트</a>
+                        <a href="#mono-projects">실험실</a>
+                        <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </nav>
+                    <MonoAuth />
+                </header>
 
-                <div className="mono-hero">
-                    <div className="mono-headline">
-                        <p className="pre">{'// developer side project hub'}</p>
+                <section className="mono-hero">
+                    <div>
                         <h1>한 사람이 만드는 <span className="mark">제품</span>의 모든 단계.</h1>
-                        <p>기획부터 운영까지 — 운영 중인 서비스와 실험실의 프로토타입을 한 곳에서 인덱싱합니다. 모드를 전환해 두 세계를 넘나드세요.</p>
+                        <p>
+                            아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 한곳에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스.
+                        </p>
+                        <div className="mono-cta">
+                            <button className="mono-btn" onClick={browseProjects}>프로젝트 둘러보기 →</button>
+                            <a className="mono-btn ghost" href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">소개 읽기</a>
+                        </div>
                     </div>
-                    <div className="mono-stat-stack">
-                        <div className="mono-stat">
-                            <span className="lbl">Active Production</span>
-                            <div className="big">
-                                <span className="acc">
-                                    {String(heroStats.production.active).padStart(2, '0')}
-                                </span>
-                                {' / '}
-                                {String(heroStats.production.total).padStart(2, '0')}
+                    <div className="mono-hero-meta">
+                        <div className="mono-meta-card">
+                            <div>
+                                <div className="label">운영 중인 서비스</div>
+                                <div className="sub">
+                                    {heroStats.production.names.join(' · ') || '준비 중'}
+                                </div>
                             </div>
-                            <span className="sub">
-                                {heroStats.production.names.join(' · ') || '—'}
-                            </span>
+                            <div className="value">
+                                <span className="acc">{heroStats.production.active}</span>
+                                <span className="total">/{totalCount}</span>
+                            </div>
                         </div>
-                        <div className="mono-stat invert">
-                            <span className="lbl">Lab Experiments</span>
-                            <div className="big">{heroStats.experiments.total}</div>
-                            <span className="sub">
-                                {heroStats.experiments.running} running, {heroStats.experiments.archived} archived
-                            </span>
+                        <div className="mono-meta-card invert">
+                            <div>
+                                <div className="label">실험실 프로젝트</div>
+                                <div className="sub">
+                                    {heroStats.experiments.running} running · {heroStats.experiments.archived} archived
+                                </div>
+                            </div>
+                            <div className="value">{expCount}</div>
                         </div>
                     </div>
+                </section>
+
+                <div id="mono-projects" className="mono-section-title">
+                    <h2>모든 프로젝트</h2>
+                    <span className="count">{filtered.length}개 표시 중 · 총 {totalCount}개</span>
                 </div>
 
                 <div className="mono-toolbar">
-                    <span className="crumb">
-                        $ ls projects/ --filter={mode} --view={layout}
-                    </span>
-                    <div className="right">
-                        <div className="lay">
+                    <div className="mono-tabs">
+                        <button
+                            className={`tab ${mode === 'all' ? 'on' : ''}`}
+                            onClick={() => setMode('all')}
+                        >
+                            전체 <span className="num">{totalCount}</span>
+                        </button>
+                        <button
+                            className={`tab ${mode === 'production' ? 'on' : ''}`}
+                            onClick={() => setMode('production')}
+                        >
+                            운영 중 <span className="num">{prodCount}</span>
+                        </button>
+                        <button
+                            className={`tab ${mode === 'experiment' ? 'on' : ''}`}
+                            onClick={() => setMode('experiment')}
+                        >
+                            실험실 <span className="num">{expCount}</span>
+                        </button>
+                    </div>
+                    <div className="mono-layout-toggle">
+                        <span>보기</span>
+                        <div className="opts">
                             <button
                                 className={layout === 'table' ? 'on' : ''}
                                 onClick={() => setLayout('table')}
-                            >[table]</button>
+                            >
+                                <span className="icn">☰</span> 표
+                            </button>
                             <button
                                 className={layout === 'cards' ? 'on' : ''}
                                 onClick={() => setLayout('cards')}
-                            >[cards]</button>
-                        </div>
-                        <div className="seg">
-                            <button
-                                className={mode === 'production' ? 'on' : ''}
-                                onClick={() => setMode('production')}
-                            >production</button>
-                            <button
-                                className={mode === 'experiment' ? 'on' : ''}
-                                onClick={() => setMode('experiment')}
-                            >experiment</button>
+                            >
+                                <span className="icn">▦</span> 카드
+                            </button>
                         </div>
                         <button
                             className="theme-btn"
@@ -350,17 +367,18 @@ const Main = () => {
 
                 {filtered.length === 0 ? (
                     <div className="mono-empty">
-                        🚧 {mode === 'production' ? '운영 중인' : '실험 중인'} 프로젝트가 없습니다.
+                        🚧 표시할 프로젝트가 없습니다.
                     </div>
                 ) : layout === 'table' ? (
                     <div className="mono-table">
                         <div className="mono-row head">
                             <div>#</div>
                             <div></div>
-                            <div>Name</div>
-                            <div>Description</div>
-                            <div>Stack</div>
-                            <div>Started</div>
+                            <div>이름</div>
+                            <div>설명</div>
+                            <div className="cat-cell">카테고리</div>
+                            <div>스택</div>
+                            <div>상태</div>
                             <div></div>
                         </div>
                         {filtered.map((p, i) => (
@@ -375,15 +393,21 @@ const Main = () => {
                                 <div className="glyph">{p.thumbnail || '📦'}</div>
                                 <div className="name">{p.name}</div>
                                 <div className="desc">{p.description}</div>
-                                <div className="stack">{renderTechStack(p)}</div>
-                                <div className="date">{p.startDate || '—'}</div>
+                                <div className="cat-cell"><span className="cat">{cleanCategory(p.category)}</span></div>
+                                <div className="stack">{renderTechTags(p, 2)}</div>
+                                <div>
+                                    <span className={`status ${p.isProduction ? 'live' : 'lab'}`}>
+                                        <span className="dot" aria-hidden="true"></span>
+                                        {p.isProduction ? '운영 중' : '실험실'}
+                                    </span>
+                                </div>
                                 <div className="arrow">→</div>
                             </a>
                         ))}
                     </div>
                 ) : (
                     <div className="mono-cardgrid">
-                        {filtered.map((p, i) => (
+                        {filtered.map((p) => (
                             <a
                                 key={p.id}
                                 href={p.link}
@@ -392,15 +416,20 @@ const Main = () => {
                                 aria-label={`${p.name} — ${p.description}`}
                             >
                                 <div className="top">
-                                    <span className="num">№ {String(i + 1).padStart(2, '0')}</span>
-                                    <span className="cat">{p.category || '—'}</span>
+                                    <div className="glyph-wrap">{p.thumbnail || '📦'}</div>
+                                    <div className="top-r">
+                                        <span className="cat">{cleanCategory(p.category)}</span>
+                                        <span className={`status ${p.isProduction ? 'live' : 'lab'}`}>
+                                            <span className="dot" aria-hidden="true"></span>
+                                            {p.isProduction ? '운영 중' : '실험실'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="glyph">{p.thumbnail || '📦'}</div>
-                                <h3 className="name">{p.name}</h3>
-                                <p className="desc">{p.description}</p>
+                                <h3>{p.name}</h3>
+                                <p>{p.description}</p>
                                 <div className="foot">
-                                    <div className="stack">{renderTechStack(p)}</div>
-                                    <span className="arrow">→</span>
+                                    <div className="stack">{renderTechTags(p, 3)}</div>
+                                    <span className="open">열기 →</span>
                                 </div>
                             </a>
                         ))}
@@ -409,36 +438,39 @@ const Main = () => {
 
                 <div className="mono-bottom">
                     <div className="mono-mini">
-                        <div className="lbl">[daily/cs-tip]</div>
-                        <div className="body">
+                        <span className="lbl">데일리 CS 팁</span>
+                        <h4>오늘의 한 줄</h4>
+                        <p className="body">
                             {isTipLoading
                                 ? <span className="skeleton" aria-label="loading">&nbsp;</span>
                                 : (dailyTip || '오늘의 팁이 없습니다.')}
-                        </div>
+                        </p>
                     </div>
                     <div className="mono-mini">
-                        <div className="lbl">[break/joke]</div>
-                        <div className="body">
+                        <span className="lbl">잠깐 쉬어가기</span>
+                        <h4>오늘의 농담</h4>
+                        <p className="body">
                             {isJokeLoading ? (
                                 <span className="skeleton" aria-label="loading">&nbsp;</span>
                             ) : dailyJoke ? (
                                 <>
-                                    <div>{dailyJoke.translatedSetup}</div>
-                                    <div style={{ marginTop: 8, opacity: 0.75 }}>
-                                        — {dailyJoke.translatedPunchline}
-                                    </div>
+                                    {dailyJoke.translatedSetup}
+                                    <br />
+                                    <span style={{ opacity: 0.78 }}>— {dailyJoke.translatedPunchline}</span>
                                 </>
                             ) : '농담을 불러오지 못했습니다.'}
-                        </div>
+                        </p>
                     </div>
                 </div>
 
-                <MonoAccount />
-
-                <div className="mono-foot">
-                    <span>© {new Date().getFullYear()} hoooon22</span>
-                    <span>devzip.cloud</span>
-                </div>
+                <footer className="mono-foot">
+                    <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    <div className="links">
+                        <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a href="/Guestbook">방명록</a>
+                        <a href="#">개인정보</a>
+                    </div>
+                </footer>
             </div>
 
             <Footer />
