@@ -375,17 +375,93 @@ body.main-scroll-locked {
   padding: 18px 22px;
   border: 1px solid var(--vb-fg);
   display: flex;
-  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 
   .label {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--vb-accent);
+    flex-shrink: 0;
   }
+
+  .prompt {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .prompt-host { font-weight: 600; }
+  .prompt-sep  { opacity: 0.5; }
+  .prompt-path { color: var(--vb-accent); font-weight: 600; }
+  .prompt-hint {
+    margin-left: 6px;
+    font-size: 11px;
+    opacity: 0.55;
+    letter-spacing: 0.04em;
+  }
+  .prompt-badge {
+    margin-left: 8px;
+    padding: 2px 8px;
+    border: 1px solid var(--vb-fg);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    color: var(--vb-accent);
+    font-weight: 700;
+  }
+  .cursor.blink { animation: mono-blink 1s steps(1) infinite; }
+
+  .actions {
+    display: inline-flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .ghost {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    background: transparent;
+    color: var(--vb-fg);
+    border: 1px solid var(--vb-fg);
+    padding: 8px 14px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background-color 0.12s ease, color 0.12s ease;
+
+    &:hover {
+      background: var(--vb-fg);
+      color: var(--vb-bg);
+    }
+    &.primary {
+      background: var(--vb-accent);
+      border-color: var(--vb-accent);
+      color: var(--vb-bg);
+
+      &:hover {
+        background: var(--vb-fg);
+        border-color: var(--vb-fg);
+        color: var(--vb-bg);
+      }
+    }
+  }
+}
+
+@keyframes mono-blink {
+  50% { opacity: 0; }
 }
 
 .mono-foot {

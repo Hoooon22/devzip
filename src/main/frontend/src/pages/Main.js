@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
-import UserStatus from '../components/auth/UserStatus';
+import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
 import "../assets/css/Main.scss";
@@ -49,6 +49,94 @@ const writePref = (key, value) => {
 
 const TODAY_ISO = new Date().toISOString().slice(0, 10);
 
+const MonoAccount = () => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('login');
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                if (authService.isAuthenticated()) {
+                    const isValid = await authService.validateToken();
+                    if (!cancelled && isValid) setUser(authService.getUserInfo());
+                }
+            } catch (e) {
+                /* ignore — guest state */
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, []);
+
+    const open = (mode) => { setModalMode(mode); setModalOpen(true); };
+    const handleLogout = () => { authService.logout(); setUser(null); };
+    const handleLoginSuccess = (userData) => setUser(userData);
+
+    if (loading) {
+        return (
+            <div className="mono-account">
+                <span className="label">[ account ]</span>
+                <span className="prompt">
+                    <span className="prompt-host">guest@devzip</span>
+                    <span className="prompt-sep">:</span>
+                    <span className="prompt-path">~$</span>
+                    <span className="cursor blink">_</span>
+                </span>
+            </div>
+        );
+    }
+
+    if (user) {
+        const isAdmin = user.role === 'ROLE_ADMIN';
+        return (
+            <div className="mono-account">
+                <span className="label">[ account ]</span>
+                <span className="prompt">
+                    <span className="prompt-host">{user.username}@devzip</span>
+                    <span className="prompt-sep">:</span>
+                    <span className="prompt-path">~$</span>
+                    <span className="prompt-badge">{isAdmin ? 'ROLE=admin' : 'ROLE=user'}</span>
+                </span>
+                <div className="actions">
+                    <button className="ghost" onClick={handleLogout}>$ logout</button>
+                </div>
+                <AuthModal
+                    isOpen={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onLoginSuccess={handleLoginSuccess}
+                    initialMode={modalMode}
+                />
+            </div>
+        );
+    }
+
+    return (
+        <div className="mono-account">
+            <span className="label">[ account ]</span>
+            <span className="prompt">
+                <span className="prompt-host">guest@devzip</span>
+                <span className="prompt-sep">:</span>
+                <span className="prompt-path">~$</span>
+                <span className="prompt-hint">authentication required</span>
+            </span>
+            <div className="actions">
+                <button className="ghost primary" onClick={() => open('login')}>$ login</button>
+                <button className="ghost" onClick={() => open('signup')}>$ signup</button>
+            </div>
+            <AuthModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onLoginSuccess={handleLoginSuccess}
+                initialMode={modalMode}
+            />
+        </div>
+    );
+};
+
 // Calculate hero stats for the two stat cards.
 // Returns:
 //   {
@@ -59,15 +147,24 @@ const TODAY_ISO = new Date().toISOString().slice(0, 10);
 // "Active" production = isProduction && active !== false.
 // "Archived" experiment = !isProduction && (active === false || endDate truthy).
 // "Running" experiment = !isProduction && not archived.
-const buildHeroStats = (allProjects) => {
-    // TODO(human): implement the reducer that walks `allProjects` once and returns
-    // the shape above. See VariantMono in the design — the Production stat shows
-    // "02 / 02 · Command Stack · Conflux" and the Lab stat shows total + a "11 running, 2 archived" sub line.
-    return {
-        production: { active: 0, total: 0, names: [] },
-        experiments: { total: 0, running: 0, archived: 0 },
-    };
-};
+const buildHeroStats = (allProjects) => allProjects.reduce((acc, p) => {
+    if (p.isProduction) {
+        acc.production.total += 1;
+        if (p.active !== false) {
+            acc.production.active += 1;
+            acc.production.names.push(p.name);
+        }
+    } else {
+        acc.experiments.total += 1;
+        const archived = p.active === false || Boolean(p.endDate);
+        if (archived) acc.experiments.archived += 1;
+        else acc.experiments.running += 1;
+    }
+    return acc;
+}, {
+    production: { active: 0, total: 0, names: [] },
+    experiments: { total: 0, running: 0, archived: 0 },
+});
 
 const Main = () => {
     const [mode, setMode] = useState('production'); // 'production' | 'experiment'
@@ -336,10 +433,7 @@ const Main = () => {
                     </div>
                 </div>
 
-                <div className="mono-account">
-                    <span className="label">[ account ]</span>
-                    <UserStatus />
-                </div>
+                <MonoAccount />
 
                 <div className="mono-foot">
                     <span>© {new Date().getFullYear()} hoooon22</span>
