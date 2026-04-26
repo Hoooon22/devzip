@@ -144,6 +144,31 @@ SPRING_DATASOURCE_PASSWORD=your_password
 - **Database**: JPA entities with Lombok annotations for boilerplate reduction
 - **API**: RESTful endpoints with consistent response format using `ApiResponse<T>` wrapper
 
+### Frontend Lint Pitfalls (CRA / react-scripts build)
+The Gradle `:buildFrontendReact` task runs `react-scripts build`, which treats ESLint
+warnings as **build-breaking errors**. The same two rules keep failing the build —
+check Main.js–style edits against this list **before** committing:
+
+- **`react/jsx-no-comment-textnodes`** — Bare `//` or `/* … */` as a JSX text child
+  looks like a JS comment to the linter, so the build fails even though it would
+  render fine.
+  - ❌ `<p className="pre">// developer hub</p>`
+  - ✅ `<p className="pre">{'// developer hub'}</p>` (literal string)
+  - ✅ `<p className="pre">{/* developer hub */}</p>` (real JSX comment, renders nothing)
+
+- **`jsx-a11y/anchor-is-valid`** — `<a href="#">` and `<a href="javascript:void(0)">`
+  are rejected. Anchors must point somewhere navigable; otherwise use a `<button>`
+  styled as a link.
+  - ❌ `<a href="#">홈</a>`
+  - ✅ `<a href="/">홈</a>` (real route)
+  - ✅ `<a href="#some-id">섹션 이동</a>` (in-page anchor with matching `id`)
+  - ✅ `<button type="button" className="link-style" onClick={...}>홈</button>`
+  - When there's no destination yet, **delete the link** — half-finished navigation
+    is worse than no navigation.
+
+Quick local check before pushing: `cd src/main/frontend && npm run build` reproduces
+the same ESLint pass that Gradle runs.
+
 ### Testing Strategy
 - Backend: JUnit tests in `src/test/java/`
 - Frontend: Jest/React Testing Library tests with `npm test`
@@ -157,6 +182,12 @@ SPRING_DATASOURCE_PASSWORD=your_password
 
 ### Claude Github
 - Do not include commit message about Claude
+
+### Communication Language
+- **모든 사용자 응답은 한국어로 작성한다.** (All user-facing replies must be in Korean.)
+- 코드 주석, 변수명, 파일명은 기존 코드베이스의 컨벤션을 따른다 (영어 우선).
+- 인사이트(`★ Insight`) 블록과 Learn by Doing 요청도 한국어로 작성한다.
+- 기술 용어(예: `useState`, `ESLint`, `props`)는 번역하지 않고 원어 그대로 사용한다.
 
 ### GitHub Actions CI/CD Pipeline
 - Automated testing, building, deployment, and health checks

@@ -271,7 +271,7 @@ const Main = () => {
                         </div>
                     </div>
                     <nav className="mono-nav">
-                        <a className="on" href="#">홈</a>
+                        <a className="on" href="/">홈</a>
                         <a href="#mono-projects">프로젝트</a>
                         <a href="#mono-projects">실험실</a>
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -468,7 +468,6 @@ const Main = () => {
                     <div className="links">
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
                         <a href="/Guestbook">방명록</a>
-                        <a href="#">개인정보</a>
                     </div>
                 </footer>
             </div>
