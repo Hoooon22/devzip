@@ -190,7 +190,7 @@ const Main = () => {
 
                 <div className="mono-hero">
                     <div className="mono-headline">
-                        <p className="pre">// developer side project hub</p>
+                        <p className="pre">{'// developer side project hub'}</p>
                         <h1>한 사람이 만드는 <span className="mark">제품</span>의 모든 단계.</h1>
                         <p>기획부터 운영까지 — 운영 중인 서비스와 실험실의 프로토타입을 한 곳에서 인덱싱합니다. 모드를 전환해 두 세계를 넘나드세요.</p>
                     </div>
