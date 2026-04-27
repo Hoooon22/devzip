@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import authService from '../../services/AuthService';
 import './LoginModal.scss';
+
+const STORAGE_KEY_DARK = 'devzip.mono.dark';
+
+const readDark = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return JSON.parse(window.localStorage.getItem(STORAGE_KEY_DARK)) === true;
+  } catch {
+    return false;
+  }
+};
 
 const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +25,11 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [theme, setTheme] = useState(() => (readDark() ? 'dark' : 'light'));
+
+  useEffect(() => {
+    if (isOpen) setTheme(readDark() ? 'dark' : 'light');
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +37,6 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
       ...prev,
       [name]: value
     }));
-    // 입력 시 에러 메시지 초기화
     if (error) setError('');
     if (success) setSuccess('');
   };
@@ -31,47 +46,37 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
       setError('사용자명을 입력해주세요.');
       return false;
     }
-    
     if (formData.username.length < 3) {
       setError('사용자명은 3글자 이상이어야 합니다.');
       return false;
     }
-
     if (!formData.email.trim()) {
       setError('이메일을 입력해주세요.');
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError('올바른 이메일 형식을 입력해주세요.');
       return false;
     }
-
     if (!formData.password) {
       setError('비밀번호를 입력해주세요.');
       return false;
     }
-
     if (formData.password.length < 6) {
       setError('비밀번호는 6글자 이상이어야 합니다.');
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setError('비밀번호가 일치하지 않습니다.');
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setError('');
@@ -83,17 +88,11 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
         formData.email,
         formData.password
       );
-      
+
       if (result.success) {
         setSuccess(result.message);
-        setFormData({
-          username: '',
-          email: '',
-          password: '',
-          confirmPassword: ''
-        });
-        
-        // 성공 메시지를 보여준 후 2초 뒤에 모달 닫기
+        setFormData({ username: '', email: '', password: '', confirmPassword: '' });
+
         setTimeout(() => {
           if (onSignupSuccess) onSignupSuccess();
           onClose();
@@ -101,8 +100,8 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
       } else {
         setError(result.message);
       }
-    } catch (error) {
-      console.error('Signup error:', error);
+    } catch (err) {
+      console.error('Signup error:', err);
       setError('회원가입 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
@@ -110,150 +109,151 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
   };
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    if (e.target === e.currentTarget) onClose();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
+    if (e.key === 'Escape') onClose();
   };
 
   if (!isOpen) return null;
 
   const modalContent = (
-    <div 
-      className="login-modal-backdrop" 
+    <div
+      className="mono-modal-backdrop"
+      data-theme={theme}
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="presentation"
     >
-      <div 
-        className="login-modal signup-modal"
+      <div
+        className="mono-modal signup"
         role="dialog"
         aria-modal="true"
         aria-labelledby="signup-modal-title"
       >
-        <div className="login-modal-header">
-          <h2 id="signup-modal-title">📝 회원가입</h2>
-          <button className="close-button" onClick={onClose}>
+        <div className="mono-modal-head">
+          <div className="cmd">
+            <span className="prompt">$</span>
+            <span className="title" id="signup-modal-title">signup</span>
+            <span className="cursor">_</span>
+          </div>
+          <button type="button" className="close" onClick={onClose} aria-label="닫기">
             ✕
           </button>
         </div>
-        
-        <div className="login-modal-body">
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-group">
-              <label htmlFor="username">사용자명 *</label>
+
+        <div className="mono-modal-body">
+          <form onSubmit={handleSubmit} className="mono-modal-form">
+            <div className="mono-modal-field">
+              <label htmlFor="username">username</label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="사용자명을 입력하세요 (3글자 이상)"
+                placeholder="사용자명 (3자 이상)"
                 required
                 disabled={loading}
                 minLength={3}
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">이메일 *</label>
+            <div className="mono-modal-field">
+              <label htmlFor="email">email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="이메일을 입력하세요"
+                placeholder="user@example.com"
                 required
                 disabled={loading}
               />
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="password">비밀번호 *</label>
+
+            <div className="mono-modal-field">
+              <label htmlFor="password">password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="비밀번호를 입력하세요 (6글자 이상)"
+                placeholder="비밀번호 (6자 이상)"
                 required
                 disabled={loading}
                 minLength={6}
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">비밀번호 확인 *</label>
+            <div className="mono-modal-field">
+              <label htmlFor="confirmPassword">confirm password</label>
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="비밀번호를 다시 입력하세요"
+                placeholder="비밀번호를 다시 입력"
                 required
                 disabled={loading}
               />
             </div>
-            
+
             {error && (
-              <div className="error-message">
-                ⚠️ {error}
+              <div className="mono-modal-alert err" role="alert">
+                <span className="prefix">!</span>
+                <span>{error}</span>
               </div>
             )}
 
             {success && (
-              <div className="success-message">
-                ✅ {success}
+              <div className="mono-modal-alert ok" role="status">
+                <span className="prefix">+</span>
+                <span>{success}</span>
               </div>
             )}
-            
-            <button 
-              type="submit" 
-              className={`login-button ${loading ? 'loading' : ''}`}
+
+            <button
+              type="submit"
+              className="mono-modal-submit"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <span className="loading-spinner"></span>
-                  가입 중...
+                  <span className="mono-modal-spinner" aria-hidden="true" />
+                  <span>가입 중…</span>
                 </>
               ) : (
-                '회원가입'
+                <>
+                  <span>회원가입</span>
+                  <span className="arrow" aria-hidden="true">→</span>
+                </>
               )}
             </button>
           </form>
-          
-          <div className="login-info">
-            <p className="info-text">
-              💡 일반 사용자 계정으로 가입됩니다. 관리자 계정은 별도로 생성됩니다.
-            </p>
-            <p className="info-text small">
-              * 표시된 항목은 필수 입력사항입니다.
-            </p>
+
+          <div className="mono-modal-info">
+            <p className="comment">일반 사용자 계정으로 가입됩니다. 관리자 계정은 별도로 생성됩니다.</p>
+            <p className="req">표시된 항목은 모두 필수 입력값입니다.</p>
           </div>
 
-          <div className="auth-switch">
-            <p className="auth-switch-text">이미 계정이 있으신가요?</p>
-            <button 
-              type="button" 
-              className="auth-switch-button"
+          <div className="mono-modal-switch">
+            <span className="lead">already registered?</span>
+            <button
+              type="button"
+              className="switch-btn"
               onClick={() => {
                 onClose();
-                // 부모 컴포넌트에서 로그인 모달을 열도록 이벤트 전달
                 if (window.openLoginModal) {
                   window.openLoginModal();
                 }
               }}
             >
-              로그인하기
+              login →
             </button>
           </div>
         </div>
@@ -261,7 +261,6 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
     </div>
   );
 
-  // Portal을 사용하여 document.body에 직접 렌더링
   return createPortal(modalContent, document.body);
 };
 

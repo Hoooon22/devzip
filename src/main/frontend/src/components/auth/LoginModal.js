@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import authService from '../../services/AuthService';
 import './LoginModal.scss';
+
+const STORAGE_KEY_DARK = 'devzip.mono.dark';
+
+const readDark = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return JSON.parse(window.localStorage.getItem(STORAGE_KEY_DARK)) === true;
+  } catch {
+    return false;
+  }
+};
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
@@ -11,6 +22,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [theme, setTheme] = useState(() => (readDark() ? 'dark' : 'light'));
+
+  useEffect(() => {
+    if (isOpen) setTheme(readDark() ? 'dark' : 'light');
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,7 +34,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       ...prev,
       [name]: value
     }));
-    // 입력 시 에러 메시지 초기화
     if (error) setError('');
   };
 
@@ -29,7 +44,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
     try {
       const result = await authService.login(formData.username, formData.password);
-      
+
       if (result.success) {
         setFormData({ username: '', password: '' });
         onLoginSuccess(result.user);
@@ -37,8 +52,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       } else {
         setError(result.message);
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (err) {
+      console.error('Login error:', err);
       setError('로그인 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
@@ -46,113 +61,118 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   };
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    if (e.target === e.currentTarget) onClose();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
+    if (e.key === 'Escape') onClose();
   };
 
   if (!isOpen) return null;
 
   const modalContent = (
-    <div 
-      className="login-modal-backdrop" 
+    <div
+      className="mono-modal-backdrop"
+      data-theme={theme}
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="presentation"
     >
-      <div 
-        className="login-modal"
+      <div
+        className="mono-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-modal-title"
       >
-        <div className="login-modal-header">
-          <h2 id="login-modal-title">🔐 관리자 로그인</h2>
-          <button className="close-button" onClick={onClose}>
+        <div className="mono-modal-head">
+          <div className="cmd">
+            <span className="prompt">$</span>
+            <span className="title" id="login-modal-title">login</span>
+            <span className="cursor">_</span>
+          </div>
+          <button type="button" className="close" onClick={onClose} aria-label="닫기">
             ✕
           </button>
         </div>
-        
-        <div className="login-modal-body">
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-group">
-              <label htmlFor="username">사용자명</label>
+
+        <div className="mono-modal-body">
+          <form onSubmit={handleSubmit} className="mono-modal-form">
+            <div className="mono-modal-field">
+              <label htmlFor="username">username</label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="사용자명을 입력하세요"
+                placeholder="사용자명"
                 autoComplete="username"
                 required
                 disabled={loading}
               />
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="password">비밀번호</label>
+
+            <div className="mono-modal-field">
+              <label htmlFor="password">password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="비밀번호를 입력하세요"
+                placeholder="비밀번호"
                 autoComplete="current-password"
                 required
                 disabled={loading}
               />
             </div>
-            
+
             {error && (
-              <div className="error-message">
-                ⚠️ {error}
+              <div className="mono-modal-alert err" role="alert">
+                <span className="prefix">!</span>
+                <span>{error}</span>
               </div>
             )}
-            
-            <button 
-              type="submit" 
-              className={`login-button ${loading ? 'loading' : ''}`}
+
+            <button
+              type="submit"
+              className="mono-modal-submit"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <span className="loading-spinner"></span>
-                  로그인 중...
+                  <span className="mono-modal-spinner" aria-hidden="true" />
+                  <span>로그인 중…</span>
                 </>
               ) : (
-                '로그인'
+                <>
+                  <span>로그인</span>
+                  <span className="arrow" aria-hidden="true">→</span>
+                </>
               )}
             </button>
           </form>
-          
-          <div className="login-info">
-            <p className="info-text">
-              💡 관리자 계정만 대시보드와 트레이스보드에 접근할 수 있습니다.
-            </p>
+
+          <div className="mono-modal-info">
+            {/* TODO(human): 모노 터미널 톤에 맞는 안내 코멘트 블록을 작성.
+                - <p className="comment">…</p> 는 자동으로 '// ' 프리픽스가 붙음.
+                - <p className="req">…</p> 는 코발트색 '*' 프리픽스(필수 안내용).
+                - 원래 메시지: "관리자 계정만 대시보드와 트레이스보드에 접근할 수 있습니다." */}
           </div>
-          
-          <div className="auth-switch">
-            <p className="auth-switch-text">계정이 없으신가요?</p>
-            <button 
-              type="button" 
-              className="auth-switch-button"
+
+          <div className="mono-modal-switch">
+            <span className="lead">no account?</span>
+            <button
+              type="button"
+              className="switch-btn"
               onClick={() => {
                 onClose();
-                // 부모 컴포넌트에서 회원가입 모달을 열도록 이벤트 전달
                 if (window.openSignupModal) {
                   window.openSignupModal();
                 }
               }}
             >
-              회원가입하기
+              signup →
             </button>
           </div>
         </div>
@@ -160,7 +180,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     </div>
   );
 
-  // Portal을 사용하여 document.body에 직접 렌더링
   return createPortal(modalContent, document.body);
 };
 

@@ -1,361 +1,331 @@
-.login-modal-backdrop {
+/* DevZip — Auth modal (mono grid system, matches Main.scss)
+   Sharp 1px borders · paper/ink palette · cobalt accent · JetBrains Mono for terminal flavor.
+   Theme follows [data-theme] on the backdrop (synced from localStorage). */
+
+.mono-modal-backdrop {
+  --mma-acc: #2D4FFF;
+  --mma-bg: #FAFAF7;
+  --mma-fg: #0E0E0E;
+  --mma-soft: rgba(14, 14, 14, 0.78);
+  --mma-mute: rgba(14, 14, 14, 0.55);
+  --mma-alt: #F1EFE9;
+  --mma-bd: rgba(14, 14, 14, 0.14);
+  --mma-bd-strong: #0E0E0E;
+  --mma-err: #C4302B;
+  --mma-ok:  #2D8A4A;
+
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  inset: 0;
+  background: rgba(14, 14, 14, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
-  padding: 1rem;
+  padding: 24px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  animation: mma-fade-in 0.18s ease-out;
   box-sizing: border-box;
-  overflow-y: auto;
-}
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
 
-.login-modal {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(31, 38, 135, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 90%;
-  max-width: 450px;
-  max-height: calc(100vh - 2rem);
-  overflow: hidden;
-  animation: slideUp 0.3s ease-out;
-  margin: auto;
-  flex-shrink: 0;
-}
+  &[data-theme='dark'] {
+    --mma-bg: #0E0E0E;
+    --mma-fg: #F5F5F2;
+    --mma-soft: rgba(245, 245, 242, 0.78);
+    --mma-mute: rgba(245, 245, 242, 0.55);
+    --mma-alt: #1A1A1A;
+    --mma-bd: rgba(245, 245, 242, 0.18);
+    --mma-bd-strong: #F5F5F2;
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    background: rgba(14, 14, 14, 0.7);
   }
 }
 
-.login-modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.5rem 2rem;
+.mono-modal {
+  background: var(--mma-bg);
+  color: var(--mma-fg);
+  border: 1px solid var(--mma-bd-strong);
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  animation: mma-slide-up 0.22s ease-out;
+
+  &.signup { max-width: 500px; }
+}
+
+/* ── Head: terminal-flavored title bar ─────────── */
+.mono-modal-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--mma-bd-strong);
+  background: var(--mma-bg);
+
+  .cmd {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--mma-fg);
+    margin: 0;
+
+    .prompt { color: var(--mma-acc); font-weight: 600; }
+    .title  { font-weight: 600; letter-spacing: 0.01em; }
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      color: var(--mma-acc);
+      font-weight: 700;
+      animation: mma-blink 1s steps(1) infinite;
+    }
+  }
+
+  .close {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    background: transparent;
+    border: 1px solid var(--mma-bd);
+    color: var(--mma-soft);
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+
+    &:hover {
+      background: var(--mma-fg);
+      color: var(--mma-bg);
+      border-color: var(--mma-fg);
+    }
+  }
 }
 
-.login-modal-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  pointer-events: none;
-}
+/* ── Body ─────────────────────────────────────── */
+.mono-modal-body { padding: 24px 20px 20px; }
 
-.login-modal-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  z-index: 1;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  z-index: 1;
-}
-
-.close-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
-
-.login-modal-body {
-  padding: 2rem;
-}
-
-.login-form {
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #2d3748;
-  font-size: 0.9rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 1rem 1.2rem;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: translateY(-1px);
-}
-
-.form-group input:disabled {
-  background: rgba(0, 0, 0, 0.05);
-  color: #999;
-  cursor: not-allowed;
-}
-
-.error-message {
-  background: rgba(229, 62, 62, 0.1);
-  color: #e53e3e;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(229, 62, 62, 0.2);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.success-message {
-  background: rgba(56, 178, 172, 0.1);
-  color: #38b2ac;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(56, 178, 172, 0.2);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.login-button {
-  width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+.mono-modal-form {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mono-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--mma-mute);
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+
+    &::before {
+      content: '# ';
+      color: var(--mma-acc);
+      font-weight: 700;
+    }
+  }
+
+  input {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    color: var(--mma-fg);
+    background: var(--mma-bg);
+    border: 1px solid var(--mma-bd-strong);
+    padding: 12px 14px;
+    width: 100%;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+
+    &::placeholder { color: var(--mma-mute); }
+    &:focus {
+      outline: none;
+      border-color: var(--mma-acc);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mma-acc) 18%, transparent);
+    }
+    &:disabled {
+      background: var(--mma-alt);
+      color: var(--mma-mute);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ── Alerts (replaces emoji banners) ──────────── */
+.mono-modal-alert {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  padding: 10px 14px;
+  border: 1px solid var(--mma-bd-strong);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.5;
+
+  .prefix {
+    color: var(--mma-acc);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+
+  &.err {
+    border-color: var(--mma-err);
+    color: var(--mma-err);
+
+    .prefix { color: var(--mma-err); }
+  }
+
+  &.ok {
+    border-color: var(--mma-ok);
+    color: var(--mma-ok);
+
+    .prefix { color: var(--mma-ok); }
+  }
+}
+
+/* ── Submit ───────────────────────────────────── */
+.mono-modal-submit {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  background: var(--mma-fg);
+  color: var(--mma-bg);
+  border: 1px solid var(--mma-fg);
+  padding: 14px 18px;
+  cursor: pointer;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
+  letter-spacing: 0.01em;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+
+  .arrow { transition: transform 0.12s ease; }
+
+  &:hover:not(:disabled) {
+    background: var(--mma-acc);
+    border-color: var(--mma-acc);
+    color: #fff;
+
+    .arrow { transform: translateX(3px); }
+  }
+
+  &:disabled {
+    background: var(--mma-alt);
+    color: var(--mma-mute);
+    border-color: var(--mma-bd);
+    cursor: not-allowed;
+  }
 }
 
-.login-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.login-button:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.login-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-.login-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.loading-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
+.mono-modal-spinner {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: mma-spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* ── Info block: terminal-style comments ──────── */
+.mono-modal-info {
+  margin-top: 22px;
+  padding: 14px 16px;
+  border: 1px dashed var(--mma-bd);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--mma-soft);
+  line-height: 1.6;
 
-.login-info {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding-top: 1.5rem;
-  text-align: center;
-}
+  p { margin: 0; }
+  p + p { margin-top: 6px; }
 
-.info-text {
-  color: #4a5568;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.info-text.small {
-  font-size: 0.8rem;
-  color: #718096;
-  margin-bottom: 0.5rem;
-}
-
-// 회원가입 모달 전용 스타일
-.signup-modal {
-  max-width: 500px;
-}
-
-.signup-modal .login-modal-header {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-}
-
-.signup-modal .login-button {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-}
-
-.signup-modal .login-button:hover:not(:disabled) {
-  box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
-}
-
-// 로그인/회원가입 전환 버튼
-.auth-switch {
-  text-align: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.auth-switch-text {
-  color: #4a5568;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-.auth-switch-button {
-  background: none;
-  border: none;
-  color: #667eea;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
-}
-
-.auth-switch-button:hover {
-  color: #5a67d8;
-}
-
-.demo-credentials {
-  background: rgba(102, 126, 234, 0.05);
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.demo-credentials p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #4a5568;
-}
-
-.demo-credentials p:first-child {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-/* 모바일 반응형 */
-@media (max-width: 480px) {
-  .login-modal-backdrop {
-    padding: 0.5rem;
-    align-items: flex-start;
-    padding-top: 2rem;
+  .comment::before {
+    content: '// ';
+    color: var(--mma-mute);
   }
-  
-  .login-modal {
-    width: 100%;
-    max-width: none;
-    max-height: calc(100vh - 1rem);
-    margin: 0;
-  }
-  
-  .login-modal-header {
-    padding: 1rem 1.5rem;
-  }
-  
-  .login-modal-header h2 {
-    font-size: 1.3rem;
-  }
-  
-  .login-modal-body {
-    padding: 1.5rem;
-    max-height: calc(100vh - 8rem);
-    overflow-y: auto;
-  }
-  
-  .form-group input {
-    padding: 0.8rem 1rem;
-  }
-  
-  .login-button {
-    padding: 0.8rem 1rem;
+  .req::before {
+    content: '* ';
+    color: var(--mma-acc);
+    font-weight: 700;
   }
 }
 
-/* 매우 작은 화면 대응 */
-@media (max-height: 600px) {
-  .login-modal-backdrop {
-    align-items: flex-start;
-    padding-top: 1rem;
+/* ── Switch (login ↔ signup) ──────────────────── */
+.mono-modal-switch {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mma-bd);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  flex-wrap: wrap;
+
+  .lead {
+    color: var(--mma-mute);
+
+    &::before { content: '// '; }
   }
-  
-  .login-modal-body {
-    padding: 1rem;
+
+  .switch-btn {
+    font: inherit;
+    background: transparent;
+    color: var(--mma-fg);
+    border: 1px solid var(--mma-bd-strong);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+
+    &:hover {
+      background: var(--mma-fg);
+      color: var(--mma-bg);
+      border-color: var(--mma-fg);
+    }
   }
-  
-  .demo-credentials {
-    display: none; /* 작은 화면에서는 데모 정보 숨기기 */
+}
+
+/* ── Animations ───────────────────────────────── */
+@keyframes mma-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes mma-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mma-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes mma-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 520px) {
+  .mono-modal-backdrop { padding: 0; align-items: stretch; }
+  .mono-modal {
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-left: none;
+    border-right: none;
+    border-top: none;
   }
+  .mono-modal-head { padding: 14px 18px; }
+  .mono-modal-body { padding: 22px 18px 18px; }
 }
