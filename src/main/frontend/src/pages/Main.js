@@ -396,7 +396,7 @@ const Main = () => {
                                 <div className="cat-cell"><span className="cat">{cleanCategory(p.category)}</span></div>
                                 <div className="stack">{renderTechTags(p, 2)}</div>
                                 <div>
-                                    <span className={`status ${p.isProduction ? 'live' : 'lab'}`}>
+                                    <span className={`status ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : 'on'}`}>
                                         <span className="dot" aria-hidden="true"></span>
                                         {p.isProduction ? '운영 중' : '실험실'}
                                     </span>
@@ -419,7 +419,7 @@ const Main = () => {
                                     <div className="glyph-wrap">{p.thumbnail || '📦'}</div>
                                     <div className="top-r">
                                         <span className="cat">{cleanCategory(p.category)}</span>
-                                        <span className={`status ${p.isProduction ? 'live' : 'lab'}`}>
+                                        <span className={`status ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : 'on'}`}>
                                             <span className="dot" aria-hidden="true"></span>
                                             {p.isProduction ? '운영 중' : '실험실'}
                                         </span>

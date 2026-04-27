@@ -424,11 +424,15 @@ body.main-scroll-locked {
     font-weight: 500;
 
     .dot { width: 8px; height: 8px; border-radius: 50%; }
-    &.live .dot {
+
+    &.on .dot {
       background: var(--vb-acc);
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--vb-acc) 18%, transparent);
     }
-    &.lab .dot { background: var(--vb-mute); }
+    &.off {
+      opacity: 0.55;
+      .dot { background: var(--vb-mute); box-shadow: none; }
+    }
   }
 
   .arrow {
@@ -500,8 +504,11 @@ body.main-scroll-locked {
     color: var(--vb-soft);
 
     .dot { width: 7px; height: 7px; border-radius: 50%; }
-    &.live .dot { background: var(--vb-acc); }
-    &.lab  .dot { background: var(--vb-mute); }
+    &.on  .dot { background: var(--vb-acc); }
+    &.off {
+      opacity: 0.55;
+      .dot { background: var(--vb-mute); }
+    }
   }
 
   h3 {
