@@ -6,6 +6,12 @@ import SignupModal from './SignupModal';
 const AuthModal = ({ isOpen, onClose, onLoginSuccess, initialMode = 'login' }) => {
   const [currentMode, setCurrentMode] = useState(initialMode); // 'login' or 'signup'
 
+  // 모달이 열릴 때마다 요청된 모드(initialMode)로 동기화.
+  // useState는 최초 1회만 초기화하므로, login/signup 버튼 선택을 반영하려면 필요.
+  useEffect(() => {
+    if (isOpen) setCurrentMode(initialMode);
+  }, [isOpen, initialMode]);
+
   // 전역 함수로 모달 전환 기능 등록
   useEffect(() => {
     if (isOpen) {

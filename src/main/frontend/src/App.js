@@ -28,6 +28,8 @@ import GraphQLApi from './pages/experiments/GraphQLApi';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { GameProvider } from './contexts/GameContext';
+import GameHud from './components/game/GameHud';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { initTracker } from './services/traceboard/tracker';
 import Overview from './components/dashboard/views/Overview';
@@ -50,6 +52,7 @@ function App() {
 
   return (
     <HelmetProvider>
+      <GameProvider>
       <BrowserRouter>
         {/* 반응형 뷰포트 설정 컴포넌트 */}
         <ViewportMeta />
@@ -167,7 +170,11 @@ function App() {
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
 
         </Routes>
+
+        {/* 사이트 전역 게이미피케이션 HUD */}
+        <GameHud />
       </BrowserRouter>
+      </GameProvider>
     </HelmetProvider>
   );
 }

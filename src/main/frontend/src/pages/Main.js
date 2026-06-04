@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
+import { useGame } from '../contexts/GameContext';
 import "../assets/css/Main.scss";
 
 const websiteSchema = {
@@ -74,6 +75,7 @@ const cleanCategory = (raw) => {
 };
 
 const MonoAuth = () => {
+    const { award } = useGame();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -140,7 +142,10 @@ const MonoAuth = () => {
             <AuthModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onLoginSuccess={(u) => setUser(u)}
+                onLoginSuccess={(u) => {
+                    setUser(u);
+                    award(50, '로그인 보너스 획득!', { icon: '🔓' });
+                }}
                 initialMode={modalMode}
             />
         </div>
@@ -148,6 +153,7 @@ const MonoAuth = () => {
 };
 
 const Main = () => {
+    const { award } = useGame();
     const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
     const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'table'));
     const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
@@ -170,7 +176,10 @@ const Main = () => {
             setIsTipLoading(true);
             try {
                 const r = await csTipService.getDailyTip();
-                if (!cancelled) setDailyTip(r.data || '');
+                if (!cancelled) {
+                    setDailyTip(r.data || '');
+                    award(5, '오늘의 CS 팁 정독!', { once: true, key: 'read-tip', icon: '💡' });
+                }
             } catch {
                 if (!cancelled) setDailyTip('팁을 불러오는 중 오류가 발생했습니다.');
             } finally {
@@ -178,7 +187,7 @@ const Main = () => {
             }
         })();
         return () => { cancelled = true; };
-    }, []);
+    }, [award]);
 
     useEffect(() => {
         let cancelled = false;
@@ -186,7 +195,10 @@ const Main = () => {
             setIsJokeLoading(true);
             try {
                 const r = await csTipService.getDailyJoke();
-                if (!cancelled) setDailyJoke(r.data || null);
+                if (!cancelled) {
+                    setDailyJoke(r.data || null);
+                    award(5, '오늘의 농담으로 힐링!', { once: true, key: 'read-joke', icon: '😄' });
+                }
             } catch {
                 if (!cancelled) setDailyJoke(null);
             } finally {
@@ -194,7 +206,7 @@ const Main = () => {
             }
         })();
         return () => { cancelled = true; };
-    }, []);
+    }, [award]);
 
     const heroStats = useMemo(() => buildHeroStats(projects), []);
     const totalCount = projects.length;
@@ -222,10 +234,26 @@ const Main = () => {
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
             return;
         }
+        // 새로 발견한 프로젝트마다 1회 탐험 보상.
+        award(15, `${project.name} 탐험!`, {
+            once: true,
+            key: `proj-${project.id}`,
+            icon: project.thumbnail || '🧭',
+        });
         if (project.link?.startsWith('http://') || project.link?.startsWith('https://')) {
             e.preventDefault();
             window.open(project.link, '_blank', 'noopener,noreferrer');
         }
+    };
+
+    const toggleDark = () => {
+        setDark(d => !d);
+        award(5, '테마 전환 발견!', { once: true, key: 'toggle-theme', icon: '🌗' });
+    };
+
+    const changeLayout = (next) => {
+        setLayout(next);
+        award(5, '보기 방식 전환!', { once: true, key: 'toggle-layout', icon: '🔀' });
     };
 
     const renderTechTags = (project, max = 2) => {
@@ -272,8 +300,8 @@ const Main = () => {
                     </div>
                     <nav className="mono-nav">
                         <a className="on" href="/">홈</a>
-                        <a href="#mono-projects">프로젝트</a>
-                        <a href="#mono-projects">실험실</a>
+                        <a href="#mono-projects" onClick={() => setMode('production')}>프로젝트</a>
+                        <a href="#mono-projects" onClick={() => setMode('experiment')}>실험실</a>
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </nav>
                     <MonoAuth />
@@ -346,20 +374,20 @@ const Main = () => {
                         <div className="opts">
                             <button
                                 className={layout === 'table' ? 'on' : ''}
-                                onClick={() => setLayout('table')}
+                                onClick={() => changeLayout('table')}
                             >
                                 <span className="icn">☰</span> 표
                             </button>
                             <button
                                 className={layout === 'cards' ? 'on' : ''}
-                                onClick={() => setLayout('cards')}
+                                onClick={() => changeLayout('cards')}
                             >
                                 <span className="icn">▦</span> 카드
                             </button>
                         </div>
                         <button
                             className="theme-btn"
-                            onClick={() => setDark(d => !d)}
+                            onClick={toggleDark}
                             aria-label="Toggle theme"
                         >{dark ? '☀ light' : '☾ dark'}</button>
                     </div>

@@ -28,6 +28,19 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     if (isOpen) setTheme(readDark() ? 'dark' : 'light');
   }, [isOpen]);
 
+  // ESC 닫기 + 배경 스크롤 잠금 (모달이 열려 있는 동안만)
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen, onClose]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -64,10 +77,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') onClose();
-  };
-
   if (!isOpen) return null;
 
   const modalContent = (
@@ -75,7 +84,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       className="mono-modal-backdrop"
       data-theme={theme}
       onClick={handleBackdropClick}
-      onKeyDown={handleKeyDown}
       role="presentation"
     >
       <div
@@ -154,10 +162,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
           </form>
 
           <div className="mono-modal-info">
-            {/* TODO(human): 모노 터미널 톤에 맞는 안내 코멘트 블록을 작성.
-                - <p className="comment">…</p> 는 자동으로 '// ' 프리픽스가 붙음.
-                - <p className="req">…</p> 는 코발트색 '*' 프리픽스(필수 안내용).
-                - 원래 메시지: "관리자 계정만 대시보드와 트레이스보드에 접근할 수 있습니다." */}
+            <p className="comment">로그인하면 방명록과 실시간 채팅을 이용할 수 있습니다.</p>
+            <p className="req">대시보드·트레이스보드는 관리자 계정만 접근할 수 있습니다.</p>
           </div>
 
           <div className="mono-modal-switch">
@@ -166,10 +172,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               type="button"
               className="switch-btn"
               onClick={() => {
-                onClose();
-                if (window.openSignupModal) {
-                  window.openSignupModal();
-                }
+                if (window.openSignupModal) window.openSignupModal();
               }}
             >
               signup →

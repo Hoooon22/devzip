@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import authService from '../../services/AuthService';
+import { useGame } from '../../contexts/GameContext';
 import './LoginModal.scss';
 
 const STORAGE_KEY_DARK = 'devzip.mono.dark';
@@ -16,6 +17,7 @@ const readDark = () => {
 };
 
 const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
+  const { award } = useGame();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -30,6 +32,19 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
   useEffect(() => {
     if (isOpen) setTheme(readDark() ? 'dark' : 'light');
   }, [isOpen]);
+
+  // ESC 닫기 + 배경 스크롤 잠금 (모달이 열려 있는 동안만)
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen, onClose]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,6 +106,7 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
 
       if (result.success) {
         setSuccess(result.message);
+        award(100, '계정 생성 완료! 환영해요 🎊', { once: true, key: 'signup', icon: '🎊' });
         setFormData({ username: '', email: '', password: '', confirmPassword: '' });
 
         setTimeout(() => {
@@ -112,10 +128,6 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') onClose();
-  };
-
   if (!isOpen) return null;
 
   const modalContent = (
@@ -123,7 +135,6 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
       className="mono-modal-backdrop"
       data-theme={theme}
       onClick={handleBackdropClick}
-      onKeyDown={handleKeyDown}
       role="presentation"
     >
       <div
@@ -247,10 +258,7 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
               type="button"
               className="switch-btn"
               onClick={() => {
-                onClose();
-                if (window.openLoginModal) {
-                  window.openLoginModal();
-                }
+                if (window.openLoginModal) window.openLoginModal();
               }}
             >
               login →
