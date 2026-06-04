@@ -19,10 +19,15 @@ This project is a Dev + zip website containing web development ideas from the de
 src/main/
 ├── java/com/hoooon22/devzip/          # Spring Boot backend
 │   ├── Controller/                    # REST API controllers
-│   │   └── traceboard/               # TraceBoard-specific endpoints
-│   ├── Model/                        # JPA entities and DTOs
-│   ├── Repository/                   # Data access layer
-│   └── Service/                      # Business logic
+│   │   ├── livechat/ musicbox/ traceboard/   # domain-specific endpoints
+│   ├── Service/                      # Business logic (mirrors domain subpackages)
+│   ├── Repository/                   # Data access layer (mirrors domain subpackages)
+│   ├── Model/                        # JPA entities (common/, livechat/, musicbox/, traceboard/)
+│   ├── dto/                          # DTOs (livechat/, musicbox/, webhook/)
+│   ├── Security/                     # JWT filter/provider + DataEncryptionUtil
+│   ├── Config/                       # WebSecurity, WebSocket/STOMP, CORS, interceptors
+│   ├── Exception/                    # Custom exceptions
+│   └── metrics/  tip/                # system metrics + tip system
 ├── frontend/                         # React application
 │   ├── src/components/               # Reusable UI components
 │   ├── src/pages/                    # Route-specific pages
@@ -44,6 +49,10 @@ src/main/
 
 # Run tests
 ./gradlew test
+
+# Run a single test class (or method)
+./gradlew test --tests com.hoooon22.devzip.DevzipApplicationTests
+./gradlew test --tests "com.hoooon22.devzip.DevzipApplicationTests.contextLoads"
 
 # Build JAR (includes frontend build)
 ./gradlew build
@@ -105,7 +114,11 @@ docker-compose up --build
 
 ### Database Configuration
 - Uses MySQL 8.0 with JPA auto-update (`spring.jpa.hibernate.ddl-auto=update`)
-- Environment-specific config in `application-aws.properties`
+- Active profile resolves via `spring.profiles.include=${SPRING_PROFILES_ACTIVE:local}` in
+  `application.properties` — defaults to the `local` profile (`application-local.properties`,
+  H2 in-memory) when no env var is set. The Docker image runs `--spring.profiles.active=docker`.
+  (There is no `application-aws.properties`; the `aws`/production config is supplied entirely
+  through the env vars below.)
 - Connection pooling and performance optimization enabled
 
 ### Security Configuration
@@ -170,9 +183,11 @@ Quick local check before pushing: `cd src/main/frontend && npm run build` reprod
 the same ESLint pass that Gradle runs.
 
 ### Testing Strategy
-- Backend: JUnit tests in `src/test/java/`
+- Backend: JUnit tests in `src/test/java/` — currently only `DevzipApplicationTests.contextLoads()`
+  (Spring context smoke test); there is no broader unit/integration suite yet
 - Frontend: Jest/React Testing Library tests with `npm test`
 - Integration: Docker Compose for full-stack testing
+- CI builds with `./gradlew build -x test` (see `.github/workflows/deploy.yml`)
 
 ### Performance Considerations
 - Frontend build optimizations configured in Gradle
