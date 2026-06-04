@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 /* 의존성 없는 DOM 콘페티. trigger 값이 바뀔 때마다 한 번 터진다. */
 
-const COLORS = ['#7C3AED', '#2D6CFF', '#EC4899', '#F59E0B', '#10B981', '#EF4444', '#06B6D4'];
+const COLORS = ['#FFD23F', '#FF5C5C', '#4D7CFF', '#2FBF71', '#FF9F1C', '#161310'];
 const PIECES = 90;
 
 const buildBurst = (seed) => {

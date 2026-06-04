@@ -1,7 +1,12 @@
-/* DevZip — 게이미피케이션 HUD (사이트 전역)
-   활기찬 그라데이션 · 둥근 카드 · 통통 튀는 애니메이션. */
+/* DevZip — 게이미피케이션 HUD (Neo-Brutalist Arcade)
+   굵은 잉크 테두리 · 하드 오프셋 그림자 · 솔리드 아케이드 컬러. */
 
-$gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
+$ink:    #161310;
+$yellow: #FFD23F;
+$red:    #FF5C5C;
+$blue:   #4D7CFF;
+$green:  #2FBF71;
+$mono:   ui-monospace, 'SFMono-Regular', Menlo, 'Cascadia Code', monospace;
 
 .gz-hud {
   position: fixed;
@@ -18,21 +23,19 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
 /* ── 레벨 배지 (진행도 링) ─────────────────────── */
 .gz-badge {
   position: relative;
-  width: 64px;
-  height: 64px;
-  border: none;
-  border-radius: 50%;
+  width: 62px;
+  height: 62px;
+  border: 2.5px solid $ink;
+  border-radius: 14px;
   cursor: pointer;
-  background: $gz-grad;
-  background-size: 200% 200%;
-  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.45);
+  background: $yellow;
+  box-shadow: 4px 4px 0 $ink;
   display: grid;
   place-items: center;
-  animation: gz-float 4s ease-in-out infinite, gz-grad-shift 6s ease infinite;
-  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 
-  &:hover { transform: scale(1.08) rotate(-4deg); }
-  &:active { transform: scale(0.94); }
+  &:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 $ink; }
+  &:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 $ink; }
 
   .gz-ring {
     position: absolute;
@@ -43,40 +46,39 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
   }
   .gz-ring-bg {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.28);
+    stroke: rgba(22, 19, 16, 0.18);
     stroke-width: 4;
   }
   .gz-ring-fg {
     fill: none;
-    stroke: #fff;
+    stroke: $ink;
     stroke-width: 4;
-    stroke-linecap: round;
+    stroke-linecap: butt;
     transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.7));
   }
 
   .gz-badge-lv {
     position: relative;
-    color: #fff;
+    color: $ink;
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-family: $mono;
   }
   .gz-badge-num { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
-  .gz-badge-cap { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; opacity: 0.85; }
+  .gz-badge-cap { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; opacity: 0.7; }
 }
 
 /* ── 펼침 패널 ───────────────────────────────── */
 .gz-panel {
-  width: 248px;
+  width: 250px;
   background: #fff;
-  border-radius: 18px;
+  border: 2.5px solid $ink;
+  border-radius: 14px;
   padding: 16px 18px;
-  box-shadow: 0 16px 40px rgba(20, 20, 50, 0.22);
-  border: 1px solid rgba(124, 58, 237, 0.14);
-  animation: gz-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 5px 5px 0 $ink;
+  animation: gz-pop 0.16s ease;
 
   .gz-panel-head {
     display: flex;
@@ -85,51 +87,54 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
     margin-bottom: 10px;
   }
   .gz-panel-title {
-    font-size: 14px;
+    font-family: $mono;
+    font-size: 13px;
     font-weight: 800;
-    background: $gz-grad;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: $ink;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
   .gz-panel-close {
-    border: none;
-    background: #F1EFFb;
-    color: #7C3AED;
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
+    border: 2px solid $ink;
+    background: $yellow;
+    color: $ink;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 11px;
+    font-weight: 800;
     display: grid;
     place-items: center;
-    transition: background 0.15s ease;
-    &:hover { background: #E3DCFb; }
+    transition: transform 0.1s ease;
+    &:hover { transform: rotate(90deg); }
   }
 
   .gz-panel-xp {
+    font-family: $mono;
     font-size: 13px;
-    color: #6B6B80;
+    color: #6B6458;
     margin-bottom: 8px;
-    strong { font-size: 20px; color: #1A1730; font-weight: 800; }
+    strong { font-size: 20px; color: $ink; font-weight: 800; }
   }
 
   .gz-panel-bar {
-    height: 10px;
-    border-radius: 99px;
-    background: #EEEAF7;
+    height: 14px;
+    border: 2px solid $ink;
+    border-radius: 6px;
+    background: #F3ECDB;
     overflow: hidden;
     span {
       display: block;
       height: 100%;
-      border-radius: 99px;
-      background: $gz-grad;
+      background: $green;
       transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     }
   }
   .gz-panel-next {
+    font-family: $mono;
     font-size: 11px;
-    color: #9A98AD;
+    color: #9A9183;
     margin-top: 7px;
   }
 
@@ -137,11 +142,11 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
     list-style: none;
     margin: 12px 0 0;
     padding: 12px 0 0;
-    border-top: 1px dashed #E7E3F2;
+    border-top: 2px dashed #E0D8C5;
     display: flex;
     flex-direction: column;
     gap: 7px;
-    li { font-size: 12px; color: #5C5A70; line-height: 1.4; }
+    li { font-size: 12px; color: #5C564B; line-height: 1.4; }
   }
 }
 
@@ -163,22 +168,24 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
   align-items: center;
   gap: 9px;
   background: #fff;
-  border-radius: 14px;
-  padding: 9px 14px;
-  box-shadow: 0 10px 26px rgba(20, 20, 50, 0.18);
-  border: 1px solid rgba(124, 58, 237, 0.16);
-  animation: gz-toast-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+  border: 2.5px solid $ink;
+  border-radius: 10px;
+  padding: 9px 13px;
+  box-shadow: 4px 4px 0 $ink;
+  animation: gz-toast-in 0.2s ease,
              gz-toast-out 0.4s ease 1.8s forwards;
 
   .gz-toast-icon { font-size: 17px; }
-  .gz-toast-reason { font-size: 13px; font-weight: 600; color: #2A2740; }
+  .gz-toast-reason { font-size: 13px; font-weight: 700; color: $ink; }
   .gz-toast-amt {
+    font-family: $mono;
     font-size: 12px;
     font-weight: 800;
-    color: #fff;
-    background: $gz-grad;
-    padding: 3px 9px;
-    border-radius: 99px;
+    color: $ink;
+    background: $yellow;
+    border: 2px solid $ink;
+    padding: 2px 8px;
+    border-radius: 5px;
     white-space: nowrap;
   }
 }
@@ -190,32 +197,30 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
   z-index: 1300;
   display: grid;
   place-items: center;
-  background: rgba(16, 12, 40, 0.32);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  animation: gz-fade 0.25s ease;
+  background: rgba(22, 19, 16, 0.4);
+  animation: gz-fade 0.18s ease;
   cursor: pointer;
 }
 .gz-levelup-card {
   text-align: center;
-  color: #fff;
-  padding: 36px 56px;
-  border-radius: 28px;
-  background: $gz-grad;
-  background-size: 200% 200%;
-  box-shadow: 0 24px 70px rgba(124, 58, 237, 0.55);
-  animation: gz-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), gz-grad-shift 4s ease infinite;
+  color: $ink;
+  padding: 34px 52px;
+  border: 3px solid $ink;
+  border-radius: 18px;
+  background: $yellow;
+  box-shadow: 8px 8px 0 $ink;
+  animation: gz-pop 0.22s ease;
 
-  .gz-levelup-spark { font-size: 40px; animation: gz-spin-pop 0.7s ease; }
+  .gz-levelup-spark { font-size: 40px; animation: gz-spin-pop 0.5s ease; }
   .gz-levelup-label {
+    font-family: $mono;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.28em;
-    opacity: 0.9;
     margin-top: 6px;
   }
-  .gz-levelup-lv { font-size: 52px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; }
-  .gz-levelup-title { font-size: 16px; font-weight: 700; opacity: 0.95; }
+  .gz-levelup-lv { font-family: $mono; font-size: 52px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  .gz-levelup-title { font-size: 16px; font-weight: 800; }
 }
 
 /* ── 콘페티 ──────────────────────────────────── */
@@ -237,16 +242,8 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
 }
 
 /* ── Keyframes ───────────────────────────────── */
-@keyframes gz-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-@keyframes gz-grad-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
-}
 @keyframes gz-pop {
-  from { opacity: 0; transform: scale(0.85); }
+  from { opacity: 0; transform: scale(0.9); }
   to   { opacity: 1; transform: scale(1); }
 }
 @keyframes gz-fade {
@@ -259,8 +256,8 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
   100% { transform: scale(1) rotate(0); }
 }
 @keyframes gz-toast-in {
-  from { opacity: 0; transform: translateX(40px) scale(0.9); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes gz-toast-out {
   to { opacity: 0; transform: translateX(40px); }
@@ -272,7 +269,6 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
 
 /* 접근성: 모션 최소화 선호 시 화려한 움직임을 줄인다. */
 @media (prefers-reduced-motion: reduce) {
-  .gz-badge { animation: none; }
   .gz-confetti { display: none; }
   .gz-badge:hover { transform: none; }
 }
@@ -280,7 +276,7 @@ $gz-grad: linear-gradient(135deg, #7C3AED 0%, #2D6CFF 50%, #EC4899 100%);
 /* ── 반응형 ──────────────────────────────────── */
 @media (max-width: 600px) {
   .gz-hud { right: 14px; bottom: 14px; }
-  .gz-badge { width: 56px; height: 56px; }
+  .gz-badge { width: 54px; height: 54px; }
   .gz-badge-num { font-size: 19px; }
   .gz-panel { width: 220px; }
   .gz-toasts { right: 14px; bottom: 84px; }
