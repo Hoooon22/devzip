@@ -28,6 +28,7 @@ public class WebController {
         "/commandstack/**",
         "/api-experiment",
         "/api-experiment/**",
+        "/tipping-point",
         "/error"
     })
     public String index() {
