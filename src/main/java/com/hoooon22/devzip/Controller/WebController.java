@@ -29,6 +29,7 @@ public class WebController {
         "/api-experiment",
         "/api-experiment/**",
         "/tipping-point",
+        "/ghost-feed",
         "/error"
     })
     public String index() {
