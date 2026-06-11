@@ -12,3 +12,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* 사이트 공통 — 브랜드 컬러 텍스트 선택 하이라이트 */
+::selection {
+  background: #FFD23F;
+  color: #161310;
+}

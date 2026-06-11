@@ -74,6 +74,11 @@ const cleanCategory = (raw) => {
     return parts[parts.length - 1];
 };
 
+// 최근 30일 내 시작한 프로젝트는 NEW 배지를 단다.
+const NEW_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const isNewProject = (p) =>
+    Boolean(p.startDate) && (Date.now() - new Date(p.startDate).getTime()) < NEW_WINDOW_MS;
+
 const MonoAuth = () => {
     const { award } = useGame();
     const [user, setUser] = useState(null);
@@ -213,6 +218,20 @@ const Main = () => {
     const prodCount = heroStats.production.total;
     const expCount  = heroStats.experiments.total;
 
+    const latestProject = useMemo(() => (
+        [...projects]
+            .filter(p => p.startDate)
+            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0] || null
+    ), []);
+
+    const tickerItems = useMemo(() => [
+        `${totalCount} projects`,
+        `${heroStats.production.active} live services`,
+        `${heroStats.experiments.running} experiments running`,
+        'built by one dev',
+        'insert coin to continue',
+    ], [totalCount, heroStats]);
+
     const filtered = useMemo(() => {
         let pool;
         if (mode === 'all') pool = projects;
@@ -307,9 +326,24 @@ const Main = () => {
                     <MonoAuth />
                 </header>
 
+                <div className="mono-ticker" aria-hidden="true">
+                    <div className="track">
+                        {[0, 1].map(half => (
+                            <span className="seq" key={half}>
+                                {tickerItems.map(item => (
+                                    <span className="item" key={item}>
+                                        {item}<span className="star">★</span>
+                                    </span>
+                                ))}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
                 <section className="mono-hero">
                     <div>
-                        <h1>한 사람이 만드는 <span className="mark">제품</span>의 모든 단계.</h1>
+                        <span className="mono-eyebrow">★ one-person project arcade</span>
+                        <h1>한 사람이 만드는 <span className="mark">제품</span>의 <span className="mark blue">모든 단계</span>.</h1>
                         <p>
                             아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 한곳에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스.
                         </p>
@@ -340,6 +374,25 @@ const Main = () => {
                             </div>
                             <div className="value">{expCount}</div>
                         </div>
+                        {latestProject && (
+                            <a
+                                className="mono-meta-card latest"
+                                href={latestProject.link}
+                                onClick={(e) => handleProjectClick(e, latestProject)}
+                            >
+                                <div>
+                                    <div className="label">최근 추가</div>
+                                    <div className="sub">
+                                        {latestProject.startDate} · {cleanCategory(latestProject.category)}
+                                    </div>
+                                </div>
+                                <div className="latest-name">
+                                    <span className="glyph" aria-hidden="true">{latestProject.thumbnail || '📦'}</span>
+                                    {latestProject.name}
+                                    <span className="go" aria-hidden="true">→</span>
+                                </div>
+                            </a>
+                        )}
                     </div>
                 </section>
 
@@ -419,7 +472,11 @@ const Main = () => {
                             >
                                 <div className="idx">{String(i + 1).padStart(2, '0')}</div>
                                 <div className="glyph">{p.thumbnail || '📦'}</div>
-                                <div className="name">{p.name}</div>
+                                <div className="name">
+                                    {p.name}
+                                    {p.pinned && <span className="pin" title="고정됨">★</span>}
+                                    {isNewProject(p) && <span className="new-badge">NEW</span>}
+                                </div>
                                 <div className="desc">{p.description}</div>
                                 <div className="cat-cell"><span className="cat">{cleanCategory(p.category)}</span></div>
                                 <div className="stack">{renderTechTags(p, 2)}</div>
@@ -443,6 +500,7 @@ const Main = () => {
                                 onClick={(e) => handleProjectClick(e, p)}
                                 aria-label={`${p.name} — ${p.description}`}
                             >
+                                {p.pinned && <span className="pin-sticker" aria-hidden="true">★</span>}
                                 <div className="top">
                                     <div className="glyph-wrap">{p.thumbnail || '📦'}</div>
                                     <div className="top-r">
@@ -453,7 +511,10 @@ const Main = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <h3>{p.name}</h3>
+                                <h3>
+                                    {p.name}
+                                    {isNewProject(p) && <span className="new-badge">NEW</span>}
+                                </h3>
                                 <p>{p.description}</p>
                                 <div className="foot">
                                     <div className="stack">{renderTechTags(p, 3)}</div>
@@ -492,7 +553,13 @@ const Main = () => {
                 </div>
 
                 <footer className="mono-foot">
-                    <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    <div className="left">
+                        <span className="sys">
+                            <span className="dot" aria-hidden="true"></span>
+                            all systems go
+                        </span>
+                        <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    </div>
                     <div className="links">
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
                         <a href="/Guestbook">방명록</a>
