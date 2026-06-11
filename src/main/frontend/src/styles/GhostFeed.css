@@ -1,0 +1,383 @@
+/* GHOST FEED — 죽은 인터넷 이론 체험실
+   디자인: 네오브루탈 아케이드 / 60-30-10
+   60% 배경 슬레이트  ·  30% 잉크블랙 구조  ·  10% 일렉트릭 민트 강조 */
+
+.gf-container {
+    --paper: #e6eaee;
+    --panel: #fbfcfd;
+    --ink: #0e1116;
+    --mute: #b7c0c9;
+    --accent: #00d39a;
+    --accent-soft: #d4fff1;
+    --bad: #ff4d6d;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(rgba(14, 17, 22, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 17, 22, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.gf-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.gf-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.gf-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.gf-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.gf-title {
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.gf-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.9rem;
+    color: #51606b;
+}
+
+/* 무대: 피드 + 패널 */
+.gf-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 피드 영역 */
+.gf-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gf-post {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.1rem 1.2rem 0.9rem;
+}
+
+.gf-post-top {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: #6a7681;
+}
+
+.gf-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--ink);
+    color: var(--accent);
+    font-weight: 900;
+    border-radius: 50%;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.gf-handle {
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.gf-dot {
+    color: var(--mute);
+}
+
+.gf-post-text {
+    margin: 0.9rem 0 0.8rem;
+    font-size: 1.12rem;
+    line-height: 1.55;
+    word-break: keep-all;
+}
+
+.gf-post-meta {
+    color: var(--mute);
+    font-size: 0.95rem;
+    letter-spacing: 0.4rem;
+}
+
+/* 선택 버튼 */
+.gf-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.gf-choice {
+    font-weight: 900;
+    font-size: 1.05rem;
+    padding: 1rem 0.5rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.gf-choice:hover {
+    background: var(--accent-soft);
+}
+
+.gf-choice:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 정답 공개 */
+.gf-reveal {
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 1rem 1.1rem;
+    background: var(--panel);
+}
+
+.gf-reveal.ok {
+    background: var(--accent-soft);
+}
+
+.gf-reveal.no {
+    background: #ffe1e7;
+}
+
+.gf-verdict {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.gf-verdict b {
+    background: var(--ink);
+    color: var(--accent);
+    padding: 0 0.35rem;
+}
+
+.gf-tell {
+    margin: 0 0 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: #3c4750;
+}
+
+.gf-next {
+    font-weight: 900;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 rgba(14, 17, 22, 0.35);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.gf-next:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(14, 17, 22, 0.35);
+}
+
+/* 사이드 패널 */
+.gf-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.gf-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.gf-stat {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.gf-stat.accent {
+    background: var(--accent);
+    color: var(--ink);
+}
+
+.gf-stat-num {
+    font-size: 1.7rem;
+    font-weight: 900;
+    line-height: 1;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.gf-stat-label {
+    margin-top: 0.2rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* AI 점유율 곡선 */
+.gf-chart {
+    height: 90px;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.gf-chart-empty {
+    margin: auto;
+    font-size: 0.72rem;
+    color: var(--mute);
+}
+
+.gf-bar {
+    flex: 1 1 0;
+    min-width: 2px;
+    background: var(--accent);
+    border-top: 2px solid var(--ink);
+}
+
+.gf-chart-label {
+    margin: -0.35rem 0 0;
+    font-size: 0.65rem;
+    color: #6a7681;
+    text-align: right;
+}
+
+/* 피드 생존률 */
+.gf-survival {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.7rem 0.8rem;
+}
+
+.gf-survival-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.gf-survival-head b {
+    font-size: 1.1rem;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    color: var(--accent);
+}
+
+.gf-survival-track {
+    margin: 0.45rem 0 0.4rem;
+    height: 14px;
+    background: var(--mute);
+    border: 2px solid var(--ink);
+    overflow: hidden;
+}
+
+.gf-survival-fill {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+}
+
+.gf-survival-note {
+    margin: 0;
+    font-size: 0.65rem;
+    color: #6a7681;
+}
+
+.gf-resetbtn {
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 0.6rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.gf-resetbtn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 풋 */
+.gf-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.gf-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+.gf-foot b {
+    background: var(--accent);
+    color: var(--ink);
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .gf-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .gf-post {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}

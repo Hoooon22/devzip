@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 16,
+        name: 'Ghost Feed',
+        description: '이 글, 사람일까 봇일까 — 죽은 인터넷 이론 판별 게임',
+        link: '/ghost-feed',
+        active: true,
+        startDate: '2026-06-11',
+        endDate: '',
+        pinned: true,
+        category: '실험/게임',
+        isProduction: false, // 실험용
+        thumbnail: '👻'
+    },
+    {
         id: 15,
         name: 'Tipping Point',
         description: '하나의 신호가 어떻게 모두에게 번지는가 — 확산 메커니즘 시뮬레이터',
