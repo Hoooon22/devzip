@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 17,
+        name: 'Qubit Lab',
+        description: '관측 전까지 답은 정해져 있지 않다 — 양자 중첩·측정 붕괴 실험실',
+        link: '/qubit-lab',
+        active: true,
+        startDate: '2026-06-11',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '⚛️'
+    },
+    {
         id: 16,
         name: 'Ghost Feed',
         description: '이 글, 사람일까 봇일까 — 죽은 인터넷 이론 판별 게임',

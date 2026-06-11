@@ -1,0 +1,457 @@
+/* QUBIT LAB — 중첩과 측정 붕괴 실험실
+   디자인: 네오브루탈 아케이드 / 60-30-10
+   60% 배경 크림  ·  30% 잉크블랙 구조  ·  10% 코발트 강조 */
+
+.ql-container {
+    --paper: #eef0e9;
+    --panel: #fbfcf8;
+    --ink: #0f1410;
+    --sand: #c4ccc0;
+    --accent: #1d4fff;
+    --accent-soft: #dfe6ff;
+    --one: #ff6a3d;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image:
+        radial-gradient(rgba(15, 20, 16, 0.08) 1.4px, transparent 1.4px);
+    background-size: 22px 22px;
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.ql-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.ql-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ql-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.ql-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.ql-title {
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.ql-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.9rem;
+    color: #4a5448;
+}
+
+/* 무대 */
+.ql-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 다이얼 */
+.ql-dial-wrap {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.1rem;
+}
+
+.ql-dial {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ql-svg {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+}
+
+.ql-ring {
+    fill: #f3f5ef;
+    stroke: var(--ink);
+    stroke-width: 4;
+}
+
+.ql-tick {
+    stroke: var(--ink);
+    stroke-width: 4;
+}
+
+.ql-pole {
+    font-size: 13px;
+    font-weight: 900;
+    fill: var(--ink);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.ql-needle line {
+    stroke: var(--accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ql-needle circle {
+    fill: var(--ink);
+}
+
+.ql-dial.is-super .ql-needle {
+    animation: ql-waver 1.6s ease-in-out infinite;
+    transform-origin: 100px 100px;
+}
+
+@keyframes ql-waver {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+}
+
+.ql-dial.is-locked .ql-ring {
+    fill: var(--accent-soft);
+}
+
+.ql-readout {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.ql-collapsed-num {
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--accent);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.ql-collapsed-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #4a5448;
+}
+
+.ql-state-tag {
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ql-state-hint {
+    font-size: 0.72rem;
+    color: #7a8478;
+    margin-top: 0.15rem;
+}
+
+/* 확률 막대 */
+.ql-probs {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.ql-prob-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+}
+
+.ql-prob-track {
+    height: 22px;
+    background: #f3f5ef;
+    border: 3px solid var(--ink);
+    overflow: hidden;
+}
+
+.ql-prob-fill {
+    display: block;
+    height: 100%;
+    transition: width 0.35s ease;
+}
+
+.ql-prob-fill.zero { background: var(--accent); }
+.ql-prob-fill.one { background: var(--one); }
+
+/* 패널 */
+.ql-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+}
+
+.ql-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.ql-block-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ql-block-label b {
+    color: var(--accent);
+    margin-left: 0.3rem;
+}
+
+.ql-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.ql-chip {
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 0.55rem 0.3rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ql-chip.on {
+    background: var(--accent);
+    color: #fff;
+}
+
+.ql-chip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* 슬라이더 */
+.ql-block input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--sand);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+.ql-block input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.ql-block input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.ql-block input[type='range']:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* 게이트 */
+.ql-gates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.ql-gate {
+    font-weight: 900;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--accent);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ql-gate small {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+}
+
+.ql-gate:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--accent);
+}
+
+/* 액션 */
+.ql-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.ql-btn {
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.4rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ql-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.ql-btn.primary {
+    grid-column: 1 / -1;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.ql-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 히스토그램 */
+.ql-hist {
+    background: #f3f5ef;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.75rem;
+}
+
+.ql-hist-title {
+    margin: 0 0 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #4a5448;
+}
+
+.ql-hist-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.ql-hist-row:last-child {
+    margin-bottom: 0;
+}
+
+.ql-hist-key {
+    font-weight: 900;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    width: 1rem;
+}
+
+.ql-hist-track {
+    flex: 1;
+    height: 18px;
+    background: #fff;
+    border: 2px solid var(--ink);
+    overflow: hidden;
+}
+
+.ql-hist-fill {
+    display: block;
+    height: 100%;
+}
+
+.ql-hist-fill.zero { background: var(--accent); }
+.ql-hist-fill.one { background: var(--one); }
+
+.ql-hist-val {
+    font-size: 0.75rem;
+    font-weight: 800;
+    width: 2.6rem;
+    text-align: right;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+/* 풋 */
+.ql-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.ql-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.ql-foot b {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .ql-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .ql-dial-wrap {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}
