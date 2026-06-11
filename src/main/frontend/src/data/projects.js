@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 15,
+        name: 'Tipping Point',
+        description: '하나의 신호가 어떻게 모두에게 번지는가 — 확산 메커니즘 시뮬레이터',
+        link: '/tipping-point',
+        active: true,
+        startDate: '2026-06-11',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '💥'
+    },
+    {
         id: 14,
         name: 'API 실험실',
         description: 'REST, JSON, SOAP, gRPC, GraphQL 등 다양한 API를 실험해볼 수 있는 공간',

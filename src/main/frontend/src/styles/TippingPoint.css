@@ -1,0 +1,317 @@
+/* TIPPING POINT — 확산 메커니즘 실험실
+   디자인: 네오브루탈 아케이드 / 60-30-10
+   60% 배경 크림  ·  30% 잉크블랙 구조  ·  10% 오렌지레드 강조 */
+
+.tp-container {
+    --paper: #f1e9d6;
+    --panel: #fffdf6;
+    --ink: #16120b;
+    --sand: #cabfa3;
+    --accent: #ff4b1f;
+    --accent-soft: #ffe7df;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(rgba(22, 18, 11, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22, 18, 11, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.tp-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.tp-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.tp-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.tp-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.tp-title {
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.tp-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.9rem;
+    color: #564c38;
+}
+
+/* 무대: 격자 + 패널 */
+.tp-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 격자 */
+.tp-grid-wrap {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 0.9rem 0.9rem 0.65rem;
+}
+
+.tp-grid {
+    display: grid;
+    gap: 2px;
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    aspect-ratio: 1 / 1;
+}
+
+.tp-cell {
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.tp-cell.is-dormant {
+    background: #fbf7ec;
+}
+
+.tp-cell.is-active {
+    background: var(--accent);
+}
+
+.tp-cell.is-faded {
+    background: var(--sand);
+}
+
+.tp-hint {
+    margin: 0.55rem 0 0;
+    font-size: 0.72rem;
+    color: #7a6f57;
+    text-align: center;
+}
+
+/* 사이드 패널 */
+.tp-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* 통계 */
+.tp-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.tp-stat {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tp-stat.accent {
+    background: var(--accent);
+    color: #fff;
+}
+
+.tp-stat-num {
+    font-size: 1.7rem;
+    font-weight: 900;
+    line-height: 1;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.tp-stat-label {
+    margin-top: 0.2rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* 확산 곡선 */
+.tp-chart {
+    height: 90px;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.tp-bar {
+    flex: 1 1 0;
+    min-width: 2px;
+    background: var(--accent);
+    border-top: 2px solid var(--ink);
+}
+
+.tp-chart-label {
+    margin: -0.35rem 0 0;
+    font-size: 0.65rem;
+    color: #7a6f57;
+    text-align: right;
+}
+
+/* 슬라이더 */
+.tp-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.tp-control label {
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.tp-control label b {
+    color: var(--accent);
+}
+
+.tp-control input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--sand);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+.tp-control input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.tp-control input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+/* 이웃 토글 */
+.tp-toggle {
+    font-weight: 800;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.tp-toggle.on {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.tp-toggle:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 액션 버튼 */
+.tp-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.tp-btn {
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.4rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.tp-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.tp-btn.primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* 풋 */
+.tp-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.tp-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.tp-foot b {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .tp-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .tp-grid-wrap {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}

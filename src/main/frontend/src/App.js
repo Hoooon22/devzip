@@ -25,6 +25,7 @@ import JsonApi from './pages/experiments/JsonApi';
 import SoapApi from './pages/experiments/SoapApi';
 import GrpcApi from './pages/experiments/GrpcApi';
 import GraphQLApi from './pages/experiments/GraphQLApi';
+import TippingPoint from './pages/experiments/TippingPoint';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -165,6 +166,7 @@ function App() {
         <Route path="/api-experiment/soap" element={<SoapApi />} />
         <Route path="/api-experiment/grpc" element={<GrpcApi />} />
         <Route path="/api-experiment/graphql" element={<GraphQLApi />} />
+        <Route path="/tipping-point" element={<TippingPoint />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
