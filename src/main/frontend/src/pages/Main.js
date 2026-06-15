@@ -160,7 +160,7 @@ const MonoAuth = () => {
 const Main = () => {
     const { award } = useGame();
     const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
-    const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'table'));
+    const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
     const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
     const [dailyTip, setDailyTip] = useState('');
     const [isTipLoading, setIsTipLoading] = useState(true);

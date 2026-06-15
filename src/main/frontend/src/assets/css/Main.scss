@@ -652,6 +652,8 @@ body.main-scroll-locked {
       transition: width 0.12s ease;
     }
   }
+  /* 줄무늬: 행 단위 스캔 가독성 향상 (호버 시엔 해제) */
+  &.data:nth-child(even):not(:hover) { background: var(--alt); }
   &.data:hover { background: var(--hovr); }
   &.data:hover::before { width: 6px; border-right: 2px solid var(--line); }
   &.data:hover .name { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
@@ -809,13 +811,24 @@ body.main-scroll-locked {
   .foot .open {
     font-size: 13px;
     font-weight: 800;
-    color: var(--ink);
+    color: #161310;
+    background: var(--c-yellow);
+    border: 2px solid var(--line);
+    border-radius: 7px;
+    padding: 6px 12px;
+    box-shadow: 2px 2px 0 var(--shadow);
+    white-space: nowrap;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    transition: gap 0.12s ease;
+    gap: 5px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, gap 0.12s ease;
   }
-  &:hover .foot .open { gap: 9px; }
+  &:hover .foot .open {
+    gap: 8px;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
   &:hover .glyph-wrap { transform: rotate(-5deg) translate(-1px, -1px); }
 }
 
