@@ -166,6 +166,7 @@ const Main = () => {
     const [isTipLoading, setIsTipLoading] = useState(true);
     const [dailyJoke, setDailyJoke] = useState(null);
     const [isJokeLoading, setIsJokeLoading] = useState(true);
+    const [showJokeTranslation, setShowJokeTranslation] = useState(false);
 
     useEffect(() => {
         document.body.classList.add('main-scroll-locked');
@@ -543,12 +544,29 @@ const Main = () => {
                                 <span className="skeleton" aria-label="loading">&nbsp;</span>
                             ) : dailyJoke ? (
                                 <>
-                                    {dailyJoke.translatedSetup}
+                                    {dailyJoke.originalSetup}
                                     <br />
-                                    <span style={{ opacity: 0.78 }}>— {dailyJoke.translatedPunchline}</span>
+                                    <span style={{ opacity: 0.78 }}>— {dailyJoke.originalPunchline}</span>
+                                    {showJokeTranslation && (
+                                        <span className="joke-trans">
+                                            {dailyJoke.translatedSetup}
+                                            <br />
+                                            <span style={{ opacity: 0.78 }}>— {dailyJoke.translatedPunchline}</span>
+                                        </span>
+                                    )}
                                 </>
                             ) : '농담을 불러오지 못했습니다.'}
                         </p>
+                        {!isJokeLoading && dailyJoke && (
+                            <button
+                                type="button"
+                                className="joke-trans-btn"
+                                aria-expanded={showJokeTranslation}
+                                onClick={() => setShowJokeTranslation(v => !v)}
+                            >
+                                {showJokeTranslation ? '번역 숨기기' : '번역 보기'}
+                            </button>
+                        )}
                     </div>
                 </div>
 

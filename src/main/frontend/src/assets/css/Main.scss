@@ -896,6 +896,33 @@ body.main-scroll-locked {
     background: var(--alt);
     animation: mono-pulse 1.2s ease-in-out infinite;
   }
+
+  .joke-trans {
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px dashed var(--line);
+  }
+
+  .joke-trans-btn {
+    align-self: flex-start;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--ink);
+    background: var(--card);
+    border: 2px solid var(--line);
+    padding: 5px 11px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--shadow);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+    &:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow); }
+    &:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--shadow); }
+  }
 }
 
 @keyframes mono-pulse {
