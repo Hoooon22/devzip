@@ -548,102 +548,37 @@ const PhysicsCanvas = ({ simulation, isActive, onComplete }) => {
       }
     );
 
-    // 그네 타기 효과 구현 - Y좌표 기준 가장 낮은 지점에서만 에너지 추가
-    let swingCount = 0;
-    let lastBottomTime = 0;
-    let energyBoostActive = false;
-    let maxY = ball.position.y; // 현재까지의 최대 Y값 (가장 낮은 위치) 추적
+    // 그네 펌핑 효과: 가장 낮은 지점을 지날 때 진행 방향으로 에너지를 더해 진폭을 키운다.
+    // (그네에서 가장 낮은 지점에서 다리를 펴 무게중심을 올리는 동작을 단순화한 모델)
+    let frame = 0;
+    let lastBoostFrame = -999;
+    let lowestY = ball.position.y; // 지금까지 관측한 가장 낮은 위치(Y가 클수록 아래)
 
     Matter.Events.on(engine, 'beforeUpdate', () => {
+      frame++;
       const currentY = ball.position.y;
-      
-      // 현재까지의 최대 Y값 (가장 낮은 위치) 업데이트
-      if (currentY > maxY) {
-        maxY = currentY;
-      }
-      
-      // Y좌표 기준 정확히 가장 아래인지 확인
-      // 현재 Y가 최대 Y에서 공 반지름 이내에 있을 때만
-      const isAtAbsoluteBottom = Math.abs(currentY - maxY) < ballRadius;
-      
-      // 진자가 충분히 움직이고 있는지 확인
-      const speed = Math.sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
-      const isMoving = speed > 0.1;
-      
-      // 현재 시간
-      const currentTime = swingCount;
-      
-      // 디버깅을 위한 로그 (매 30프레임마다)
-      if (swingCount % 30 === 0) {
-        console.log('진자 상태:', { 
-          currentY: currentY.toFixed(1),
-          maxY: maxY.toFixed(1),
-          distanceFromMaxY: Math.abs(currentY - maxY).toFixed(1),
-          isAtAbsoluteBottom,
-          speed: speed.toFixed(2),
-          isMoving,
-          timeSinceLastBoost: currentTime - lastBottomTime
-        });
-      }
-      
-      // 진자의 움직임 방향 확인 (오른쪽에서 왼쪽으로 가는지)
-      const isMovingLeftward = ball.velocity.x < 0; // 왼쪽으로 가는 중
-      
-      // Y좌표 기준 정확히 가장 아래에서 왼쪽으로 움직일 때만 에너지 부스트
-      if (isAtAbsoluteBottom && isMoving && isMovingLeftward && (currentTime - lastBottomTime) > 120) {
-        energyBoostActive = true;
-        lastBottomTime = currentTime;
-        
-        // 현재 속도에 부드러운 부스트 적용
-        const currentVel = ball.velocity;
-        const boostFactor = 2.5; // 150% 증가 (더 강한 가속)
-        
-        // 속도 직접 설정으로 확실히 적용
-        const newVelX = currentVel.x * boostFactor;
-        const newVelY = currentVel.y * boostFactor;
-        
+      if (currentY > lowestY) lowestY = currentY;
+
+      const isAtBottom = Math.abs(currentY - lowestY) < ballRadius;
+      const speed = Math.hypot(ball.velocity.x, ball.velocity.y);
+
+      // 최저점을 빠르게 지날 때, 일정 간격으로만 진행 방향 가속
+      if (isAtBottom && speed > 0.1 && frame - lastBoostFrame > 90) {
+        lastBoostFrame = frame;
+        const boostFactor = 1.15; // 매 통과 시 15%씩 가속해 점진적으로 진폭 증가
         Matter.Body.setVelocity(ball, {
-          x: newVelX,
-          y: newVelY
+          x: ball.velocity.x * boostFactor,
+          y: ball.velocity.y * boostFactor
         });
-        
-        // 추가 힘을 더 강하게 적용
-        Matter.Body.applyForce(ball, ball.position, {
-          x: -0.008 * scale, // 왼쪽 방향으로 더 강한 힘
-          y: -0.006 * scale  // 상승 힘도 더 강하게
-        });
-        
-        // 추가 임펄스로 즉각적인 에너지 전달 (관성 효과 강화)
-        const impulseStrength = 0.020 * scale; // 임펄스도 더 강하게
-        Matter.Body.applyForce(ball, ball.position, {
-          x: currentVel.x > 0 ? -impulseStrength : -impulseStrength, // 왼쪽으로 임펄스
-          y: -impulseStrength * 0.7 // 위쪽으로도 임펄스
-        });
-        
-        // 시각적 피드백 (왼쪽으로 갈 때만)
-        ball.render.fillStyle = '#FF0000';
-        bottomIndicator.render.fillStyle = '#FF0000';
-        
+
+        // 가속 순간 시각적 피드백
+        ball.render.fillStyle = '#FF5C5C';
+        bottomIndicator.render.fillStyle = '#FF5C5C';
         setTimeout(() => {
           ball.render.fillStyle = config.ballColor;
           bottomIndicator.render.fillStyle = '#4ECDC4';
-          energyBoostActive = false;
-        }, 500);
-        
-        console.log('🚀🚀🚀 에너지 부스트 적용! (Y좌표 기준 가장 아래, 왼쪽으로 이동 중)', { 
-          oldVel: currentVel,
-          newVel: { x: newVelX, y: newVelY },
-          boostFactor,
-          position: { x: ball.position.x, y: ball.position.y },
-          currentY: currentY.toFixed(1),
-          maxY: maxY.toFixed(1),
-          isAtAbsoluteBottom,
-          isMovingLeftward,
-          currentSpeed: speed.toFixed(2)
-        });
+        }, 250);
       }
-      
-      swingCount++;
     });
 
     // 설명 텍스트를 위한 표시점 (시각적 가이드)

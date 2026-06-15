@@ -12,6 +12,7 @@ import ChatRoomPage from "./pages/ChatRoomPage";
 import TraceBoard from './pages/traceboard/index.js';
 import AccessLogs from './pages/AccessLogs';
 import PhysicsQuiz from './pages/PhysicsQuiz';
+import PhysicsLab from './pages/PhysicsLab';
 import LiveChatListPage from "./pages/LiveChatListPage";
 import LiveChatRoomPage from "./pages/LiveChatRoomPage";
 import Hopperbox from './pages/Hopperbox';
@@ -138,6 +139,9 @@ function App() {
 
         {/* 물리 퀴즈 페이지 */}
         <Route path="/physics-quiz" element={<PhysicsQuiz />} />
+
+        {/* 물리 엔진 놀이터 */}
+        <Route path="/physics-lab" element={<PhysicsLab />} />
 
         {/* Hopperbox 페이지 - 로그인 필수 */}
         <Route

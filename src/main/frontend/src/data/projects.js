@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 22,
+        name: '물리 엔진 놀이터',
+        description: 'Matter.js 위에서 직접 굴리고 쌓고 무너뜨리는 인터랙티브 샌드박스 — 뉴턴의 요람·도미노·중력 우물 등',
+        link: '/physics-lab',
+        active: true,
+        startDate: '2026-06-15',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧪'
+    },
+    {
         id: 21,
         name: 'Uncanny Valley',
         description: '거의 사람일수록 더 친근할까 — 인간 유사도와 호감도의 골짜기를 그려보는 실험',

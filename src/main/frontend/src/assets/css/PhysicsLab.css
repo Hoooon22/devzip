@@ -1,0 +1,239 @@
+/* 물리 엔진 놀이터 — 네오브루탈 아케이드 톤 */
+.lab-wrap {
+  --ink: #161310;
+  --cream: #fbf3e4;
+  --yellow: #ffd23f;
+  --red: #ff5c5c;
+  --blue: #4d7cff;
+  --green: #2fbf71;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+  color: var(--ink);
+  font-family: 'Pretendard', system-ui, sans-serif;
+}
+
+.lab-header {
+  margin-bottom: 24px;
+}
+.lab-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 4px 10px;
+  border-radius: 2px;
+  margin-bottom: 10px;
+}
+.lab-header h1 {
+  font-size: 2.4rem;
+  font-weight: 900;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+.lab-header p {
+  margin: 0;
+  max-width: 640px;
+  line-height: 1.6;
+  font-size: 0.98rem;
+  color: #4a443c;
+}
+
+/* 레이아웃: 좌(씬) - 중(캔버스) - 우(컨트롤) */
+.lab-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr 240px;
+  gap: 18px;
+  align-items: start;
+}
+
+.panel-label {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px;
+  color: #6b6258;
+}
+
+/* 공통 네오브루탈 카드 */
+.lab-scenes,
+.lab-controls {
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 14px;
+}
+
+/* 씬 버튼 */
+.scene-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 9px 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.scene-btn:last-child { margin-bottom: 0; }
+.scene-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.scene-btn.active {
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.scene-emoji { font-size: 1.2rem; }
+
+/* 캔버스 무대 */
+.lab-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stage-canvas {
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--ink);
+  overflow: hidden;
+  line-height: 0;
+  background: var(--cream);
+  width: 100%;
+}
+.stage-canvas canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: grab;
+}
+.stage-canvas canvas:active { cursor: grabbing; }
+.stage-hint {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #4a443c;
+  text-align: center;
+  max-width: 560px;
+}
+
+/* 컨트롤 패널 */
+.control-group {
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 2px dashed #d8cdb8;
+}
+.control-group:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+.control-value {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--green);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.control-group input[type='range'] {
+  width: 100%;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.control-group input[type='range']:disabled { cursor: not-allowed; opacity: 0.4; }
+
+.preset-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+.preset-btn {
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  border-radius: 4px;
+  padding: 5px 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink);
+}
+.preset-btn:hover:not(:disabled) { background: var(--blue); color: #fff; }
+.preset-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.control-note {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #6b6258;
+}
+
+.action-btn {
+  display: block;
+  width: 100%;
+  border: 2.5px solid var(--ink);
+  border-radius: 5px;
+  background: #fff;
+  padding: 9px;
+  margin-bottom: 8px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.action-btn:last-child { margin-bottom: 0; }
+.action-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+.action-btn:active { transform: translate(0, 0); box-shadow: 1px 1px 0 var(--ink); }
+.action-btn.spawn { background: var(--green); color: #fff; }
+.action-btn.reset { background: var(--red); color: #fff; }
+
+.stats { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+.stat-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+.stat-line strong { font-size: 1rem; }
+
+/* 반응형 */
+@media (max-width: 980px) {
+  .lab-grid {
+    grid-template-columns: 1fr;
+  }
+  .lab-scenes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .lab-scenes .panel-label { width: 100%; }
+  .scene-btn { width: auto; margin-bottom: 0; flex: 1 1 130px; }
+  .lab-stage { order: -1; }
+}
+
+@media (max-width: 560px) {
+  .lab-header h1 { font-size: 1.8rem; }
+  .preset-row { grid-template-columns: 1fr 1fr; }
+}

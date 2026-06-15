@@ -21,6 +21,7 @@ public class WebController {
         "/livechat",
         "/livechat/**",
         "/physics-quiz",
+        "/physics-lab",
         "/hopperbox",
         "/chaotic-music-box",
         "/conflux",

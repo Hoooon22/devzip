@@ -1,4 +1,9 @@
 // 물리 퀴즈 문제 데이터 구조
+//
+// 각 문제의 simulation.tunable 배열은 정답 확인 후 사용자가 직접 값을 바꿔
+// 다시 재생할 수 있는 슬라이더를 정의한다.
+//   { key, label, min, max, step, unit }
+// key 는 config 내부 경로이며 점 표기(예: "ball1.velocity")로 중첩 값도 가리킬 수 있다.
 
 export const physicsQuestions = [
   {
@@ -44,7 +49,11 @@ export const physicsQuestions = [
         ballRadius: 12,
         ballColor: "#4ECDC4",
         showTarget: true
-      }
+      },
+      tunable: [
+        { key: "angle", label: "발사 각도", min: 10, max: 80, step: 1, unit: "°" },
+        { key: "power", label: "발사 힘", min: 10, max: 26, step: 1, unit: "" }
+      ]
     }
   },
   {
@@ -64,7 +73,11 @@ export const physicsQuestions = [
         ball1: { mass: 5, velocity: 12, radius: 22, color: "#FF6B6B" },
         ball2: { mass: 5, velocity: 0, radius: 22, color: "#4DABF7" },
         elasticity: 1.0
-      }
+      },
+      tunable: [
+        { key: "ball1.velocity", label: "공1 속도", min: 6, max: 18, step: 1, unit: "" },
+        { key: "elasticity", label: "반발 계수", min: 0, max: 1, step: 0.1, unit: "" }
+      ]
     }
   },
   {
@@ -88,7 +101,10 @@ export const physicsQuestions = [
         planetColor: "#4DABF7",
         satelliteColor: "#FF6B6B",
         gravitationalConstant: 0.0008 // 구심력 상수
-      }
+      },
+      tunable: [
+        { key: "initialVelocityFactor", label: "궤도 속도 배율", min: 0.6, max: 1.4, step: 0.05, unit: "x" }
+      ]
     }
   },
   {
@@ -110,9 +126,113 @@ export const physicsQuestions = [
         gravity: 9.8,
         ballRadius: 25,
         ballColor: "#FFD43B"
-      }
+      },
+      tunable: [
+        { key: "initialAngle", label: "시작 각도", min: 10, max: 70, step: 1, unit: "°" },
+        { key: "length", label: "줄 길이", min: 0.6, max: 1.8, step: 0.1, unit: "" }
+      ]
     }
   },
+  {
+    id: 6,
+    title: "롤러코스터의 수직 루프",
+    question: "롤러코스터가 수직 원형 루프의 꼭대기에서 떨어지지 않으려면 무엇이 필요할까요?",
+    options: [
+      { id: "A", text: "꼭대기에서 충분히 빠른 속도", correct: true },
+      { id: "B", text: "탑승객의 안전벨트만 있으면 된다", correct: false },
+      { id: "C", text: "루프가 작을수록 천천히 가도 된다", correct: false },
+      { id: "D", text: "속도와는 전혀 무관하다", correct: false }
+    ],
+    explanation: "루프 꼭대기에서는 중력이 구심력 역할을 합니다. 떨어지지 않으려면 원운동에 필요한 구심력(mv²/r)이 최소한 중력(mg)만큼은 되어야 하므로, 꼭대기 속도가 v ≥ √(gr) 를 만족해야 합니다. 속도가 부족하면 레일에서 이탈해 떨어집니다!",
+    simulation: {
+      type: "circular",
+      config: {
+        radius: 2.0,
+        ballRadius: 14,
+        ballColor: "#FF6B6B",
+        velocity_multiplier: 1.25
+      },
+      tunable: [
+        { key: "velocity_multiplier", label: "진입 속도 배율", min: 0.9, max: 1.8, step: 0.05, unit: "x" }
+      ]
+    }
+  },
+  {
+    id: 7,
+    title: "가장 멀리 던지는 각도",
+    question: "공기 저항을 무시할 때, 같은 힘으로 공을 가장 멀리 던지려면 몇 도로 던져야 할까요?",
+    options: [
+      { id: "A", text: "30도", correct: false },
+      { id: "B", text: "45도", correct: true },
+      { id: "C", text: "60도", correct: false },
+      { id: "D", text: "75도", correct: false }
+    ],
+    explanation: "수평 도달 거리는 R = v²·sin(2θ)/g 로 주어집니다. sin(2θ)가 최대가 되는 지점은 2θ = 90°, 즉 θ = 45°일 때입니다. 슬라이더로 각도를 바꿔 가며 비거리를 직접 비교해 보세요!",
+    simulation: {
+      type: "projectile",
+      config: {
+        initialHeight: 3,
+        angle: 45,
+        power: 20,
+        gravity: 9.8,
+        ballRadius: 12,
+        ballColor: "#FF9F1C",
+        showTarget: false
+      },
+      tunable: [
+        { key: "angle", label: "발사 각도", min: 10, max: 80, step: 1, unit: "°" }
+      ]
+    }
+  },
+  {
+    id: 8,
+    title: "진자의 주기",
+    question: "진자가 한 번 왕복하는 데 걸리는 시간(주기)을 결정하는 것은 무엇일까요?",
+    options: [
+      { id: "A", text: "추의 무게", correct: false },
+      { id: "B", text: "흔드는 진폭(각도)", correct: false },
+      { id: "C", text: "줄의 길이", correct: true },
+      { id: "D", text: "추의 색깔", correct: false }
+    ],
+    explanation: "단진자의 주기는 T = 2π√(L/g) 로, 줄의 길이 L과 중력가속도 g에만 의존합니다. 작은 진폭에서는 추의 무게나 진폭과 무관하죠(진폭 등시성). 줄 길이 슬라이더를 바꾸면 주기가 달라지지만, 시작 각도를 바꿔도 주기는 거의 그대로인 것을 확인해 보세요!",
+    simulation: {
+      type: "pendulum",
+      config: {
+        length: 1.0,
+        initialAngle: 30,
+        gravity: 9.8,
+        ballRadius: 22,
+        ballColor: "#2FBF71"
+      },
+      tunable: [
+        { key: "length", label: "줄 길이", min: 0.6, max: 1.8, step: 0.1, unit: "" },
+        { key: "initialAngle", label: "시작 각도", min: 10, max: 70, step: 1, unit: "°" }
+      ]
+    }
+  },
+  {
+    id: 9,
+    title: "탄성충돌과 반발 계수",
+    question: "두 공이 부딪힌 뒤 거의 멈춰서 함께 움직인다면, 이 충돌은 어떤 충돌에 가까울까요?",
+    options: [
+      { id: "A", text: "완전 탄성충돌", correct: false },
+      { id: "B", text: "완전 비탄성충돌", correct: true },
+      { id: "C", text: "충돌이 일어나지 않은 것", correct: false },
+      { id: "D", text: "운동량이 사라진 것", correct: false }
+    ],
+    explanation: "반발 계수(e)가 1이면 완전 탄성충돌로 운동에너지가 보존되고, 0이면 완전 비탄성충돌로 두 물체가 붙어 함께 움직입니다. 어느 경우든 운동량은 항상 보존됩니다. 반발 계수 슬라이더를 0과 1 사이에서 바꿔 충돌 후 모습을 비교해 보세요!",
+    simulation: {
+      type: "collision",
+      config: {
+        ball1: { mass: 5, velocity: 12, radius: 22, color: "#B57BFF" },
+        ball2: { mass: 5, velocity: 0, radius: 22, color: "#4DABF7" },
+        elasticity: 0.2
+      },
+      tunable: [
+        { key: "elasticity", label: "반발 계수", min: 0, max: 1, step: 0.1, unit: "" }
+      ]
+    }
+  }
 ];
 
 // 시뮬레이션 타입별 기본 설정
