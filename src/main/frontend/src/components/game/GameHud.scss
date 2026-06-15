@@ -11,7 +11,7 @@ $mono:   ui-monospace, 'SFMono-Regular', Menlo, 'Cascadia Code', monospace;
 .gz-hud {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 96px; /* 우하단 푸터(Blog/GitHub/Email)를 가리지 않도록 위로 띄움 */
   z-index: 1200;
   display: flex;
   flex-direction: column;
@@ -154,7 +154,7 @@ $mono:   ui-monospace, 'SFMono-Regular', Menlo, 'Cascadia Code', monospace;
 .gz-toasts {
   position: fixed;
   right: 20px;
-  bottom: 100px;
+  bottom: 176px; /* 위로 옮긴 레벨 배지 위에 쌓이도록 함께 상향 */
   z-index: 1250;
   display: flex;
   flex-direction: column;
@@ -275,9 +275,9 @@ $mono:   ui-monospace, 'SFMono-Regular', Menlo, 'Cascadia Code', monospace;
 
 /* ── 반응형 ──────────────────────────────────── */
 @media (max-width: 600px) {
-  .gz-hud { right: 14px; bottom: 14px; }
+  .gz-hud { right: 14px; bottom: 84px; } /* 모바일 푸터 위로 띄움 */
   .gz-badge { width: 54px; height: 54px; }
   .gz-badge-num { font-size: 19px; }
   .gz-panel { width: 220px; }
-  .gz-toasts { right: 14px; bottom: 84px; }
+  .gz-toasts { right: 14px; bottom: 150px; }
 }
