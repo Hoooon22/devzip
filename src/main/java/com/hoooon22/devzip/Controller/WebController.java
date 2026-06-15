@@ -31,6 +31,7 @@ public class WebController {
         "/tipping-point",
         "/ghost-feed",
         "/qubit-lab",
+        "/nostalgia-engine",
         "/error"
     })
     public String index() {

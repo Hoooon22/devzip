@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 18,
+        name: 'Nostalgia Engine',
+        description: '현재는 늘 과거의 한 시대를 소환한다 — 점점 짧아지는 향수 사이클 시뮬레이터',
+        link: '/nostalgia-engine',
+        active: true,
+        startDate: '2026-06-15',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '📼'
+    },
+    {
         id: 17,
         name: 'Qubit Lab',
         description: '관측 전까지 답은 정해져 있지 않다 — 양자 중첩·측정 붕괴 실험실',

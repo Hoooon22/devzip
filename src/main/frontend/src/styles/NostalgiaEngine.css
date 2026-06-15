@@ -1,0 +1,358 @@
+/* NOSTALGIA ENGINE — 향수 사이클 시뮬레이터
+   디자인: 네오브루탈 아케이드 / 60-30-10
+   60% 배경 웜크림  ·  30% 잉크블랙 구조  ·  10% 레트로 버밀리언 강조 */
+
+.ne-container {
+    --paper: #f1e7d6;
+    --panel: #fbf6ec;
+    --ink: #1a1410;
+    --sand: #d8cbb3;
+    --accent: #e0431f;
+    --accent-soft: #f7d9cf;
+    --revive: #1f6f5c;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image:
+        repeating-linear-gradient(0deg, rgba(26, 20, 16, 0.05) 0 1px, transparent 1px 24px);
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.ne-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.ne-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ne-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.ne-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.ne-title {
+    font-size: clamp(2.1rem, 7.5vw, 3.9rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.ne-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.88rem;
+    color: #5b5044;
+}
+
+/* 무대 */
+.ne-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 시각화 영역 */
+.ne-viz {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.1rem;
+}
+
+.ne-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.ne-block {
+    fill: #ece1cd;
+    stroke: var(--ink);
+    stroke-width: 3;
+    transition: fill 0.3s ease;
+}
+
+.ne-block.is-hot {
+    fill: var(--accent-soft);
+}
+
+.ne-block-label {
+    font-size: 11px;
+    font-weight: 900;
+    fill: var(--ink);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.ne-arc {
+    fill: none;
+    stroke: var(--revive);
+    stroke-width: 3.5;
+    stroke-dasharray: 6 5;
+    transition: d 0.4s ease;
+}
+
+.ne-arrowhead {
+    fill: var(--revive);
+}
+
+.ne-now-line {
+    stroke: var(--accent);
+    stroke-width: 3;
+}
+
+.ne-now-dot {
+    fill: var(--accent);
+    stroke: var(--ink);
+    stroke-width: 2;
+}
+
+.ne-now-text {
+    font-size: 12px;
+    font-weight: 900;
+    fill: var(--accent);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.ne-rev-text {
+    font-size: 12px;
+    font-weight: 900;
+    fill: var(--revive);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+/* 소환된 시대 카드 */
+.ne-era-card {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: #f3f5ef;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.85rem 1rem;
+}
+
+.ne-era-emoji {
+    font-size: 2.2rem;
+    line-height: 1;
+}
+
+.ne-era-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.ne-era-decade {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7a6f60;
+}
+
+.ne-era-tag {
+    font-size: 1.05rem;
+    font-weight: 900;
+}
+
+.ne-era-vibe {
+    font-size: 0.78rem;
+    color: #5b5044;
+}
+
+.ne-era-gap {
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #fff;
+    background: var(--revive);
+    border: 3px solid var(--ink);
+    padding: 0.25rem 0.5rem;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.ne-era-empty {
+    justify-content: center;
+    font-weight: 800;
+    color: #7a6f60;
+    font-size: 0.85rem;
+}
+
+/* 컨트롤 패널 */
+.ne-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ne-block-ctl {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.ne-ctl-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ne-ctl-label b {
+    color: var(--accent);
+    margin-left: 0.3rem;
+}
+
+.ne-block-ctl input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--sand);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+.ne-block-ctl input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.ne-block-ctl input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+/* 프리셋 칩 */
+.ne-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.ne-chip {
+    font-weight: 800;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.2rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ne-chip.on {
+    background: var(--accent);
+    color: #fff;
+}
+
+.ne-chip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* 타임랩스 버튼 */
+.ne-play {
+    font-weight: 900;
+    font-size: 0.95rem;
+    padding: 0.7rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ne-play.on {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 4px 4px 0 var(--ink);
+}
+
+.ne-play:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--accent);
+}
+
+/* 읽기 라인 */
+.ne-readout {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    background: #f3f5ef;
+    border: 3px solid var(--ink);
+    padding: 0.65rem 0.8rem;
+}
+
+.ne-readout b {
+    color: var(--accent);
+    font-weight: 900;
+}
+
+/* 풋 */
+.ne-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.ne-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.ne-foot b {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .ne-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .ne-viz {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}

@@ -11,6 +11,18 @@
 
 ---
 
+## 2026-06-15 / Nostalgia Engine (`/nostalgia-engine`)
+
+- **선정 주제**: 향수 사이클(nostalgia cycle) — 현재는 늘 과거의 한 시대를 다시 불러내며, 그 주기(갭)는 한 세대(약 30년)에서 점점 짧아진다. 현재 연도·향수 갭 슬라이더, 시대축을 훑는 타임랩스, 소환되는 10년대 미감 카드로 체험한다.
+- **선정 이유**: 2026년 1월부터 SNS를 휩쓴 "2026 is the new 2016" / "Great Meme Reset" 트렌드를 특정 인물·사건 없이 '문화가 일정 주기로 과거를 소환한다'는 보편 개념으로 변환. 슬라이더·프리셋·타임랩스 애니메이션·시대 미감 카드라는 인터랙티브 요소로 풀기 적합하고, 기존 실험(봇 판별 Ghost Feed, 확산 Tipping Point, 양자 Qubit Lab, API 실험실)과 주제가 겹치지 않음. 디자인은 레트로 미감에 맞춘 네오브루탈 + 60-30-10(웜크림/잉크블랙/버밀리언).
+- **기반 자료**:
+  - [2026 is the new 2016 — Wikipedia](https://en.wikipedia.org/wiki/2026_is_the_new_2016) — 10년 주기 디지털 향수 리셋
+  - [Is 2026 the New 2016? Inside the Internet's 10-Year Nostalgia Reset — CEO Today](https://www.ceotodaymagazine.com/2026/01/is-2026-the-new-2016-nostalgia-trend/)
+  - [2016 Trend / 2026 Is the New 2016 — Know Your Meme](https://knowyourmeme.com/memes/2016-trend-2026-is-the-new-2016) — Great Meme Reset의 기원
+  - [The '2026 is the new 2016' trend is taking over social media — The Week](https://theweek.com/culture-life/nostalgia-2016-social-media-trend)
+
+---
+
 ## 2026-06-11 / Qubit Lab (`/qubit-lab`)
 
 - **선정 주제**: 양자 비트(큐비트)의 중첩과 측정 붕괴. 회전 게이트로 P(0)/P(1) 확률을 정하고, 단일 측정 시 하나의 값으로 붕괴하며 중첩이 사라지는 과정 + 1000회 반복 측정 분포를 체험한다.
