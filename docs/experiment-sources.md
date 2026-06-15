@@ -11,6 +11,18 @@
 
 ---
 
+## 2026-06-15 / Uncanny Valley (`/uncanny-valley`)
+
+- **선정 주제**: 불쾌한 골짜기(uncanny valley). 인간 유사도가 커질수록 호감도가 오르다가 '거의 사람' 구간에서 급락(골짜기)하고 실제 사람에서 급반등하는 곡선. 인간 유사도 슬라이더로 호감도 곡선 위 현재 위치를 이동하고, 그에 맞춰 모핑되는 SVG 얼굴(골짜기에서 칙칙한 올리브 톤·비대칭 눈·빗나간 시선)과 반응 라벨을 본다. '움직임' 토글을 켜면 골짜기가 더 깊어진다(정지보다 동작이 거부감을 키운다는 보편 관찰).
+- **선정 이유**: 2026년 상반기 인터넷 화두인 "AI 합성 영상/밈이 현실과 구분되지 않는다 — 하이퍼리얼·언캐니 밸리 유머"를 특정 인물·제품을 겨냥하지 않고 '인간 유사도 ↔ 호감도'라는 보편 곡선(모리의 불쾌한 골짜기)으로 변환. 슬라이더·실시간 곡선 플롯·모핑 얼굴·움직임 토글이라는 풍부한 인터랙티브 요소로 풀기 적합하고, 기존 실험(향수 Nostalgia Engine, 기억 Context Window, 양자 Qubit Lab, 봇 판별 Ghost Feed, 확산 Tipping Point, 네트워크 Latency Arena, API 실험실)과 주제가 완전히 겹치지 않음. 디자인은 클리니컬 랩 무드의 네오브루탈 + 60-30-10(쿨 본화이트/잉크 차콜/애시드 그린).
+- **기반 자료**:
+  - [The trends that will shape AI and tech in 2026 — IBM](https://www.ibm.com/think/news/ai-tech-trends-predictions-2026)
+  - [Humor and relatability drive 2026's biggest viral memes — MSN](https://www.msn.com/en-us/news/other/humor-and-relatability-drive-2026-s-biggest-viral-memes/gm-GMB097309C) — 접근성 높아진 AI 이미지·영상 도구가 만든 초현실·언캐니 밸리 유머의 부상
+  - [The Most Viral Memes of 2026 — ViralTrench](https://viraltrench.com/most-viral-memes/) — 밈이 현실과 구분되지 않는 하이퍼리얼 AI 영상의 시대
+  - 일반 개념: 모리 마사히로의 불쾌한 골짜기(uncanny valley) — 인간 유사도 대비 호감도 곡선, 움직임이 골짜기를 심화시킨다는 관찰
+
+---
+
 ## 2026-06-15 / Latency Arena (`/latency-arena`)
 
 - **선정 주제**: 네트워크 왕복 시간(RTT) 측정·비교. 같은 요청을 여러 엔드포인트에 반복 전송해 min/p50/p95/max 분포를 막대·스파크라인으로 비교하고, 첫 요청(DNS·TLS 핸드셰이크)이 왜 느린지, 왜 평균보다 p50(중앙값)이 체감 속도에 가까운지를 체험한다. 브라우저에서 `fetch(mode: 'no-cors')`로 응답 본문은 읽지 않고 왕복 시간만 측정한다.

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 21,
+        name: 'Uncanny Valley',
+        description: '거의 사람일수록 더 친근할까 — 인간 유사도와 호감도의 골짜기를 그려보는 실험',
+        link: '/uncanny-valley',
+        active: true,
+        startDate: '2026-06-15',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🎭'
+    },
+    {
         id: 20,
         name: 'Latency Arena',
         description: '같은 요청을 여러 엔드포인트에 반복해 왕복 시간(RTT)을 측정·비교하는 실험',

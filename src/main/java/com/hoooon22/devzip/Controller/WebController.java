@@ -34,6 +34,7 @@ public class WebController {
         "/nostalgia-engine",
         "/context-window",
         "/latency-arena",
+        "/uncanny-valley",
         "/error"
     })
     public String index() {

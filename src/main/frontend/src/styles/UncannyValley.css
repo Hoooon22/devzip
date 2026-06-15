@@ -1,0 +1,374 @@
+/* UNCANNY VALLEY — 불쾌한 골짜기 시뮬레이터
+   디자인: 네오브루탈 / 클리니컬 랩 / 60-30-10
+   60% 차가운 본화이트 배경  ·  30% 잉크 차콜 구조  ·  10% 애시드 그린 강조 */
+
+.uv-container {
+    --paper: #e7e8e3;
+    --panel: #f5f6f1;
+    --ink: #15171a;
+    --line: #15171a;
+    --mute: #d4d6cd;
+    --accent: #79b515;
+    --accent-soft: #e4f0c7;
+    --creep: #93a32a;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image:
+        repeating-linear-gradient(0deg, rgba(21, 23, 26, 0.045) 0 1px, transparent 1px 26px);
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.uv-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.uv-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.uv-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.uv-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.uv-title {
+    font-size: clamp(2.1rem, 7.5vw, 3.9rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.uv-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.88rem;
+    color: #555a4e;
+}
+
+/* 무대 */
+.uv-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.8fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 시각화 영역 */
+.uv-viz {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.1rem;
+}
+
+.uv-curve {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.uv-valley-shade {
+    fill: rgba(147, 163, 42, 0.12);
+}
+
+.uv-axis-zero {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+    opacity: 0.5;
+}
+
+.uv-axis-cap {
+    font-size: 10px;
+    font-weight: 800;
+    fill: #6b7060;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.uv-axis-x {
+    font-size: 11px;
+    font-weight: 800;
+    fill: #6b7060;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.uv-line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+    transition: d 0.3s ease;
+}
+
+.uv-ex-dot {
+    fill: var(--panel);
+    stroke: var(--ink);
+    stroke-width: 2;
+}
+
+.uv-ex-emoji {
+    font-size: 14px;
+}
+
+.uv-now-line {
+    stroke: var(--accent);
+    stroke-width: 3;
+}
+
+.uv-now-dot {
+    fill: var(--accent);
+    stroke: var(--ink);
+    stroke-width: 2.5;
+}
+
+/* 모핑 얼굴 + 반응 */
+.uv-react {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #eef0e8;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 0.85rem 1rem;
+}
+
+.uv-face {
+    width: 96px;
+    height: 104px;
+    flex-shrink: 0;
+}
+
+.uv-face rect,
+.uv-face ellipse,
+.uv-face circle,
+.uv-face path {
+    transition: all 0.18s ease;
+}
+
+@keyframes uv-jitter {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-1.5px, 1px); }
+    50% { transform: translate(1.5px, -1px); }
+    75% { transform: translate(-1px, -1.5px); }
+}
+
+.uv-face.is-jitter {
+    animation: uv-jitter 0.18s steps(2) infinite;
+}
+
+.uv-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.uv-zone-emoji {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.uv-zone-label {
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.uv-zone-note {
+    font-size: 0.8rem;
+    color: #555a4e;
+}
+
+/* 컨트롤 패널 */
+.uv-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.uv-ctl {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.uv-ctl-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.uv-ctl-label b {
+    color: var(--accent);
+    margin-left: 0.3rem;
+}
+
+.uv-ctl input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--mute);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+.uv-ctl input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.uv-ctl input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+/* 움직임 토글 */
+.uv-toggle {
+    font-weight: 900;
+    font-size: 0.9rem;
+    padding: 0.7rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.uv-toggle.on {
+    background: var(--creep);
+    color: #fff;
+}
+
+.uv-toggle:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 읽기 패널 */
+.uv-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: #eef0e8;
+    border: 3px solid var(--ink);
+    padding: 0.65rem 0.8rem;
+}
+
+.uv-readout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.uv-readout-row b {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.95rem;
+}
+
+.uv-readout-row b.pos {
+    color: #2f7d2f;
+}
+
+.uv-readout-row b.neg {
+    color: #b3471a;
+}
+
+/* 점프 칩 */
+.uv-jump {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.uv-jump-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.35rem;
+}
+
+.uv-chip {
+    font-size: 1rem;
+    padding: 0.4rem 0;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 2px 2px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.uv-chip.on {
+    background: var(--accent);
+}
+
+.uv-chip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--ink);
+}
+
+/* 풋 */
+.uv-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.uv-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.uv-foot b {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .uv-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .uv-viz {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}

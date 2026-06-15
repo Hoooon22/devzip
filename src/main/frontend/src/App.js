@@ -31,6 +31,7 @@ import QubitLab from './pages/experiments/QubitLab';
 import NostalgiaEngine from './pages/experiments/NostalgiaEngine';
 import ContextWindow from './pages/experiments/ContextWindow';
 import LatencyArena from './pages/experiments/LatencyArena';
+import UncannyValley from './pages/experiments/UncannyValley';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -178,6 +179,7 @@ function App() {
         <Route path="/nostalgia-engine" element={<NostalgiaEngine />} />
         <Route path="/context-window" element={<ContextWindow />} />
         <Route path="/latency-arena" element={<LatencyArena />} />
+        <Route path="/uncanny-valley" element={<UncannyValley />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
