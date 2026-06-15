@@ -3,230 +3,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devzip - 서버 점검 중</title>
+    <meta name="robots" content="noindex">
+    <title>DevZip — 서비스 점검 중</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* DevZip — Neo-Brutalist Arcade
+           굵은 잉크 테두리 · 하드 오프셋 그림자 · 솔리드 아케이드 컬러.
+           그라데이션/글로우 없음. 라이트/다크는 prefers-color-scheme로 전환. */
+        :root {
+            --c-yellow: #FFD23F;
+            --c-red:    #FF5C5C;
+            --c-blue:   #4D7CFF;
+            --c-green:  #2FBF71;
+            --c-amber:  #FF9F1C;
+
+            --paper:    #FBF3E4;
+            --card:     #FFFFFF;
+            --alt:      #F3ECDB;
+            --ink:      #161310;
+            --ink-soft: #46413A;
+            --ink-mute: #8A8175;
+            --line:     #161310;
+            --shadow:   #161310;
+            --dot:      rgba(22, 19, 16, 0.06);
+            --mono:     ui-monospace, 'SFMono-Regular', Menlo, 'Cascadia Code', monospace;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper:    #15120C;
+                --card:     #221E16;
+                --alt:      #2B2619;
+                --ink:      #F4ECD9;
+                --ink-soft: #C9C0AC;
+                --ink-mute: #8C8369;
+                --line:     #F4ECD9;
+                --shadow:   #000000;
+                --dot:      rgba(244, 236, 217, 0.05);
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background:
+                radial-gradient(var(--dot) 1.4px, transparent 1.4px) 0 0 / 22px 22px,
+                var(--paper);
+            color: var(--ink);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            padding: 24px;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .maintenance-container {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .maintenance-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .maintenance-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .maintenance-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-
-        .maintenance-info {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .maintenance-info h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #e0e7ff;
-        }
-
-        .maintenance-info p {
-            opacity: 0.8;
-            line-height: 1.5;
-        }
-
-        .progress-bar {
+        .card {
             width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
+            max-width: 540px;
+            background: var(--card);
+            border: 2.5px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 7px 7px 0 var(--shadow);
+            padding: 32px;
+        }
+
+        /* ── Brand row ── */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .brand .mark {
+            width: 44px; height: 44px;
+            background: var(--c-yellow);
+            color: #161310;
+            display: grid; place-items: center;
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: -0.04em;
+            border: 2.5px solid #161310;
+            border-radius: 10px;
+            box-shadow: 3px 3px 0 var(--shadow);
+        }
+        .brand .name { font-weight: 900; font-size: 20px; letter-spacing: -0.02em; }
+        .brand .tag  { font-size: 12px; color: var(--ink-mute); font-weight: 600; margin-top: 1px; }
+
+        /* ── Status badge ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--c-red);
+            color: #161310;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 7px 12px;
+            border: 2.5px solid #161310;
+            border-radius: 999px;
+            box-shadow: 3px 3px 0 var(--shadow);
+            margin-bottom: 20px;
+        }
+        .badge .dot {
+            width: 9px; height: 9px;
+            background: #161310;
+            border-radius: 50%;
+            animation: blink 1.1s steps(2, start) infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.25; } }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+        h1 .hl {
+            background: var(--c-yellow);
+            color: #161310;
+            padding: 0 6px;
+            border: 2px solid #161310;
+            border-radius: 6px;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+        .lead {
+            font-size: 15px;
+            color: var(--ink-soft);
+            margin-bottom: 24px;
+        }
+
+        /* ── Working bar (indeterminate) ── */
+        .track {
+            position: relative;
+            height: 14px;
+            background: var(--alt);
+            border: 2.5px solid var(--line);
+            border-radius: 999px;
             overflow: hidden;
-            margin: 1.5rem 0;
+            margin-bottom: 24px;
+        }
+        .track .bar {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 38%;
+            background: var(--c-green);
+            border-right: 2.5px solid var(--line);
+            animation: slide 1.6s ease-in-out infinite;
+        }
+        @keyframes slide {
+            0%   { left: -40%; }
+            100% { left: 100%; }
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80, #22c55e);
-            border-radius: 4px;
-            animation: progress 3s ease-in-out infinite;
+        /* ── Info grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
         }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 0%; }
+        .cell {
+            background: var(--alt);
+            border: 2.5px solid var(--line);
+            border-radius: 10px;
+            padding: 12px 14px;
         }
-
-        .contact-info {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        .cell .k {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--ink-mute);
+            margin-bottom: 4px;
         }
+        .cell .v {
+            font-family: var(--mono);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+        .cell .v.ok    { color: var(--c-green); }
+        .cell .v.busy  { color: var(--c-amber); }
+        .cell .v.fail  { color: var(--c-red); }
 
-        .contact-info a {
-            color: #e0e7ff;
+        .note {
+            font-size: 14px;
+            color: var(--ink-soft);
+            background: var(--alt);
+            border: 2.5px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+        }
+        .note strong { color: var(--ink); }
+
+        /* ── Retry button ── */
+        .retry {
+            width: 100%;
+            font-family: var(--mono);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #161310;
+            background: var(--c-yellow);
+            border: 2.5px solid #161310;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0 var(--shadow);
+            padding: 14px;
+            cursor: pointer;
+            transition: transform 0.05s ease, box-shadow 0.05s ease;
+        }
+        .retry:hover { background: var(--c-amber); }
+        .retry:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--shadow);
+        }
+        .retry:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--shadow);
+        }
+        .retry:focus-visible { outline: 3px solid var(--c-blue); outline-offset: 3px; }
+
+        /* ── Footer ── */
+        .foot {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 2.5px dashed var(--line);
+            font-size: 13px;
+            color: var(--ink-soft);
+            text-align: center;
+        }
+        .foot a {
+            color: var(--ink);
+            font-weight: 700;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            border-bottom: 2px solid var(--c-yellow);
         }
+        .foot a:hover { background: var(--c-yellow); color: #161310; }
+        .foot a:focus-visible { outline: 3px solid var(--c-blue); outline-offset: 3px; }
 
-        .contact-info a:hover {
-            color: white;
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: rgba(239, 68, 68, 0.2);
-            color: #fecaca;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            margin-bottom: 1rem;
-        }
-
-        .eta {
-            font-size: 1rem;
-            color: #e0e7ff;
-            margin-top: 1rem;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .maintenance-title {
-                font-size: 2rem;
-            }
-            
-            .maintenance-subtitle {
-                font-size: 1rem;
-            }
-            
-            .maintenance-container {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            .maintenance-icon {
-                font-size: 3rem;
-            }
-        }
-
-        /* 다크모드 지원 */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-            }
+        @media (max-width: 520px) {
+            .card { padding: 24px; box-shadow: 5px 5px 0 var(--shadow); }
+            h1 { font-size: 25px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="maintenance-container">
-        <div class="maintenance-icon">🔧</div>
-        
-        <div class="status-badge">
-            서비스 점검 중
-        </div>
-        
-        <h1 class="maintenance-title">Devzip</h1>
-        <p class="maintenance-subtitle">
-            더 나은 서비스를 위해 시스템 점검을 진행하고 있습니다.
-        </p>
-        
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-        
-        <div class="maintenance-info">
-            <h3>점검 안내</h3>
-            <p>
-                시스템 안정성 향상 및 성능 개선을 위한 정기 점검을 실시하고 있습니다. 
-                점검이 완료되는 대로 정상 서비스를 재개하겠습니다.
-            </p>
-            
-            <div class="eta">
-                <strong>예상 완료 시간:</strong> 약 30분 ~ 1시간
+    <main class="card" role="main" aria-live="polite">
+        <div class="brand">
+            <div class="mark">D</div>
+            <div>
+                <div class="name">DevZip</div>
+                <div class="tag">개발자 사이드 프로젝트 허브</div>
             </div>
         </div>
-        
-        <div class="contact-info">
-            <p>문의사항이 있으시면 아래로 연락해 주세요.</p>
-            <p>
-                <a href="mailto:momo990305@gmail.com">momo990305@gmail.com</a>
-            </p>
+
+        <span class="badge"><span class="dot" aria-hidden="true"></span>서비스 점검 중</span>
+
+        <h1>잠시 <span class="hl">점검</span> 중이에요.</h1>
+        <p class="lead">
+            더 안정적인 서비스를 위해 시스템을 손보고 있습니다.
+            점검이 끝나면 이 페이지가 자동으로 사라지고 정상 화면으로 돌아갑니다.
+        </p>
+
+        <div class="track" role="progressbar" aria-label="점검 진행 중">
+            <div class="bar"></div>
         </div>
-    </div>
+
+        <div class="grid">
+            <div class="cell">
+                <div class="k">서버 상태</div>
+                <div class="v fail" id="statusValue">응답 없음</div>
+            </div>
+            <div class="cell">
+                <div class="k">다음 자동 확인</div>
+                <div class="v" id="countdownValue">--초</div>
+            </div>
+            <div class="cell">
+                <div class="k">마지막 확인</div>
+                <div class="v" id="lastCheckValue">--:--:--</div>
+            </div>
+            <div class="cell">
+                <div class="k">현재 시각</div>
+                <div class="v" id="clockValue">--:--:--</div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>점검 안내.</strong> 시스템 안정성 향상 및 성능 개선을 위한 작업을 진행 중입니다.
+            이 페이지는 15초마다 서버 상태를 자동으로 확인하며, 복구가 감지되면 즉시 새로고침됩니다.
+        </div>
+
+        <button type="button" class="retry" id="retryBtn">지금 다시 확인</button>
+
+        <div class="foot">
+            문의가 필요하시면 <a href="mailto:momo990305@gmail.com">momo990305@gmail.com</a> 으로 연락 주세요.
+        </div>
+    </main>
 
     <script>
-        // 현재 시간 표시 및 자동 새로고침
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ko-KR');
-            document.title = `Devzip - 서버 점검 중 (${timeString})`;
-        }
+        (function () {
+            'use strict';
 
-        // 30초마다 페이지 새로고침하여 서버 복구 확인
-        setInterval(() => {
-            updateTime();
-            // 서버가 복구되었는지 확인
-            fetch('/')
-                .then(response => {
-                    if (response.ok) {
-                        window.location.reload();
+            var CHECK_INTERVAL = 15;            // 자동 확인 주기(초)
+            var HEALTH_URL = '/actuator/health'; // Spring Boot Actuator 헬스 엔드포인트
+            var countdown = CHECK_INTERVAL;
+            var checking = false;
+
+            var statusEl    = document.getElementById('statusValue');
+            var countdownEl = document.getElementById('countdownValue');
+            var lastCheckEl = document.getElementById('lastCheckValue');
+            var clockEl     = document.getElementById('clockValue');
+            var retryBtn    = document.getElementById('retryBtn');
+
+            function fmtTime(date) {
+                return date.toLocaleTimeString('ko-KR', { hour12: false });
+            }
+
+            function setStatus(text, cls) {
+                statusEl.textContent = text;
+                statusEl.className = 'v ' + cls;
+            }
+
+            // 1초마다 현재 시각 갱신
+            function tickClock() {
+                clockEl.textContent = fmtTime(new Date());
+            }
+
+            // 서버 헬스 체크: status === 'UP' 이면 복구로 간주하고 새로고침
+            function checkHealth() {
+                if (checking) { return; }
+                checking = true;
+                setStatus('확인 중…', 'busy');
+                retryBtn.disabled = true;
+                retryBtn.textContent = '확인 중…';
+
+                var done = function (recovered) {
+                    checking = false;
+                    lastCheckEl.textContent = fmtTime(new Date());
+                    retryBtn.disabled = false;
+                    retryBtn.textContent = '지금 다시 확인';
+                    countdown = CHECK_INTERVAL;
+                    if (recovered) {
+                        setStatus('정상 (UP)', 'ok');
+                        document.title = 'DevZip — 서비스 재개';
+                        retryBtn.textContent = '서비스 복구됨 · 이동 중…';
+                        setTimeout(function () { window.location.href = '/'; }, 800);
+                    } else {
+                        setStatus('점검 중', 'fail');
                     }
-                })
-                .catch(() => {
-                    // 여전히 502 에러 - 점검 계속
-                });
-        }, 30000);
+                };
 
-        updateTime();
+                // 캐시 무력화를 위한 타임스탬프 쿼리
+                fetch(HEALTH_URL + '?_=' + Date.now(), {
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(function (res) {
+                        if (!res.ok) { return done(false); }
+                        return res.json()
+                            .then(function (body) { done(body && body.status === 'UP'); })
+                            // 헬스 엔드포인트가 200 + 비-JSON이면 일단 살아있다고 간주
+                            .catch(function () { done(true); });
+                    })
+                    .catch(function () { done(false); }); // 네트워크 실패 → 여전히 점검 중
+            }
+
+            // 1초 틱: 시계 + 카운트다운, 0이 되면 자동 확인
+            function everySecond() {
+                tickClock();
+                if (!checking) {
+                    countdown -= 1;
+                    if (countdown <= 0) {
+                        checkHealth();
+                    } else {
+                        countdownEl.textContent = countdown + '초';
+                    }
+                }
+            }
+
+            retryBtn.addEventListener('click', checkHealth);
+
+            // 초기 표시 + 시작
+            tickClock();
+            countdownEl.textContent = countdown + '초';
+            setInterval(everySecond, 1000);
+            checkHealth(); // 첫 진입 시 즉시 1회 확인
+        })();
     </script>
 </body>
 </html>
