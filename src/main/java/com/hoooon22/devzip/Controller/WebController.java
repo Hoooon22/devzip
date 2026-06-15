@@ -32,6 +32,7 @@ public class WebController {
         "/ghost-feed",
         "/qubit-lab",
         "/nostalgia-engine",
+        "/context-window",
         "/error"
     })
     public String index() {

@@ -29,6 +29,7 @@ import TippingPoint from './pages/experiments/TippingPoint';
 import GhostFeed from './pages/experiments/GhostFeed';
 import QubitLab from './pages/experiments/QubitLab';
 import NostalgiaEngine from './pages/experiments/NostalgiaEngine';
+import ContextWindow from './pages/experiments/ContextWindow';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -173,6 +174,7 @@ function App() {
         <Route path="/ghost-feed" element={<GhostFeed />} />
         <Route path="/qubit-lab" element={<QubitLab />} />
         <Route path="/nostalgia-engine" element={<NostalgiaEngine />} />
+        <Route path="/context-window" element={<ContextWindow />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}

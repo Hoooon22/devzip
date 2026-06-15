@@ -1,0 +1,442 @@
+/* CONTEXT WINDOW — 유한한 기억(컨텍스트 창)과 망각 시뮬레이터
+   디자인: 네오브루탈 / 60-30-10
+   60% 배경 쿨 콘크리트  ·  30% 잉크블랙 구조  ·  10% 시그널 블루 강조 */
+
+.cw-container {
+    --bg: #e7eae5;
+    --panel: #f6f8f3;
+    --ink: #14181a;
+    --line: #14181a;
+    --mute: #6a716c;
+    --accent: #1f6dff;
+    --accent-soft: #d7e3ff;
+    --warn: #b24a23;
+    --warn-soft: #f0ddd2;
+
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image:
+        repeating-linear-gradient(90deg, rgba(20, 24, 26, 0.045) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(0deg, rgba(20, 24, 26, 0.045) 0 1px, transparent 1px 26px);
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.cw-inner {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* 돌아가기 */
+.cw-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.cw-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 헤더 */
+.cw-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.cw-title {
+    font-size: clamp(2rem, 7.2vw, 3.8rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.cw-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.88rem;
+    color: var(--mute);
+}
+
+/* 무대 */
+.cw-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 시각화 영역 */
+.cw-viz {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.1rem;
+}
+
+/* 토큰 미터 */
+.cw-meter-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+}
+
+.cw-meter-label {
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cw-meter-num {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: var(--accent);
+}
+
+.cw-meter-num.hot {
+    color: var(--warn);
+}
+
+.cw-bar {
+    height: 16px;
+    background: #dfe3dc;
+    border: 3px solid var(--ink);
+}
+
+.cw-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease, background 0.25s ease;
+}
+
+.cw-bar-fill.hot {
+    background: var(--warn);
+}
+
+/* 컨텍스트 창 */
+.cw-window {
+    margin-top: 1rem;
+    border: 3px dashed var(--ink);
+    background: #eef1ea;
+    padding: 0.65rem;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.cw-window-tag {
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 0.1rem 0.45rem;
+}
+
+.cw-mem {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 0.5rem 0.6rem;
+    animation: cw-pop 0.18s ease;
+}
+
+@keyframes cw-pop {
+    from { transform: translateY(6px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.cw-mem.is-fact {
+    background: var(--accent-soft);
+}
+
+.cw-mem.is-summary {
+    background: #e9e2d3;
+    border-style: dashed;
+}
+
+.cw-mem-tok {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.68rem;
+    font-weight: 900;
+    color: #fff;
+    background: var(--ink);
+    padding: 0.1rem 0.35rem;
+    flex-shrink: 0;
+}
+
+.cw-mem-text {
+    flex: 1;
+    font-size: 0.86rem;
+    font-weight: 600;
+    min-width: 0;
+}
+
+.cw-mem-badge {
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: var(--accent);
+    border: 2px solid var(--ink);
+    padding: 0.05rem 0.3rem;
+    flex-shrink: 0;
+}
+
+.cw-mem-badge.sum {
+    background: var(--warn);
+}
+
+/* 밀려난 기억 */
+.cw-forgotten {
+    margin-top: 0.9rem;
+    border-top: 3px dotted var(--ink);
+    padding-top: 0.7rem;
+}
+
+.cw-forgotten-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--warn);
+    margin-bottom: 0.4rem;
+}
+
+.cw-forgotten-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.cw-ghost {
+    font-size: 0.72rem;
+    color: var(--mute);
+    background: var(--warn-soft);
+    border: 2px solid #c9b6a8;
+    padding: 0.15rem 0.4rem;
+    text-decoration: line-through;
+}
+
+/* 조작 패널 */
+.cw-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.cw-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cw-block-label {
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cw-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.cw-chip,
+.cw-qchip {
+    font-weight: 800;
+    font-size: 0.76rem;
+    padding: 0.4rem 0.55rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.cw-chip:hover,
+.cw-qchip:hover {
+    background: var(--accent-soft);
+}
+
+.cw-chip:active,
+.cw-qchip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* 직접 입력 */
+.cw-input-row {
+    display: flex;
+    gap: 0.45rem;
+}
+
+.cw-input {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.6rem;
+    border: 3px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+}
+
+.cw-input:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--accent);
+}
+
+.cw-add {
+    font-weight: 900;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.8rem;
+    background: var(--accent);
+    color: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.cw-add:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* 액션 버튼들 */
+.cw-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.cw-act {
+    font-weight: 900;
+    font-size: 0.8rem;
+    padding: 0.6rem 0.4rem;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    background: var(--panel);
+    color: var(--ink);
+}
+
+.cw-act:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+.cw-act.fill {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+.cw-act.compact {
+    background: var(--warn);
+    color: #fff;
+}
+
+.cw-act.reset {
+    grid-column: span 2;
+}
+
+/* 회상 결과 */
+.cw-recall {
+    border-top: 3px solid var(--ink);
+    padding-top: 0.9rem;
+}
+
+.cw-answer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.7rem;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.cw-answer.clear {
+    background: var(--accent-soft);
+}
+
+.cw-answer.fuzzy {
+    background: #efe6d2;
+}
+
+.cw-answer.lost {
+    background: var(--warn-soft);
+}
+
+.cw-answer-q {
+    font-weight: 800;
+    font-size: 0.76rem;
+    color: var(--mute);
+}
+
+.cw-answer-a {
+    font-weight: 700;
+}
+
+/* 풋 */
+.cw-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.cw-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.cw-foot b {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 0.35rem;
+}
+
+/* 반응형 */
+@media (max-width: 760px) {
+    .cw-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .cw-viz {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}

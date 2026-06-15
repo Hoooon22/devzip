@@ -11,6 +11,18 @@
 
 ---
 
+## 2026-06-15 / Context Window (`/context-window`)
+
+- **선정 주제**: 유한한 기억(컨텍스트 창)과 망각. 사실/잡담을 주입해 한정된 토큰 창을 채우면 오래된 기억부터 밀려나고(eviction), "압축(요약)"은 공간을 벌지만 디테일이 손실되어 회상이 흐릿해진다. 회상 테스트로 "또렷이 기억 / 요약에만 흐릿하게 / 완전히 망각" 3단계를 체험한다.
+- **선정 이유**: 2026년 상반기 기술 화두인 'AI 에이전트 메모리 / 컨텍스트 창 / 메모리 감쇠(memory decay)·오염'을 특정 제품·기업을 겨냥하지 않고 '한정된 기억 용량과 망각'이라는 보편 개념으로 다룰 수 있어 적합. 토큰 미터·eviction·손실 압축·회상 판정이라는 풍부한 인터랙티브 요소로 풀 수 있고, 기존 실험(향수 사이클 Nostalgia Engine, 양자 Qubit Lab, 봇 판별 Ghost Feed, 확산 Tipping Point, API 실험실)과 주제가 완전히 겹치지 않음.
+- **기반 자료**:
+  - [State of AI Agent Memory 2026: Benchmarks, Architectures & Production Gaps — mem0.ai](https://mem0.ai/blog/state-of-ai-agent-memory-2026) — 메모리가 일급 아키텍처 요소로, 3계층 구조와 성능 격차
+  - [Beyond the Context Window: The Rise of Persistent Memory — hyperight.com](https://hyperight.com/beyond-the-context-window-the-rise-of-persistent-memory-cognitive-capital/)
+  - [Why AI Agents Forget: Memory Decay and Context Contamination Explained — DEV Community](https://dev.to/pickuma/why-ai-agents-forget-memory-decay-and-context-contamination-explained-44kd)
+  - [Agent Context Windows in 2026: How to Stop Your AI from Forgetting Everything — sparkco.ai](https://sparkco.ai/blog/agent-context-windows-in-2026-how-to-stop-your-ai-from-forgetting-everything)
+
+---
+
 ## 2026-06-15 / Nostalgia Engine (`/nostalgia-engine`)
 
 - **선정 주제**: 향수 사이클(nostalgia cycle) — 현재는 늘 과거의 한 시대를 다시 불러내며, 그 주기(갭)는 한 세대(약 30년)에서 점점 짧아진다. 현재 연도·향수 갭 슬라이더, 시대축을 훑는 타임랩스, 소환되는 10년대 미감 카드로 체험한다.

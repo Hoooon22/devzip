@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 19,
+        name: 'Context Window',
+        description: '기억은 무한하지 않다 — 컨텍스트 창이 차면 오래된 기억부터 밀려나는 망각 시뮬레이터',
+        link: '/context-window',
+        active: true,
+        startDate: '2026-06-15',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧠'
+    },
+    {
         id: 18,
         name: 'Nostalgia Engine',
         description: '현재는 늘 과거의 한 시대를 소환한다 — 점점 짧아지는 향수 사이클 시뮬레이터',
