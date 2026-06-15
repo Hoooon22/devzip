@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 20,
+        name: 'Latency Arena',
+        description: '같은 요청을 여러 엔드포인트에 반복해 왕복 시간(RTT)을 측정·비교하는 실험',
+        link: '/latency-arena',
+        active: true,
+        startDate: '2026-06-15',
+        endDate: '',
+        pinned: true,
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '📡'
+    },
+    {
         id: 19,
         name: 'Context Window',
         description: '기억은 무한하지 않다 — 컨텍스트 창이 차면 오래된 기억부터 밀려나는 망각 시뮬레이터',

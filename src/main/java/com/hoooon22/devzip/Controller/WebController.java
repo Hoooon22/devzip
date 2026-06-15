@@ -33,6 +33,7 @@ public class WebController {
         "/qubit-lab",
         "/nostalgia-engine",
         "/context-window",
+        "/latency-arena",
         "/error"
     })
     public String index() {
