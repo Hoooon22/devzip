@@ -29,7 +29,9 @@
 .library-head { margin-bottom: 36px; }
 
 .library-head .back-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font-family: var(--mono);
     font-size: 13px;
     font-weight: 700;
@@ -38,7 +40,7 @@
     background: var(--card);
     border: 2px solid var(--ink);
     border-radius: 8px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     box-shadow: 3px 3px 0 var(--ink);
     margin-bottom: 22px;
     transition: transform 0.1s ease, box-shadow 0.1s ease;
