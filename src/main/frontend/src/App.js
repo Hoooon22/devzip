@@ -21,6 +21,7 @@ import Conflux from './pages/Conflux';
 import CommandStack from './pages/CommandStack';
 import CommandStackDownload from './pages/CommandStackDownload';
 import ApiExperiment from './pages/ApiExperiment';
+import Library from './pages/Library';
 import RestApi from './pages/experiments/RestApi';
 import JsonApi from './pages/experiments/JsonApi';
 import SoapApi from './pages/experiments/SoapApi';
@@ -184,6 +185,9 @@ function App() {
         <Route path="/context-window" element={<ContextWindow />} />
         <Route path="/latency-arena" element={<LatencyArena />} />
         <Route path="/uncanny-valley" element={<UncannyValley />} />
+
+        {/* 자료실 페이지 */}
+        <Route path="/library" element={<Library />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}

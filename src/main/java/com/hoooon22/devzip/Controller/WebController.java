@@ -36,6 +36,7 @@ public class WebController {
         "/context-window",
         "/latency-arena",
         "/uncanny-valley",
+        "/library",
         "/error"
     })
     public String index() {

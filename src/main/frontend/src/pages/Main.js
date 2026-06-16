@@ -322,6 +322,7 @@ const Main = () => {
                         <a className="on" href="/">홈</a>
                         <a href="#mono-projects" onClick={() => setMode('production')}>프로젝트</a>
                         <a href="#mono-projects" onClick={() => setMode('experiment')}>실험실</a>
+                        <a href="/library">자료실</a>
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </nav>
                     <MonoAuth />

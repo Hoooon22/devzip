@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCP PCA v6.1 · 압축 학습 콘솔</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#15202E; --ink-2:#21303F; --ink-3:#2D3F52;
+  --paper:#FAF7F1; --card:#FFFFFF; --card-2:#F3EEE3;
+  --signal:#C77A06; --signal-bg:#FBEFD6;
+  --service:#0B7D7D; --service-bg:#DBF0EF;
+  --trap:#C8412F; --trap-bg:#FAE3DF;
+  --ok:#2E7D52; --ok-bg:#E0F0E5;
+  --muted:#697785; --line:#E2DACB; --line-2:#D2C9B6;
+  --mono:'JetBrains Mono',monospace; --sans:'Noto Sans KR',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:74px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* ---- top bar ---- */
+.topbar{position:sticky;top:0;z-index:50;background:var(--ink);color:#EFE9DC;border-bottom:2px solid var(--signal)}
+.topbar-inner{max-width:1080px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.5px;color:#fff}
+.brand b{color:var(--signal)}
+.nav-chips{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.nav-chips a{font-family:var(--mono);font-size:11.5px;text-decoration:none;color:#C9D2DC;background:var(--ink-2);padding:5px 9px;border-radius:5px;border:1px solid transparent;transition:.15s}
+.nav-chips a:hover,.nav-chips a:focus{background:var(--signal);color:var(--ink);outline:none}
+
+/* ---- hero ---- */
+.hero{background:linear-gradient(160deg,var(--ink) 0%,var(--ink-3) 100%);color:#EFE9DC;padding:46px 18px 40px}
+.hero-inner{max-width:1080px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--signal);text-transform:uppercase}
+.hero h1{font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.1;margin:10px 0 6px}
+.hero h1 .v{font-family:var(--mono);color:var(--signal)}
+.hero p.sub{color:#B8C2CD;font-size:15px;max-width:640px;margin-top:8px}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.meta-pill{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);padding:7px 12px;border-radius:7px;color:#DCE3EA}
+.meta-pill b{color:var(--signal)}
+
+/* ---- legend ---- */
+.legend{max-width:1080px;margin:22px auto 0;padding:0 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.legend .lab{font-size:12.5px;color:var(--muted)}
+
+/* ---- chips (the signature system) ---- */
+.sig,.svc,.trapword{font-family:var(--mono);font-size:.88em;padding:1px 7px;border-radius:5px;font-weight:500;white-space:nowrap;display:inline-block;line-height:1.5}
+.sig{background:var(--signal-bg);color:var(--signal);border:1px solid #EAD2A2}
+.svc{background:var(--service-bg);color:var(--service);border:1px solid #ABDAD8}
+.trapword{background:var(--trap-bg);color:var(--trap);border:1px solid #EBC0B8}
+
+/* ---- layout ---- */
+.wrap{max-width:1080px;margin:0 auto;padding:30px 18px 80px}
+section{margin-top:14px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin:38px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--line-2)}
+.sec-num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--ink);padding:4px 9px;border-radius:6px}
+.sec-head h2{font-size:23px;font-weight:900}
+.sec-head .tag{font-family:var(--mono);font-size:11px;margin-left:auto;padding:4px 9px;border-radius:20px}
+.tag.done{background:var(--ok-bg);color:var(--ok)}
+.tag.now{background:var(--signal-bg);color:var(--signal)}
+.tag.todo{background:var(--card-2);color:var(--muted)}
+
+/* ---- roadmap ---- */
+.road{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.step{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:9px;padding:13px 14px;position:relative}
+.step.s-done{border-left-color:var(--ok)}
+.step.s-now{border-left-color:var(--signal);box-shadow:0 3px 14px rgba(199,122,6,.13)}
+.step .sn{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.step h4{font-size:14.5px;margin:3px 0 4px}
+.step p{font-size:12px;color:var(--muted)}
+.step .st{font-family:var(--mono);font-size:10.5px;margin-top:7px;display:inline-block;padding:2px 7px;border-radius:12px}
+.s-done .st{background:var(--ok-bg);color:var(--ok)}
+.s-now .st{background:var(--signal-bg);color:var(--signal)}
+.s-todo .st{background:var(--card-2);color:var(--muted)}
+.progbar{height:9px;background:var(--card-2);border-radius:6px;overflow:hidden;margin:16px 0 4px;border:1px solid var(--line)}
+.progbar i{display:block;height:100%;width:65%;background:linear-gradient(90deg,var(--ok),var(--service))}
+.progtext{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* ---- accordion ---- */
+.acc{background:var(--card);border:1px solid var(--line);border-radius:11px;margin-bottom:11px;overflow:hidden}
+.acc>button{width:100%;text-align:left;background:none;border:none;padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink)}
+.acc>button:hover{background:var(--card-2)}
+.acc>button:focus-visible{outline:2px solid var(--signal);outline-offset:-2px}
+.acc .ico{font-family:var(--mono);font-size:13px;color:var(--service);background:var(--service-bg);width:26px;height:26px;border-radius:6px;display:grid;place-items:center;flex-shrink:0}
+.acc .arrow{margin-left:auto;font-family:var(--mono);color:var(--muted);transition:transform .2s;font-size:13px}
+.acc.open .arrow{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.acc-body-inner{padding:4px 18px 20px}
+.acc p{font-size:14.5px;margin:8px 0}
+.acc h5{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;border-bottom:1px dashed var(--line-2);padding-bottom:5px}
+
+/* ---- tables ---- */
+.tbl{width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px;display:block;overflow-x:auto}
+.tbl table{width:100%;border-collapse:collapse;min-width:480px}
+.tbl th{background:var(--ink);color:#EFE9DC;text-align:left;padding:9px 11px;font-size:12px;font-weight:700}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:nth-child(even) td{background:var(--card-2)}
+
+/* ---- decision tree ---- */
+.tree{margin:10px 0}
+.tnode{background:var(--card-2);border:1px solid var(--line-2);border-radius:8px;padding:10px 13px;margin:7px 0;position:relative;font-size:13.5px}
+.tnode.q{background:var(--ink-2);color:#EFE9DC;font-weight:700}
+.tnode.lvl1{margin-left:18px}
+.tnode.lvl2{margin-left:36px}
+.tnode .y{font-family:var(--mono);font-size:11px;color:var(--signal);font-weight:700}
+
+/* ---- callouts ---- */
+.trap{background:var(--trap-bg);border:1px solid #EBC0B8;border-left:4px solid var(--trap);border-radius:9px;padding:12px 15px;margin:12px 0;font-size:14px}
+.trap b{color:var(--trap)}
+.trap .th{font-family:var(--mono);font-size:11px;color:var(--trap);font-weight:700;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.note{background:#FBF8EE;border:1px dashed var(--signal);border-radius:9px;padding:12px 15px;margin:12px 0;font-size:14px}
+.note .nh{font-family:var(--mono);font-size:11px;color:var(--signal);font-weight:700;display:block;margin-bottom:4px}
+
+/* ---- case card ---- */
+.case{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:18px;margin-bottom:12px}
+.case h4{font-size:17px;display:flex;align-items:center;gap:10px}
+.case .badge{font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:12px;background:var(--service-bg);color:var(--service)}
+.case .badge.new{background:var(--signal-bg);color:var(--signal)}
+.case .ident{font-size:13.5px;color:var(--muted);margin:8px 0 0;font-style:italic}
+
+/* ---- quiz ---- */
+.quiz-q{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-bottom:12px}
+.quiz-q .qtop{display:flex;gap:9px;align-items:baseline;margin-bottom:4px}
+.quiz-q .qn{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;background:var(--ink);padding:2px 7px;border-radius:5px;flex-shrink:0}
+.quiz-q .dom{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.quiz-q .qtext{font-size:14px;margin:6px 0 11px;font-weight:500}
+.opt{display:block;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 13px;margin:6px 0;cursor:pointer;font-family:var(--sans);font-size:13.5px;color:var(--ink);transition:.12s}
+.opt:hover{border-color:var(--service);background:var(--service-bg)}
+.opt:focus-visible{outline:2px solid var(--signal)}
+.opt .ol{font-family:var(--mono);font-weight:700;margin-right:8px;color:var(--muted)}
+.opt.correct{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--trap-bg);border-color:var(--trap);color:var(--trap)}
+.opt.dim{opacity:.55}
+.qexp{margin-top:10px;padding:11px 13px;background:var(--card-2);border-radius:8px;font-size:13px;display:none}
+.qexp.show{display:block}
+.qexp .qh{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ok);display:block;margin-bottom:3px}
+.score{font-family:var(--mono);font-size:14px;background:var(--ink);color:#EFE9DC;padding:12px 16px;border-radius:9px;text-align:center;margin-bottom:14px}
+.score b{color:var(--signal);font-size:18px}
+
+.foot{text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);margin-top:50px;padding-top:20px;border-top:1px solid var(--line)}
+ul.tight{margin:6px 0 6px 20px}ul.tight li{margin:5px 0;font-size:14px}
+.kbd{font-family:var(--mono);font-size:.85em;background:var(--card-2);border:1px solid var(--line-2);border-radius:4px;padding:1px 5px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">GCP <b>PCA</b> v6.1 · 콘솔</span>
+    <nav class="nav-chips">
+      <a href="#roadmap">로드맵</a>
+      <a href="#core">핵심개념</a>
+      <a href="#ai">AI/ML</a>
+      <a href="#process">프로세스</a>
+      <a href="#implement">구현</a>
+      <a href="#ops">운영</a>
+      <a href="#new61">v6.1신규</a>
+      <a href="#cases">케이스</a>
+      <a href="#traps">함정</a>
+      <a href="#quiz">퀴즈</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Professional Cloud Architect · 압축 학습 자료</span>
+    <h1>합격은 <span class="v">신호어(signal word)</span>를<br>잡는 데서 갈린다</h1>
+    <p class="sub">시험은 영어다. 영어 용어 그대로 외우고, 문제 속 트리거 단어를 보면 손이 먼저 서비스를 고르게 만드는 게 목표. 이 문서는 지금까지 다룬 개념·결정 트리·함정·문제를 한 곳에 압축한 인터랙티브 콘솔이다.</p>
+    <div class="hero-meta">
+      <span class="meta-pill">버전 <b>v6.1</b> (2025.10.30~)</span>
+      <span class="meta-pill">케이스 <b>4종</b></span>
+      <span class="meta-pill">현재 <b>4단계</b> 진행 중</span>
+      <span class="meta-pill">진행률 <b>~65%</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="legend">
+  <span class="lab">표기 약속:</span>
+  <span class="sig">신호어</span>
+  <span class="svc">GCP 서비스</span>
+  <span class="trapword">함정</span>
+</div>
+
+<div class="wrap">
+
+<!-- ================= ROADMAP ================= -->
+<section id="roadmap">
+  <div class="sec-head"><span class="sec-num">MAP</span><h2>6단계 로드맵</h2></div>
+  <div class="progbar"><i></i></div>
+  <p class="progtext">3.5 / 6 단계 완료 · 개념 파트(2·3단계) 통과 · 남은 고비는 케이스 + 실전</p>
+  <div class="road" style="margin-top:14px">
+    <div class="step s-done"><div class="sn">STEP 1</div><h4>시험 가이드 개요</h4><p>v6.1 6개 섹션·배점</p><span class="st">완료</span></div>
+    <div class="step s-done"><div class="sn">STEP 2</div><h4>핵심 개념</h4><p>WAF·컴퓨트·DB·네트워크·IAM·데이터</p><span class="st">완료</span></div>
+    <div class="step s-done"><div class="sn">STEP 3</div><h4>AI/ML 블록</h4><p>Vertex·Gemini·Securing AI</p><span class="st">완료</span></div>
+    <div class="step s-now"><div class="sn">STEP 4</div><h4>케이스 스터디</h4><p>EHR✓ Altostrat✓ · Cymbal·Knight 남음</p><span class="st">진행 중</span></div>
+    <div class="step s-todo"><div class="sn">STEP 5</div><h4>실전 모의</h4><p>120분 / 50–60문제</p><span class="st">예정</span></div>
+    <div class="step s-todo"><div class="sn">STEP 6</div><h4>최종 복습</h4><p>4케이스 + 손노트</p><span class="st">예정</span></div>
+  </div>
+  <div class="note"><span class="nh">v6.1 핵심 변화 · 전 섹션 커버</span>
+    이 자료는 공식 6개 섹션을 모두 담는다: 1·2·3(설계·프로비저닝·보안) + AI/ML(2.4/2.5) + <b>4 프로세스(~15%)</b> + <b>5 구현·IaC(~11%)</b> + <b>6 운영(~12%)</b> + v6.1 신규 키워드. WAF가 필수 지식이 됐고, 케이스는 EHR만 유지·나머지 3개는 AI 통합 신규.
+  </div>
+</section>
+
+<!-- ================= CORE ================= -->
+<section id="core">
+  <div class="sec-head"><span class="sec-num">02</span><h2>핵심 개념</h2><span class="tag done">완료</span></div>
+
+  <!-- WAF -->
+  <div class="acc"><button><span class="ico">W</span>WAF 6 필러 — 트레이드오프의 잣대<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <p>WAF는 "정답을 고르는 기준"이다. 문제가 충돌하는 요구(비용 vs 가용성 등)를 줄 때, 어느 필러를 우선하라는 신호인지 읽어야 한다.</p>
+      <div class="tbl"><table><tr><th>필러</th><th>핵심 질문</th></tr>
+      <tr><td>Operational Excellence</td><td>운영·자동화·관측가능성 (v6.1 6.1 섹션 핵심)</td></tr>
+      <tr><td>Security</td><td>누가/무엇을/데이터 보호</td></tr>
+      <tr><td>Reliability</td><td>가용성·DR·장애 견딤</td></tr>
+      <tr><td>Cost Optimization</td><td>낭비 제거·적정 규모</td></tr>
+      <tr><td>Performance</td><td>지연·처리량·확장</td></tr>
+      <tr><td>Sustainability</td><td>에너지·탄소 (TPU·carbon-aware)</td></tr></table></div>
+      <div class="note"><span class="nh">원칙</span>요구가 명시 안 됐으면 <b>가장 단순한 매니지드 서비스</b>가 정답. 과한 설계(over-engineering)는 거의 항상 오답.</div>
+    </div></div>
+  </div>
+
+  <!-- Compute -->
+  <div class="acc"><button><span class="ico">C</span>컴퓨트 선택 — GCE / GKE / Cloud Run / Functions<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tree">
+        <div class="tnode q">이벤트 1개에 반응하는 작은 코드인가?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Cloud Functions</span> <span class="sig">single event</span> <span class="sig">trigger</span></div>
+        <div class="tnode q">컨테이너 + 유휴 시 0으로 축소?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Cloud Run</span> <span class="sig">scale to zero</span> <span class="sig">serverless container</span></div>
+        <div class="tnode q">Kubernetes·서비스 메시·이식성 필요?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">GKE</span> <span class="sig">portability</span> <span class="sig">service mesh</span> <span class="sig">k8s expertise</span></div>
+        <div class="tnode q">OS 제어·GPU 직접·BYOL 필요?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Compute Engine</span> <span class="sig">full OS control</span> <span class="sig">GPU direct</span> <span class="sig">BYOL</span></div>
+      </div>
+      <div class="trap"><span class="th">함정</span>"유휴 시 0 축소 + 가끔 트래픽 폭증 + 비용효율" = <span class="svc">Cloud Run</span>. GKE/GCE로 답하면 <b>technically works but not optimal</b>.</div>
+    </div></div>
+  </div>
+
+  <!-- GKE -->
+  <div class="acc"><button><span class="ico">K</span>GKE 심화 — Autopilot vs Standard, 오토스케일<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>주제</th><th>요점</th></tr>
+      <tr><td>Autopilot vs Standard</td><td>운영부담 최소·노드 관리 위임 → <b>Autopilot</b> / 노드 세밀 제어 → <b>Standard</b></td></tr>
+      <tr><td>HPA</td><td>Pod 수 가로 확장 (CPU/메트릭 기준)</td></tr>
+      <tr><td>VPA</td><td>Pod 리소스 요청 세로 조정</td></tr>
+      <tr><td>Cluster Autoscaler</td><td>노드 수 조정</td></tr>
+      <tr><td>Private cluster</td><td>노드 공인 IP 없음 (보안·컴플라이언스 신호어)</td></tr></table></div>
+      <div class="note"><span class="nh">하이브리드 K8s</span>"on-prem + cloud 클러스터를 <b>중앙 관리</b>" → <span class="svc">GKE Enterprise / fleet</span> (Altostrat 케이스 단골)</div>
+    </div></div>
+  </div>
+
+  <!-- Storage / DB -->
+  <div class="acc"><button><span class="ico">D</span>스토리지·데이터베이스 선택<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>서비스</th><th>언제</th></tr>
+      <tr><td><span class="svc">Cloud SQL</span></td><td>관계형 OLTP, MySQL/PostgreSQL/SQL Server, 단일 리전급</td></tr>
+      <tr><td><span class="svc">Spanner</span></td><td>관계형 + <span class="sig">global</span> + 수평확장 + 강한 일관성</td></tr>
+      <tr><td><span class="svc">Bigtable</span></td><td>대용량 <span class="sig">low-latency</span> NoSQL, 시계열/IoT</td></tr>
+      <tr><td><span class="svc">Firestore</span></td><td>문서형 NoSQL, 모바일/웹 동기화</td></tr>
+      <tr><td><span class="svc">BigQuery</span></td><td>분석 DW, <span class="sig">analytics</span> <span class="sig">trends</span> <span class="sig">SQL on huge data</span></td></tr>
+      <tr><td><span class="svc">Memorystore</span></td><td>Redis/Memcached 관리형 캐시</td></tr>
+      <tr><td>Cloud Storage 클래스</td><td>Standard→Nearline→Coldline→Archive (접근빈도↓). 자동화는 <span class="svc">Autoclass</span>/lifecycle</td></tr></table></div>
+      <div class="trap"><span class="th">함정</span>OLTP(Cloud SQL)와 분석(BigQuery)을 혼동 금지. "trends/predictions/reports" = BigQuery (+BQML).</div>
+    </div></div>
+  </div>
+
+  <!-- Networking -->
+  <div class="acc"><button><span class="ico">N</span>네트워킹 — 연결·하이브리드·LB·비공개 접근<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <h5>VPC 연결</h5>
+      <div class="tbl"><table><tr><th>방식</th><th>신호어</th></tr>
+      <tr><td><span class="svc">Shared VPC</span></td><td>같은 조직 <span class="sig">centralized network mgmt</span>, 네트워크팀↔개발팀 분리</td></tr>
+      <tr><td><span class="svc">VPC Peering</span></td><td>다른 조직/VPC 1:1 <span class="sig">merger</span> <span class="sig">minimal re-engineering</span> (IP 안 겹칠 때만)</td></tr></table></div>
+      <h5>하이브리드 (온프렘↔GCP)</h5>
+      <div class="tbl"><table><tr><th>방식</th><th>신호어 / 주의</th></tr>
+      <tr><td><span class="svc">Cloud VPN</span></td><td>저비용·낮은 대역폭·빠른 구축</td></tr>
+      <tr><td><span class="svc">Dedicated Interconnect</span></td><td><span class="sig">high throughput</span> <span class="sig">internal IPs</span> <span class="sig">low latency</span> · 프로덕션 HA는 <b>2 metro 이중화</b></td></tr>
+      <tr><td><span class="trapword">Direct/Carrier Peering</span></td><td>Google <b>공개 API</b>용 — <b>VPC 내부 리소스 접근 불가</b></td></tr></table></div>
+      <h5>비공개 접근 3종 (방향 구분이 핵심)</h5>
+      <ul class="tight">
+        <li>아웃바운드 인터넷 → <span class="svc">Cloud NAT</span></li>
+        <li>GCP API 접근 → <span class="svc">Private Google Access</span></li>
+        <li>인바운드 SSH/HTTPS 접속 → <span class="svc">IAP</span></li>
+      </ul>
+      <div class="trap"><span class="th">최대 함정 클러스터 (내 약점)</span>NAT·Direct Peering·Private Google Access는 전부 <b>"나가거나 공개 API에 붙는" 도구</b>다. <b>내부 연결</b>이나 <b>들어오는 접속</b> 도구가 아니다. "SSH into" 보이면 <span class="svc">IAP</span>, "VPC끼리 내부 IP" 보이면 <span class="svc">VPC Peering</span>.</div>
+    </div></div>
+  </div>
+
+  <!-- IAM -->
+  <div class="acc"><button><span class="ico">I</span>IAM · 리소스 계층<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <p>계층: <span class="kbd">Organization → Folder → Project → Resource</span>. 정책은 <b>위→아래 상속</b>. 공통은 위, 특수는 아래.</p>
+      <div class="tbl"><table><tr><th>역할 종류</th><th>언제</th></tr>
+      <tr><td>Basic (Owner/Editor/Viewer)</td><td>너무 광범위 → 보통 <span class="trapword">오답</span></td></tr>
+      <tr><td><span class="svc">Predefined</span></td><td><span class="sig">least privilege</span> <span class="sig">best practice</span> → <b>대부분 정답</b></td></tr>
+      <tr><td>Custom</td><td>predefined로 안 될 때만</td></tr></table></div>
+      <ul class="tight">
+        <li>권한은 개인 X → <b>Google Group</b>에 부여 · 기존 AD → <b>federation + SSO</b></li>
+        <li>SA: 최소권한, <span class="trapword">키 다운로드 금지</span>, 워크로드 → <span class="svc">Workload Identity Federation</span></li>
+        <li><b>IAM</b> = 누가 할 수 있나 / <b>Organization Policy</b> = 무엇이 허용되나 (region 제한·public IP 금지 등)</li>
+      </ul>
+      <div class="trap"><span class="th">함정 (내 약점)</span><span class="sig">as restricted as possible</span> / least privilege 보이면 → <b>Owner·Editor·Org Admin 들어간 보기 즉시 제거</b>. cross-project는 SA를 상대 IAM에 principal로 추가 + 딱 맞는 predefined(예: Firebase Admin).</div>
+    </div></div>
+  </div>
+
+  <!-- Data pipeline -->
+  <div class="acc"><button><span class="ico">P</span>데이터 파이프라인 · 운영/모니터링<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>서비스</th><th>역할 / 신호어</th></tr>
+      <tr><td><span class="svc">Pub/Sub</span></td><td>수집·<b>버퍼</b> <span class="sig">data not lost in backlog</span> · 스케일은 <span class="kbd">num_undelivered_messages</span></td></tr>
+      <tr><td><span class="svc">Dataflow</span></td><td>스트림+배치 <span class="sig">on the fly</span> <span class="sig">late-arriving data</span> · PII는 <span class="svc">DLP API</span></td></tr>
+      <tr><td><span class="svc">Dataproc</span></td><td>기존 <span class="sig">Hadoop/Spark</span> lift-and-shift · Spot VM로 절감</td></tr>
+      <tr><td><span class="svc">Composer</span></td><td>워크플로 오케스트레이션(Airflow)</td></tr></table></div>
+      <p>교과서 실시간 분석: <span class="svc">Pub/Sub</span> → <span class="svc">Dataflow</span> → <span class="svc">BigQuery</span></p>
+      <h5>운영 / 모니터링</h5>
+      <ul class="tight">
+        <li>"폴더/조직 전체 + 미래 프로젝트 자동" 로그 → <b>aggregated sink</b> (해당 폴더/Org 레벨)</li>
+        <li>"로그 → 실시간 대응" → Pub/Sub export → <span class="svc">Cloud Function</span></li>
+        <li>흩어진 모니터링·이메일 알림 → <span class="svc">Cloud Operations Suite</span>로 중앙화</li>
+      </ul>
+      <div class="trap"><span class="th">함정</span>기존 Hadoop/Spark 코드 그대로 = <span class="svc">Dataproc</span> / 새 스트리밍 = <span class="svc">Dataflow</span>. 이 한 쌍이 함정의 90%.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= AI/ML ================= -->
+<section id="ai">
+  <div class="sec-head"><span class="sec-num">03</span><h2>AI / ML 블록</h2><span class="tag done">완료</span></div>
+
+  <div class="acc open"><button><span class="ico">★</span>Build vs Buy — 최다 출제 결정 트리<span class="arrow">▶</span></button>
+    <div class="acc-body" style="max-height:none"><div class="acc-body-inner">
+      <div class="tree">
+        <div class="tnode q">표준 작업 + 팀에 ML 전문성 없음 + 빠르게?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Pre-trained API / Gemini</span> <span class="sig">no ML expertise</span> <span class="sig">quickly</span> <span class="sig">common task</span></div>
+        <div class="tnode q">자체 라벨 데이터로 커스텀 모델, 단 코딩 최소?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Vertex AI AutoML</span> <span class="sig">own labeled data</span> <span class="sig">without writing training code</span></div>
+        <div class="tnode q">완전 제어·자체 알고리즘/프레임워크?</div>
+        <div class="tnode lvl1"><span class="y">YES →</span> <span class="svc">Vertex AI Custom Training</span> <span class="sig">full control</span> <span class="sig">custom architecture</span></div>
+      </div>
+      <div class="trap"><span class="th">함정</span>"메타데이터 추출·콘텐츠 분석"같은 표준 작업에 <b>custom 모델 직접 학습</b> 고르면 오답. → <span class="svc">Vision/Video/Speech API</span>.</div>
+    </div></div>
+  </div>
+
+  <div class="acc"><button><span class="ico">V</span>Vertex AI — 통합 ML 플랫폼<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>구성요소</th><th>역할</th></tr>
+      <tr><td>Pipelines</td><td>MLOps 자동화 (학습→평가→배포)</td></tr>
+      <tr><td>Model Registry</td><td>모델 버전 관리</td></tr>
+      <tr><td>Endpoints</td><td>배포·서빙(온라인 예측), 오토스케일</td></tr>
+      <tr><td>Feature Store</td><td>피처 재사용·일관성</td></tr>
+      <tr><td>Model Monitoring</td><td><span class="sig">data drift</span> 감지 → 재학습 트리거</td></tr></table></div>
+      <div class="trap"><span class="th">함정 (내 약점)</span>운영 중 <b>정확도 서서히 저하</b> = <span class="sig">data drift</span> → <span class="svc">Model Monitoring</span> + 재학습. <b>머신 크기 키우기는 latency용</b>이지 정확도 해결책이 아니다.</div>
+    </div></div>
+  </div>
+
+  <div class="acc"><button><span class="ico">G</span>Gemini · Model Garden · RAG<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <ul class="tight">
+        <li><span class="svc">Gemini</span> — 멀티모달 생성 모델. 요약·챗봇·NLU <span class="sig">generative</span> <span class="sig">summarize</span></li>
+        <li><span class="svc">Model Garden</span> — 모델 카탈로그(Gemini/Llama/오픈소스) 발견·배포·파인튜닝</li>
+        <li><span class="svc">RAG (grounding)</span> — 답변을 자체 문서에 근거 <span class="sig">reduce hallucination</span> <span class="sig">answer from company docs</span></li>
+      </ul>
+      <div class="trap"><span class="th">함정 (내 약점)</span>"자체 문서 근거 + 환각↓" = <span class="svc">RAG</span>. 모델 교체·temperature↑·파인튜닝 아님. <br><b>RAG = 사실 근거 / 파인튜닝 = 스타일·행동 / temperature↑ = 환각↑</b></div>
+    </div></div>
+  </div>
+
+  <div class="acc"><button><span class="ico">S</span>Securing AI · TPU · Responsible AI<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <ul class="tight">
+        <li><span class="svc">Model Armor</span> — LLM 입출력 필터 <span class="sig">prompt injection</span> <span class="sig">harmful content</span> (Cloud Armor=네트워크 웹방어, 혼동 금지)</li>
+        <li><span class="svc">SAIF</span> — AI 보안 거버넌스 프레임워크</li>
+        <li><span class="svc">TPU</span> — 대규모 딥러닝 <span class="sig">large-scale training</span> · <span class="svc">AI Hypercomputer</span> = 초대형 학습 인프라</li>
+        <li><span class="svc">Explainable AI</span> + fairness indicators — <span class="sig">auditable</span> <span class="sig">explain decisions</span></li>
+      </ul>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= PROCESS / SEC 4 ================= -->
+<section id="process">
+  <div class="sec-head"><span class="sec-num">04</span><h2>프로세스 분석·최적화</h2><span class="tag now">~15%</span></div>
+
+  <div class="acc"><button><span class="ico">R</span>재해복구(DR) — RTO/RPO 등급<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>패턴</th><th>RTO/RPO</th><th>비용</th><th>신호어</th></tr>
+      <tr><td>Backup &amp; Restore</td><td>시간~일</td><td>최저</td><td><span class="sig">cheapest DR</span> non-critical</td></tr>
+      <tr><td>Cold standby</td><td>수 시간</td><td>낮음</td><td>최소 복제본 대기</td></tr>
+      <tr><td>Warm standby</td><td>분</td><td>중간</td><td>reduced capacity 상시</td></tr>
+      <tr><td>Hot / Active-Active</td><td>≈0</td><td>최고</td><td><span class="sig">near-zero downtime</span> mission-critical</td></tr></table></div>
+      <div class="trap"><span class="th">함정</span><b>RTO</b>=복구까지 시간, <b>RPO</b>=허용 데이터 손실. 둘이 0에 가까울수록 비싼 hot. "비용 최소 DR" → backup-restore.</div>
+    </div></div>
+  </div>
+
+  <div class="acc"><button><span class="ico">$</span>비용 최적화<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>도구</th><th>언제 / 신호어</th></tr>
+      <tr><td><span class="svc">Committed Use Discount (CUD)</span></td><td>예측 가능한 <span class="sig">24/7 steady</span> 워크로드, 1/3년 약정</td></tr>
+      <tr><td><span class="svc">Spot VM</span></td><td>중단 감내 <span class="sig">batch</span> 작업, 최대 ~90% 할인</td></tr>
+      <tr><td>Sustained Use Discount</td><td>장기 가동 자동 할인</td></tr>
+      <tr><td><span class="svc">Recommender / Active Assist</span></td><td>유휴·rightsizing 추천</td></tr>
+      <tr><td>CapEx → OpEx</td><td>선투자 → 사용량 과금 전환</td></tr></table></div>
+      <div class="trap"><span class="th">함정</span>예측 가능한 상시 = <span class="svc">CUD</span> / 중단 OK 배치 = <span class="svc">Spot</span>. 둘 혼동 금지.</div>
+    </div></div>
+  </div>
+
+  <div class="acc"><button><span class="ico">⟳</span>SDLC · CI/CD · RCA · 변경관리<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <ul class="tight">
+        <li>CI/CD 파이프라인 — <span class="svc">Cloud Build</span> + <span class="svc">Artifact Registry</span> + <span class="svc">Cloud Deploy</span></li>
+        <li>근본원인분석(RCA) — 로그·메트릭·트레이스 상관분석. v6.1은 <span class="svc">Gemini Cloud Assist investigations</span>로 RCA 보조</li>
+        <li>비즈니스: 변경관리(change mgmt)·이해관계자 관리·팀 스킬 준비도·의사결정 프로세스</li>
+      </ul>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= IMPLEMENTATION / SEC 5 ================= -->
+<section id="implement">
+  <div class="sec-head"><span class="sec-num">05</span><h2>구현 관리 — IaC · API · 도구</h2><span class="tag now">~11%</span></div>
+  <div class="acc"><button><span class="ico">T</span>Terraform/IaC · Apigee · CLI · Emulators<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>항목</th><th>핵심 / 신호어</th></tr>
+      <tr><td><span class="svc">Terraform / IaC</span></td><td><span class="sig">repeatable</span> <span class="sig">declarative</span> 인프라 코드·버전관리. 관리형 실행 = <span class="svc">Infrastructure Manager</span></td></tr>
+      <tr><td><span class="svc">Apigee</span></td><td><span class="sig">API management</span> 게이트웨이 — 외부 API 인증·할당량·버전·모니터링</td></tr>
+      <tr><td>Cloud Shell / <span class="svc">Cloud Code</span></td><td>브라우저 CLI · VS Code/IntelliJ에서 GCP 개발</td></tr>
+      <tr><td><span class="kbd">gcloud</span>·<span class="kbd">gsutil</span>·<span class="kbd">bq</span></td><td>일반 / 스토리지 / BigQuery CLI</td></tr>
+      <tr><td><span class="svc">Cloud Emulators</span></td><td>Bigtable·Spanner·Pub/Sub·Firestore <b>로컬 테스트</b>(무과금 개발)</td></tr></table></div>
+      <div class="trap"><span class="th">함정</span>"재현 가능·선언적 프로비저닝" → <span class="svc">Terraform/IaC</span>. 수동 콘솔 클릭·명령형 스크립트는 오답 방향.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= OPS EXCELLENCE / SEC 6 ================= -->
+<section id="ops">
+  <div class="sec-head"><span class="sec-num">06</span><h2>운영 우수성 — 관측성·릴리스</h2><span class="tag now">~12%</span></div>
+  <div class="acc"><button><span class="ico">O</span>Observability 4종 · 릴리스 전략 · 신뢰성<span class="arrow">▶</span></button>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>도구</th><th>역할 / 신호어</th></tr>
+      <tr><td><span class="svc">Cloud Monitoring</span></td><td>메트릭·대시보드·알림</td></tr>
+      <tr><td><span class="svc">Cloud Logging</span></td><td>로그·sink·retention</td></tr>
+      <tr><td><span class="svc">Cloud Trace</span></td><td><span class="sig">어느 서비스가 지연</span> 유발? 분산 추적</td></tr>
+      <tr><td><span class="svc">Cloud Profiler</span></td><td><span class="sig">CPU/메모리</span> 코드 성능 프로파일</td></tr></table></div>
+      <h5>릴리스 전략</h5>
+      <ul class="tight">
+        <li><b>Blue-Green</b> — 두 환경 통째 교체(즉시 롤백)</li>
+        <li><b>Canary</b> — 일부 트래픽만 신버전 → 점진 확대</li>
+        <li><b>Rolling</b> — 인스턴스 순차 교체</li>
+        <li><b>SLO/SLI/Error Budget</b> — 신뢰성 목표·알림 기준</li>
+        <li>chaos engineering · pen testing · load testing (프로덕션 신뢰성 능동 검증)</li>
+      </ul>
+      <div class="trap"><span class="th">함정</span>"마이크로서비스 지연 추적" = <span class="svc">Cloud Trace</span> / "함수 CPU 과다" = <span class="svc">Cloud Profiler</span>. 모니터링(메트릭)과 구분.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= NEW v6.1 SERVICES ================= -->
+<section id="new61">
+  <div class="sec-head"><span class="sec-num">v6</span><h2>v6.1 신규 키워드 — 안 짚으면 손해</h2></div>
+  <div class="acc open"><button><span class="ico">+</span>공식 가이드 명시 신규 서비스<span class="arrow">▶</span></button>
+    <div class="acc-body" style="max-height:none"><div class="acc-body-inner">
+      <div class="tbl"><table><tr><th>서비스</th><th>무엇 / 구분</th></tr>
+      <tr><td><span class="svc">Gemini Cloud Assist</span></td><td>콘솔 내 <b>AI 운영 비서</b> — 설계·배포·<span class="sig">트러블슈팅(RCA)</span>·비용최적화 자연어. <i>아키텍트 본인</i> 생산성</td></tr>
+      <tr><td><span class="svc">Gemini Code Assist</span></td><td>IDE <b>코드 자동완성</b> (개발자 코딩용 — Cloud Assist와 구분)</td></tr>
+      <tr><td><span class="svc">Gemini Enterprise</span></td><td>사내 데이터 통합 <b>검색 + AI 에이전트</b> 플랫폼 (Jira·SharePoint 커넥터)</td></tr>
+      <tr><td><span class="svc">NotebookLM Enterprise</span></td><td><span class="sig">지정한 문서 묶음</span> 한정 Q&amp;A·요약. "curated/known sources"</td></tr>
+      <tr><td><span class="svc">Migration Center</span></td><td>마이그레이션 <b>평가·계획</b> 허브 (디스커버리·TCO)</td></tr>
+      <tr><td><span class="svc">VMware Engine</span></td><td>VMware 워크로드 <span class="sig">lift-and-shift</span> 그대로 이전</td></tr>
+      <tr><td><span class="svc">Cloud KMS / CMEK</span></td><td><span class="sig">own/manage encryption keys</span> 고객 관리 키</td></tr>
+      <tr><td><span class="svc">Sensitive Data Protection</span></td><td>(구 Cloud DLP) PII 탐지·분류·비식별화</td></tr>
+      <tr><td><span class="svc">Chrome Enterprise Premium</span></td><td>(구 BeyondCorp) <span class="sig">zero-trust</span> 접근, VPN 없이 컨텍스트 기반</td></tr>
+      <tr><td>AI APIs 구분</td><td>Vision·Video·Speech·Natural Language·Translation + Search·Conversation</td></tr></table></div>
+      <div class="trap"><span class="th">최신 함정</span><b>Code Assist</b>(코딩) vs <b>Cloud Assist</b>(운영/RCA) · <b>NotebookLM</b>(지정 문서 한정) vs <b>RAG/Gemini Enterprise</b>(전사 데이터 검색)</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section id="cases">
+  <div class="sec-head"><span class="sec-num">07</span><h2>케이스 스터디</h2><span class="tag now">진행 중</span></div>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:6px">암기 X. "요구사항 한 줄 → GCP 서비스" 매핑 반사신경을 만든다. testlet 문제는 늘 이 매핑에서 나온다.</p>
+
+  <div class="case">
+    <h4>EHR Healthcare <span class="badge">유지</span></h4>
+    <p class="ident">다국적 의료기관·보험사 대상 전자의무기록 SaaS. 콜로케이션→GCP. 확장성·복원력·일관성·HIPAA.</p>
+    <h5 style="font-family:var(--mono);font-size:12px;color:var(--muted);margin:14px 0 6px;letter-spacing:1px">결정 동인</h5>
+    <div class="tbl"><table><tr><th>단서</th><th>서비스</th></tr>
+    <tr><td>containerized on Kubernetes + 다중 환경</td><td><span class="svc">GKE</span></td></tr>
+    <tr><td>MySQL/SQL Server/Redis/Mongo + 관리비↓</td><td><span class="svc">Cloud SQL</span>·<span class="svc">Memorystore</span> 등 매니지드</td></tr>
+    <tr><td>Active Directory 사용자</td><td>Cloud Identity + <b>AD federation</b></td></tr>
+    <tr><td>secure high-performance 온프렘 연결</td><td><span class="svc">Dedicated Interconnect</span> ×2 metro</td></tr>
+    <tr><td>consistent logging/monitoring/alert</td><td><span class="svc">Cloud Operations Suite</span></td></tr>
+    <tr><td>healthcare trends + predictions</td><td><span class="svc">BigQuery</span> + BQML/Vertex</td></tr>
+    <tr><td>ingest data from new providers</td><td><span class="svc">Pub/Sub</span> + <span class="svc">Dataflow</span></td></tr>
+    <tr><td>regulatory compliance (HIPAA)</td><td><b>BAA 체결</b> + 컴플라이언스 제품 확인</td></tr></table></div>
+    <div class="trap"><span class="th">함정 (내 약점)</span>의료 + compliance → <b>BAA</b>가 거의 자동 정답. Prometheus는 모니터링 도구지 보안 침해 탐지/차단 아님 + EHR은 Cloud Ops 중앙화가 방향.</div>
+  </div>
+
+  <div class="case">
+    <h4>Altostrat Media <span class="badge new">신규·GenAI</span></h4>
+    <p class="ident">오디오·비디오 미디어 회사. <b>이미 GCP 위</b>(GKE·Cloud Storage·BigQuery·Cloud Run)에 GenAI를 얹어 콘텐츠 관리·UX 현대화.</p>
+    <h5 style="font-family:var(--mono);font-size:12px;color:var(--muted);margin:14px 0 6px;letter-spacing:1px">결정 동인</h5>
+    <div class="tbl"><table><tr><th>단서</th><th>서비스</th></tr>
+    <tr><td>metadata via NLP + computer vision</td><td><span class="svc">Video/Vision/Speech API</span> (사전학습)</td></tr>
+    <tr><td>detect/filter inappropriate content</td><td>Video/Vision AI + LLM은 <span class="svc">Model Armor</span></td></tr>
+    <tr><td>summaries / chatbot / NLU / 24/7</td><td><span class="svc">Gemini</span> · Agent Builder(Dialogflow CX)</td></tr>
+    <tr><td>personalized recommendations</td><td><span class="svc">Vertex AI</span> + <span class="svc">RAG</span></td></tr>
+    <tr><td>k8s on-prem + cloud, 중앙 관리</td><td><span class="svc">GKE Enterprise / fleet</span></td></tr>
+    <tr><td>modernize CI/CD containerized</td><td><span class="svc">Cloud Build</span>+<span class="svc">Artifact Registry</span>+<span class="svc">Cloud Deploy</span></td></tr>
+    <tr><td>optimize storage cost, growing media</td><td><span class="svc">Cloud Storage Autoclass</span>/lifecycle</td></tr>
+    <tr><td>AI auditable + explainable</td><td><span class="svc">Explainable AI</span> + Audit Logs</td></tr></table></div>
+    <div class="note"><span class="nh">EHR과 차이</span>EHR=온프렘→클라우드 <b>이전</b>이 주제 / Altostrat=이미 클라우드, <b>AI를 얹는</b> 게 주제.</div>
+  </div>
+
+  <div class="case">
+    <h4>Cymbal Retail <span class="badge new">신규·GenAI</span></h4>
+    <p class="ident">온라인 소매. GenAI로 카탈로그 자동화·대화형 커머스·기술 스택 업그레이드. <span style="color:var(--signal)">→ 다음 세션에서 결정 동인 추출 예정.</span></p>
+  </div>
+  <div class="case">
+    <h4>KnightMotives Automotive <span class="badge new">신규·GenAI</span></h4>
+    <p class="ident">자동차. AI 통합형. <span style="color:var(--signal)">→ 다음 세션에서 결정 동인 추출 예정.</span></p>
+  </div>
+</section>
+
+<!-- ================= TRAPS ================= -->
+<section id="traps">
+  <div class="sec-head"><span class="sec-num">!!</span><h2>내 함정 클러스터 — 시험 직전 1순위 복습</h2></div>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:6px">지금까지 틀린 문제는 거의 다 아래 4개 패턴에서 나왔다. 이 페이지만 시험장 가기 전 다시 본다.</p>
+
+  <div class="trap"><span class="th">함정 1 · 네트워킹 도구 family</span>
+    NAT·Direct Peering·Private Google Access를 "내부 연결/인바운드 접속"에 잘못 씀.<br>
+    → SSH 들어가기 = <span class="svc">IAP</span> · VPC끼리 = <span class="svc">VPC Peering</span> · 고성능 온프렘 = <span class="svc">Dedicated Interconnect</span>
+  </div>
+  <div class="trap"><span class="th">함정 2 · least privilege</span>
+    <span class="sig">as restricted as possible</span> 보이면 Owner·Editor·Org Admin 보기 즉시 탈락. 가장 좁은 predefined 역할 선택.
+  </div>
+  <div class="trap"><span class="th">함정 3 · AI 증상↔해결 매칭</span>
+    정확도 저하 = data drift → <span class="svc">Model Monitoring</span>(머신 증설 아님) · 자체 문서 근거 = <span class="svc">RAG</span>(모델 교체·파인튜닝 아님)
+  </div>
+  <div class="trap"><span class="th">함정 4 · 비기술 축 (계약·거버넌스)</span>
+    의료/규제 + compliance = <b>BAA</b> · 전사 강제 금지 = <b>Organization Policy</b> · "보안처럼 들리는 모니터링 도구(Prometheus)" 주의
+  </div>
+  <div class="note"><span class="nh">공통 메타 규칙</span>요구가 명시 안 됐으면 <b>가장 단순한 매니지드 서비스</b>. "되긴 되지만 최적이 아닌(technically works but not optimal)" 보기를 의식적으로 골라내기.</div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <div class="sec-head"><span class="sec-num">Q</span><h2>셀프 퀴즈</h2></div>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:10px">지금까지 푼 문제 + 신규 섹션 핵심 15개. 보기를 탭하면 정오·해설이 뜬다. (문제 원문은 영어 그대로)</p>
+  <div class="score" id="score">진행: <b id="answered">0</b> / 15 · 정답 <b id="correct">0</b></div>
+  <div id="quizbox"></div>
+</section>
+
+<p class="foot">GCP PCA v6.1 · 개인 학습용 압축 자료 · 신호어를 잡으면 합격이 보인다</p>
+
+</div>
+
+<script>
+// ---- accordion ----
+document.querySelectorAll('.acc>button').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var acc=btn.parentElement, body=acc.querySelector('.acc-body');
+    var open=acc.classList.toggle('open');
+    body.style.maxHeight = open ? body.scrollHeight+40+'px' : '0';
+  });
+});
+// open the first AI accordion already marked open
+document.querySelectorAll('.acc.open').forEach(function(acc){
+  var b=acc.querySelector('.acc-body'); b.style.maxHeight=b.scrollHeight+40+'px';
+});
+
+// ---- quiz data ----
+var QUIZ=[
+ {dom:"Networking",q:"Two separate Cloud Organizations after a merger, each with its own Shared VPC. Subnets don't overlap. Apps must communicate over private internal IPs with minimal re-engineering.",
+  o:["Migrate all projects into one Organization and relaunch in a single Shared VPC","Set up VPC Network Peering between the two Shared VPCs","Configure SSH port forwarding between the VPCs","Deploy Cloud NAT in each VPC and route through NAT IPs"],a:1,
+  e:"다른 조직 + 서브넷 안 겹침 + 최소 변경 → VPC Peering. NAT는 아웃바운드용이라 내부 연결 불가."},
+ {dom:"Networking",q:"Healthcare SaaS needs hybrid connectivity for a production app requiring high bandwidth and high availability, following Google practices.",
+  o:["Two Cloud VPN tunnels in separate racks","Direct Peering at two Google locations","Two Dedicated Interconnect in one metro + two more in a second metro","One Dedicated Interconnect with backup VPN"],a:2,
+  e:"고대역폭+프로덕션 HA → Dedicated Interconnect 2 metro 이중화. Direct Peering은 공개 API용이라 VPC 내부 부적합."},
+ {dom:"Networking",q:"Instances must have no public IP. No VPN/Interconnect exists. You must SSH into one instance without violating the rule.",
+  o:["Cloud NAT and SSH to the NAT IP","Identity-Aware Proxy (IAP) TCP forwarding","Temporarily assign a public IP, SSH, then remove","Private Google Access and SSH through it"],a:1,
+  e:"인바운드 SSH 접속 → IAP. NAT/Private Google Access는 아웃바운드 방향이라 접속 불가."},
+ {dom:"IAM",q:"Give a new app programmatic access to a legacy project's Firestore. Access must be as restricted as possible.",
+  o:["SA in legacy project with Organization Admin, then Firebase Admin in both","SA in legacy project, add as principal in new project's IAM, grant Firebase Admin in both","SA in new project with Owner on the legacy project","Migrate the new app into the legacy project with Editor"],a:1,
+  e:"least privilege → 가장 좁은 predefined(Firebase Admin). Owner·Org Admin 들어간 보기는 즉시 탈락."},
+ {dom:"IAM",q:"Secure Cloud Storage data. Groups already exist. Use best practices and the simplest design.",
+  o:["Custom roles on Groups + CSEK","Predefined roles to individual users + default encryption","Predefined roles to the Groups + Google default encryption at rest","Basic roles to the Groups + a default KMS key"],a:2,
+  e:"best practice+simplest → Predefined 역할 + 기본 암호화, 그리고 개인 아닌 Group에 부여. Custom/CSEK/KMS는 요구 없으면 과함."},
+ {dom:"IAM / Org Policy",q:"No one may create Compute Engine resources outside europe-west1 / europe-west4, across all existing and future projects.",
+  o:["Custom IAM role permitting only the two regions","Organization Policy constraint restricting resource locations, applied at Org level","VPC Service Controls perimeter around the regions","Cloud Function that deletes out-of-region resources"],a:1,
+  e:"전사 강제 금지 = Organization Policy constraint (Org 레벨, 상속으로 미래 프로젝트 포함). IAM은 '누가'지 '무엇이 허용'이 아님."},
+ {dom:"Data pipeline",q:"Real-time analytics: process on the fly, handle late-arriving data, no data loss during backlog, query 10TB+ history.",
+  o:["GKE, Pub/Sub, Cloud SQL","Dataflow, Cloud Storage, Pub/Sub, BigQuery","Cloud SQL, Cloud Storage, Pub/Sub, Dataflow","Dataproc, Pub/Sub, Cloud SQL, Dataflow"],a:1,
+  e:"on the fly=Dataflow, no loss in backlog=Pub/Sub, 10TB query=BigQuery. Cloud SQL은 분석 부적합."},
+ {dom:"Data pipeline",q:"Migrate large on-prem Spark/Hadoop jobs with minimal code change, reducing cost where possible.",
+  o:["Rewrite as Beam pipelines on Dataflow","Run existing jobs on Dataproc using preemptible (Spot) secondary workers","Migrate to BigQuery SQL","Self-managed Hadoop on Compute Engine"],a:1,
+  e:"기존 Spark/Hadoop 코드 그대로 = Dataproc + Spot로 비용절감. Beam 재작성은 'minimal change' 위반."},
+ {dom:"AI/ML",q:"A deployed Vertex AI model's accuracy gradually degraded in production over months. Detect automatically and trigger retraining.",
+  o:["Increase the endpoint machine type","Enable Vertex AI Model Monitoring to detect data/prediction drift and alert","Redeploy to a second region","Turn on Cloud CDN in front of the endpoint"],a:1,
+  e:"정확도 점진 저하 = data drift → Model Monitoring. 머신 증설은 latency용이지 정확도 해결책 아님."},
+ {dom:"AI/ML",q:"GenAI assistant must answer from the company's internal docs and minimize hallucinations by grounding answers in that content.",
+  o:["Fine-tune a foundation model on the public internet","Increase the model's temperature","Implement RAG that grounds responses in company docs (e.g., Vertex AI Search)","Switch to a smaller open-source model in Model Garden"],a:2,
+  e:"자체 문서 근거 + 환각↓ = RAG(grounding). 모델 교체·temperature↑·인터넷 파인튜닝은 무관/역효과."},
+ {dom:"Sec4 · Cost",q:"You run a predictable 24/7 production workload on Compute Engine and want to reduce its cost with a commitment.",
+  o:["Use Spot VMs for the production fleet","Purchase Committed Use Discounts (CUD) for the steady workload","Move to a larger machine type","Disable autoscaling"],a:1,
+  e:"예측 가능한 상시 워크로드 = CUD. Spot은 중단 감내 배치용이라 프로덕션 상시엔 부적합."},
+ {dom:"Sec4 · DR",q:"A non-critical internal app needs the cheapest possible disaster recovery; multi-hour RTO is acceptable.",
+  o:["Active-active hot standby across two regions","Warm standby with reduced capacity always running","Backup & restore from Cloud Storage","Synchronous multi-region replication"],a:2,
+  e:"비용 최소 + RTO 여유 → Backup & Restore. RTO/RPO가 0에 가까울수록(hot) 비싸진다."},
+ {dom:"Sec5 · IaC",q:"You must provision identical infrastructure repeatably across dev/staging/prod, with version control and peer review of changes.",
+  o:["Click through the Cloud Console for each environment","Write imperative shell scripts per environment","Define infrastructure as code with Terraform (Infrastructure Manager)","Manually export and import configs"],a:2,
+  e:"재현 가능·선언적·버전관리 → Terraform/IaC. 수동 콘솔·명령형 스크립트는 재현성 떨어져 오답."},
+ {dom:"Sec6 · Observability",q:"Requests through your microservices are slow and you need to pinpoint which service in the call chain adds the latency.",
+  o:["Cloud Profiler","Cloud Trace (distributed tracing)","Cloud Logging text search","Increase the VM machine type"],a:1,
+  e:"호출 체인 어느 서비스가 지연? = Cloud Trace(분산 추적). Profiler는 코드 CPU/메모리용."},
+ {dom:"v6.1",q:"An architect wants AI help to investigate a production incident's root cause and get cost-optimization recommendations directly in the Google Cloud console.",
+  o:["Gemini Code Assist","Gemini Cloud Assist","NotebookLM Enterprise","Model Armor"],a:1,
+  e:"운영·RCA·비용최적화 콘솔 비서 = Gemini Cloud Assist. Code Assist는 IDE 코드 작성용."}
+];
+var LETTERS=["A","B","C","D"];
+var answered=0, correct=0, locked=[];
+var box=document.getElementById('quizbox');
+QUIZ.forEach(function(item,qi){
+  locked[qi]=false;
+  var card=document.createElement('div'); card.className='quiz-q';
+  var top=document.createElement('div'); top.className='qtop';
+  top.innerHTML='<span class="qn">Q'+(qi+1)+'</span><span class="dom">'+item.dom+'</span>';
+  card.appendChild(top);
+  var qt=document.createElement('div'); qt.className='qtext'; qt.textContent=item.q; card.appendChild(qt);
+  item.o.forEach(function(opt,oi){
+    var b=document.createElement('button'); b.className='opt';
+    b.innerHTML='<span class="ol">'+LETTERS[oi]+'</span>'+opt;
+    b.addEventListener('click',function(){
+      if(locked[qi])return; locked[qi]=true;
+      var opts=card.querySelectorAll('.opt');
+      opts.forEach(function(o,k){
+        o.classList.add('dim');
+        if(k===item.a){o.classList.add('correct');o.classList.remove('dim');}
+      });
+      if(oi===item.a){correct++;}
+      else{b.classList.add('wrong');b.classList.remove('dim');}
+      answered++;
+      document.getElementById('answered').textContent=answered;
+      document.getElementById('correct').textContent=correct;
+      card.querySelector('.qexp').classList.add('show');
+    });
+    card.appendChild(b);
+  });
+  var exp=document.createElement('div'); exp.className='qexp';
+  exp.innerHTML='<span class="qh">정답 '+LETTERS[item.a]+'</span>'+item.e;
+  card.appendChild(exp);
+  box.appendChild(card);
+});
+</script>
+</body>
+</html>
