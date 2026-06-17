@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 23,
+        name: 'Murmuration',
+        description: '우두머리도 설계도도 없이 세 줄의 규칙(분리·정렬·응집)만으로 하늘을 뒤덮는 군무가 태어나는 창발 실험실',
+        link: '/murmuration',
+        active: true,
+        startDate: '2026-06-17',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🐦'
+    },
+    {
         id: 22,
         name: '물리 엔진 놀이터',
         description: 'Matter.js 위에서 직접 굴리고 쌓고 무너뜨리는 인터랙티브 샌드박스 — 뉴턴의 요람·도미노·중력 우물 등',
