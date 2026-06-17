@@ -36,6 +36,8 @@ public class WebController {
         "/context-window",
         "/latency-arena",
         "/uncanny-valley",
+        "/murmuration",
+        "/rubber-band",
         "/library",
         "/error"
     })
