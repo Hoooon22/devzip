@@ -23,10 +23,10 @@ public class DataEncryptionUtil {
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 16;
 
-    @Value("${app.encryption.secret-key:MySecretKey123456789012345678901234567890}")
+    @Value("${app.encryption.secret-key}")
     private String secretKey;
 
-    @Value("${app.encryption.salt:TraceBoard2024Salt}")
+    @Value("${app.encryption.salt}")
     private String salt;
 
     /**

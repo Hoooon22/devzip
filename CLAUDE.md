@@ -141,6 +141,11 @@ SPRING_PROFILES_ACTIVE=aws
 SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/devzip
 SPRING_DATASOURCE_USERNAME=your_username
 SPRING_DATASOURCE_PASSWORD=your_password
+# 보안 비밀키 (미설정 시 애플리케이션 기동 실패 - fail-fast)
+# JWT 서명은 HS512 사용 -> 최소 64바이트(512비트) 이상의 강한 값 필요
+JWT_SECRET=your_64byte_or_longer_random_secret
+ENCRYPTION_SECRET=your_encryption_secret
+ENCRYPTION_SALT=your_encryption_salt
 ```
 
 ## Development Guidelines

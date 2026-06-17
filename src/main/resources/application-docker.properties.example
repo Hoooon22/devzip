@@ -38,5 +38,10 @@ app.admin.password=${APP_ADMIN_PASSWORD:change-me}
 app.admin.auto-create=${APP_ADMIN_AUTO_CREATE:true}
 
 # JWT Configuration
-app.jwtSecret=${JWT_SECRET:replace-with-strong-secret}
+# 비밀키/암호화 키는 기본값을 두지 않는다. 환경변수 미설정 시 기동 실패(fail-fast).
+app.jwtSecret=${JWT_SECRET}
 app.jwtExpirationInMs=${JWT_EXPIRATION_MS:86400000}
+
+# Data Encryption Configuration (환경변수 필수)
+app.encryption.secret-key=${ENCRYPTION_SECRET}
+app.encryption.salt=${ENCRYPTION_SALT}
