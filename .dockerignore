@@ -1,0 +1,8 @@
+# Dockerfile은 build/libs/*.jar 만 COPY한다.
+# 소스/모듈/메타데이터는 빌드 컨텍스트로 전송할 필요가 없어 제외한다(컨텍스트 전송 시간 단축).
+.git
+.github
+src
+gradle
+**/node_modules
+*.md

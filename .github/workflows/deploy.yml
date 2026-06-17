@@ -38,7 +38,7 @@ jobs:
         cache-dependency-path: src/main/frontend/package-lock.json
 
     - name: Cache Gradle packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches
@@ -46,6 +46,16 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+
+    # 프론트엔드 node_modules 캐시: installFrontendReact가 매 빌드 npm install을
+    # 전체 실행하므로, lock 파일 기준으로 node_modules를 캐시해 설치 시간을 단축한다.
+    - name: Cache frontend node_modules
+      uses: actions/cache@v4
+      with:
+        path: src/main/frontend/node_modules
+        key: ${{ runner.os }}-frontend-modules-${{ hashFiles('src/main/frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-frontend-modules-
 
     - name: Build Application
       env:
@@ -141,7 +151,7 @@ jobs:
           APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose up -d --force-recreate app
 
           echo "⏳ Waiting briefly for application to start..."
-          sleep 10
+          sleep 5
 
           # 헬스체크
           for i in {1..12}; do
@@ -186,9 +196,10 @@ jobs:
     steps:
     - name: Wait for Application Startup
       run: |
-        echo "⏳ Waiting briefly for application to fully start..."
-        echo "📊 Docker start-period is 60s, waiting adequately..."
-        sleep 45
+        # 배포 job의 SSH 단계에서 이미 헬스체크를 통과하므로 긴 고정 대기는 불필요하다.
+        # 아래 "Health Check - Server Local" 단계가 10회×6s 폴링으로 안전망 역할을 한다.
+        echo "⏳ Brief grace period before health verification..."
+        sleep 5
 
     - name: Health Check - Server Local (authoritative)
       uses: appleboy/ssh-action@v1.0.3
