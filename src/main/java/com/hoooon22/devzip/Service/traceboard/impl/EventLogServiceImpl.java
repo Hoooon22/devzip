@@ -134,35 +134,9 @@ public class EventLogServiceImpl implements EventLogService {
         // 전체 이벤트 수
         result.put("totalEvents", logs.size());
 
-        // 고유 방문자 수 계산 (IP 해시 기반 또는 userId 기반)
-        long uniqueVisitors = logs.stream()
-                .filter(log -> log.getUserId() != null && !log.getUserId().isEmpty())
-                .map(EventLog::getUserId)
-                .distinct()
-                .count();
-
-        // userId가 없는 경우 IP 해시로 대체
-        if (uniqueVisitors == 0) {
-            uniqueVisitors = logs.stream()
-                    .filter(log -> log.getIpAddressHash() != null)
-                    .map(EventLog::getIpAddressHash)
-                    .distinct()
-                    .count();
-        }
-
-        long prevUniqueVisitors = prevLogs.stream()
-                .filter(log -> log.getUserId() != null && !log.getUserId().isEmpty())
-                .map(EventLog::getUserId)
-                .distinct()
-                .count();
-
-        if (prevUniqueVisitors == 0) {
-            prevUniqueVisitors = prevLogs.stream()
-                    .filter(log -> log.getIpAddressHash() != null)
-                    .map(EventLog::getIpAddressHash)
-                    .distinct()
-                    .count();
-        }
+        // 고유 방문자 수 계산: 로그별로 userId 우선, 없으면 IP 해시로 식별하여 중복 제거
+        long uniqueVisitors = countUniqueVisitors(logs);
+        long prevUniqueVisitors = countUniqueVisitors(prevLogs);
 
         result.put("totalUsers", uniqueVisitors);
         result.put("uniqueVisitors", uniqueVisitors);
@@ -242,9 +216,13 @@ public class EventLogServiceImpl implements EventLogService {
                 .collect(Collectors.groupingBy(EventLog::getDeviceType, Collectors.counting()));
         result.put("deviceDistribution", deviceDistribution);
 
-        // 모바일 사용자 비율
-        long mobileCount = deviceDistribution.getOrDefault("mobile", 0L) + deviceDistribution.getOrDefault("Mobile", 0L);
-        double mobilePercentage = logs.size() > 0 ? (double) mobileCount / logs.size() * 100 : 0;
+        // 모바일 사용자 비율 (기기 정보가 있는 이벤트 기준, 대소문자 무시)
+        long mobileCount = deviceDistribution.entrySet().stream()
+                .filter(e -> e.getKey() != null && "mobile".equalsIgnoreCase(e.getKey()))
+                .mapToLong(Map.Entry::getValue)
+                .sum();
+        long deviceKnownCount = deviceDistribution.values().stream().mapToLong(Long::longValue).sum();
+        double mobilePercentage = deviceKnownCount > 0 ? (double) mobileCount / deviceKnownCount * 100 : 0;
         result.put("mobilePercentage", Math.round(mobilePercentage * 10.0) / 10.0);
 
         // 브라우저별 분포
@@ -266,6 +244,26 @@ public class EventLogServiceImpl implements EventLogService {
         result.put("recentLogs", recentLogs);
 
         return result;
+    }
+
+    /**
+     * 고유 방문자 수 계산
+     * 로그마다 userId가 있으면 userId로, 없으면 IP 해시로 식별하여 중복 제거한다.
+     * (userId와 IP 해시 문자열이 우연히 겹치는 것을 막기 위해 접두사를 붙인다)
+     */
+    private long countUniqueVisitors(List<EventLog> logs) {
+        return logs.stream()
+                .map(log -> {
+                    String userId = log.getUserId();
+                    if (userId != null && !userId.isEmpty()) {
+                        return "u:" + userId;
+                    }
+                    String ipHash = log.getIpAddressHash();
+                    return ipHash != null ? "ip:" + ipHash : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .count();
     }
 
     /**
@@ -357,11 +355,17 @@ public class EventLogServiceImpl implements EventLogService {
     @Transactional(readOnly = true)
     public Map<String, Long> getPageViewCounts(LocalDateTime startDate, LocalDateTime endDate) {
         // 페이지뷰 통계 조회 시 제한: 50,000개
+        // SDK는 'pageView'(카멜케이스)를 전송하므로 대소문자/언더스코어 표기를 모두 허용한다.
         Pageable pageable = PageRequest.of(0, 50000, Sort.by(Sort.Direction.DESC, "occurredAt"));
-        Page<EventLog> logPage = eventLogRepository.findByEventTypeAndOccurredAtBetween("pageview", startDate, endDate, pageable);
+        Page<EventLog> logPage = eventLogRepository.findByOccurredAtBetween(startDate, endDate, pageable);
         List<EventLog> logs = logPage.getContent();
-        
+
         return logs.stream()
+                .filter(log -> {
+                    String type = log.getEventType();
+                    return type != null && (type.equalsIgnoreCase("pageview") || type.equalsIgnoreCase("page_view"));
+                })
+                .filter(log -> log.getPath() != null && !log.getPath().isEmpty())
                 .collect(Collectors.groupingBy(EventLog::getPath, Collectors.counting()));
     }
 

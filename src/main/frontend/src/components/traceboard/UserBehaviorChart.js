@@ -88,20 +88,20 @@ const filterLogsByTimeRange = (logs, range) => {
   if (!logs || !Array.isArray(logs)) return [];
   
   const now = new Date();
-  let cutoffDate;
-  
+  const cutoffDate = new Date(now);
+
   switch (range) {
     case 'day':
-      cutoffDate = new Date(now.setDate(now.getDate() - 1));
+      cutoffDate.setDate(now.getDate() - 1);
       break;
     case 'week':
-      cutoffDate = new Date(now.setDate(now.getDate() - 7));
+      cutoffDate.setDate(now.getDate() - 7);
       break;
     case 'month':
-      cutoffDate = new Date(now.setMonth(now.getMonth() - 1));
+      cutoffDate.setMonth(now.getMonth() - 1);
       break;
     default:
-      cutoffDate = new Date(0); // 모든 이벤트
+      cutoffDate.setTime(0); // 모든 이벤트
   }
   
   // logs 배열의 유효성 확인 후 filter 적용

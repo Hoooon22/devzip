@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import EventLogTable from '../../components/traceboard/EventLogTable';
 import VisitorMetrics from '../../components/traceboard/VisitorMetrics';
 import UserBehaviorChart from '../../components/traceboard/UserBehaviorChart';
+import DistributionPanel from '../../components/traceboard/DistributionPanel';
 import { getDashboardData } from '../../services/traceboard/api';
 
 const PageContainer = styled.div`
@@ -151,6 +152,7 @@ const TraceBoard = () => {
     trends: {},
     eventTypeMetrics: {},
     deviceTypeMetrics: {},
+    distributions: {},
     recentLogs: []
   });
   const [timeRange, setTimeRange] = useState('week'); // day, week, month
@@ -387,11 +389,21 @@ const TraceBoard = () => {
       recentLogs: recentLogs.length
     });
 
+    // 백엔드가 집계하는 분포 데이터 (시간대/이벤트유형/브라우저/OS) 전달
+    const distributions = {
+      eventType: serverData.eventTypeDistribution || {},
+      device: serverData.deviceDistribution || {},
+      browser: serverData.browserDistribution || {},
+      os: serverData.osDistribution || {},
+      hourly: serverData.hourlyDistribution || {}
+    };
+
     return {
       visitorMetrics,
       trends,
       eventTypeMetrics,
       deviceTypeMetrics,
+      distributions,
       recentLogs
     };
   };
@@ -453,6 +465,10 @@ const TraceBoard = () => {
 
           <FullWidthSection>
             <UserBehaviorChart eventLogs={dashboardData.recentLogs} />
+          </FullWidthSection>
+
+          <FullWidthSection>
+            <DistributionPanel distributions={dashboardData.distributions} />
           </FullWidthSection>
 
           <FullWidthSection>

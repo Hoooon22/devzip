@@ -50,7 +50,7 @@ public interface EventLogRepository extends JpaRepository<EventLog, Long>, JpaSp
     @Query(value = 
             "SELECT path, COUNT(DISTINCT user_id) as visitors " +
             "FROM event_logs " +
-            "WHERE event_type = 'pageview' " +  // 이벤트 타입을 일관성 있게 수정
+            "WHERE LOWER(event_type) IN ('pageview', 'page_view') " +  // SDK의 'pageView' 표기까지 포괄
             "AND occurred_at BETWEEN :startDate AND :endDate " +
             "GROUP BY path ORDER BY visitors DESC LIMIT 100", 
             nativeQuery = true)
