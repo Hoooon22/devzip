@@ -107,6 +107,9 @@ jobs:
         GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
         GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
         GITHUB_SHA: ${{ github.sha }}
+        # 비밀키는 리포에 두지 않고 GitHub Secrets로 주입한다(서버 .env 미설정 대비).
+        ENCRYPTION_SECRET: ${{ secrets.ENCRYPTION_SECRET }}
+        ENCRYPTION_SALT: ${{ secrets.ENCRYPTION_SALT }}
       with:
         host: ${{ secrets.SERVER_HOST }}
         port: ${{ secrets.SERVER_SSH_PORT }}
@@ -114,7 +117,7 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         timeout: 60s
         command_timeout: 10m
-        envs: GHCR_TOKEN,GITHUB_REPOSITORY_OWNER,GITHUB_SHA
+        envs: GHCR_TOKEN,GITHUB_REPOSITORY_OWNER,GITHUB_SHA,ENCRYPTION_SECRET,ENCRYPTION_SALT
         script: |
           cd /home/ubuntu/project/devzip
           echo "🚀 Starting deployment (pulling prebuilt image)..."
@@ -148,7 +151,11 @@ jobs:
           APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose pull app
 
           echo "🚀 Recreating containers with new image..."
-          APP_IMAGE="${IMAGE_FULL}" sudo -E docker compose up -d --force-recreate app
+          # ENCRYPTION_SECRET/SALT 를 compose 로 전달(서버 .env 에 없을 때 대비).
+          APP_IMAGE="${IMAGE_FULL}" \
+            ENCRYPTION_SECRET="${ENCRYPTION_SECRET}" \
+            ENCRYPTION_SALT="${ENCRYPTION_SALT}" \
+            sudo -E docker compose up -d --force-recreate app
 
           echo "⏳ Waiting briefly for application to start..."
           sleep 5
