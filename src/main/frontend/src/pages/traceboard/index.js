@@ -8,13 +8,18 @@ import DistributionPanel from '../../components/traceboard/DistributionPanel';
 import { getDashboardData } from '../../services/traceboard/api';
 
 const PageContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  
+
   @media (min-width: 768px) {
     padding: 32px;
   }
+`;
+
+const PageInner = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const Header = styled.header`
@@ -33,8 +38,9 @@ const HeaderContent = styled.div`
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
   margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
   @media (min-width: 768px) {
     font-size: 32px;
@@ -42,28 +48,29 @@ const Title = styled.h1`
 `;
 
 const Description = styled.p`
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 16px;
 `;
 
 const AccessLogButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #5a4bb5;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
   padding: 12px 24px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
   }
 
   &:active {
@@ -95,49 +102,62 @@ const FullWidthSection = styled.section`
 `;
 
 const ErrorMessage = styled.div`
-  background-color: #fee2e2;
+  background-color: rgba(254, 226, 226, 0.95);
   border: 1px solid #ef4444;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 16px;
   margin-bottom: 24px;
   color: #b91c1c;
+  font-weight: 500;
+`;
+
+const LoadingMessage = styled.p`
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  text-align: center;
+  padding: 40px 0;
 `;
 
 const TimeRangeSelector = styled.div`
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 `;
 
 const TimeButton = styled.button`
-  background-color: ${props => props.active ? '#3b82f6' : 'white'};
-  color: ${props => props.active ? 'white' : '#334155'};
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#cbd5e1'};
-  border-radius: 4px;
-  padding: 8px 16px;
+  background-color: ${props => props.active ? '#ffffff' : 'rgba(255, 255, 255, 0.15)'};
+  color: ${props => props.active ? '#5a4bb5' : '#ffffff'};
+  border: 1px solid ${props => props.active ? '#ffffff' : 'rgba(255, 255, 255, 0.35)'};
+  border-radius: 8px;
+  padding: 8px 18px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+
   &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
+    background-color: ${props => props.active ? '#ffffff' : 'rgba(255, 255, 255, 0.28)'};
   }
 `;
 
 const NoDataMessage = styled.div`
   text-align: center;
-  padding: 40px;
-  background-color: #f8fafc;
-  border-radius: 8px;
-  border: 1px dashed #cbd5e1;
+  padding: 48px 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   margin-bottom: 24px;
   color: #64748b;
-  
+
   h3 {
     font-size: 18px;
     margin-bottom: 8px;
     color: #0f172a;
   }
-  
+
   p {
     margin-bottom: 0;
   }
@@ -414,6 +434,7 @@ const TraceBoard = () => {
   
   return (
     <PageContainer>
+      <PageInner>
       <Header>
         <HeaderContent>
           <Title>TraceBoard</Title>
@@ -423,7 +444,7 @@ const TraceBoard = () => {
           🔒 접근 로그
         </AccessLogButton>
       </Header>
-      
+
       <TimeRangeSelector>
         <TimeButton 
           active={timeRange === 'day'} 
@@ -448,7 +469,7 @@ const TraceBoard = () => {
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
       {loading ? (
-        <p>데이터를 불러오는 중입니다...</p>
+        <LoadingMessage>데이터를 불러오는 중입니다...</LoadingMessage>
       ) : hasNoData ? (
         <NoDataMessage>
           <h3>데이터가 없습니다</h3>
@@ -476,6 +497,7 @@ const TraceBoard = () => {
           </FullWidthSection>
         </>
       )}
+      </PageInner>
     </PageContainer>
   );
 };

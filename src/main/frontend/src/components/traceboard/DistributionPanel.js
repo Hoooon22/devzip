@@ -18,9 +18,11 @@ const PanelGrid = styled.div`
 `;
 
 const Card = styled.div`
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
   padding: 20px;
 
   @media (min-width: 768px) {
@@ -147,7 +149,7 @@ const DistributionPanel = ({ distributions }) => {
               <XAxis dataKey="hour" interval={1} />
               <YAxis allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="count" name="이벤트 수" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" name="이벤트 수" fill="#667eea" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         ) : (

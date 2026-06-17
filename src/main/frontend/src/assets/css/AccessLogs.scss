@@ -1,3 +1,11 @@
+// 접근 로그 페이지 - 관리자 영역(Dashboard) 보라 테마와 통일
+// 배경: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+// 카드: 가독성을 위해 밝은 frosted 카드 + 보라 액센트
+
+$brand-start: #667eea;
+$brand-end: #764ba2;
+$brand-deep: #5a4bb5;
+
 .access-logs-password-modal {
     position: fixed;
     top: 0;
@@ -13,15 +21,15 @@
     .modal-content {
         background: white;
         padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
         max-width: 400px;
         width: 90%;
         text-align: center;
 
         h2 {
             margin-bottom: 0.5rem;
-            color: #333;
+            color: #2d2a4a;
         }
 
         p {
@@ -44,7 +52,7 @@
 
                 &:focus {
                     outline: none;
-                    border-color: #4CAF50;
+                    border-color: $brand-start;
                 }
             }
 
@@ -66,15 +74,17 @@
                     border: none;
                     border-radius: 8px;
                     font-size: 1rem;
+                    font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s;
 
                     &.btn-primary {
-                        background: #4CAF50;
+                        background: linear-gradient(135deg, $brand-start 0%, $brand-end 100%);
                         color: white;
 
                         &:hover {
-                            background: #45a049;
+                            opacity: 0.92;
+                            transform: translateY(-1px);
                         }
                     }
 
@@ -93,32 +103,44 @@
 }
 
 .access-logs-container {
-    max-width: 1400px;
-    margin: 0 auto;
+    min-height: 100vh;
+    background: linear-gradient(135deg, $brand-start 0%, $brand-end 100%);
     padding: 2rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
     .access-logs-header {
-        margin-bottom: 2rem;
+        max-width: 1400px;
+        margin: 0 auto 2rem;
 
         h1 {
             font-size: 2rem;
-            color: #333;
+            color: #ffffff;
             margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
 
         .warning-text {
-            color: #ff9800;
+            color: #ffe082;
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
         }
+    }
+
+    // 본문 폭 정렬
+    .tabs,
+    .filters,
+    .logs-table-container,
+    .statistics-container {
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .tabs {
         display: flex;
         gap: 0.5rem;
         margin-bottom: 1.5rem;
-        border-bottom: 2px solid #e0e0e0;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.25);
 
         .tab {
             padding: 0.75rem 1.5rem;
@@ -127,25 +149,28 @@
             border-bottom: 3px solid transparent;
             cursor: pointer;
             font-size: 1rem;
-            color: #666;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75);
             transition: all 0.3s;
 
             &:hover {
-                color: #333;
+                color: #ffffff;
             }
 
             &.active {
-                color: #4CAF50;
-                border-bottom-color: #4CAF50;
-                font-weight: 600;
+                color: #ffffff;
+                border-bottom-color: #ffffff;
             }
         }
     }
 
     .filters {
-        background: #f9f9f9;
+        background: rgba(255, 255, 255, 0.97);
         padding: 1.5rem;
-        border-radius: 8px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
         margin-bottom: 1.5rem;
 
         .filter-row {
@@ -161,20 +186,21 @@
 
                 label {
                     font-size: 0.9rem;
-                    color: #666;
-                    font-weight: 500;
+                    color: #555;
+                    font-weight: 600;
                 }
 
                 input,
                 select {
                     padding: 0.6rem;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
+                    border: 1px solid #d6d3e6;
+                    border-radius: 8px;
                     font-size: 0.95rem;
 
                     &:focus {
                         outline: none;
-                        border-color: #4CAF50;
+                        border-color: $brand-start;
+                        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
                     }
                 }
             }
@@ -187,26 +213,28 @@
             button {
                 padding: 0.75rem 1.5rem;
                 border: none;
-                border-radius: 6px;
+                border-radius: 8px;
                 font-size: 0.95rem;
+                font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s;
 
                 &.btn-primary {
-                    background: #4CAF50;
+                    background: linear-gradient(135deg, $brand-start 0%, $brand-end 100%);
                     color: white;
 
                     &:hover {
-                        background: #45a049;
+                        opacity: 0.92;
+                        transform: translateY(-1px);
                     }
                 }
 
                 &.btn-secondary {
-                    background: #e0e0e0;
-                    color: #333;
+                    background: #ede9fe;
+                    color: $brand-deep;
 
                     &:hover {
-                        background: #d0d0d0;
+                        background: #ddd6fe;
                     }
                 }
             }
@@ -214,9 +242,11 @@
     }
 
     .logs-table-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
         overflow-x: auto;
 
         .loading {
@@ -231,34 +261,43 @@
             border-collapse: collapse;
 
             thead {
-                background: #f5f5f5;
+                background: #f5f3ff;
 
                 th {
                     padding: 1rem;
                     text-align: left;
-                    font-weight: 600;
-                    color: #555;
-                    border-bottom: 2px solid #e0e0e0;
+                    font-weight: 700;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                    color: $brand-deep;
+                    border-bottom: 2px solid #ede9fe;
+                    white-space: nowrap;
                 }
             }
 
             tbody {
                 tr {
-                    border-bottom: 1px solid #f0f0f0;
+                    border-bottom: 1px solid #eef0f4;
                     transition: background 0.2s;
 
+                    &:nth-child(even) {
+                        background: #faf9ff;
+                    }
+
                     &:hover {
-                        background: #fafafa;
+                        background: #f1ecff;
                     }
 
                     td {
                         padding: 0.9rem 1rem;
                         font-size: 0.9rem;
+                        color: #334155;
 
                         &.ip-address {
-                            font-family: monospace;
-                            color: #2196F3;
-                            font-weight: 500;
+                            font-family: "SFMono-Regular", Consolas, monospace;
+                            color: $brand-deep;
+                            font-weight: 600;
 
                             .country-flag {
                                 font-size: 1.2em;
@@ -269,54 +308,25 @@
                         }
 
                         &.uri {
-                            font-family: monospace;
-                            color: #666;
+                            font-family: "SFMono-Regular", Consolas, monospace;
+                            color: #475569;
                             max-width: 300px;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
                         }
 
-                        &.method-get {
-                            color: #4CAF50;
-                            font-weight: 600;
-                        }
-
-                        &.method-post {
-                            color: #2196F3;
-                            font-weight: 600;
-                        }
-
+                        // HTTP 메서드 (의미 기반 색상 유지)
+                        &.method-get { color: #16a34a; font-weight: 700; }
+                        &.method-post { color: #2563eb; font-weight: 700; }
                         &.method-put,
-                        &.method-patch {
-                            color: #FF9800;
-                            font-weight: 600;
-                        }
+                        &.method-patch { color: #d97706; font-weight: 700; }
+                        &.method-delete { color: #dc2626; font-weight: 700; }
 
-                        &.method-delete {
-                            color: #f44336;
-                            font-weight: 600;
-                        }
-
-                        &.status-success {
-                            color: #4CAF50;
-                            font-weight: 600;
-                        }
-
-                        &.status-redirect {
-                            color: #2196F3;
-                            font-weight: 600;
-                        }
-
-                        &.status-client-error {
-                            color: #FF9800;
-                            font-weight: 600;
-                        }
-
-                        &.status-server-error {
-                            color: #f44336;
-                            font-weight: 600;
-                        }
+                        &.status-success { color: #16a34a; font-weight: 700; }
+                        &.status-redirect { color: #2563eb; font-weight: 700; }
+                        &.status-client-error { color: #d97706; font-weight: 700; }
+                        &.status-server-error { color: #dc2626; font-weight: 700; }
 
                         &.no-data {
                             text-align: center;
@@ -334,10 +344,14 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 1.5rem;
-            background: #f9f9f9;
-            padding: 1rem;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
             align-items: flex-end;
+            flex-wrap: wrap;
 
             .filter-item {
                 display: flex;
@@ -346,19 +360,20 @@
 
                 label {
                     font-size: 0.9rem;
-                    color: #666;
-                    font-weight: 500;
+                    color: #555;
+                    font-weight: 600;
                 }
 
                 input {
                     padding: 0.6rem;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
+                    border: 1px solid #d6d3e6;
+                    border-radius: 8px;
                     font-size: 0.95rem;
 
                     &:focus {
                         outline: none;
-                        border-color: #4CAF50;
+                        border-color: $brand-start;
+                        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
                     }
                 }
             }
@@ -366,14 +381,16 @@
             button {
                 padding: 0.75rem 1.5rem;
                 border: none;
-                border-radius: 6px;
-                background: #4CAF50;
+                border-radius: 8px;
+                background: linear-gradient(135deg, $brand-start 0%, $brand-end 100%);
                 color: white;
+                font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s;
 
                 &:hover {
-                    background: #45a049;
+                    opacity: 0.92;
+                    transform: translateY(-1px);
                 }
             }
         }
@@ -382,7 +399,7 @@
         .no-data {
             text-align: center;
             padding: 3rem;
-            color: #999;
+            color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
         }
 
@@ -392,15 +409,17 @@
             gap: 1.5rem;
 
             .stat-card {
-                background: white;
+                background: rgba(255, 255, 255, 0.97);
                 padding: 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                backdrop-filter: blur(8px);
                 transition: transform 0.3s, box-shadow 0.3s;
 
                 &:hover {
                     transform: translateY(-4px);
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+                    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
                 }
 
                 &.wide {
@@ -408,19 +427,21 @@
                 }
 
                 h3 {
-                    font-size: 1rem;
-                    color: #666;
+                    font-size: 0.85rem;
+                    color: #64748b;
                     margin-bottom: 0.75rem;
-                    font-weight: 500;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
                 }
 
                 .stat-value {
                     font-size: 2.5rem;
-                    font-weight: 700;
-                    color: #4CAF50;
+                    font-weight: 800;
+                    color: $brand-deep;
 
                     &.error {
-                        color: #f44336;
+                        color: #dc2626;
                     }
                 }
 
@@ -430,33 +451,36 @@
                     margin-top: 0.5rem;
 
                     thead {
-                        background: #f5f5f5;
+                        background: #f5f3ff;
 
                         th {
                             padding: 0.75rem;
                             text-align: left;
-                            font-weight: 600;
-                            font-size: 0.9rem;
-                            color: #555;
-                            border-bottom: 2px solid #e0e0e0;
+                            font-weight: 700;
+                            font-size: 0.78rem;
+                            text-transform: uppercase;
+                            letter-spacing: 0.3px;
+                            color: $brand-deep;
+                            border-bottom: 2px solid #ede9fe;
                         }
                     }
 
                     tbody {
                         tr {
-                            border-bottom: 1px solid #f0f0f0;
+                            border-bottom: 1px solid #eef0f4;
 
                             &:hover {
-                                background: #fafafa;
+                                background: #f1ecff;
                             }
 
                             td {
                                 padding: 0.75rem;
                                 font-size: 0.85rem;
+                                color: #334155;
 
                                 &:first-child {
-                                    font-family: monospace;
-                                    color: #666;
+                                    font-family: "SFMono-Regular", Consolas, monospace;
+                                    color: #475569;
 
                                     .country-flag {
                                         font-size: 1.1em;
@@ -468,8 +492,8 @@
 
                                 &:last-child {
                                     text-align: right;
-                                    font-weight: 600;
-                                    color: #4CAF50;
+                                    font-weight: 700;
+                                    color: $brand-deep;
                                 }
                             }
                         }

@@ -1,5 +1,8 @@
 FROM eclipse-temurin:17-jre
 
+# 컨테이너 시간대를 한국 시간(KST)으로 설정 (애플리케이션 로그/시간 기록 일관성)
+ENV TZ=Asia/Seoul
+
 # curl 설치 (헬스체크용)
 # apt 미러가 동기화 중이면 update가 일시적으로 실패할 수 있어 재시도 루프로 감싼다.
 RUN set -eux; \

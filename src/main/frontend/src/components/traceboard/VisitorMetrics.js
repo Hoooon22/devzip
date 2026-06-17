@@ -18,17 +18,17 @@ const MetricsContainer = styled.div`
 `;
 
 const MetricCard = styled.div`
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 22px;
   transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-    border-color: #cbd5e1;
+    transform: translateY(-4px);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
   }
 
   @media (max-width: 768px) {
@@ -187,7 +187,7 @@ const VisitorMetrics = ({ metrics, trends }) => {
             marginTop: '10px',
             fontWeight: 500
           }}>
-            <span style={{ color: '#3b82f6', fontWeight: 600 }}>
+            <span style={{ color: '#667eea', fontWeight: 700 }}>
               {mostVisitedPage.count.toLocaleString()}
             </span>
             {' '}페이지뷰

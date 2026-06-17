@@ -4,10 +4,12 @@ import PropTypes from 'prop-types';
 import Badge from '../Badge';
 
 const TableContainer = styled.div`
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  margin-top: 8px;
   overflow-x: auto;
 `;
 
@@ -18,36 +20,40 @@ const Table = styled.table`
 
 const TableHeader = styled.th`
   text-align: left;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #64748b;
-  font-weight: 600;
-  font-size: 14px;
+  padding: 14px 16px;
+  border-bottom: 2px solid #ede9fe;
+  background-color: #f5f3ff;
+  color: #5a4bb5;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 `;
 
 const TableRow = styled.tr`
   &:nth-child(even) {
-    background-color: #f8fafc;
+    background-color: #faf9ff;
   }
-  
+
   &:hover {
-    background-color: #f1f5f9;
+    background-color: #f1ecff;
   }
 `;
 
 const TableCell = styled.td`
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #eef0f4;
   color: #334155;
   font-size: 14px;
 `;
 
 const Title = styled.h2`
   font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   margin-bottom: 16px;
-  
+
   @media (min-width: 768px) {
     font-size: 20px;
   }
@@ -62,16 +68,18 @@ const FilterContainer = styled.div`
 
 const FilterSelect = styled.select`
   padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   color: #334155;
   font-size: 14px;
-  background-color: white;
-  
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
   }
 `;
 
@@ -86,21 +94,22 @@ const Pagination = styled.div`
 `;
 
 const PaginationButton = styled.button`
-  background-color: ${props => props.active ? '#3b82f6' : 'white'};
+  background-color: ${props => props.active ? '#667eea' : 'white'};
   color: ${props => props.active ? 'white' : '#334155'};
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#cbd5e1'};
-  border-radius: 4px;
-  padding: 6px 12px;
+  border: 1px solid ${props => props.active ? '#667eea' : '#cbd5e1'};
+  border-radius: 6px;
+  padding: 6px 14px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
   &:hover:not(:disabled) {
-    background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
+    background-color: ${props => props.active ? '#5a4bb5' : '#f1f5f9'};
   }
 `;
 

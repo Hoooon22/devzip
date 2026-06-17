@@ -4,12 +4,14 @@ import PropTypes from 'prop-types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const ChartContainer = styled.div`
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
   padding: 20px;
   margin-bottom: 24px;
-  
+
   @media (min-width: 768px) {
     padding: 24px;
   }
@@ -43,16 +45,18 @@ const TimeRangeSelector = styled.div`
 `;
 
 const TimeButton = styled.button`
-  background-color: ${props => props.active ? '#3b82f6' : 'white'};
+  background-color: ${props => props.active ? '#667eea' : 'white'};
   color: ${props => props.active ? 'white' : '#334155'};
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#cbd5e1'};
-  border-radius: 4px;
-  padding: 6px 12px;
+  border: 1px solid ${props => props.active ? '#667eea' : '#cbd5e1'};
+  border-radius: 6px;
+  padding: 6px 14px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  
+  transition: all 0.2s ease;
+
   &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
+    background-color: ${props => props.active ? '#5a4bb5' : '#f1f5f9'};
   }
 `;
 
@@ -63,16 +67,18 @@ const ChartTypeSelector = styled.div`
 `;
 
 const ChartTypeButton = styled.button`
-  background-color: ${props => props.active ? '#3b82f6' : 'white'};
+  background-color: ${props => props.active ? '#667eea' : 'white'};
   color: ${props => props.active ? 'white' : '#334155'};
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#cbd5e1'};
-  border-radius: 4px;
-  padding: 6px 12px;
+  border: 1px solid ${props => props.active ? '#667eea' : '#cbd5e1'};
+  border-radius: 6px;
+  padding: 6px 14px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  
+  transition: all 0.2s ease;
+
   &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
+    background-color: ${props => props.active ? '#5a4bb5' : '#f1f5f9'};
   }
 `;
 
