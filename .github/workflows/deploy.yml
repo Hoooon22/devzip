@@ -120,6 +120,15 @@ jobs:
           git pull origin master
           echo "✅ Git repository updated"
 
+          # 점검 페이지(maintenance.html)를 nginx 서빙 경로로 동기화
+          # nginx는 백엔드 502/503/504 시 /var/www/html/maintenance.html을 서빙한다.
+          echo "📄 Syncing maintenance page to nginx..."
+          if sudo cp maintenance.html /var/www/html/maintenance.html; then
+            echo "✅ maintenance.html updated"
+          else
+            echo "⚠️ maintenance.html sync failed (non-blocking)"
+          fi
+
           # 컨테이너 레지스트리 로그인 (GHCR)
           echo "🔑 Logging into GHCR..."
           echo "${GHCR_TOKEN}" | sudo docker login ghcr.io -u "${GITHUB_REPOSITORY_OWNER}" --password-stdin
