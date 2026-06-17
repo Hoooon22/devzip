@@ -35,6 +35,7 @@ import ContextWindow from './pages/experiments/ContextWindow';
 import LatencyArena from './pages/experiments/LatencyArena';
 import UncannyValley from './pages/experiments/UncannyValley';
 import Murmuration from './pages/experiments/Murmuration';
+import RubberBand from './pages/experiments/RubberBand';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -187,6 +188,7 @@ function App() {
         <Route path="/latency-arena" element={<LatencyArena />} />
         <Route path="/uncanny-valley" element={<UncannyValley />} />
         <Route path="/murmuration" element={<Murmuration />} />
+        <Route path="/rubber-band" element={<RubberBand />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

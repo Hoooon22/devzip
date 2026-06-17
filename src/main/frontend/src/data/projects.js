@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 24,
+        name: 'Rubber Band',
+        description: '게임은 당신이 이기길 바라지 않는다 — 보이지 않는 손이 난이도를 당겨 늘 아슬아슬한 승률에 묶어두는 동적 난이도(DDA) 실험',
+        link: '/rubber-band',
+        active: true,
+        startDate: '2026-06-17',
+        endDate: '',
+        pinned: true,
+        category: '실험/게임',
+        isProduction: false, // 실험용
+        thumbnail: '🎮'
+    },
+    {
         id: 23,
         name: 'Murmuration',
         description: '우두머리도 설계도도 없이 세 줄의 규칙(분리·정렬·응집)만으로 하늘을 뒤덮는 군무가 태어나는 창발 실험실',
