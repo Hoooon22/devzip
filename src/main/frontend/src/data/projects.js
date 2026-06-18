@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 25,
+        name: 'Edge Run',
+        description: '거리가 곧 지연이다 — 연산을 사용자 가까이의 엣지 노드로 분산해 왕복 지연이 줄어드는 과정을 보는 엣지 컴퓨팅 실험',
+        link: '/edge-run',
+        active: true,
+        startDate: '2026-06-18',
+        endDate: '',
+        pinned: true,
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '🛰️'
+    },
+    {
         id: 24,
         name: 'Rubber Band',
         description: '게임은 당신이 이기길 바라지 않는다 — 보이지 않는 손이 난이도를 당겨 늘 아슬아슬한 승률에 묶어두는 동적 난이도(DDA) 실험',

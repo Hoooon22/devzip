@@ -1,0 +1,299 @@
+/* EDGE RUN — 엣지 컴퓨팅 / 지연 시뮬레이터
+   디자인: 네오브루탈 / 60-30-10
+   60% 배경 쿨 페이퍼그레이  ·  30% 잉크 네이비 구조 + 다크 캔버스  ·  10% 시그널 청록 강조 */
+
+.er-container {
+    --paper: #e9edf2;
+    --panel: #f7f9fb;
+    --ink: #0d1b2a;
+    --stone: #aab6c2;
+    --accent: #00b4a6;
+    --warm: #ff8c42;
+
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(13, 27, 42, 0.06) 1.2px, transparent 1.2px);
+    background-size: 18px 18px;
+    padding: 2rem 1.25rem 3rem;
+    color: var(--ink);
+    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.er-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.er-back {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.er-back:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.er-header {
+    margin: 1.75rem 0 1.5rem;
+}
+
+.er-title {
+    font-size: clamp(2.2rem, 7.5vw, 3.8rem);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 5px 5px 0 var(--accent);
+}
+
+.er-sub {
+    margin: 0.85rem 0 0;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.9rem;
+    color: #4a5a68;
+}
+
+.er-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(250px, 0.7fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* 캔버스 */
+.er-canvas-wrap {
+    background: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 0.55rem 0.55rem 0.4rem;
+}
+
+.er-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 720 / 480;
+    background: #0d1b2a;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.er-hint {
+    margin: 0.5rem 0 0;
+    font-size: 0.72rem;
+    color: var(--stone);
+    text-align: center;
+}
+
+/* 패널 */
+.er-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.er-stat-main {
+    background: var(--ink);
+    color: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    padding: 0.85rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.er-stat-num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--accent);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.er-stat-num small {
+    font-size: 0.9rem;
+    margin-left: 0.15rem;
+    color: var(--stone);
+}
+
+.er-stat-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--stone);
+}
+
+.er-stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.er-stat-row .er-stat {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 0.6rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.er-stat-num.er-mini {
+    font-size: 1.4rem;
+    color: var(--ink);
+}
+
+.er-stat-row .er-stat-label {
+    color: #6a7886;
+}
+
+.er-edges {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--accent);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 0.55rem 0.8rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.er-edges b {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 1.05rem;
+}
+
+/* 슬라이더 */
+.er-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.er-control label {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.er-control label b {
+    color: var(--accent);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.er-control input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--stone);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+.er-control input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+.er-control input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--ink);
+    cursor: pointer;
+}
+
+/* 토글 */
+.er-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.er-toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* 버튼 */
+.er-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.er-btn {
+    font-weight: 800;
+    font-size: 0.78rem;
+    padding: 0.55rem 0.2rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.er-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* 풋 */
+.er-foot {
+    margin-top: 1.75rem;
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 1rem 1.2rem;
+}
+
+.er-foot p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.er-foot b {
+    background: var(--accent);
+    color: var(--ink);
+    padding: 0 0.35rem;
+    font-weight: 800;
+}
+
+/* 반응형 */
+@media (max-width: 780px) {
+    .er-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .er-canvas-wrap {
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+}
