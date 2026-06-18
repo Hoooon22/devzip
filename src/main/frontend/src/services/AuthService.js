@@ -179,9 +179,16 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // 기존에 로그인된(토큰이 있던) 상태에서의 401만 "세션 만료"로 간주한다.
+      // (로그인 실패 등 토큰이 없는 상태의 401은 만료가 아니므로 리다이렉트하지 않는다.)
+      const sessionExpired = authService.isAuthenticated();
       authService.logout();
       // 인증 실패 이벤트를 발생시켜 다른 컴포넌트에서 처리할 수 있도록 함
       window.dispatchEvent(new Event('auth-failure'));
+      // 로그인 세션이 만료되면 홈으로 이동 (이미 홈이면 이동하지 않음)
+      if (sessionExpired && window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }
