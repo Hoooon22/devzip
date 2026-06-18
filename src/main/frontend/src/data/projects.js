@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 26,
+        name: 'Lossy',
+        description: '압축은 버리는 기술이다 — 해상도·색 심도를 줄여 데이터량과 화질의 거래를 직접 체험하는 손실 압축 실험',
+        link: '/lossy',
+        active: true,
+        startDate: '2026-06-18',
+        endDate: '',
+        pinned: true,
+        category: '실험/그래픽스',
+        isProduction: false, // 실험용
+        thumbnail: '🗜️'
+    },
+    {
         id: 25,
         name: 'Edge Run',
         description: '거리가 곧 지연이다 — 연산을 사용자 가까이의 엣지 노드로 분산해 왕복 지연이 줄어드는 과정을 보는 엣지 컴퓨팅 실험',

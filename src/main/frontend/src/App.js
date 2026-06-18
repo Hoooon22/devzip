@@ -37,6 +37,7 @@ import UncannyValley from './pages/experiments/UncannyValley';
 import Murmuration from './pages/experiments/Murmuration';
 import RubberBand from './pages/experiments/RubberBand';
 import EdgeRun from './pages/experiments/EdgeRun';
+import Lossy from './pages/experiments/Lossy';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -191,6 +192,7 @@ function App() {
         <Route path="/murmuration" element={<Murmuration />} />
         <Route path="/rubber-band" element={<RubberBand />} />
         <Route path="/edge-run" element={<EdgeRun />} />
+        <Route path="/lossy" element={<Lossy />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
