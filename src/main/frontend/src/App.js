@@ -38,6 +38,7 @@ import Murmuration from './pages/experiments/Murmuration';
 import RubberBand from './pages/experiments/RubberBand';
 import EdgeRun from './pages/experiments/EdgeRun';
 import Lossy from './pages/experiments/Lossy';
+import FanOut from './pages/experiments/FanOut';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -193,6 +194,7 @@ function App() {
         <Route path="/rubber-band" element={<RubberBand />} />
         <Route path="/edge-run" element={<EdgeRun />} />
         <Route path="/lossy" element={<Lossy />} />
+        <Route path="/fan-out" element={<FanOut />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

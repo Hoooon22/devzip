@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 27,
+        name: 'Fan-Out',
+        description: '일꾼을 늘려도 깰 수 없는 벽 — 하나의 목표를 여러 에이전트에 분산할 때 의존성 사슬(임계 경로)이 만드는 속도 한계를 체험하는 병렬 스케줄링 실험',
+        link: '/fan-out',
+        active: true,
+        startDate: '2026-06-19',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🕸️'
+    },
+    {
         id: 26,
         name: 'Lossy',
         description: '압축은 버리는 기술이다 — 해상도·색 심도를 줄여 데이터량과 화질의 거래를 직접 체험하는 손실 압축 실험',
