@@ -67,6 +67,14 @@ export const styles = {
     marginBottom: '15px',
   },
   
+  // 프로젝트 조회수 스타일
+  projectViews: {
+    display: 'inline-block',
+    fontSize: '0.8rem',
+    color: '#888',
+    fontWeight: 600,
+  },
+
   // 활성 프로젝트 아이콘
   permissionIcon: {
     position: 'absolute',
