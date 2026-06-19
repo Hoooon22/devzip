@@ -3,14 +3,12 @@ import projects from '../../data/projects';
 import Pagination from '../../components/pagination';
 import ProjectBox from '../../components/project-box';
 import Footer from '../../components/footer';
-import viewService from '../../services/viewService';
 import { styles } from './styles';
 
 const Main = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [projectsPerPage, setProjectsPerPage] = useState(6);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [viewCounts, setViewCounts] = useState({});
 
   // 반응형으로 프로젝트 표시 개수 조정
   useEffect(() => {
@@ -30,15 +28,10 @@ const Main = () => {
 
     window.addEventListener('resize', handleResize);
     handleResize(); // 초기 로드 시 실행
-
+    
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
-
-  // 프로젝트 조회수 로드
-  useEffect(() => {
-    viewService.getViewCounts().then(setViewCounts);
   }, []);
 
   // 현재 페이지에 표시할 프로젝트 계산
@@ -71,7 +64,7 @@ const Main = () => {
       <ul style={styles.projectList} aria-label="프로젝트 목록">
         {currentProjects.map(project => (
           <li key={project.id} style={styles.projectItem}>
-            <ProjectBox project={project} viewCount={viewCounts[project.link] ?? 0} />
+            <ProjectBox project={project} />
           </li>
         ))}
       </ul>

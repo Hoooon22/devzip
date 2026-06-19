@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
+import viewService from '../services/viewService';
 import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
@@ -167,10 +168,20 @@ const Main = () => {
     const [dailyJoke, setDailyJoke] = useState(null);
     const [isJokeLoading, setIsJokeLoading] = useState(true);
     const [showJokeTranslation, setShowJokeTranslation] = useState(false);
+    const [viewCounts, setViewCounts] = useState({});
 
     useEffect(() => {
         document.body.classList.add('main-scroll-locked');
         return () => document.body.classList.remove('main-scroll-locked');
+    }, []);
+
+    // 프로젝트 조회수 로드 (로그인 불필요)
+    useEffect(() => {
+        let cancelled = false;
+        viewService.getViewCounts().then((counts) => {
+            if (!cancelled) setViewCounts(counts);
+        });
+        return () => { cancelled = true; };
     }, []);
 
     useEffect(() => { writePref(STORAGE_KEYS.dark, dark); }, [dark]);
@@ -253,6 +264,16 @@ const Main = () => {
             e.preventDefault();
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
             return;
+        }
+        // 조회수 증가 (로그인 불필요, 세션당 프로젝트별 1회만 집계)
+        const seenKey = `viewed:${project.link}`;
+        if (!sessionStorage.getItem(seenKey)) {
+            sessionStorage.setItem(seenKey, '1');
+            setViewCounts((prev) => ({
+                ...prev,
+                [project.link]: (prev[project.link] || 0) + 1,
+            }));
+            viewService.incrementView(project.link);
         }
         // 새로 발견한 프로젝트마다 1회 탐험 보상.
         award(15, `${project.name} 탐험!`, {
@@ -520,6 +541,9 @@ const Main = () => {
                                 <p>{p.description}</p>
                                 <div className="foot">
                                     <div className="stack">{renderTechTags(p, 3)}</div>
+                                    <span className="views" aria-label={`조회수 ${(viewCounts[p.link] || 0).toLocaleString()}회`}>
+                                        <span aria-hidden="true">👁</span> {(viewCounts[p.link] || 0).toLocaleString()}
+                                    </span>
                                     <span className="open">열기 →</span>
                                 </div>
                             </a>
