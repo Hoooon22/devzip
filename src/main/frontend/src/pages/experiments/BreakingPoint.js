@@ -314,26 +314,97 @@ function createThree3D(container, size) {
   };
   applyCam();
 
+  // 카메라 회전(Ctrl+드래그) + 물체 잡기(클릭&드래그)
   let dragging = false;
   let lx = 0;
   let ly = 0;
   const el = renderer.domElement;
+
+  // 물체 잡기용 레이캐스터 + 커서 앵커 바디
+  const raycaster = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const movePlane = new THREE.Plane();
+  const planeNormal = new THREE.Vector3();
+  const hitPoint = new THREE.Vector3();
+  const planeTarget = new THREE.Vector3();
+  const jointBody = new CANNON.Body({ mass: 0 });
+  jointBody.addShape(new CANNON.Sphere(0.1));
+  jointBody.collisionFilterGroup = 0;
+  jointBody.collisionFilterMask = 0;
+  world.addBody(jointBody);
+  let pickConstraint = null;
+
+  const setNDC = (e) => {
+    const rect = el.getBoundingClientRect();
+    ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    ndc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  };
+  const releasePick = () => {
+    if (pickConstraint) {
+      world.removeConstraint(pickConstraint);
+      pickConstraint = null;
+    }
+    el.style.cursor = '';
+  };
+
   const onDown = (e) => {
-    dragging = true;
     cam.auto = false;
-    lx = e.clientX;
-    ly = e.clientY;
+    // Ctrl/⌘ + 드래그 → 카메라 회전
+    if (e.ctrlKey || e.metaKey) {
+      dragging = true;
+      lx = e.clientX;
+      ly = e.clientY;
+      return;
+    }
+    // 그 외 클릭 → 레이캐스트로 물체 잡기
+    setNDC(e);
+    raycaster.setFromCamera(ndc, camera);
+    const hits = raycaster.intersectObjects(dynamic.map((d) => d.mesh), false);
+    if (!hits.length) return;
+    const entry = dynamic.find((d) => d.mesh === hits[0].object);
+    if (!entry) return;
+    hitPoint.copy(hits[0].point);
+    // 시선에 수직이고 잡은 지점을 지나는 평면 위에서 커서를 따라간다
+    camera.getWorldDirection(planeNormal);
+    movePlane.setFromNormalAndCoplanarPoint(planeNormal, hitPoint);
+    jointBody.position.set(hitPoint.x, hitPoint.y, hitPoint.z);
+    entry.body.wakeUp();
+    const pivot = entry.body.pointToLocalFrame(
+      new CANNON.Vec3(hitPoint.x, hitPoint.y, hitPoint.z),
+      new CANNON.Vec3()
+    );
+    pickConstraint = new CANNON.PointToPointConstraint(
+      entry.body,
+      pivot,
+      jointBody,
+      new CANNON.Vec3(0, 0, 0),
+      1e6
+    );
+    world.addConstraint(pickConstraint);
+    el.style.cursor = 'grabbing';
   };
+
   const onMove = (e) => {
-    if (!dragging) return;
-    cam.theta -= (e.clientX - lx) * 0.008;
-    cam.phi = Math.max(0.15, Math.min(Math.PI * 0.49, cam.phi - (e.clientY - ly) * 0.006));
-    lx = e.clientX;
-    ly = e.clientY;
-    applyCam();
+    if (dragging) {
+      cam.theta -= (e.clientX - lx) * 0.008;
+      cam.phi = Math.max(0.15, Math.min(Math.PI * 0.49, cam.phi - (e.clientY - ly) * 0.006));
+      lx = e.clientX;
+      ly = e.clientY;
+      applyCam();
+      return;
+    }
+    if (pickConstraint) {
+      setNDC(e);
+      raycaster.setFromCamera(ndc, camera);
+      if (raycaster.ray.intersectPlane(movePlane, planeTarget)) {
+        jointBody.position.set(planeTarget.x, planeTarget.y, planeTarget.z);
+      }
+    }
   };
+
   const onUp = () => {
     dragging = false;
+    releasePick();
   };
   const onWheel = (e) => {
     e.preventDefault();
@@ -460,6 +531,7 @@ function createThree3D(container, size) {
     },
     destroy() {
       cancelAnimationFrame(raf);
+      releasePick();
       el.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
@@ -775,7 +847,7 @@ const BreakingPoint = () => {
           <div className="bp-hud bp-hud-bl">
             <span className="bp-rec" data-paused={paused} />
             <span className="bp-hint">
-              {mode === '3d' ? '드래그 회전 · 휠 줌' : '물체를 마우스로 잡아 던지기'}
+              {mode === '3d' ? '클릭&드래그: 물체 잡기 · Ctrl+드래그: 회전 · 휠: 줌' : '물체를 마우스로 잡아 던지기'}
             </span>
           </div>
 
