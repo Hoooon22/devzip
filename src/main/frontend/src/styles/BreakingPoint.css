@@ -509,6 +509,206 @@
     color: var(--dim) !important;
 }
 
+/* ── PARAMS 토글 (레일) ──────────────────────────────── */
+.bp-params-toggle {
+    align-self: center;
+    padding: 0.4rem 0.7rem;
+    background: transparent;
+    border: 1px solid var(--hair);
+    color: var(--dim);
+    font-family: var(--data);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bp-params-toggle:hover {
+    color: var(--trace);
+    border-color: var(--dim);
+}
+.bp-params-toggle.on {
+    background: var(--sig);
+    border-color: var(--sig);
+    color: var(--ink);
+}
+.bp-params-toggle:focus-visible {
+    outline: 2px solid var(--sig);
+    outline-offset: 1px;
+}
+
+/* ── 실험 드로어 ─────────────────────────────────────── */
+.bp-drawer {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(300px, 86vw);
+    background: rgba(12, 16, 21, 0.95);
+    border-left: 1px solid var(--hair);
+    backdrop-filter: blur(6px);
+    padding: 0.6rem 0.8rem 1.4rem;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.22s ease;
+    pointer-events: none;
+}
+.bp-drawer.open {
+    transform: translateX(0);
+    pointer-events: auto;
+    box-shadow: -16px 0 40px rgba(0, 0, 0, 0.5);
+}
+.bp-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--trace);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.4rem;
+    border-bottom: 1px solid var(--hair);
+}
+.bp-drawer-close {
+    background: transparent;
+    border: 1px solid var(--hair);
+    color: var(--dim);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    line-height: 1;
+    font-family: var(--data);
+}
+.bp-drawer-close:hover {
+    color: var(--trace);
+    border-color: var(--dim);
+}
+
+.bp-sec {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--hair-soft);
+}
+.bp-sec-title {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    margin-bottom: 0.5rem;
+}
+.bp-sec-note {
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    color: var(--dim);
+}
+.bp-field {
+    display: block;
+    margin-bottom: 0.55rem;
+}
+.bp-field:last-child {
+    margin-bottom: 0;
+}
+.bp-field-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--trace);
+    margin-bottom: 4px;
+}
+.bp-field-row b {
+    color: var(--sig);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+}
+.bp-field input[type='range'] {
+    width: 100%;
+    accent-color: var(--trace);
+    cursor: pointer;
+}
+.bp-chiprow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+.bp-chip {
+    flex: 1 1 auto;
+    padding: 0.35rem 0.4rem;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    color: var(--dim);
+    font-family: var(--data);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.bp-chip:hover {
+    color: var(--trace);
+    border-color: var(--dim);
+}
+.bp-chip.on {
+    background: var(--trace);
+    border-color: var(--trace);
+    color: var(--ink);
+}
+.bp-chip:focus-visible {
+    outline: 2px solid var(--sig);
+    outline-offset: 1px;
+}
+.bp-chip-act {
+    flex: 1 1 45%;
+    background: transparent;
+    color: var(--trace);
+    padding: 0.45rem 0.4rem;
+}
+.bp-chip-act:hover {
+    background: var(--panel-2);
+    border-color: var(--trace);
+}
+
+/* 중력 방향 패드 (십자 배치) */
+.bp-dirpad {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 36px);
+    gap: 4px;
+    justify-content: center;
+}
+.bp-dir {
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    color: var(--dim);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.bp-dir:hover {
+    color: var(--trace);
+    border-color: var(--dim);
+}
+.bp-dir.on {
+    background: var(--sig);
+    border-color: var(--sig);
+    color: var(--ink);
+    transition: background 0.3s, color 0.3s;
+}
+.bp-dir:focus-visible {
+    outline: 2px solid var(--sig);
+    outline-offset: 1px;
+}
+.bp-dir-up { grid-column: 2; grid-row: 1; }
+.bp-dir-left { grid-column: 1; grid-row: 2; }
+.bp-dir-right { grid-column: 3; grid-row: 2; }
+.bp-dir-down { grid-column: 2; grid-row: 3; }
+.bp-dir-center {
+    grid-column: 2;
+    grid-row: 2;
+    border: 1px dashed var(--hair);
+    align-self: stretch;
+}
+
 /* ── 반응형 ──────────────────────────────────────────── */
 @media (max-width: 720px) {
     .bp-rail {
