@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
@@ -7,6 +7,7 @@ import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
 import { useGame } from '../contexts/GameContext';
+import KCommandPalette from '../components/KCommandPalette';
 import "../assets/css/Main.scss";
 
 const websiteSchema = {
@@ -33,8 +34,8 @@ const organizationSchema = {
 };
 
 const STORAGE_KEYS = {
-    dark: 'devzip.mono.dark',
-    layout: 'devzip.mono.layout',
+    dark: 'devzip.kernel.dark',
+    layout: 'devzip.kernel.layout',
 };
 
 const readPref = (key, fallback) => {
@@ -80,13 +81,55 @@ const NEW_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 const isNewProject = (p) =>
     Boolean(p.startDate) && (Date.now() - new Date(p.startDate).getTime()) < NEW_WINDOW_MS;
 
-const MonoAuth = () => {
-    const { award } = useGame();
+const openExternal = (url) => window.open(url, '_blank', 'noopener,noreferrer');
+
+// 메뉴바 트레이의 라이브 시계 + 세션 업타임.
+const useClock = () => {
+    const [now, setNow] = useState(() => new Date());
+    const startRef = useRef(Date.now());
+    useEffect(() => {
+        const id = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(id);
+    }, []);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    const upS = Math.floor((Date.now() - startRef.current) / 1000);
+    const up = `${String(Math.floor(upS / 60)).padStart(2, '0')}:${String(upS % 60).padStart(2, '0')}`;
+    return { time: `${hh}:${mm}:${ss}`, up };
+};
+
+const Main = () => {
+    const { award, xp, level, progress } = useGame();
+    const { time, up } = useClock();
+
+    const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
+    const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
+    const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
+    const [dailyTip, setDailyTip] = useState('');
+    const [isTipLoading, setIsTipLoading] = useState(true);
+    const [dailyJoke, setDailyJoke] = useState(null);
+    const [isJokeLoading, setIsJokeLoading] = useState(true);
+    const [showJokeTranslation, setShowJokeTranslation] = useState(false);
+    const [viewCounts, setViewCounts] = useState({});
+    const [paletteOpen, setPaletteOpen] = useState(false);
+
+    // 인증 상태 (메뉴바 트레이 + 명령 팔레트가 공유)
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('login');
 
+    // 프로젝트 조회수 로드 (로그인 불필요)
+    useEffect(() => {
+        let cancelled = false;
+        viewService.getViewCounts().then((counts) => {
+            if (!cancelled) setViewCounts(counts);
+        });
+        return () => { cancelled = true; };
+    }, []);
+
+    // 기존 로그인 세션 복원
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -98,94 +141,26 @@ const MonoAuth = () => {
             } catch {
                 /* guest */
             } finally {
-                if (!cancelled) setLoading(false);
+                if (!cancelled) setAuthLoading(false);
             }
         })();
         return () => { cancelled = true; };
     }, []);
 
-    const open = (mode) => { setModalMode(mode); setModalOpen(true); };
-    const handleLogout = () => { authService.logout(); setUser(null); };
-
-    if (loading) {
-        return (
-            <div className="mono-auth">
-                <span className="who">
-                    <span className="host">guest</span>
-                    <span className="at">@</span>
-                    <span className="host">devzip</span>
-                    <span className="cursor">_</span>
-                </span>
-            </div>
-        );
-    }
-
-    if (user) {
-        const isAdmin = user.role === 'ROLE_ADMIN';
-        return (
-            <div className="mono-auth">
-                <span className="who">
-                    <span className="host">{user.username}</span>
-                    <span className="at">@</span>
-                    <span className="host">devzip</span>
-                    {isAdmin && <span className="role">admin</span>}
-                </span>
-                <button className="auth-btn" onClick={handleLogout}>$ logout</button>
-            </div>
-        );
-    }
-
-    return (
-        <div className="mono-auth">
-            <span className="who">
-                <span className="host">guest</span>
-                <span className="at">@</span>
-                <span className="host">devzip</span>
-                <span className="cursor">_</span>
-            </span>
-            <button className="auth-btn primary" onClick={() => open('login')}>$ login</button>
-            <button className="auth-btn" onClick={() => open('signup')}>$ signup</button>
-            <AuthModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onLoginSuccess={(u) => {
-                    setUser(u);
-                    award(50, '로그인 보너스 획득!', { icon: '🔓' });
-                }}
-                initialMode={modalMode}
-            />
-        </div>
-    );
-};
-
-const Main = () => {
-    const { award } = useGame();
-    const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
-    const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
-    const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
-    const [dailyTip, setDailyTip] = useState('');
-    const [isTipLoading, setIsTipLoading] = useState(true);
-    const [dailyJoke, setDailyJoke] = useState(null);
-    const [isJokeLoading, setIsJokeLoading] = useState(true);
-    const [showJokeTranslation, setShowJokeTranslation] = useState(false);
-    const [viewCounts, setViewCounts] = useState({});
-
-    useEffect(() => {
-        document.body.classList.add('main-scroll-locked');
-        return () => document.body.classList.remove('main-scroll-locked');
-    }, []);
-
-    // 프로젝트 조회수 로드 (로그인 불필요)
-    useEffect(() => {
-        let cancelled = false;
-        viewService.getViewCounts().then((counts) => {
-            if (!cancelled) setViewCounts(counts);
-        });
-        return () => { cancelled = true; };
-    }, []);
-
     useEffect(() => { writePref(STORAGE_KEYS.dark, dark); }, [dark]);
     useEffect(() => { writePref(STORAGE_KEYS.layout, layout); }, [layout]);
+
+    // ⌘K / Ctrl+K 로 명령 팔레트 토글
+    useEffect(() => {
+        const onKey = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                setPaletteOpen((o) => !o);
+            }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -237,8 +212,8 @@ const Main = () => {
     ), []);
 
     const tickerItems = useMemo(() => [
-        `${totalCount} projects`,
-        `${heroStats.production.active} live services`,
+        `${totalCount} projects mounted`,
+        `${heroStats.production.active} services online`,
         `${heroStats.experiments.running} experiments running`,
         'built by one dev',
         'insert coin to continue',
@@ -258,6 +233,13 @@ const Main = () => {
             return new Date(b.startDate) - new Date(a.startDate);
         });
     }, [mode]);
+
+    /* 액션 */
+    const scrollToProc = () => {
+        const el = document.getElementById('k-proc');
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 58, behavior: 'smooth' });
+    };
+    const gotoFilter = (m) => { setMode(m); setTimeout(scrollToProc, 30); };
 
     const handleProjectClick = (e, project) => {
         if (project.requiresAdmin && !authService.isAdmin()) {
@@ -305,13 +287,43 @@ const Main = () => {
         return list.map(tag => <span key={`tech-${tag}`}>{tag}</span>);
     };
 
-    const browseProjects = () => {
-        document.getElementById('mono-projects')
-            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    /* 인증 */
+    const openAuth = (m) => { setModalMode(m); setModalOpen(true); };
+    const handleLogout = () => { authService.logout(); setUser(null); };
+    const handleLoginSuccess = (u) => {
+        setUser(u);
+        award(50, '로그인 보너스 획득!', { once: true, key: 'login', icon: '🔓' });
     };
 
+    /* 명령 팔레트 항목 */
+    const paletteItems = useMemo(() => {
+        const nav = [
+            { id: 'n-home', group: '탐색', icon: '⌂', title: '홈', hint: '/', run: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+            { id: 'n-prod', group: '탐색', icon: '◆', title: '프로젝트 — 운영 중', hint: 'filter', run: () => gotoFilter('production') },
+            { id: 'n-lab', group: '탐색', icon: '⚗', title: '실험실', hint: 'filter', run: () => gotoFilter('experiment') },
+            { id: 'n-lib', group: '탐색', icon: '▤', title: '자료실', hint: '/library', run: () => window.location.assign('/library') },
+            { id: 'n-gh', group: '탐색', icon: '⎇', title: 'GitHub — Hoooon22', hint: 'external', run: () => openExternal('https://github.com/Hoooon22') },
+        ];
+        const sys = [
+            { id: 's-theme', group: '시스템', icon: '◑', title: dark ? '라이트 모드로 전환' : '다크 모드로 전환', hint: 'theme', run: toggleDark },
+            { id: 's-layout', group: '시스템', icon: '▦', title: layout === 'cards' ? '표 보기로 전환' : '카드 보기로 전환', hint: 'view', run: () => changeLayout(layout === 'cards' ? 'table' : 'cards') },
+            user
+                ? { id: 's-out', group: '시스템', icon: '⏻', title: '로그아웃', hint: '$ logout', run: handleLogout }
+                : { id: 's-in', group: '시스템', icon: '⏼', title: '로그인', hint: '$ login', run: () => openAuth('login') },
+        ];
+        const projs = filtered.map((p) => ({
+            id: `p-${p.id}`, group: '프로젝트', icon: p.thumbnail || '📦', title: p.name,
+            hint: p.isProduction ? 'live' : 'lab', keywords: `${p.description} ${cleanCategory(p.category)}`,
+            run: () => handleProjectClick({ preventDefault() {} }, p),
+        }));
+        return [...nav, ...sys, ...projs];
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filtered, dark, layout, user]);
+
+    const filledSegs = Math.round(Math.min(Math.max(progress, 0), 1) * 5);
+
     return (
-        <div className="mono-root" data-theme={dark ? 'dark' : 'light'}>
+        <div className="k-os" data-theme={dark ? 'dark' : 'light'}>
             <Helmet>
                 <title>DevZip - 개발자의 사이드 프로젝트 허브 | Developer&apos;s Side Project Hub</title>
                 <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요." />
@@ -330,285 +342,268 @@ const Main = () => {
                 <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
             </Helmet>
 
-            <div className="mono-wrap">
-                <header className="mono-top">
-                    <div className="mono-brand">
-                        <div className="mark">D</div>
-                        <div>
-                            <div className="name">DevZip</div>
-                            <div className="tag">개발자 사이드 프로젝트 허브</div>
-                        </div>
-                    </div>
-                    <nav className="mono-nav">
-                        <a className="on" href="/">홈</a>
-                        <a href="#mono-projects" onClick={() => setMode('production')}>프로젝트</a>
-                        <a href="#mono-projects" onClick={() => setMode('experiment')}>실험실</a>
-                        <a href="/library">자료실</a>
-                        <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    </nav>
-                    <MonoAuth />
-                </header>
-
-                <div className="mono-ticker" aria-hidden="true">
-                    <div className="track">
-                        {[0, 1].map(half => (
-                            <span className="seq" key={half}>
-                                {tickerItems.map(item => (
-                                    <span className="item" key={item}>
-                                        {item}<span className="star">★</span>
-                                    </span>
-                                ))}
-                            </span>
-                        ))}
-                    </div>
+            {/* ── 메뉴 바 ── */}
+            <header className="k-menubar">
+                <div className="k-brand">
+                    <span className="dia">◆</span>
+                    <span className="nm">DEVZIP</span>
+                    <span className="ver k-mono">{'/ kernel v3.0'}</span>
                 </div>
+                <nav className="k-mb-nav">
+                    <a className="on" href="/" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>home</a>
+                    <button type="button" onClick={() => gotoFilter('production')}>projects</button>
+                    <button type="button" onClick={() => gotoFilter('experiment')}>lab</button>
+                    <a href="/library">library</a>
+                    <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">github</a>
+                </nav>
+                <div className="k-mb-tray">
+                    <button type="button" className="k-kbd" onClick={() => setPaletteOpen(true)} aria-label="명령 팔레트 열기">
+                        <span>⌘</span><kbd>K</kbd>
+                    </button>
+                    <span className="k-xp k-mono">
+                        <span className="lv">Lv.{level}</span>
+                        <span className="bar">{[0, 1, 2, 3, 4].map((n) => <i key={n} className={n < filledSegs ? 'f' : ''} />)}</span>
+                        <span className="coins">◉ <b>{xp}</b></span>
+                    </span>
+                    <span className="k-tray-clock k-mono">{time} <span className="up">· up {up}</span></span>
+                    {authLoading ? (
+                        <span className="k-auth">
+                            <span className="who k-mono"><span className="host">guest</span><span className="at">@</span><span className="host">devzip</span><span className="cur">_</span></span>
+                        </span>
+                    ) : user ? (
+                        <span className="k-auth">
+                            <span className="who k-mono">
+                                <span className="host">{user.username}</span><span className="at">@</span><span className="host">devzip</span>
+                                {user.role === 'ROLE_ADMIN' && <span className="role">admin</span>}
+                            </span>
+                            <button type="button" className="k-auth-btn" onClick={handleLogout}>$ logout</button>
+                        </span>
+                    ) : (
+                        <span className="k-auth">
+                            <span className="who k-mono"><span className="host">guest</span><span className="at">@</span><span className="host">devzip</span><span className="cur">_</span></span>
+                            <button type="button" className="k-auth-btn primary" onClick={() => openAuth('login')}>$ login</button>
+                            <button type="button" className="k-auth-btn" onClick={() => openAuth('signup')}>$ signup</button>
+                        </span>
+                    )}
+                    <button type="button" className="k-theme k-mono" onClick={toggleDark} aria-label="테마 전환">{dark ? '☀ light' : '☾ dark'}</button>
+                </div>
+            </header>
 
-                <section className="mono-hero">
-                    <div>
-                        <span className="mono-eyebrow">★ one-person project arcade</span>
-                        <h1>한 사람이 만드는 <span className="mark">제품</span>의 <span className="mark blue">모든 단계</span>.</h1>
-                        <p>
-                            아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 한곳에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스.
-                        </p>
-                        <div className="mono-cta">
-                            <button className="mono-btn" onClick={browseProjects}>프로젝트 둘러보기 →</button>
-                            <a className="mono-btn ghost" href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">소개 읽기</a>
+            {/* ── 티커 ── */}
+            <div className="k-ticker" aria-hidden="true">
+                <div className="track">
+                    {[0, 1].map((half) => (
+                        <span className="seq" key={half}>
+                            {tickerItems.map((it) => <span className="item" key={it}>{it}<span className="star">★</span></span>)}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            <main className="k-desk">
+                {/* ── 히어로 / 부트 매니페스트 ── */}
+                <section className="k-win" aria-label="소개">
+                    <div className="k-win-bar">
+                        <div className="k-dots"><i></i><i></i><i></i></div>
+                        <span className="path k-mono"><span className="dir">~/devzip/</span>MOTD.md</span>
+                        <span className="meta k-mono">read-only · {time}</span>
+                    </div>
+                    <div className="k-hero-bd">
+                        <div className="k-hero-main">
+                            <span className="k-eyebrow"><span className="sq"></span>one-person project arcade</span>
+                            <h1>한 사람이 만드는 <span className="box">제품</span>의 <span className="mk">모든 단계</span>.</h1>
+                            <p>아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 하나의 커널 위에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스가 마운트되어 있습니다.</p>
+                            <div className="k-cta">
+                                <button type="button" className="k-btn" onClick={scrollToProc}>프로세스 모니터 열기 →</button>
+                                <button type="button" className="k-btn ghost" onClick={() => setPaletteOpen(true)}>⌘K 명령 팔레트</button>
+                            </div>
+                        </div>
+                        <aside className="k-bootlog" aria-hidden="true">
+                            <div className="ln"><span className="ok">[ ok ]</span> kernel devzip v3.0 booted</div>
+                            <div className="ln"><span className="ok">[ ok ]</span> mounted {totalCount} projects</div>
+                            <div className="ln"><span className="ok">[ ok ]</span> {heroStats.production.active} services online</div>
+                            <div className="ln"><span className="dim">[ .. ]</span> {heroStats.experiments.running} experiments running</div>
+                            <div className="ln"><span className="ok">[ ok ]</span> command palette ready ⌘K</div>
+                            <div className="coin">insert coin to continue <span className="cur">▌</span></div>
+                        </aside>
+                    </div>
+                    <div className="k-resize"></div>
+                </section>
+
+                {/* ── 게이지 (히어로 메타) ── */}
+                <section className="k-gauges">
+                    <div className="k-win">
+                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>services</span></div>
+                        <div className="k-gauge-bd">
+                            <div className="top">
+                                <div><div className="label">운영 중인 서비스</div><div className="sub">{heroStats.production.names.join(' · ') || '준비 중'}</div></div>
+                                <div className="val"><span className="acc">{heroStats.production.active}</span><span className="tot">/{totalCount}</span></div>
+                            </div>
+                            <div className="k-meter">{Array.from({ length: totalCount }).map((_, n) => <i key={n} className={n < heroStats.production.active ? 'f' : ''} />)}</div>
+                        </div>
+                        <div className="k-resize"></div>
+                    </div>
+                    <div className="k-win">
+                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>lab</span></div>
+                        <div className="k-gauge-bd">
+                            <div className="top">
+                                <div><div className="label">실험실 프로젝트</div><div className="sub">{heroStats.experiments.running} running · {heroStats.experiments.archived} archived</div></div>
+                                <div className="val">{expCount}</div>
+                            </div>
+                            <div className="k-meter">{Array.from({ length: totalCount }).map((_, n) => <i key={n} className={n < expCount ? 'f' : ''} />)}</div>
+                        </div>
+                        <div className="k-resize"></div>
+                    </div>
+                    {latestProject && (
+                        <a className="k-win k-gauge" href={latestProject.link} onClick={(e) => handleProjectClick(e, latestProject)}>
+                            <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>latest</span></div>
+                            <div className="k-gauge-bd">
+                                <div className="top"><div><div className="label">최근 추가</div><div className="sub">{latestProject.startDate} · {cleanCategory(latestProject.category)}</div></div></div>
+                                <div className="latest"><span className="gl">{latestProject.thumbnail || '📦'}</span>{latestProject.name}<span className="go">→</span></div>
+                            </div>
+                        </a>
+                    )}
+                </section>
+
+                {/* ── 프로세스 모니터 ── */}
+                <section id="k-proc" className="k-win">
+                    <div className="k-win-bar">
+                        <div className="k-dots"><i></i><i></i><i></i></div>
+                        <span className="path k-mono"><span className="dir">/proc/</span>projects</span>
+                        <span className="meta k-mono">{filtered.length} / {totalCount} 표시 중</span>
+                    </div>
+                    <div className="k-toolbar">
+                        <div className="k-tabs">
+                            <button type="button" className={`k-tab ${mode === 'all' ? 'on' : ''}`} onClick={() => setMode('all')}>전체 <span className="num">{totalCount}</span></button>
+                            <button type="button" className={`k-tab ${mode === 'production' ? 'on' : ''}`} onClick={() => setMode('production')}>운영 중 <span className="num">{prodCount}</span></button>
+                            <button type="button" className={`k-tab ${mode === 'experiment' ? 'on' : ''}`} onClick={() => setMode('experiment')}>실험실 <span className="num">{expCount}</span></button>
+                        </div>
+                        <div className="k-seg k-mono">
+                            <span>render</span>
+                            <div className="opts">
+                                <button type="button" className={layout === 'table' ? 'on' : ''} onClick={() => changeLayout('table')}><span>☰</span> 표</button>
+                                <button type="button" className={layout === 'cards' ? 'on' : ''} onClick={() => changeLayout('cards')}><span>▦</span> 카드</button>
+                            </div>
                         </div>
                     </div>
-                    <div className="mono-hero-meta">
-                        <div className="mono-meta-card">
-                            <div>
-                                <div className="label">운영 중인 서비스</div>
-                                <div className="sub">
-                                    {heroStats.production.names.join(' · ') || '준비 중'}
-                                </div>
+
+                    {filtered.length === 0 ? (
+                        <div className="k-empty">🚧 표시할 프로세스가 없습니다.</div>
+                    ) : layout === 'table' ? (
+                        <div className="k-table">
+                            <div className="k-row head">
+                                <div className="pid">PID</div><div className="state">STATE</div><div className="name">PROCESS</div>
+                                <div className="desc">DESC</div><div className="cat-cell">CAT</div><div className="stack-cell">STACK</div><div className="arrow"></div>
                             </div>
-                            <div className="value">
-                                <span className="acc">{heroStats.production.active}</span>
-                                <span className="total">/{totalCount}</span>
-                            </div>
-                        </div>
-                        <div className="mono-meta-card invert">
-                            <div>
-                                <div className="label">실험실 프로젝트</div>
-                                <div className="sub">
-                                    {heroStats.experiments.running} running · {heroStats.experiments.archived} archived
-                                </div>
-                            </div>
-                            <div className="value">{expCount}</div>
-                        </div>
-                        {latestProject && (
-                            <a
-                                className="mono-meta-card latest"
-                                href={latestProject.link}
-                                onClick={(e) => handleProjectClick(e, latestProject)}
-                            >
-                                <div>
-                                    <div className="label">최근 추가</div>
-                                    <div className="sub">
-                                        {latestProject.startDate} · {cleanCategory(latestProject.category)}
+                            {filtered.map((p, n) => (
+                                <a key={p.id} href={p.link} className="k-row data" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                                    <div className="pid">{String(n + 1).padStart(2, '0')}</div>
+                                    <div className="state">
+                                        <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
                                     </div>
-                                </div>
-                                <div className="latest-name">
-                                    <span className="glyph" aria-hidden="true">{latestProject.thumbnail || '📦'}</span>
-                                    {latestProject.name}
-                                    <span className="go" aria-hidden="true">→</span>
-                                </div>
-                            </a>
-                        )}
+                                    <div className="name">{p.thumbnail} {p.name}{p.pinned && <span className="k-pin" title="고정">★</span>}{isNewProject(p) && <span className="k-new">NEW</span>}</div>
+                                    <div className="desc">{p.description}</div>
+                                    <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
+                                    <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
+                                    <div className="arrow">→</div>
+                                </a>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="k-tiles">
+                            {filtered.map((p) => (
+                                <a key={p.id} href={p.link} className="k-tile" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                                    {p.pinned && <span className="k-pin-sticker" aria-hidden="true">★</span>}
+                                    <div className="k-tile-bar">
+                                        <div className="k-dots"><i></i><i></i><i></i></div>
+                                        <span className="tname">{p.name}</span>
+                                        <span className={`tdot ${p.isProduction ? 'live' : ''}`}></span>
+                                    </div>
+                                    <div className="k-tile-bd">
+                                        <div className="gl-row">
+                                            <div className="glw">{p.thumbnail || '📦'}</div>
+                                            <span className="k-chip">{cleanCategory(p.category)}</span>
+                                        </div>
+                                        <h3>{p.name}{isNewProject(p) && <span className="k-new">NEW</span>}</h3>
+                                        <p>{p.description}</p>
+                                        <div className="foot">
+                                            <span className="k-stack">{renderTechTags(p, 2)}</span>
+                                            <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
+                                            <span className="open">열기 →</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                    <div className="k-resize"></div>
+                </section>
+
+                {/* ── 도크 위젯 ── */}
+                <section className="k-dock">
+                    <div className="k-win k-widget">
+                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono">man cs-tip</span></div>
+                        <div className="k-widget-bd">
+                            <span className="lbl k-mono">데일리 CS 팁</span>
+                            <h4>오늘의 한 줄</h4>
+                            <p className="body">{isTipLoading ? <span className="k-skel"></span> : (dailyTip || '오늘의 팁이 없습니다.')}</p>
+                        </div>
+                    </div>
+                    <div className="k-win k-widget">
+                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono">fortune</span></div>
+                        <div className="k-widget-bd">
+                            <span className="lbl k-mono">잠깐 쉬어가기</span>
+                            <h4>오늘의 농담</h4>
+                            <p className="body">
+                                {isJokeLoading ? <span className="k-skel"></span> : dailyJoke ? (
+                                    <>
+                                        {dailyJoke.originalSetup}<br />
+                                        <span style={{ opacity: 0.78 }}>— {dailyJoke.originalPunchline}</span>
+                                        {showJokeTranslation && <span className="joke-trans">{dailyJoke.translatedSetup}<br /><span style={{ opacity: 0.78 }}>— {dailyJoke.translatedPunchline}</span></span>}
+                                    </>
+                                ) : '농담을 불러오지 못했습니다.'}
+                            </p>
+                            {!isJokeLoading && dailyJoke && (
+                                <button type="button" className="k-trans-btn" aria-expanded={showJokeTranslation} onClick={() => setShowJokeTranslation((v) => !v)}>
+                                    {showJokeTranslation ? '번역 숨기기' : '번역 보기'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <div className="k-win k-widget">
+                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>status</span></div>
+                        <div className="k-widget-bd">
+                            <span className="lbl k-mono">시스템 상태</span>
+                            <h4>all systems go</h4>
+                            <div className="k-sys-rows">
+                                <div className="sr"><span className="k">uptime</span><span className="v">{up}</span></div>
+                                <div className="sr"><span className="k">level</span><span className="v ok">Lv.{level} · {xp} XP</span></div>
+                                <div className="sr"><span className="k">session</span><span className="v">{user ? user.username : 'guest'}@devzip</span></div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <div id="mono-projects" className="mono-section-title">
-                    <h2>모든 프로젝트</h2>
-                    <span className="count">{filtered.length}개 표시 중 · 총 {totalCount}개</span>
-                </div>
-
-                <div className="mono-toolbar">
-                    <div className="mono-tabs">
-                        <button
-                            className={`tab ${mode === 'all' ? 'on' : ''}`}
-                            onClick={() => setMode('all')}
-                        >
-                            전체 <span className="num">{totalCount}</span>
-                        </button>
-                        <button
-                            className={`tab ${mode === 'production' ? 'on' : ''}`}
-                            onClick={() => setMode('production')}
-                        >
-                            운영 중 <span className="num">{prodCount}</span>
-                        </button>
-                        <button
-                            className={`tab ${mode === 'experiment' ? 'on' : ''}`}
-                            onClick={() => setMode('experiment')}
-                        >
-                            실험실 <span className="num">{expCount}</span>
-                        </button>
-                    </div>
-                    <div className="mono-layout-toggle">
-                        <span>보기</span>
-                        <div className="opts">
-                            <button
-                                className={layout === 'table' ? 'on' : ''}
-                                onClick={() => changeLayout('table')}
-                            >
-                                <span className="icn">☰</span> 표
-                            </button>
-                            <button
-                                className={layout === 'cards' ? 'on' : ''}
-                                onClick={() => changeLayout('cards')}
-                            >
-                                <span className="icn">▦</span> 카드
-                            </button>
-                        </div>
-                        <button
-                            className="theme-btn"
-                            onClick={toggleDark}
-                            aria-label="Toggle theme"
-                        >{dark ? '☀ light' : '☾ dark'}</button>
-                    </div>
-                </div>
-
-                {filtered.length === 0 ? (
-                    <div className="mono-empty">
-                        🚧 표시할 프로젝트가 없습니다.
-                    </div>
-                ) : layout === 'table' ? (
-                    <div className="mono-table">
-                        <div className="mono-row head">
-                            <div>#</div>
-                            <div></div>
-                            <div>이름</div>
-                            <div>설명</div>
-                            <div className="cat-cell">카테고리</div>
-                            <div>스택</div>
-                            <div>상태</div>
-                            <div></div>
-                        </div>
-                        {filtered.map((p, i) => (
-                            <a
-                                key={p.id}
-                                href={p.link}
-                                className="mono-row data"
-                                onClick={(e) => handleProjectClick(e, p)}
-                                aria-label={`${p.name} — ${p.description}`}
-                            >
-                                <div className="idx">{String(i + 1).padStart(2, '0')}</div>
-                                <div className="glyph">{p.thumbnail || '📦'}</div>
-                                <div className="name">
-                                    {p.name}
-                                    {p.pinned && <span className="pin" title="고정됨">★</span>}
-                                    {isNewProject(p) && <span className="new-badge">NEW</span>}
-                                </div>
-                                <div className="desc">{p.description}</div>
-                                <div className="cat-cell"><span className="cat">{cleanCategory(p.category)}</span></div>
-                                <div className="stack">{renderTechTags(p, 2)}</div>
-                                <div>
-                                    <span className={`status ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : 'on'}`}>
-                                        <span className="dot" aria-hidden="true"></span>
-                                        {p.isProduction ? '운영 중' : '실험실'}
-                                    </span>
-                                </div>
-                                <div className="arrow">→</div>
-                            </a>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="mono-cardgrid">
-                        {filtered.map((p) => (
-                            <a
-                                key={p.id}
-                                href={p.link}
-                                className="mono-cell"
-                                onClick={(e) => handleProjectClick(e, p)}
-                                aria-label={`${p.name} — ${p.description}`}
-                            >
-                                {p.pinned && <span className="pin-sticker" aria-hidden="true">★</span>}
-                                <div className="top">
-                                    <div className="glyph-wrap">{p.thumbnail || '📦'}</div>
-                                    <div className="top-r">
-                                        <span className="cat">{cleanCategory(p.category)}</span>
-                                        <span className={`status ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : 'on'}`}>
-                                            <span className="dot" aria-hidden="true"></span>
-                                            {p.isProduction ? '운영 중' : '실험실'}
-                                        </span>
-                                    </div>
-                                </div>
-                                <h3>
-                                    {p.name}
-                                    {isNewProject(p) && <span className="new-badge">NEW</span>}
-                                </h3>
-                                <p>{p.description}</p>
-                                <div className="foot">
-                                    <div className="stack">{renderTechTags(p, 3)}</div>
-                                    <span className="views" aria-label={`조회수 ${(viewCounts[p.link] || 0).toLocaleString()}회`}>
-                                        <span aria-hidden="true">👁</span> {(viewCounts[p.link] || 0).toLocaleString()}
-                                    </span>
-                                    <span className="open">열기 →</span>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                )}
-
-                <div className="mono-bottom">
-                    <div className="mono-mini">
-                        <span className="lbl">데일리 CS 팁</span>
-                        <h4>오늘의 한 줄</h4>
-                        <p className="body">
-                            {isTipLoading
-                                ? <span className="skeleton" aria-label="loading">&nbsp;</span>
-                                : (dailyTip || '오늘의 팁이 없습니다.')}
-                        </p>
-                    </div>
-                    <div className="mono-mini">
-                        <span className="lbl">잠깐 쉬어가기</span>
-                        <h4>오늘의 농담</h4>
-                        <p className="body">
-                            {isJokeLoading ? (
-                                <span className="skeleton" aria-label="loading">&nbsp;</span>
-                            ) : dailyJoke ? (
-                                <>
-                                    {dailyJoke.originalSetup}
-                                    <br />
-                                    <span style={{ opacity: 0.78 }}>— {dailyJoke.originalPunchline}</span>
-                                    {showJokeTranslation && (
-                                        <span className="joke-trans">
-                                            {dailyJoke.translatedSetup}
-                                            <br />
-                                            <span style={{ opacity: 0.78 }}>— {dailyJoke.translatedPunchline}</span>
-                                        </span>
-                                    )}
-                                </>
-                            ) : '농담을 불러오지 못했습니다.'}
-                        </p>
-                        {!isJokeLoading && dailyJoke && (
-                            <button
-                                type="button"
-                                className="joke-trans-btn"
-                                aria-expanded={showJokeTranslation}
-                                onClick={() => setShowJokeTranslation(v => !v)}
-                            >
-                                {showJokeTranslation ? '번역 숨기기' : '번역 보기'}
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <footer className="mono-foot">
-                    <div className="left">
-                        <span className="sys">
-                            <span className="dot" aria-hidden="true"></span>
-                            all systems go
-                        </span>
-                        <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
-                    </div>
+                {/* ── 상태 바 ── */}
+                <footer className="k-statusbar">
+                    <span className="sys"><span className="sq"></span>all systems go</span>
+                    <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    <span className="dir">build f7c4a3b · master</span>
                     <div className="links">
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>
                         <a href="/Guestbook">방명록</a>
                     </div>
                 </footer>
-            </div>
+            </main>
+
+            {/* 오버레이 */}
+            {paletteOpen && <KCommandPalette items={paletteItems} onClose={() => setPaletteOpen(false)} />}
+            <AuthModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onLoginSuccess={handleLoginSuccess}
+                initialMode={modalMode}
+            />
 
             <Footer />
         </div>
