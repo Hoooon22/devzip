@@ -79,6 +79,9 @@ function createMatter2D(container, size) {
   buildWalls();
 
   const mouse = Matter.Mouse.create(render.canvas);
+  // Windows 디스플레이 배율 등으로 devicePixelRatio가 소수면 Mouse.create가
+  // data-pixel-ratio를 parseInt로 읽어 1로 잘려 좌표가 어긋난다 → 렌더와 같은 값으로 맞춘다
+  mouse.pixelRatio = pr;
   const mouseConstraint = Matter.MouseConstraint.create(engine, {
     mouse,
     constraint: { stiffness: 0.2, render: { visible: false } }
