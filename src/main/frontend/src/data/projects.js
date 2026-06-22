@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 29,
+        name: 'Breaking Point',
+        description: '웹 물리엔진은 어디서 무너지는가 — 물체를 쏟아부으며 FPS가 붕괴하는 한계점을 찾는 스트레스 테스트. 2D(Matter.js)와 3D(three.js+cannon-es)의 한계를 직접 비교',
+        link: '/breaking-point',
+        active: true,
+        startDate: '2026-06-22',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧨'
+    },
+    {
         id: 28,
         name: 'Tokenizer',
         description: 'AI는 글을 글자가 아니라 토큰으로 읽는다 — 입력한 문장이 토큰으로 쪼개지는 과정과 그 비용·언어별 효율 차이를 실시간으로 보는 토큰 경제 실험',

@@ -40,6 +40,7 @@ import EdgeRun from './pages/experiments/EdgeRun';
 import Lossy from './pages/experiments/Lossy';
 import FanOut from './pages/experiments/FanOut';
 import Tokenizer from './pages/experiments/Tokenizer';
+import BreakingPoint from './pages/experiments/BreakingPoint';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -197,6 +198,7 @@ function App() {
         <Route path="/lossy" element={<Lossy />} />
         <Route path="/fan-out" element={<FanOut />} />
         <Route path="/tokenizer" element={<Tokenizer />} />
+        <Route path="/breaking-point" element={<BreakingPoint />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

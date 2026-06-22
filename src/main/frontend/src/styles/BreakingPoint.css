@@ -1,0 +1,553 @@
+/* BREAKING POINT — physics engine test bench
+   그래파이트 계측기. 유일한 색은 엔진 건강 신호(--sig): 정상→부하→한계.
+   data-health 속성이 --sig 한 변수를 바꾸면 HUD 전체 색이 따라온다. */
+
+.bp-bench {
+    --ink: #0b0e11;
+    --panel: #12161b;
+    --panel-2: #1a2027;
+    --hair: #2a333d;
+    --hair-soft: #1b222a;
+    --trace: #e8edf2;
+    --dim: #6c7884;
+    --ok: #36e27a;
+    --warn: #ffc24b;
+    --crit: #ff4d5e;
+
+    --sig: var(--ok);
+    --data: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --display: 'Saira Condensed', 'Arial Narrow', system-ui, sans-serif;
+
+    position: relative;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--trace);
+    font-family: var(--data);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 도구 영역만 화면을 꽉 채운다 (해설 노트는 그 아래로 스크롤) */
+.bp-tool {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+.bp-bench[data-health='warn'] {
+    --sig: var(--warn);
+}
+.bp-bench[data-health='crit'] {
+    --sig: var(--crit);
+}
+
+/* ── 상단 레일 ───────────────────────────────────────── */
+.bp-rail {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    height: 52px;
+    padding: 0 0.75rem;
+    border-bottom: 1px solid var(--hair);
+    background: var(--panel);
+}
+.bp-exit {
+    display: inline-flex;
+    align-items: center;
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    padding: 0 0.4rem;
+    transition: color 0.15s;
+}
+.bp-exit:hover,
+.bp-exit:focus-visible {
+    color: var(--trace);
+    outline: none;
+}
+.bp-id {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+    margin-right: auto;
+}
+.bp-id-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.06em;
+}
+.bp-id-desc {
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-top: 2px;
+}
+
+/* 엔진 토글 — 세그먼트 */
+.bp-engine {
+    display: flex;
+    align-self: center;
+    border: 1px solid var(--hair);
+}
+.bp-engine-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 86px;
+    padding: 0.4rem 0.7rem;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--hair);
+    color: var(--dim);
+    font-family: var(--data);
+    cursor: pointer;
+    line-height: 1.1;
+    transition: background 0.15s, color 0.15s;
+}
+.bp-engine-btn:first-child {
+    border-left: none;
+}
+.bp-engine-btn b {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+}
+.bp-engine-btn span {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+}
+.bp-engine-btn:hover {
+    color: var(--trace);
+}
+.bp-engine-btn.on {
+    background: var(--trace);
+    color: var(--ink);
+}
+.bp-engine-btn:focus-visible {
+    outline: 2px solid var(--sig);
+    outline-offset: -2px;
+}
+
+/* ── 뷰포트 (캔버스 + HUD) ───────────────────────────── */
+.bp-viewport {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 380px;
+    overflow: hidden;
+    background:
+        radial-gradient(120% 120% at 50% 0%, #11161c 0%, var(--ink) 70%);
+}
+.bp-stage {
+    position: absolute;
+    inset: 0;
+    line-height: 0;
+}
+.bp-stage canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none;
+}
+/* 아주 옅은 스캔라인 — 계기판 질감 */
+.bp-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.018) 0,
+        rgba(255, 255, 255, 0.018) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    mix-blend-mode: screen;
+}
+
+/* HUD 공통 */
+.bp-hud {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+}
+.bp-hud-tl {
+    top: 12px;
+    left: 12px;
+    width: min(320px, 60vw);
+    background: rgba(11, 14, 17, 0.72);
+    border: 1px solid var(--hair);
+    border-left: 2px solid var(--sig);
+    backdrop-filter: blur(3px);
+    padding: 0.55rem 0.7rem 0.65rem;
+    transition: border-color 0.3s;
+}
+.bp-hud-tr {
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: right;
+}
+.bp-hud-bl {
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+}
+
+/* FPS 큰 숫자 */
+.bp-fps-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+.bp-fps-val {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 3.1rem;
+    line-height: 0.82;
+    color: var(--sig);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+}
+.bp-fps-side {
+    display: flex;
+    flex-direction: column;
+    padding-top: 3px;
+}
+.bp-fps-unit {
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    color: var(--dim);
+}
+.bp-fps-state {
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--sig);
+    transition: color 0.3s;
+}
+
+/* 오실로스코프 */
+.bp-scope {
+    width: 100%;
+    height: 56px;
+    margin-top: 0.45rem;
+    display: block;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--hair-soft);
+}
+.bp-scope-grid {
+    stroke: var(--hair);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    vector-effect: non-scaling-stroke;
+}
+.bp-scope-tick {
+    fill: var(--dim);
+    font-family: var(--data);
+    font-size: 7px;
+}
+.bp-scope-area {
+    fill: var(--sig);
+    opacity: 0.14;
+    transition: fill 0.3s;
+}
+.bp-scope-line {
+    fill: none;
+    stroke: var(--sig);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 0.3s;
+}
+
+/* 프레임 예산 */
+.bp-budget {
+    margin-top: 0.5rem;
+}
+.bp-budget-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    margin-bottom: 3px;
+}
+.bp-budget-ms {
+    color: var(--trace);
+    font-variant-numeric: tabular-nums;
+}
+.bp-budget-track {
+    position: relative;
+    height: 7px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--hair-soft);
+}
+.bp-budget-fill {
+    height: 100%;
+    background: var(--sig);
+    transition: width 0.2s linear, background 0.3s;
+}
+/* 16.7ms = 33.4 트랙의 절반 지점에 60fps 예산선 */
+.bp-budget-mark {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    left: 50%;
+    width: 1px;
+    background: var(--trace);
+    opacity: 0.55;
+}
+
+/* 우상단 카운트 */
+.bp-count {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: rgba(11, 14, 17, 0.72);
+    border: 1px solid var(--hair);
+    backdrop-filter: blur(3px);
+    padding: 0.4rem 0.6rem;
+}
+.bp-count-val {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+}
+.bp-count-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    margin-top: 2px;
+}
+.bp-break {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: rgba(11, 14, 17, 0.72);
+    border: 1px solid var(--hair);
+    backdrop-filter: blur(3px);
+    padding: 0.4rem 0.6rem;
+}
+.bp-break-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+}
+.bp-break-val {
+    font-size: 0.82rem;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+}
+.bp-break.hit {
+    border-color: var(--crit);
+}
+.bp-break.hit .bp-break-label {
+    color: var(--crit);
+}
+.bp-break.hit .bp-break-val {
+    color: var(--crit);
+    font-weight: 600;
+}
+
+/* REC 점 */
+.bp-rec {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sig);
+    box-shadow: 0 0 6px var(--sig);
+    animation: bp-pulse 1.4s ease-in-out infinite;
+    transition: background 0.3s;
+}
+.bp-rec[data-paused='true'] {
+    background: var(--dim);
+    box-shadow: none;
+    animation: none;
+}
+@keyframes bp-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+}
+
+/* ── 하단 도크 ───────────────────────────────────────── */
+.bp-dock {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    /* 좌측 패딩으로 전역 ⌘K 명령 팔레트(좌하단 고정)를 비켜간다 */
+    padding: 0.7rem 0.9rem 0.7rem 6.5rem;
+    border-top: 1px solid var(--hair);
+    background: var(--panel);
+}
+.bp-dock-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.bp-dock-grav {
+    flex: 1 1 280px;
+    min-width: 220px;
+}
+.bp-dock-actions {
+    margin-left: auto;
+}
+.bp-dock-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    color: var(--dim);
+}
+.bp-btns {
+    display: flex;
+    gap: 0.4rem;
+}
+.bp-btn {
+    padding: 0.45rem 0.7rem;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    color: var(--trace);
+    font-family: var(--data);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.06s;
+}
+.bp-btn:hover:not(:disabled) {
+    background: var(--trace);
+    color: var(--ink);
+    border-color: var(--trace);
+}
+.bp-btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+.bp-btn:focus-visible {
+    outline: 2px solid var(--sig);
+    outline-offset: 1px;
+}
+.bp-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.bp-btn-load {
+    font-variant-numeric: tabular-nums;
+}
+.bp-btn-ghost {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    background: transparent;
+}
+.bp-btn-purge:hover:not(:disabled) {
+    background: var(--crit);
+    border-color: var(--crit);
+    color: #fff;
+}
+.bp-dock-grav input[type='range'] {
+    flex: 1 1 auto;
+    min-width: 90px;
+    accent-color: var(--trace);
+    cursor: pointer;
+}
+.bp-grav-val {
+    font-size: 0.76rem;
+    color: var(--trace);
+    font-variant-numeric: tabular-nums;
+    min-width: 46px;
+}
+
+.bp-cap {
+    flex: 0 0 auto;
+    padding: 0.4rem 0.9rem;
+    background: rgba(255, 77, 94, 0.1);
+    border-top: 1px solid var(--crit);
+    color: var(--crit);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}
+
+/* ── 해설 노트 (벤치 아래로 스크롤) ──────────────────── */
+.bp-notes {
+    flex: 0 0 auto;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+}
+.bp-notes-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 1rem;
+}
+.bp-notes p {
+    margin: 0 0 1rem;
+    line-height: 1.8;
+    font-size: 0.92rem;
+    color: #c4cad1;
+}
+.bp-notes b {
+    color: var(--trace);
+    font-weight: 600;
+}
+.bp-notes-dim {
+    font-size: 0.78rem !important;
+    color: var(--dim) !important;
+}
+
+/* ── 반응형 ──────────────────────────────────────────── */
+@media (max-width: 720px) {
+    .bp-rail {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 0.5rem 0.6rem;
+        gap: 0.5rem;
+    }
+    .bp-id {
+        order: -1;
+        flex: 1 1 100%;
+    }
+    .bp-viewport {
+        min-height: 56vh;
+    }
+    .bp-hud-tl {
+        width: min(260px, 70vw);
+    }
+    .bp-fps-val {
+        font-size: 2.4rem;
+    }
+    .bp-dock {
+        gap: 0.8rem 1rem;
+    }
+    .bp-dock-actions {
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-rec {
+        animation: none;
+    }
+    .bp-fps-val,
+    .bp-fps-state,
+    .bp-scope-line,
+    .bp-scope-area,
+    .bp-budget-fill,
+    .bp-hud-tl {
+        transition: none;
+    }
+}
