@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 28,
+        name: 'Tokenizer',
+        description: 'AI는 글을 글자가 아니라 토큰으로 읽는다 — 입력한 문장이 토큰으로 쪼개지는 과정과 그 비용·언어별 효율 차이를 실시간으로 보는 토큰 경제 실험',
+        link: '/tokenizer',
+        active: true,
+        startDate: '2026-06-22',
+        endDate: '',
+        pinned: true,
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🔡'
+    },
+    {
         id: 27,
         name: 'Fan-Out',
         description: '일꾼을 늘려도 깰 수 없는 벽 — 하나의 목표를 여러 에이전트에 분산할 때 의존성 사슬(임계 경로)이 만드는 속도 한계를 체험하는 병렬 스케줄링 실험',
