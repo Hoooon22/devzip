@@ -1,5 +1,31 @@
 const projects = [
     {
+        id: 31,
+        name: 'Diffusion',
+        description: '생성 AI는 어떻게 노이즈에서 그림을 만드는가 — 순수 노이즈를 한 스텝씩 되감아 형태가 떠오르는 역확산(denoising)을 직접 스크럽하는 생성 모델 실험. 끝까지 걷지 않으면 남는 거친 입자가 곧 요즘 인터넷의 그 어설픈 AI 이미지 질감이다',
+        link: '/diffusion',
+        active: true,
+        startDate: '2026-06-23',
+        endDate: '',
+        pinned: true,
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🌫️'
+    },
+    {
+        id: 30,
+        name: 'Movement Lab',
+        description: '3D 게임 캐릭터의 움직임은 어떻게 손맛이 되는가 — 이동·가속·점프·공중 제어부터 코요테 타임·점프 버퍼까지, 캐릭터 컨트롤러를 직접 튜닝하며 계단·경사로·공중 발판을 누비는 무브먼트 실험실',
+        link: '/movement-lab',
+        active: true,
+        startDate: '2026-06-23',
+        endDate: '',
+        pinned: true,
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🎮'
+    },
+    {
         id: 29,
         name: 'Breaking Point',
         description: '웹 물리엔진은 어디서 무너지는가 — 물체를 쏟아부으며 FPS가 붕괴하는 한계점을 찾는 스트레스 테스트. 2D(Matter.js)와 3D(three.js+cannon-es)의 한계를 직접 비교',
