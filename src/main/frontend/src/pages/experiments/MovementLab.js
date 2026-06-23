@@ -30,6 +30,14 @@ const DEFAULT_CFG = { ...PRESETS.platformer.cfg };
 const BODY_R = 0.6;
 const SPAWN = new CANNON.Vec3(0, 2.2, 8);
 
+// 전투 — 적을 쏟아부으며 타격하고 그동안 FPS를 본다
+const MAX_ENEMIES = 400; // 브라우저 멈춤 방지 상한
+const ENEMY_STEPS = [5, 20, 50]; // 한 번에 스폰하는 단위
+const ENEMY_SPEED = 2.4; // 플레이어를 향해 다가오는 속도
+const ATTACK_DUR = 0.36; // 검 한 번 휘두르는 시간(초)
+const ATTACK_RANGE = 3.1; // 베기 도달 거리
+const ATTACK_ARC = 0.42; // 정면 기준 히트 콘 (dot 임계값)
+
 // 입력 코드 → 이동축
 const KEY_AXIS = {
   KeyW: 'f', ArrowUp: 'f',
@@ -74,7 +82,8 @@ function createMovementLab(container, size) {
 
   const disposables = [];
   const track = (geo, mat) => {
-    disposables.push(geo, mat);
+    if (geo) disposables.push(geo);
+    if (mat) disposables.push(mat);
   };
 
   // 정적 박스: three 메시 + cannon 바디 동시 생성
@@ -181,12 +190,84 @@ function createMovementLab(container, size) {
   velArrow.visible = false;
   scene.add(velArrow);
 
+  // ── 검 (아바타 그룹의 자식, 스윙 시 로컬 회전) ─────────
+  const swordPivot = new THREE.Group();
+  swordPivot.position.set(0.42, 0.35, 0.05); // 오른손 위치
+  avatar.add(swordPivot);
+  const bladeGeo = new THREE.BoxGeometry(0.1, 0.1, 1.5);
+  const bladeMat = new THREE.MeshStandardMaterial({
+    color: '#dfe9f2', metalness: 0.75, roughness: 0.22, emissive: '#26333d', emissiveIntensity: 0.35
+  });
+  const blade = new THREE.Mesh(bladeGeo, bladeMat);
+  blade.position.set(0, 0, 0.78);
+  swordPivot.add(blade);
+  const hiltGeo = new THREE.BoxGeometry(0.36, 0.1, 0.1); // 가드
+  const hiltMat = new THREE.MeshStandardMaterial({ color: '#9a7636', metalness: 0.5, roughness: 0.5 });
+  const guard = new THREE.Mesh(hiltGeo, hiltMat);
+  guard.position.set(0, 0, 0.04);
+  swordPivot.add(guard);
+  const gripGeo = new THREE.BoxGeometry(0.09, 0.09, 0.32);
+  const grip = new THREE.Mesh(gripGeo, hiltMat);
+  grip.position.set(0, 0, -0.16);
+  swordPivot.add(grip);
+  track(bladeGeo, bladeMat);
+  track(hiltGeo, hiltMat);
+  track(gripGeo, null);
+  // 검 자세: p<0 이면 대기, 0..1 이면 스윙 진행
+  const poseSword = (p) => {
+    if (p < 0) {
+      swordPivot.rotation.set(-0.15, -0.55, 0.12); // 오른쪽으로 내린 대기 자세
+      return;
+    }
+    const yaw = 1.15 - 2.7 * p; // 오른쪽 뒤 → 왼쪽 앞으로 횡베기
+    const pitch = -0.2 - Math.sin(p * Math.PI) * 0.7; // 중간에 아래로 찍는 호
+    swordPivot.rotation.set(pitch, yaw, 0.12);
+  };
+  poseSword(-1);
+
+  // ── 적 ─────────────────────────────────────────────────
+  const enemyGeo = new THREE.BoxGeometry(0.9, 1.1, 0.9);
+  const enemyMat = new THREE.MeshStandardMaterial({
+    color: '#ff5468', roughness: 0.55, metalness: 0.05, emissive: '#5a0e18', emissiveIntensity: 0.55
+  });
+  const enemyDeadMat = new THREE.MeshStandardMaterial({
+    color: '#ffb070', roughness: 0.7, metalness: 0.05, emissive: '#3a1e08', emissiveIntensity: 0.3
+  });
+  track(enemyGeo, enemyMat);
+  track(null, enemyDeadMat);
+  const enemies = []; // { body, mesh, dead, deadT }
+
+  const spawnEnemy = () => {
+    const ang = Math.random() * Math.PI * 2;
+    const rad = 6 + Math.random() * (ARENA - 9);
+    const mesh = new THREE.Mesh(enemyGeo, enemyMat);
+    scene.add(mesh);
+    const body = new CANNON.Body({ mass: 1.2, material: bodyMat });
+    body.addShape(new CANNON.Box(new CANNON.Vec3(0.45, 0.55, 0.45)));
+    body.position.set(Math.cos(ang) * rad, 1.1, Math.sin(ang) * rad);
+    body.fixedRotation = true;
+    body.updateMassProperties();
+    body.linearDamping = 0.01;
+    world.addBody(body);
+    enemies.push({ body, mesh, dead: false, deadT: 0 });
+  };
+
   // ── 입력 ───────────────────────────────────────────────
   const keys = new Set();
   let runHeld = false;
   let prevJump = false;
+  let prevAttack = false;
   let jumpQueuedAt = -1;
+  let attackTime = -1; // -1 = 대기, 0..ATTACK_DUR = 스윙 중
+  const hitSet = new Set(); // 이번 스윙에서 이미 맞은 적 (중복 타격 방지)
   let facingYaw = Math.PI;
+
+  const startAttack = () => {
+    if (attackTime < 0) {
+      attackTime = 0;
+      hitSet.clear();
+    }
+  };
 
   const onKeyDown = (e) => {
     const t = e.target;
@@ -246,7 +327,7 @@ function createMovementLab(container, size) {
   };
 
   // ── 통계 / 루프 ────────────────────────────────────────
-  const stats = { fps: 60, frameMs: 16.7, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0 };
+  const stats = { fps: 60, frameMs: 16.7, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0, enemies: 0, kills: 0 };
   let emaMs = 16.7;
   let lastT = null;
   let paused = false;
@@ -329,9 +410,67 @@ function createMovementLab(container, size) {
     stats.grounded = grounded;
     stats.jumps = jumpsUsed;
 
-    // 진행 방향으로 아바타 회전
+    // 진행 방향으로 아바타 회전 (정지 중엔 마지막 방향 유지)
     if (moving) {
       facingYaw = Math.atan2(moveDir.x, moveDir.z);
+    }
+
+    // 적: 플레이어를 향해 수평 이동 (사망한 적은 물리에 맡김)
+    const px = charBody.position.x;
+    const pz = charBody.position.z;
+    for (let i = 0; i < enemies.length; i++) {
+      const e = enemies[i];
+      if (e.dead) {
+        e.deadT += dt;
+        continue;
+      }
+      const dx = px - e.body.position.x;
+      const dz = pz - e.body.position.z;
+      const d = Math.hypot(dx, dz) || 1;
+      e.body.velocity.x = (dx / d) * ENEMY_SPEED;
+      e.body.velocity.z = (dz / d) * ENEMY_SPEED;
+    }
+
+    // 검 스윙 + 히트 판정
+    if (attackTime >= 0) {
+      attackTime += dt;
+      const p = attackTime / ATTACK_DUR;
+      poseSword(Math.min(p, 1));
+      // 액티브 윈도우(중반)에서만 정면 콘 안의 적을 벤다
+      if (p >= 0.18 && p <= 0.62) {
+        const fx = Math.sin(facingYaw);
+        const fz = Math.cos(facingYaw);
+        for (let i = 0; i < enemies.length; i++) {
+          const e = enemies[i];
+          if (e.dead || hitSet.has(e)) continue;
+          const dx = e.body.position.x - px;
+          const dz = e.body.position.z - pz;
+          const dist = Math.hypot(dx, dz);
+          if (dist > ATTACK_RANGE) continue;
+          const facingDot = (dx * fx + dz * fz) / (dist || 1);
+          if (facingDot < ATTACK_ARC) continue;
+          // 명중 — 넉백 + 회전 + 사망 표시
+          hitSet.add(e);
+          e.dead = true;
+          e.deadT = 0;
+          e.mesh.material = enemyDeadMat;
+          e.body.fixedRotation = false;
+          e.body.updateMassProperties();
+          const inv = 1 / (dist || 1);
+          e.body.applyImpulse(new CANNON.Vec3(dx * inv * 9, 6.5, dz * inv * 9), e.body.position);
+          e.body.angularVelocity.set(
+            (Math.random() - 0.5) * 9,
+            (Math.random() - 0.5) * 9,
+            (Math.random() - 0.5) * 9
+          );
+          stats.kills += 1;
+        }
+      }
+      if (attackTime > ATTACK_DUR) {
+        attackTime = -1;
+        hitSet.clear();
+        poseSword(-1);
+      }
     }
   };
 
@@ -352,6 +491,11 @@ function createMovementLab(container, size) {
       if (jumpNow && !prevJump) jumpQueuedAt = 0;
       prevJump = jumpNow;
 
+      // 공격 라이징 엣지 → 스윙 시작
+      const attackNow = keys.has('KeyJ');
+      if (attackNow && !prevAttack) startAttack();
+      prevAttack = attackNow;
+
       let dt = Math.min(emaMs / 1000, 0.05);
       accumulator += dt;
       while (accumulator >= STEP) {
@@ -362,6 +506,20 @@ function createMovementLab(container, size) {
 
       // 추락 → 리스폰
       if (charBody.position.y < -15) doRespawn();
+
+      // 적 메시 동기화 + 사망/추락 적 정리
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        const e = enemies[i];
+        if ((e.dead && e.deadT > 0.7) || e.body.position.y < -15) {
+          world.removeBody(e.body);
+          scene.remove(e.mesh);
+          enemies.splice(i, 1);
+          continue;
+        }
+        e.mesh.position.copy(e.body.position);
+        e.mesh.quaternion.copy(e.body.quaternion);
+      }
+      stats.enemies = enemies.length;
 
       // 메시 동기화
       avatar.position.copy(charBody.position);
@@ -435,6 +593,23 @@ function createMovementLab(container, size) {
     pressJump() {
       jumpQueuedAt = 0;
     },
+    pressAttack() {
+      startAttack();
+    },
+    addEnemies(n) {
+      const room = MAX_ENEMIES - enemies.length;
+      const count = Math.max(0, Math.min(n, room));
+      for (let i = 0; i < count; i++) spawnEnemy();
+      stats.enemies = enemies.length;
+    },
+    clearEnemies() {
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        world.removeBody(enemies[i].body);
+        scene.remove(enemies[i].mesh);
+      }
+      enemies.length = 0;
+      stats.enemies = 0;
+    },
     resize(w, h) {
       width = w;
       height = h;
@@ -450,6 +625,11 @@ function createMovementLab(container, size) {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       el.removeEventListener('wheel', onWheel);
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        world.removeBody(enemies[i].body);
+        scene.remove(enemies[i].mesh);
+      }
+      enemies.length = 0;
       grid.geometry.dispose();
       grid.material.dispose();
       disposables.forEach((d) => d.dispose && d.dispose());
@@ -533,7 +713,7 @@ const MovementLab = () => {
   const [showVel, setShowVel] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [preset, setPreset] = useState('platformer');
-  const [ui, setUi] = useState({ fps: 60, frameMs: 16.7, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0 });
+  const [ui, setUi] = useState({ fps: 60, frameMs: 16.7, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0, enemies: 0, kills: 0 });
   const [history, setHistory] = useState([]);
 
   // 컨트롤러 1회 생성
@@ -578,7 +758,7 @@ const MovementLab = () => {
       const c = ctrlRef.current;
       if (!c) return;
       const s = c.stats;
-      setUi({ fps: s.fps, frameMs: s.frameMs, speed: s.speed, vy: s.vy, grounded: s.grounded, jumps: s.jumps, maxSpeed: s.maxSpeed });
+      setUi({ fps: s.fps, frameMs: s.frameMs, speed: s.speed, vy: s.vy, grounded: s.grounded, jumps: s.jumps, maxSpeed: s.maxSpeed, enemies: s.enemies, kills: s.kills });
       setHistory((prev) => {
         const next = prev.concat(Math.max(0, s.fps));
         return next.length > 90 ? next.slice(next.length - 90) : next;
@@ -621,6 +801,12 @@ const MovementLab = () => {
   const respawn = () => {
     if (ctrlRef.current) ctrlRef.current.respawn();
   };
+  const addEnemies = (n) => {
+    if (ctrlRef.current) ctrlRef.current.addEnemies(n);
+  };
+  const clearEnemies = () => {
+    if (ctrlRef.current) ctrlRef.current.clearEnemies();
+  };
 
   // 터치 입력 바인딩
   const touchAxis = (axis) => ({
@@ -637,6 +823,7 @@ const MovementLab = () => {
   const fpsLabel = health === 'ok' ? 'SMOOTH' : health === 'warn' ? 'STRAINED' : 'STUTTER';
   const stateLabel = ui.grounded ? 'GROUNDED' : 'AIRBORNE';
   const budgetPct = Math.min(100, (ui.frameMs / 33.4) * 100);
+  const enemyCapReached = ui.enemies >= MAX_ENEMIES;
 
   return (
     <div className="bp-bench" data-health={health}>
@@ -697,13 +884,15 @@ const MovementLab = () => {
             </div>
           </div>
 
-          {/* 우상단: 무브먼트 지표 (작게) */}
+          {/* 우상단: 전투 + 무브먼트 지표 (작게) */}
           <div className="bp-hud bp-hud-tr">
             <div className="bp-count">
-              <span className="bp-count-val">{ui.speed.toFixed(1)}</span>
-              <span className="bp-count-label">M/S&nbsp;·&nbsp;{stateLabel}</span>
+              <span className="bp-count-val">{ui.enemies}</span>
+              <span className="bp-count-label">ENEMIES&nbsp;·&nbsp;KILL&nbsp;{ui.kills}</span>
             </div>
             <div className="ml-readout">
+              <div className="ml-readout-row"><span>SPEED</span><b>{ui.speed.toFixed(1)} m/s</b></div>
+              <div className="ml-readout-row"><span>STATE</span><b>{stateLabel}</b></div>
               <div className="ml-readout-row"><span>VERTICAL</span><b>{ui.vy >= 0 ? '+' : ''}{ui.vy.toFixed(1)}</b></div>
               <div className="ml-readout-row"><span>MAX SPEED</span><b>{ui.maxSpeed.toFixed(1)}</b></div>
               <div className="ml-readout-row"><span>JUMPS</span><b>{ui.jumps}/{cfg.maxJumps}</b></div>
@@ -717,6 +906,7 @@ const MovementLab = () => {
               <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동
               <kbd className="ml-wide">SPACE</kbd> 점프
               <kbd className="ml-wide">SHIFT</kbd> 달리기
+              <kbd>J</kbd> 공격
               <span className="ml-keys-sep">· 드래그 회전 · 휠 줌</span>
             </span>
           </div>
@@ -729,6 +919,13 @@ const MovementLab = () => {
             <button type="button" className="ml-pad ml-pad-b" {...touchAxis('b')}>▼</button>
           </div>
           <div className="ml-touch ml-touch-act" aria-hidden="true">
+            <button
+              type="button"
+              className="ml-attack"
+              onPointerDown={(e) => { e.preventDefault(); if (ctrlRef.current) ctrlRef.current.pressAttack(); }}
+            >
+              ⚔
+            </button>
             <button
               type="button"
               className="ml-jump"
@@ -816,6 +1013,26 @@ const MovementLab = () => {
             <span className="bp-grav-val">{cfg.jumpHeight.toFixed(1)} m</span>
           </div>
 
+          <div className="bp-dock-group">
+            <span className="bp-dock-label">ENEMIES</span>
+            <div className="bp-btns">
+              {ENEMY_STEPS.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className="bp-btn bp-btn-load"
+                  disabled={enemyCapReached}
+                  onClick={() => addEnemies(n)}
+                >
+                  +{n}
+                </button>
+              ))}
+              <button type="button" className="bp-btn bp-btn-ghost" onClick={clearEnemies}>
+                정리
+              </button>
+            </div>
+          </div>
+
           <div className="bp-dock-group bp-dock-actions">
             <button type="button" className="bp-btn" onClick={togglePause}>
               {paused ? '▶ RUN' : '❚❚ HOLD'}
@@ -825,6 +1042,10 @@ const MovementLab = () => {
             </button>
           </div>
         </footer>
+
+        {enemyCapReached && (
+          <div className="bp-cap">적 상한 {MAX_ENEMIES.toLocaleString()}에 도달했습니다 — 정리로 비우세요.</div>
+        )}
       </div>
 
       <section className="bp-notes">
@@ -853,8 +1074,17 @@ const MovementLab = () => {
           {'더블 점프를 켜면 닿지 않던 높은 발판에 오를 수 있고, 공중 제어를 0으로 내리면 같은 점프도 '}
           {'완전히 다른 게임처럼 느껴진다.'}
         </p>
+        <p>
+          {'하단 '}<b>ENEMIES</b>{' 버튼으로 적을 쏟아붓고 '}<kbd className="ml-kbd-inline">J</kbd>{' 키로 검을 휘둘러 보자. '}
+          {'적은 매 프레임 플레이어를 향해 다가오고(추적 연산), 검은 정면 '}<b>콘(부채꼴) 범위</b>{' 안의 적만 '}
+          {'베어 넉백시킨다 — 정밀한 칼날 충돌 대신 거리·각도 판정을 쓰는 건, 적이 수백이어도 버티게 하려는 '}
+          {'게임의 전형적인 타협이다. 적이 늘수록 '}<b>물리 바디 수·충돌 검사·추적 루프·드로우콜</b>{'이 함께 '}
+          {'불어나 좌측 '}<b>FPS 계기판</b>{'이 60 → 30으로 무너지는 지점이 보인다. 타격하면서 그 그래프가 '}
+          {'어디서 꺾이는지를 실시간으로 지켜보는 것이 이 모드의 핵심이다.'}
+        </p>
         <p className="bp-notes-dim">
-          {'* 캐릭터 충돌은 단순화를 위해 구(sphere)로 처리됩니다. 계단은 구가 굴러 넘을 수 있는 높이로 설계되어 있습니다.'}
+          {'* 캐릭터·적 충돌은 단순화를 위해 각각 구(sphere)·박스로 처리됩니다. FPS는 기기 성능에 따라 다르며, '}
+          {'한계점은 절대값이 아니라 이 페이지를 여는 기기의 상대적 부하 한계입니다.'}
         </p>
       </section>
     </div>
