@@ -6,6 +6,31 @@
     min-width: 66px;
 }
 
+/* 우상단 무브먼트 지표 — 작은 읽기 패널 */
+.ml-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 138px;
+    padding: 0.4rem 0.6rem;
+    background: rgba(11, 14, 17, 0.72);
+    border: 1px solid var(--hair);
+    backdrop-filter: blur(3px);
+}
+.ml-readout-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+}
+.ml-readout-row b {
+    color: var(--trace);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
 /* 조작 키캡 */
 .ml-keys {
     display: flex;

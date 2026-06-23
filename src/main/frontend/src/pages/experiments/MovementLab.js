@@ -464,7 +464,7 @@ function createMovementLab(container, size) {
 // ---------------------------------------------------------------------------
 const SCOPE_W = 300;
 const SCOPE_H = 56;
-const SCOPE_MAX = 16;
+const SCOPE_MAX = 75;
 const scopeY = (v) => SCOPE_H - (Math.min(Math.max(v, 0), SCOPE_MAX) / SCOPE_MAX) * SCOPE_H;
 
 function renderScope(history) {
@@ -479,8 +479,10 @@ function renderScope(history) {
       : '';
   return (
     <svg className="bp-scope" viewBox={`0 0 ${SCOPE_W} ${SCOPE_H}`} preserveAspectRatio="none">
-      <line className="bp-scope-grid" x1="0" y1={scopeY(8)} x2={SCOPE_W} y2={scopeY(8)} />
-      <text className="bp-scope-tick" x="2" y={scopeY(8) - 2}>8 m/s</text>
+      <line className="bp-scope-grid" x1="0" y1={scopeY(60)} x2={SCOPE_W} y2={scopeY(60)} />
+      <line className="bp-scope-grid" x1="0" y1={scopeY(30)} x2={SCOPE_W} y2={scopeY(30)} />
+      <text className="bp-scope-tick" x="2" y={scopeY(60) - 2}>60</text>
+      <text className="bp-scope-tick" x="2" y={scopeY(30) - 2}>30</text>
       {area && <path className="bp-scope-area" d={area} />}
       {line && <polyline className="bp-scope-line" points={line} />}
     </svg>
@@ -531,7 +533,7 @@ const MovementLab = () => {
   const [showVel, setShowVel] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [preset, setPreset] = useState('platformer');
-  const [ui, setUi] = useState({ fps: 60, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0 });
+  const [ui, setUi] = useState({ fps: 60, frameMs: 16.7, speed: 0, vy: 0, grounded: true, jumps: 0, maxSpeed: 0 });
   const [history, setHistory] = useState([]);
 
   // 컨트롤러 1회 생성
@@ -576,9 +578,9 @@ const MovementLab = () => {
       const c = ctrlRef.current;
       if (!c) return;
       const s = c.stats;
-      setUi({ fps: s.fps, speed: s.speed, vy: s.vy, grounded: s.grounded, jumps: s.jumps, maxSpeed: s.maxSpeed });
+      setUi({ fps: s.fps, frameMs: s.frameMs, speed: s.speed, vy: s.vy, grounded: s.grounded, jumps: s.jumps, maxSpeed: s.maxSpeed });
       setHistory((prev) => {
-        const next = prev.concat(Math.max(0, s.speed));
+        const next = prev.concat(Math.max(0, s.fps));
         return next.length > 90 ? next.slice(next.length - 90) : next;
       });
     }, 120);
@@ -631,8 +633,10 @@ const MovementLab = () => {
     onPointerCancel: () => ctrlRef.current && ctrlRef.current.setVirtual(axis, false)
   });
 
-  const health = ui.grounded ? 'ok' : 'warn';
+  const health = ui.fps >= 50 ? 'ok' : ui.fps >= 30 ? 'warn' : 'crit';
+  const fpsLabel = health === 'ok' ? 'SMOOTH' : health === 'warn' ? 'STRAINED' : 'STUTTER';
   const stateLabel = ui.grounded ? 'GROUNDED' : 'AIRBORNE';
+  const budgetPct = Math.min(100, (ui.frameMs / 33.4) * 100);
 
   return (
     <div className="bp-bench" data-health={health}>
@@ -671,37 +675,38 @@ const MovementLab = () => {
           <div className="bp-stage" ref={stageRef} />
           <div className="bp-scanlines" aria-hidden="true" />
 
-          {/* 좌상단: 속도 텔레메트리 */}
+          {/* 좌상단: 성능 텔레메트리 (FPS · 프레임타임) */}
           <div className="bp-hud bp-hud-tl">
             <div className="bp-fps-block">
-              <span className="bp-fps-val">{ui.speed.toFixed(1)}</span>
+              <span className="bp-fps-val">{Math.round(ui.fps)}</span>
               <span className="bp-fps-side">
-                <span className="bp-fps-unit">M/S</span>
-                <span className="bp-fps-state">{stateLabel}</span>
+                <span className="bp-fps-unit">FPS</span>
+                <span className="bp-fps-state">{fpsLabel}</span>
               </span>
             </div>
             {renderScope(history)}
             <div className="bp-budget">
               <div className="bp-budget-row">
-                <span>VERTICAL</span>
-                <span className="bp-budget-ms">{ui.vy >= 0 ? '+' : ''}{ui.vy.toFixed(1)} m/s</span>
+                <span>FRAME</span>
+                <span className="bp-budget-ms">{ui.frameMs.toFixed(1)}ms</span>
               </div>
-              <div className="bp-budget-row">
-                <span>MAX SPEED</span>
-                <span className="bp-budget-ms">{ui.maxSpeed.toFixed(1)} m/s</span>
+              <div className="bp-budget-track">
+                <div className="bp-budget-fill" style={{ width: `${budgetPct}%` }} />
+                <div className="bp-budget-mark" title="16.7ms · 60fps 예산" />
               </div>
             </div>
           </div>
 
-          {/* 우상단: 점프 상태 */}
+          {/* 우상단: 무브먼트 지표 (작게) */}
           <div className="bp-hud bp-hud-tr">
             <div className="bp-count">
-              <span className="bp-count-val">{ui.jumps}/{cfg.maxJumps}</span>
-              <span className="bp-count-label">JUMPS&nbsp;USED</span>
+              <span className="bp-count-val">{ui.speed.toFixed(1)}</span>
+              <span className="bp-count-label">M/S&nbsp;·&nbsp;{stateLabel}</span>
             </div>
-            <div className="bp-count">
-              <span className="bp-count-val">{Math.round(ui.fps)}</span>
-              <span className="bp-count-label">FPS</span>
+            <div className="ml-readout">
+              <div className="ml-readout-row"><span>VERTICAL</span><b>{ui.vy >= 0 ? '+' : ''}{ui.vy.toFixed(1)}</b></div>
+              <div className="ml-readout-row"><span>MAX SPEED</span><b>{ui.maxSpeed.toFixed(1)}</b></div>
+              <div className="ml-readout-row"><span>JUMPS</span><b>{ui.jumps}/{cfg.maxJumps}</b></div>
             </div>
           </div>
 
