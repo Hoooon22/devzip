@@ -23,8 +23,8 @@ public class ProjectPinService {
     }
 
     /**
-     * 관리자가 명시적으로 설정한 고정 override 를 { projectKey: pinned } 형태로 반환합니다.
-     * 행이 없는 프로젝트는 프론트의 정적 기본값을 그대로 사용합니다.
+     * 관리자가 설정한 고정 여부를 { projectKey: pinned } 형태로 반환합니다.
+     * 행이 없는 프로젝트는 프론트에서 고정되지 않은 것으로 간주합니다.
      */
     @Transactional(readOnly = true)
     public Map<String, Boolean> getAllPins() {

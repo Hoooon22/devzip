@@ -246,11 +246,18 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-stat.live .sq { background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
 .k-stat.off { opacity: 0.5; }
 .k-new { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; background: var(--signal); color: var(--on-signal); padding: 2px 5px; margin-left: 8px; vertical-align: 2px; }
-.k-pin { color: var(--signal); margin-left: 7px; font-size: 12px; }
-.k-pin-toggle { margin-left: 7px; padding: 1px 4px; font-size: 11px; line-height: 1; background: transparent; border: 1px solid var(--line); color: var(--ink-soft); cursor: pointer; opacity: 0.45; filter: grayscale(1); vertical-align: 1px; transition: opacity 0.12s ease, filter 0.12s ease; }
-.k-pin-toggle:hover { opacity: 0.9; filter: grayscale(0); border-color: var(--signal); }
-.k-pin-toggle.on { opacity: 1; filter: grayscale(0); border-color: var(--signal); background: var(--signal-soft); }
-.k-tile-bar .k-pin-toggle { margin-left: auto; }
+/* 고정(핀) — 압정 아이콘 하나로 통일. 관리자는 토글 버튼, 일반 사용자는 정적 마크/배지 */
+.k-pin-svg { width: 100%; height: 100%; display: block; }
+/* 관리자 토글 버튼: 미고정=고스트 외곽선, 고정=시그널 채움 */
+.k-pin-btn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 5px; margin-left: 9px; flex-shrink: 0; vertical-align: middle; background: transparent; border: 1px solid var(--line); color: var(--ink-mute); cursor: pointer; transition: color 0.14s, border-color 0.14s, background 0.14s, transform 0.14s; }
+.k-pin-btn:hover { color: var(--signal); border-color: var(--signal); }
+.k-pin-btn.on { color: var(--on-signal); background: var(--signal); border-color: var(--signal); }
+.k-pin-btn.on:hover { transform: rotate(-12deg); }
+.k-tile-bar .k-pin-btn { width: 20px; height: 20px; padding: 4px; margin: 0 0 0 auto; }
+/* 일반 사용자에게 보이는 고정 표시 — 표는 아이콘+'고정' 배지, 카드는 시그널 칩 */
+.k-pin-badge { display: inline-flex; align-items: center; gap: 4px; margin-left: 9px; vertical-align: middle; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--signal); }
+.k-pin-badge .k-pin-svg { width: 13px; height: 13px; }
+.k-tile-bar .k-pin-mark { display: inline-flex; width: 18px; height: 18px; padding: 3px; margin-left: auto; flex-shrink: 0; background: var(--signal); color: var(--on-signal); }
 .k-chip { display: inline-block; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; background: var(--row-alt); border: 1px solid var(--line); color: var(--ink-soft); }
 .k-stack { display: flex; flex-wrap: wrap; gap: 4px; }
 .k-stack span { font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; border: 1px solid var(--line); color: var(--ink-soft); }
@@ -265,6 +272,8 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-row.data { text-decoration: none; color: inherit; cursor: pointer; position: relative; transition: background 0.12s; min-height: 72px; }
 .k-row.data:nth-child(even) { background: var(--row-alt); }
 .k-row.data:hover { background: var(--hover); box-shadow: inset 3px 0 0 var(--signal); }
+.k-table .k-row.data.is-pinned { background: var(--hover); box-shadow: inset 3px 0 0 var(--signal); }
+.k-table .k-row.data.is-pinned:hover { background: var(--signal-soft); }
 .k-row .pid { color: var(--ink-mute); font-size: 12px; }
 .k-row .name { font-family: var(--font-ui); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
 .k-row .desc { font-family: var(--font-ui); font-size: 13.5px; color: var(--ink-soft); line-height: 1.45; }
@@ -275,6 +284,8 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding: 16px; }
 .k-tile { position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--panel-2); border: 1px solid var(--frame); transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s; }
 .k-tile:hover { transform: translateY(-3px); border-color: var(--signal); box-shadow: 0 16px 32px -22px rgba(45,79,255,0.6); }
+.k-tile.is-pinned { border-color: var(--signal); box-shadow: inset 0 0 0 1px var(--signal-soft); }
+.k-tile.is-pinned:hover { box-shadow: 0 16px 32px -22px rgba(45,79,255,0.6); }
 .k-tile-bar { display: flex; align-items: center; gap: 9px; height: 34px; padding: 0 11px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); }
 .k-tile-bar .tname { font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .k-tile-bar .tdot { margin-left: auto; width: 7px; height: 7px; background: var(--ink-mute); flex-shrink: 0; }
@@ -288,7 +299,6 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-tile .foot .views { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-left: auto; white-space: nowrap; }
 .k-tile .foot .open { font-family: var(--font-mono); font-size: 12px; color: var(--signal); font-weight: 600; white-space: nowrap; }
 .k-tile:hover .foot .open { letter-spacing: 0.02em; }
-.k-pin-sticker { position: absolute; top: -7px; right: 12px; background: var(--signal); color: var(--on-signal); font-size: 11px; width: 20px; height: 20px; display: grid; place-items: center; z-index: 1; }
 .k-empty { padding: 60px; text-align: center; font-family: var(--font-mono); color: var(--ink-mute); font-size: 14px; }
 
 /* ── dock widgets ── */

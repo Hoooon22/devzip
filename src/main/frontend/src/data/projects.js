@@ -7,7 +7,6 @@ const projects = [
         active: true,
         startDate: '2026-06-23',
         endDate: '',
-        pinned: true,
         category: '실험/AI',
         isProduction: false, // 실험용
         thumbnail: '🌫️'
@@ -20,7 +19,6 @@ const projects = [
         active: true,
         startDate: '2026-06-23',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🎮'
@@ -33,7 +31,6 @@ const projects = [
         active: true,
         startDate: '2026-06-22',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🧨'
@@ -46,7 +43,6 @@ const projects = [
         active: true,
         startDate: '2026-06-22',
         endDate: '',
-        pinned: true,
         category: '실험/AI',
         isProduction: false, // 실험용
         thumbnail: '🔡'
@@ -59,7 +55,6 @@ const projects = [
         active: true,
         startDate: '2026-06-19',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🕸️'
@@ -72,7 +67,6 @@ const projects = [
         active: true,
         startDate: '2026-06-18',
         endDate: '',
-        pinned: true,
         category: '실험/그래픽스',
         isProduction: false, // 실험용
         thumbnail: '🗜️'
@@ -85,7 +79,6 @@ const projects = [
         active: true,
         startDate: '2026-06-18',
         endDate: '',
-        pinned: true,
         category: '실험/네트워크',
         isProduction: false, // 실험용
         thumbnail: '🛰️'
@@ -98,7 +91,6 @@ const projects = [
         active: true,
         startDate: '2026-06-17',
         endDate: '',
-        pinned: true,
         category: '실험/게임',
         isProduction: false, // 실험용
         thumbnail: '🎮'
@@ -111,7 +103,6 @@ const projects = [
         active: true,
         startDate: '2026-06-17',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🐦'
@@ -124,7 +115,6 @@ const projects = [
         active: true,
         startDate: '2026-06-15',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🧪'
@@ -137,7 +127,6 @@ const projects = [
         active: true,
         startDate: '2026-06-15',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🎭'
@@ -150,7 +139,6 @@ const projects = [
         active: true,
         startDate: '2026-06-15',
         endDate: '',
-        pinned: true,
         category: '실험/네트워크',
         isProduction: false, // 실험용
         thumbnail: '📡'
@@ -163,7 +151,6 @@ const projects = [
         active: true,
         startDate: '2026-06-15',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '🧠'
@@ -176,7 +163,6 @@ const projects = [
         active: true,
         startDate: '2026-06-15',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '📼'
@@ -189,7 +175,6 @@ const projects = [
         active: true,
         startDate: '2026-06-11',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '⚛️'
@@ -202,7 +187,6 @@ const projects = [
         active: true,
         startDate: '2026-06-11',
         endDate: '',
-        pinned: true,
         category: '실험/게임',
         isProduction: false, // 실험용
         thumbnail: '👻'
@@ -215,7 +199,6 @@ const projects = [
         active: true,
         startDate: '2026-06-11',
         endDate: '',
-        pinned: true,
         category: '실험/시뮬레이션',
         isProduction: false, // 실험용
         thumbnail: '💥'
@@ -228,7 +211,6 @@ const projects = [
         active: true,
         startDate: '2026-01-06',
         endDate: '',
-        pinned: true,
         category: '프로젝트/개발도구',
         isProduction: false, // 실험용
         thumbnail: '🧪'
@@ -241,7 +223,6 @@ const projects = [
         active: true,
         startDate: '2026-01-05',
         endDate: '',
-        pinned: true,
         category: '프로젝트/생산성도구',
         isProduction: true, // 프로덕션
         thumbnail: '⚡'
@@ -254,7 +235,6 @@ const projects = [
         active: true,
         startDate: '2025-12-28',
         endDate: '',
-        pinned: true,
         category: '프로젝트/개발도구',
         isProduction: true, // 프로덕션
         thumbnail: '🌊'
@@ -267,7 +247,6 @@ const projects = [
         active: true,
         startDate: '2025-10-20',
         endDate: '',
-        pinned: true,
         category: '음악/협업',
         requiresLogin: true,
         isProduction: false, // 실험용
@@ -281,7 +260,6 @@ const projects = [
         active: true,
         startDate: '2025-09-30',
         endDate: '',
-        pinned: true,
         category: '생산성/AI',
         isProduction: false, // 실험용
         thumbnail: '🤖'
@@ -294,7 +272,6 @@ const projects = [
         active: true,
         startDate: '2025-09-12',
         endDate: '2025-09-25',
-        pinned: true,
         isProduction: false, // 실험용
         thumbnail: '💬'
     },
@@ -319,7 +296,6 @@ const projects = [
         active: true,
         startDate: '2024-07-10',
         endDate: '2024-12-30',
-        pinned: true,
         isProduction: false, // 실험용
         thumbnail: '📝'
     },

@@ -84,6 +84,16 @@ const isNewProject = (p) =>
 
 const openExternal = (url) => window.open(url, '_blank', 'noopener,noreferrer');
 
+// 고정(핀) 글리프 — 터미널/커널 테마에 맞춘 얇은 압정 아이콘. 색은 currentColor 를 따른다.
+const PinGlyph = () => (
+    <svg className="k-pin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="9" y1="4" x2="15" y2="4" />
+        <path d="M10 4 L9 11 C7.4 11.7 6.4 12.8 6.4 14 H17.6 C17.6 12.8 16.6 11.7 15 11 L14 4" />
+        <line x1="12" y1="14" x2="12" y2="20.5" />
+    </svg>
+);
+
 // 메뉴바 트레이의 라이브 시계 + 세션 업타임.
 const useClock = () => {
     const [now, setNow] = useState(() => new Date());
@@ -233,9 +243,10 @@ const Main = () => {
 
     const isAdmin = user?.role === 'ROLE_ADMIN';
 
-    // effective 고정 여부: 관리자 override 가 있으면 그 값을, 없으면 정적 pinned 기본값을 사용.
+    // 고정 여부의 유일한 기준은 관리자가 설정한 백엔드 핀(pinOverrides)이다.
+    // 기본값은 "고정 안 됨"이며, 관리자가 명시적으로 고정한 것만 맨 위로 올라간다.
     const isPinned = useCallback(
-        (p) => (p.link in pinOverrides ? pinOverrides[p.link] : !!p.pinned),
+        (p) => pinOverrides[p.link] === true,
         [pinOverrides]
     );
 
@@ -261,8 +272,13 @@ const Main = () => {
         e.preventDefault();
         e.stopPropagation();
         const next = !isPinned(project);
+        // 고정 시 목록이 즉시 재정렬되므로, 클릭한 카드를 따라가 시야에서 사라지지 않게 한다.
+        const card = e.currentTarget.closest('.k-row, .k-tile');
         // 낙관적 업데이트
         setPinOverrides((prev) => ({ ...prev, [project.link]: next }));
+        if (card) {
+            requestAnimationFrame(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        }
         const result = await pinService.setPin(project.link, next);
         if (result === null) {
             // 실패 시 롤백
@@ -533,13 +549,15 @@ const Main = () => {
                                 <div className="desc">DESC</div><div className="cat-cell">CAT</div><div className="stack-cell">STACK</div><div className="arrow"></div>
                             </div>
                             {filtered.map((p, n) => (
-                                <a key={p.id} href={p.link} className="k-row data" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                                <a key={p.id} href={p.link} className={`k-row data ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="pid">{String(n + 1).padStart(2, '0')}</div>
                                     <div className="state">
                                         <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
                                     </div>
-                                    <div className="name">{p.thumbnail} {p.name}{isPinned(p) && <span className="k-pin" title="고정">★</span>}{isNewProject(p) && <span className="k-new">NEW</span>}{isAdmin && (
-                                        <button type="button" className={`k-pin-toggle ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '고정'} aria-label={isPinned(p) ? '고정 해제' : '고정'} onClick={(e) => handlePinToggle(e, p)}>📌</button>
+                                    <div className="name">{p.thumbnail} {p.name}{isNewProject(p) && <span className="k-new">NEW</span>}{isAdmin ? (
+                                        <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
+                                    ) : isPinned(p) && (
+                                        <span className="k-pin-badge"><PinGlyph />고정</span>
                                     )}</div>
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
@@ -551,13 +569,14 @@ const Main = () => {
                     ) : (
                         <div className="k-tiles">
                             {filtered.map((p) => (
-                                <a key={p.id} href={p.link} className="k-tile" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
-                                    {isPinned(p) && <span className="k-pin-sticker" aria-hidden="true">★</span>}
+                                <a key={p.id} href={p.link} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="k-tile-bar">
                                         <div className="k-dots"><i></i><i></i><i></i></div>
                                         <span className="tname">{p.name}</span>
-                                        {isAdmin && (
-                                            <button type="button" className={`k-pin-toggle ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '고정'} aria-label={isPinned(p) ? '고정 해제' : '고정'} onClick={(e) => handlePinToggle(e, p)}>📌</button>
+                                        {isAdmin ? (
+                                            <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
+                                        ) : isPinned(p) && (
+                                            <span className="k-pin-mark" title="고정됨"><PinGlyph /></span>
                                         )}
                                         <span className={`tdot ${p.isProduction ? 'live' : ''}`}></span>
                                     </div>
