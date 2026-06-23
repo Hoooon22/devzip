@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
 import viewService from '../services/viewService';
+import pinService from '../services/pinService';
 import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
@@ -112,6 +113,8 @@ const Main = () => {
     const [isJokeLoading, setIsJokeLoading] = useState(true);
     const [showJokeTranslation, setShowJokeTranslation] = useState(false);
     const [viewCounts, setViewCounts] = useState({});
+    // 관리자가 설정한 고정 override { projectKey: boolean }. 행이 없으면 정적 pinned 기본값 사용.
+    const [pinOverrides, setPinOverrides] = useState({});
     const [paletteOpen, setPaletteOpen] = useState(false);
 
     // 인증 상태 (메뉴바 트레이 + 명령 팔레트가 공유)
@@ -125,6 +128,15 @@ const Main = () => {
         let cancelled = false;
         viewService.getViewCounts().then((counts) => {
             if (!cancelled) setViewCounts(counts);
+        });
+        return () => { cancelled = true; };
+    }, []);
+
+    // 프로젝트 고정(핀) 설정 로드 (로그인 불필요, 모두에게 동일하게 보임)
+    useEffect(() => {
+        let cancelled = false;
+        pinService.getPins().then((pins) => {
+            if (!cancelled) setPinOverrides(pins);
         });
         return () => { cancelled = true; };
     }, []);
@@ -219,6 +231,14 @@ const Main = () => {
         'insert coin to continue',
     ], [totalCount, heroStats]);
 
+    const isAdmin = user?.role === 'ROLE_ADMIN';
+
+    // effective 고정 여부: 관리자 override 가 있으면 그 값을, 없으면 정적 pinned 기본값을 사용.
+    const isPinned = useCallback(
+        (p) => (p.link in pinOverrides ? pinOverrides[p.link] : !!p.pinned),
+        [pinOverrides]
+    );
+
     const filtered = useMemo(() => {
         let pool;
         if (mode === 'all') pool = projects;
@@ -226,13 +246,30 @@ const Main = () => {
         else pool = projects.filter(p => !p.isProduction);
 
         return [...pool].sort((a, b) => {
-            if (a.pinned && !b.pinned) return -1;
-            if (!a.pinned && b.pinned) return 1;
+            const ap = isPinned(a);
+            const bp = isPinned(b);
+            if (ap && !bp) return -1;
+            if (!ap && bp) return 1;
             if (!a.startDate) return 1;
             if (!b.startDate) return -1;
             return new Date(b.startDate) - new Date(a.startDate);
         });
-    }, [mode]);
+    }, [mode, isPinned]);
+
+    // 관리자: 프로젝트 고정/해제 토글 (전역 설정, 모두에게 반영)
+    const handlePinToggle = useCallback(async (e, project) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const next = !isPinned(project);
+        // 낙관적 업데이트
+        setPinOverrides((prev) => ({ ...prev, [project.link]: next }));
+        const result = await pinService.setPin(project.link, next);
+        if (result === null) {
+            // 실패 시 롤백
+            setPinOverrides((prev) => ({ ...prev, [project.link]: !next }));
+            alert('고정 설정에 실패했습니다. 관리자 권한 또는 네트워크를 확인해주세요.');
+        }
+    }, [isPinned]);
 
     /* 액션 */
     const scrollToProc = () => {
@@ -501,7 +538,9 @@ const Main = () => {
                                     <div className="state">
                                         <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
                                     </div>
-                                    <div className="name">{p.thumbnail} {p.name}{p.pinned && <span className="k-pin" title="고정">★</span>}{isNewProject(p) && <span className="k-new">NEW</span>}</div>
+                                    <div className="name">{p.thumbnail} {p.name}{isPinned(p) && <span className="k-pin" title="고정">★</span>}{isNewProject(p) && <span className="k-new">NEW</span>}{isAdmin && (
+                                        <button type="button" className={`k-pin-toggle ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '고정'} aria-label={isPinned(p) ? '고정 해제' : '고정'} onClick={(e) => handlePinToggle(e, p)}>📌</button>
+                                    )}</div>
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
                                     <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
@@ -513,10 +552,13 @@ const Main = () => {
                         <div className="k-tiles">
                             {filtered.map((p) => (
                                 <a key={p.id} href={p.link} className="k-tile" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
-                                    {p.pinned && <span className="k-pin-sticker" aria-hidden="true">★</span>}
+                                    {isPinned(p) && <span className="k-pin-sticker" aria-hidden="true">★</span>}
                                     <div className="k-tile-bar">
                                         <div className="k-dots"><i></i><i></i><i></i></div>
                                         <span className="tname">{p.name}</span>
+                                        {isAdmin && (
+                                            <button type="button" className={`k-pin-toggle ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '고정'} aria-label={isPinned(p) ? '고정 해제' : '고정'} onClick={(e) => handlePinToggle(e, p)}>📌</button>
+                                        )}
                                         <span className={`tdot ${p.isProduction ? 'live' : ''}`}></span>
                                     </div>
                                     <div className="k-tile-bd">

@@ -247,6 +247,10 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-stat.off { opacity: 0.5; }
 .k-new { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; background: var(--signal); color: var(--on-signal); padding: 2px 5px; margin-left: 8px; vertical-align: 2px; }
 .k-pin { color: var(--signal); margin-left: 7px; font-size: 12px; }
+.k-pin-toggle { margin-left: 7px; padding: 1px 4px; font-size: 11px; line-height: 1; background: transparent; border: 1px solid var(--line); color: var(--ink-soft); cursor: pointer; opacity: 0.45; filter: grayscale(1); vertical-align: 1px; transition: opacity 0.12s ease, filter 0.12s ease; }
+.k-pin-toggle:hover { opacity: 0.9; filter: grayscale(0); border-color: var(--signal); }
+.k-pin-toggle.on { opacity: 1; filter: grayscale(0); border-color: var(--signal); background: var(--signal-soft); }
+.k-tile-bar .k-pin-toggle { margin-left: auto; }
 .k-chip { display: inline-block; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; background: var(--row-alt); border: 1px solid var(--line); color: var(--ink-soft); }
 .k-stack { display: flex; flex-wrap: wrap; gap: 4px; }
 .k-stack span { font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; border: 1px solid var(--line); color: var(--ink-soft); }

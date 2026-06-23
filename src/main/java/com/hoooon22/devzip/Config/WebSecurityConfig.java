@@ -77,6 +77,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/serverstarts/**").permitAll()
                         .requestMatchers("/metrics/**").permitAll()
                         .requestMatchers("/api/traceboard/**").hasRole("ADMIN") // 나머지 트레이스보드 API는 관리자만
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/pins").hasRole("ADMIN") // 프로젝트 고정 설정은 관리자만 (조회는 공개)
                         .requestMatchers("/api/livechat/**").authenticated() // 실시간 채팅 API는 인증된 사용자만
                         // 페이지 라우팅은 React에서 ProtectedRoute로 보호됨
                         .requestMatchers("/", "/static/**", "/manifest.json", "/favicon.ico").permitAll()
