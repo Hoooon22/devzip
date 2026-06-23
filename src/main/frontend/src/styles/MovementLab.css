@@ -1,0 +1,109 @@
+/* MOVEMENT LAB — BreakingPoint 벤치 위에 얹는 무브먼트 전용 요소
+   (키캡 힌트 · 프리셋 폭 · 모바일 터치 컨트롤) */
+
+/* 프리셋 세그먼트는 3칸이라 살짝 좁게 */
+.ml-presets .bp-engine-btn {
+    min-width: 66px;
+}
+
+/* 조작 키캡 */
+.ml-keys {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    color: var(--dim);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+}
+.ml-keys kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    margin-right: 2px;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    color: var(--trace);
+    font-family: var(--data);
+    font-size: 0.58rem;
+    line-height: 1;
+}
+.ml-keys kbd.ml-wide {
+    min-width: auto;
+    letter-spacing: 0.08em;
+    margin-left: 6px;
+}
+.ml-keys-sep {
+    margin-left: 4px;
+}
+
+/* ── 모바일 터치 컨트롤 (포인터: coarse 에서만 노출) ──── */
+.ml-touch {
+    position: absolute;
+    z-index: 3;
+    bottom: 18px;
+    display: none;
+    touch-action: none;
+}
+.ml-touch-move {
+    left: 16px;
+    width: 132px;
+    height: 132px;
+}
+.ml-touch-act {
+    right: 16px;
+}
+.ml-pad {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    background: rgba(18, 22, 27, 0.78);
+    border: 1px solid var(--hair);
+    color: var(--trace);
+    font-size: 0.85rem;
+    border-radius: 8px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.ml-pad:active {
+    background: var(--sig);
+    color: var(--ink);
+    border-color: var(--sig);
+}
+.ml-pad-f { left: 44px; top: 0; }
+.ml-pad-l { left: 0; top: 44px; }
+.ml-pad-r { left: 88px; top: 44px; }
+.ml-pad-b { left: 44px; top: 88px; }
+.ml-jump {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(94, 200, 255, 0.16);
+    border: 1.5px solid var(--sig);
+    color: var(--sig);
+    font-family: var(--display, var(--data));
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.ml-jump:active {
+    background: var(--sig);
+    color: var(--ink);
+}
+
+@media (pointer: coarse) {
+    .ml-touch {
+        display: block;
+    }
+    /* 터치 기기에선 키캡 힌트 숨김 */
+    .ml-keys {
+        display: none;
+    }
+}
