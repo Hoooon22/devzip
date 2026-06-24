@@ -1,5 +1,17 @@
 const projects = [
     {
+        id: 33,
+        name: 'Interpolate',
+        description: '온도계는 몇 곳에만 꽂혀 있는데 지도는 빈틈없이 색칠해야 한다 — 흩어진 관측점 사이의 빈 공간을 추정해 연속 표면을 만드는 GIS 공간 보간 실험. 필드를 클릭해 관측점을 찍고 IDW(역거리가중)와 최근접 이웃(보로노이)을 같은 데이터로 비교하며, p를 키울수록 도드라지는 황소눈 무늬까지 직접 관찰',
+        link: '/interpolate',
+        active: true,
+        startDate: '2026-06-24',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🗺️'
+    },
+    {
         id: 32,
         name: 'Mixture',
         description: '거대 모델이라고 매번 전부 켜지는 건 아니다 — 라우터가 토큰마다 어울리는 전문가 소수(top-k)만 깨우는 희소 라우팅(MoE)을 직접 돌려보는 실험. 용량은 키우면서 실제 연산은 작게 유지하는 \'효율 모델\'의 비결과, 라우터가 쏠리면 생기는 죽은 전문가까지 관찰',
