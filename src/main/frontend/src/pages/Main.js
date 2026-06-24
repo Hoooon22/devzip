@@ -558,7 +558,7 @@ const Main = () => {
                                         <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
                                     ) : isPinned(p) && (
                                         <span className="k-pin-badge"><PinGlyph />고정</span>
-                                    )}</div>
+                                    )}{p.subtitle && <span className="k-subtitle">{p.subtitle}</span>}</div>
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
                                     <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
@@ -585,7 +585,7 @@ const Main = () => {
                                             <div className="glw">{p.thumbnail || '📦'}</div>
                                             <span className="k-chip">{cleanCategory(p.category)}</span>
                                         </div>
-                                        <h3>{p.name}{isNewProject(p) && <span className="k-new">NEW</span>}</h3>
+                                        <h3>{p.name}{isNewProject(p) && <span className="k-new">NEW</span>}{p.subtitle && <span className="k-subtitle">{p.subtitle}</span>}</h3>
                                         <p>{p.description}</p>
                                         <div className="foot">
                                             <span className="k-stack">{renderTechTags(p, 2)}</span>

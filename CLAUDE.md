@@ -162,6 +162,21 @@ ENCRYPTION_SALT=your_encryption_salt
 - **Database**: JPA entities with Lombok annotations for boilerplate reduction
 - **API**: RESTful endpoints with consistent response format using `ApiResponse<T>` wrapper
 
+### Project Card Convention (실험/프로젝트 카드)
+When adding a new experiment/project to `src/main/frontend/src/data/projects.js`,
+follow these rules so cards stay consistent:
+
+- **영문명에는 한국어 부제(`subtitle`)를 붙인다.** 프로젝트 `name`이 영문이면
+  `subtitle` 필드에 그 개념을 나타내는 짧은 한국어 부제를 추가한다. 카드/표 뷰 모두
+  영문 제목 아래에 부제로 작게 표시된다(`pages/Main.js`의 `p.subtitle` → `.k-subtitle`,
+  스타일은 `assets/css/Main.scss`).
+  - ✅ `name: 'Mixture', subtitle: '전문가 혼합 (MoE)'`
+  - 이름이 이미 한국어인 항목은 `subtitle`을 넣지 않는다(중복이므로 생략).
+- **`description`(카드 부가설명)은 한 줄로 짧게 쓴다.** 긴 배경 설명·인사이트는
+  카드에 넣지 말고 실험 페이지 본문에 둔다. 한 문장(대략 40자 내외) 분량을 목표로 한다.
+  - ✅ `description: '토큰마다 어울리는 전문가 소수만 깨우는 희소 라우팅(MoE) 실험'`
+  - ❌ 두세 문장에 걸친 장문 설명(`— ... 까지 직접 관찰` 식의 긴 서술)
+
 ### Frontend Lint Pitfalls (CRA / react-scripts build)
 The Gradle `:buildFrontendReact` task runs `react-scripts build`, which treats ESLint
 warnings as **build-breaking errors**. The same two rules keep failing the build —
