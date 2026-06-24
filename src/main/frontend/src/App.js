@@ -43,6 +43,7 @@ import Tokenizer from './pages/experiments/Tokenizer';
 import BreakingPoint from './pages/experiments/BreakingPoint';
 import MovementLab from './pages/experiments/MovementLab';
 import Diffusion from './pages/experiments/Diffusion';
+import Mixture from './pages/experiments/Mixture';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -203,6 +204,7 @@ function App() {
         <Route path="/breaking-point" element={<BreakingPoint />} />
         <Route path="/movement-lab" element={<MovementLab />} />
         <Route path="/diffusion" element={<Diffusion />} />
+        <Route path="/mixture" element={<Mixture />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

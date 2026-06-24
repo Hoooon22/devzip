@@ -1,5 +1,17 @@
 const projects = [
     {
+        id: 32,
+        name: 'Mixture',
+        description: '거대 모델이라고 매번 전부 켜지는 건 아니다 — 라우터가 토큰마다 어울리는 전문가 소수(top-k)만 깨우는 희소 라우팅(MoE)을 직접 돌려보는 실험. 용량은 키우면서 실제 연산은 작게 유지하는 \'효율 모델\'의 비결과, 라우터가 쏠리면 생기는 죽은 전문가까지 관찰',
+        link: '/mixture',
+        active: true,
+        startDate: '2026-06-24',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🔀'
+    },
+    {
         id: 31,
         name: 'Diffusion',
         description: '생성 AI는 어떻게 노이즈에서 그림을 만드는가 — 순수 노이즈를 한 스텝씩 되감아 형태가 떠오르는 역확산(denoising)을 직접 스크럽하는 생성 모델 실험. 끝까지 걷지 않으면 남는 거친 입자가 곧 요즘 인터넷의 그 어설픈 AI 이미지 질감이다',
