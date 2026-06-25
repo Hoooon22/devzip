@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 35,
+        name: 'Eavesdrop',
+        subtitle: '양자 키 분배 (BB84)',
+        description: '광자를 엿보면 흔적이 남아 도청이 들통나는 양자 키 분배 실험',
+        link: '/eavesdrop',
+        active: true,
+        startDate: '2026-06-25',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🔑'
+    },
+    {
         id: 34,
         name: 'Speculative',
         subtitle: '추측 디코딩',
