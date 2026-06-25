@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 34,
+        name: 'Speculative',
+        subtitle: '추측 디코딩',
+        description: '작은 모델이 미리 찍고 큰 모델이 한 번에 검증하는 추론 가속 실험',
+        link: '/speculative',
+        active: true,
+        startDate: '2026-06-25',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '⏩'
+    },
+    {
         id: 33,
         name: 'Interpolate',
         subtitle: '공간 보간',
