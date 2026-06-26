@@ -2,6 +2,7 @@ package com.hoooon22.devzip.Config;
 
 import com.hoooon22.devzip.Service.AuthTokenFilter;
 import com.hoooon22.devzip.Service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,6 +31,10 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authTokenFilter;
+
+    // 자격증명 허용 CORS 의 허용 출처 (application.properties: app.cors.allowed-origins)
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
             AuthEntryPointJwt unauthorizedHandler,
@@ -92,25 +97,25 @@ public class WebSecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        // 자격증명 포함 요청은 명시적 허용 출처에서만 가능 (와일드카드 + credentials 금지)
         CorsConfiguration configuration = new CorsConfiguration();
-        // allowCredentials가 true일 때는 allowedOriginPatterns 사용
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:*",
-                "https://localhost:*",
-                "http://192.168.*:*",
-                "https://192.168.*:*",
-                "http://192.168.*", // 포트 없는 경우 추가
-                "https://192.168.*", // 포트 없는 경우 추가
-                "https://devzip.cloud",
-                "http://devzip.cloud",
-                "https://www.devzip.cloud",
-                "http://www.devzip.cloud"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 공개 이벤트 수집 엔드포인트: 외부 SDK 호출을 위해 모든 출처 허용하되 자격증명은 받지 않음
+        CorsConfiguration publicEvent = new CorsConfiguration();
+        publicEvent.setAllowedOrigins(Arrays.asList("*"));
+        publicEvent.setAllowedMethods(Arrays.asList("POST", "OPTIONS"));
+        publicEvent.setAllowedHeaders(Arrays.asList("Content-Type"));
+        publicEvent.setAllowCredentials(false);
+        publicEvent.setMaxAge(3600L);
+
+        source.registerCorsConfiguration("/api/traceboard/event", publicEvent);
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
