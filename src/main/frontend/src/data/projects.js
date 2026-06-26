@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 36,
+        name: 'Feed Rank',
+        subtitle: '추천 랭킹 신호',
+        description: '팔로우가 아니라 참여 신호가 피드를 정하고 필터 버블을 만드는 추천 랭킹 실험',
+        link: '/feed-rank',
+        active: true,
+        startDate: '2026-06-26',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '📲'
+    },
+    {
         id: 35,
         name: 'Eavesdrop',
         subtitle: '양자 키 분배 (BB84)',

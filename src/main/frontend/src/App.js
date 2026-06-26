@@ -47,6 +47,7 @@ import Mixture from './pages/experiments/Mixture';
 import Interpolate from './pages/experiments/Interpolate';
 import Speculative from './pages/experiments/Speculative';
 import Eavesdrop from './pages/experiments/Eavesdrop';
+import FeedRank from './pages/experiments/FeedRank';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -211,6 +212,7 @@ function App() {
         <Route path="/interpolate" element={<Interpolate />} />
         <Route path="/speculative" element={<Speculative />} />
         <Route path="/eavesdrop" element={<Eavesdrop />} />
+        <Route path="/feed-rank" element={<FeedRank />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
