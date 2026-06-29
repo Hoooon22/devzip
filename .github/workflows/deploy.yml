@@ -161,18 +161,20 @@ jobs:
           echo "⏳ Waiting briefly for application to start..."
           sleep 5
 
-          # 헬스체크
-          for i in {1..12}; do
+          # 헬스체크 (배포 SSH 세션 내에서 권위 검증).
+          # 러너->서버 SSH는 간헐적으로 끊기므로, 이미 연결된 이 세션에서 직접 검증해
+          # 두 번째 SSH 연결에 파이프라인 성패를 의존하지 않게 한다. 실패 시 job 실패 처리.
+          for i in $(seq 1 20); do
             if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
               echo "✅ Application started successfully!"
               exit 0
             fi
-            echo "⏳ Waiting... ($i/12)"
-            sleep 3
+            echo "⏳ Waiting for app health... ($i/20)"
+            sleep 6
           done
 
-          echo "⚠️ Application might be starting slower than expected"
-          echo "🎉 Deployment completed!"
+          echo "❌ Application failed health check after deployment"
+          exit 1
 
     - name: Send Build Failure Webhook
       if: failure()
@@ -209,7 +211,11 @@ jobs:
         echo "⏳ Brief grace period before health verification..."
         sleep 5
 
-    - name: Health Check - Server Local (authoritative)
+    # 권위 헬스체크는 배포 job의 SSH 세션 안에서 이미 수행한다.
+    # 이 단계는 러너->서버로의 두 번째 SSH 연결이라 간헐적으로 끊겨(false negative)
+    # 파이프라인을 망가뜨리므로 비차단(continue-on-error)으로 둔다.
+    - name: Health Check - Server Local (informational)
+      continue-on-error: true
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
