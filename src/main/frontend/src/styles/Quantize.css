@@ -1,0 +1,192 @@
+/* QUANTIZE — 가중치 양자화 실험
+   60-30-10: 차가운 회색 제도지 배경(60) / 잉크 패널·테두리(30) / 앰버 강조(10).
+   스코프는 의도적으로 어두운 계측기 느낌. 빨강(오차)·흰색(원본)은 기능 색. */
+
+.qz-container {
+    --bg: #e7e9ec;
+    --surface: #f3f4f6;
+    --surface-2: #d9dce1;
+    --ink: #15181d;
+    --muted: #69707d;
+    --line: #15181d;
+    --accent: #f59e0b;
+    --err: #d83a2b;
+
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+        linear-gradient(var(--surface-2) 1px, transparent 1px),
+        linear-gradient(90deg, var(--surface-2) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: 'Courier New', ui-monospace, monospace;
+    padding: 2rem 1rem 4rem;
+    box-sizing: border-box;
+}
+
+.qz-inner { max-width: 1080px; margin: 0 auto; }
+
+.qz-back {
+    display: inline-block;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+    border: 3px solid var(--line);
+    background: var(--surface);
+    box-shadow: 4px 4px 0 var(--line);
+}
+.qz-back:hover { background: var(--accent); color: var(--ink); }
+
+.qz-header { margin: 1.8rem 0 1.4rem; }
+.qz-title {
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 0;
+    line-height: 0.9;
+}
+.qz-sub { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.95rem; font-weight: 700; }
+
+.qz-stage { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+@media (min-width: 920px) {
+    .qz-stage { grid-template-columns: 1.7fr 1fr; align-items: start; }
+}
+
+/* ---- 좌측 ---- */
+.qz-left {
+    background: var(--surface);
+    border: 3px solid var(--line);
+    box-shadow: 8px 8px 0 var(--line);
+    padding: 1rem;
+}
+
+.qz-presets { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem; }
+.qz-presets-label { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.qz-preset-btn {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.7rem;
+    border: 2px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--line);
+    transition: transform 0.05s, box-shadow 0.05s, background 0.1s;
+}
+.qz-preset-btn:hover { background: var(--accent); }
+.qz-preset-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--line); }
+.qz-preset-on { background: var(--accent); }
+
+.qz-scope-wrap {
+    border: 3px solid var(--line);
+    background: #16191f;
+    line-height: 0;
+}
+.qz-scope { width: 100%; height: auto; display: block; }
+
+.qz-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin-top: 0.8rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+.qz-leg { display: inline-flex; align-items: center; gap: 0.35rem; }
+.qz-swatch { width: 1rem; height: 0.55rem; border: 1.5px solid var(--line); display: inline-block; }
+.qz-sw-orig { background: #fff; }
+.qz-sw-quant { background: var(--accent); }
+.qz-sw-err { background: var(--err); }
+.qz-sw-grid { background: rgba(245,158,11,0.35); }
+
+.qz-reshuffle {
+    margin-top: 0.9rem;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.6rem;
+    border: 2px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--line);
+}
+.qz-reshuffle:hover { background: var(--accent); }
+.qz-reshuffle:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--line); }
+
+/* ---- 우측 패널 ---- */
+.qz-panel {
+    background: var(--surface);
+    border: 3px solid var(--line);
+    box-shadow: 8px 8px 0 var(--line);
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.qz-control { display: flex; flex-direction: column; gap: 0.4rem; }
+.qz-control label { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.qz-control label b { color: var(--ink); font-size: 1.1rem; }
+.qz-control label small { color: var(--muted); font-weight: 700; margin-left: 0.25rem; }
+.qz-control input[type=range] { width: 100%; accent-color: var(--accent); }
+.qz-ticks { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--muted); font-weight: 700; }
+
+.qz-stat { display: flex; flex-direction: column; }
+.qz-stat-main { border: 3px solid var(--accent); padding: 0.8rem; background: #fff; }
+.qz-stat-num { font-size: 2.6rem; font-weight: 800; line-height: 1; color: var(--ink); }
+.qz-stat-num small { font-size: 1.2rem; color: var(--accent); margin-left: 0.1rem; }
+.qz-stat-num.qz-mini { font-size: 1.5rem; }
+.qz-stat-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; margin-top: 0.35rem; }
+.qz-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+.qz-stat-row .qz-stat { border: 2px solid var(--line); padding: 0.6rem; background: var(--surface-2); }
+
+/* ---- 메모리 비교 ---- */
+.qz-mem { border-top: 2px dashed var(--muted); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.qz-mem-head { font-size: 0.8rem; font-weight: 800; }
+.qz-mem-row { display: flex; align-items: center; gap: 0.5rem; }
+.qz-mem-tag { width: 3.4rem; font-size: 0.72rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+.qz-mem-track { flex: 1; height: 1.4rem; background: var(--surface-2); border: 2px solid var(--line); overflow: hidden; }
+.qz-mem-fill {
+    height: 100%;
+    min-width: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+    transition: width 0.2s;
+}
+.qz-mem-base { background: var(--ink); }
+.qz-mem-q { background: var(--accent); color: var(--ink); }
+.qz-mem-foot { font-size: 0.74rem; color: var(--muted); font-weight: 700; }
+.qz-mem-foot b { background: var(--accent); color: var(--ink); padding: 0 0.2rem; }
+
+.qz-hint {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 2px solid var(--line);
+    padding: 0.5rem 0.6rem;
+}
+
+/* ---- 푸터 ---- */
+.qz-foot {
+    margin-top: 1.4rem;
+    border: 3px solid var(--line);
+    background: var(--surface);
+    box-shadow: 6px 6px 0 var(--line);
+    padding: 1.1rem 1.2rem;
+}
+.qz-foot p { margin: 0 0 0.8rem; font-size: 0.92rem; line-height: 1.7; color: var(--ink); }
+.qz-foot p:last-child { margin-bottom: 0; }
+.qz-foot b { background: var(--accent); color: var(--ink); padding: 0 0.2rem; }
+.qz-disclaimer { font-size: 0.74rem !important; color: var(--muted); background: none; }
+.qz-disclaimer { background: none; }

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 37,
+        name: 'Quantize',
+        subtitle: '가중치 양자화',
+        description: '정밀도를 깎아 거대한 모델을 손바닥 위로 올리는 양자화 실험',
+        link: '/quantize',
+        active: true,
+        startDate: '2026-06-29',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🪙'
+    },
+    {
         id: 36,
         name: 'Feed Rank',
         subtitle: '추천 랭킹 신호',
