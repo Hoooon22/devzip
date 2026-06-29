@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 38,
+        name: 'Reach',
+        subtitle: '로봇 팔 역기구학',
+        description: '목표점을 향해 관절 각도를 거꾸로 푸는 로봇 팔 역기구학(IK) 실험',
+        link: '/reach',
+        active: true,
+        startDate: '2026-06-29',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🦾'
+    },
+    {
         id: 37,
         name: 'Quantize',
         subtitle: '가중치 양자화',

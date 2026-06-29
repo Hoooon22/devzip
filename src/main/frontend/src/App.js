@@ -49,6 +49,7 @@ import Speculative from './pages/experiments/Speculative';
 import Eavesdrop from './pages/experiments/Eavesdrop';
 import FeedRank from './pages/experiments/FeedRank';
 import Quantize from './pages/experiments/Quantize';
+import Reach from './pages/experiments/Reach';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -215,6 +216,7 @@ function App() {
         <Route path="/eavesdrop" element={<Eavesdrop />} />
         <Route path="/feed-rank" element={<FeedRank />} />
         <Route path="/quantize" element={<Quantize />} />
+        <Route path="/reach" element={<Reach />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
