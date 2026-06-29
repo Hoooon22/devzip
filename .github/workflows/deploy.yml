@@ -115,7 +115,8 @@ jobs:
         port: ${{ secrets.SERVER_SSH_PORT }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        timeout: 60s
+        # 서버 SSH 연결이 간헐적으로 느려 60s에서 dial tcp i/o timeout이 발생 -> 여유 확보
+        timeout: 180s
         command_timeout: 10m
         envs: GHCR_TOKEN,GITHUB_REPOSITORY_OWNER,GITHUB_SHA,ENCRYPTION_SECRET,ENCRYPTION_SALT
         script: |
@@ -215,7 +216,8 @@ jobs:
         port: ${{ secrets.SERVER_SSH_PORT }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        timeout: 60s
+        # 서버 SSH 연결이 간헐적으로 느려 60s에서 dial tcp i/o timeout이 발생 -> 여유 확보
+        timeout: 180s
         command_timeout: 2m
         script: |
           echo "🏥 Checking app health from server..."
