@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 39,
+        name: 'Synthetic',
+        subtitle: '합성 데이터 생성',
+        description: '원본을 베끼지 않고 분포만 닮게 만드는 합성 데이터 실험',
+        link: '/synthetic',
+        active: true,
+        startDate: '2026-06-30',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🧬'
+    },
+    {
         id: 38,
         name: 'Reach',
         subtitle: '로봇 팔 역기구학',
