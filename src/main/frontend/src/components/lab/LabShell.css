@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* DevZip // Lab Shell — 실험 상세 페이지 공용 커널 셸.
+   메인(.k-os)의 팔레트·창 크롬·모노 폰트를 그대로 미러링해 세부 페이지가
+   동일한 단일 개발자 OS 톤을 공유하도록 한다. 페이지 본문은 이 셸이 제공하는
+   토큰(--panel/--signal/--frame …)과 프리미티브(.k-win/.k-mono/.k-btn …)를 소비한다. */
+
+.lab-os {
+  --font-ui: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --desk: #E6E3D9;
+  --desk-2: #ECE9DF;
+  --dot: rgba(22,23,27,0.10);
+  --panel: #F7F5EF;
+  --panel-2: #FCFAF4;
+  --ink: #15161A;
+  --ink-soft: rgba(21,22,26,0.66);
+  --ink-mute: rgba(21,22,26,0.42);
+  --line: rgba(21,22,26,0.13);
+  --frame: rgba(21,22,26,0.26);
+  --frame-strong: #15161A;
+  --row-alt: rgba(21,22,26,0.035);
+  --hover: rgba(45,79,255,0.06);
+  --signal: #2D4FFF;
+  --signal-soft: rgba(45,79,255,0.14);
+  --on-signal: #FFFFFF;
+  --shadow: 0 1px 0 rgba(255,255,255,0.6), 0 18px 40px -28px rgba(21,22,26,0.5);
+
+  min-height: 100vh;
+  background-color: var(--desk);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01";
+}
+
+.lab-os[data-theme="dark"] {
+  --desk: #090A0D;
+  --desk-2: #0D0F13;
+  --dot: rgba(233,232,226,0.07);
+  --panel: #14161C;
+  --panel-2: #191C23;
+  --ink: #E9E8E2;
+  --ink-soft: rgba(233,232,226,0.66);
+  --ink-mute: rgba(233,232,226,0.40);
+  --line: rgba(233,232,226,0.13);
+  --frame: rgba(233,232,226,0.22);
+  --frame-strong: rgba(233,232,226,0.82);
+  --row-alt: rgba(233,232,226,0.035);
+  --hover: rgba(91,124,255,0.10);
+  --signal: #5B7CFF;
+  --signal-soft: rgba(91,124,255,0.18);
+  --on-signal: #0A0B0E;
+  --shadow: 0 1px 0 rgba(255,255,255,0.04), 0 20px 44px -26px rgba(0,0,0,0.8);
+}
+
+.lab-os *, .lab-os *::before, .lab-os *::after { box-sizing: border-box; }
+.lab-os .k-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ───────────────────────── menu bar ───────────────────────── */
+.lab-bar {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; gap: 18px;
+  height: 46px; padding: 0 18px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--frame);
+  font-family: var(--font-mono); font-size: 12px;
+}
+.lab-bar .k-brand { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.lab-bar .k-brand .dia { color: var(--signal); font-size: 13px; line-height: 1; }
+.lab-bar .k-brand .nm { font-weight: 700; letter-spacing: 0.14em; font-size: 13px; color: var(--ink); }
+.lab-bar .k-brand .ver { color: var(--ink-mute); font-size: 11px; }
+.lab-nav { display: flex; align-items: center; gap: 12px; }
+.lab-nav a {
+  color: var(--ink-soft); text-decoration: none; text-transform: lowercase;
+  padding: 5px 9px; border-radius: 5px; letter-spacing: 0.02em;
+}
+.lab-nav a:hover { color: var(--ink); background: var(--hover); }
+.lab-path { color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lab-path .dir { color: var(--ink-mute); }
+.lab-tray { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.lab-clock { color: var(--ink-soft); letter-spacing: 0.06em; }
+.lab-os .k-theme {
+  font: inherit; font-family: var(--font-mono); font-size: 11px; cursor: pointer;
+  border: 1px solid var(--frame); background: var(--panel-2); color: var(--ink-soft);
+  padding: 5px 9px; border-radius: 6px;
+}
+.lab-os .k-theme:hover { border-color: var(--signal); color: var(--ink); }
+
+/* ───────────────────────── desktop ───────────────────────── */
+.lab-main { max-width: 1080px; margin: 0 auto; padding: 22px 20px 20px; display: grid; gap: 16px; }
+
+/* window chrome (mirror .k-win) */
+.lab-os .k-win { position: relative; background: var(--panel); border: 1px solid var(--frame); box-shadow: var(--shadow); }
+.lab-os .k-win-bar {
+  display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 12px;
+  border-bottom: 1px solid var(--line); background: var(--panel-2);
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);
+}
+.lab-os .k-dots { display: flex; gap: 5px; flex-shrink: 0; }
+.lab-os .k-dots i { width: 8px; height: 8px; background: var(--frame); }
+.lab-os .k-dots i:first-child { background: var(--signal); }
+.lab-os .k-win-bar .path { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lab-os .k-win-bar .path .dir { color: var(--ink-mute); }
+.lab-os .k-win-bar .meta { margin-left: auto; color: var(--ink-mute); white-space: nowrap; flex-shrink: 0; }
+.lab-os .k-resize {
+  position: absolute; right: 4px; bottom: 4px; width: 12px; height: 12px; opacity: 0.45; pointer-events: none;
+  background-image: linear-gradient(135deg, transparent 46%, var(--frame) 46% 54%, transparent 54%),
+                    linear-gradient(135deg, transparent 70%, var(--frame) 70% 78%, transparent 78%);
+}
+
+/* buttons (mirror .k-btn) */
+.lab-os .k-btn {
+  font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 18px; border: 1px solid var(--frame-strong); background: var(--ink); color: var(--desk);
+  transition: background 0.14s, color 0.14s, transform 0.14s, border-color 0.14s;
+}
+.lab-os .k-btn:hover:not(:disabled) { background: var(--signal); border-color: var(--signal); color: var(--on-signal); transform: translateY(-1px); }
+.lab-os .k-btn:disabled { opacity: 0.45; cursor: default; }
+.lab-os .k-btn.ghost { background: transparent; color: var(--ink); }
+.lab-os .k-btn.ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); }
+
+/* chip (mirror .k-chip) */
+.lab-os .k-chip { display: inline-block; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; background: var(--row-alt); border: 1px solid var(--line); color: var(--ink-soft); }
+
+/* ── hero / title window ── */
+.lab-hero-bd { padding: 34px 34px 32px; }
+.lab-os .k-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--signal); border: 1px solid var(--signal-soft); background: var(--signal-soft);
+  padding: 5px 11px; border-radius: 999px; margin-bottom: 20px;
+}
+.lab-os .k-eyebrow .sq { width: 6px; height: 6px; background: var(--signal); }
+.lab-hero-bd h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.0; letter-spacing: -0.04em; font-weight: 600; margin: 0; }
+.lab-sub { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6; color: var(--signal); margin: 14px 0 0; }
+
+/* ── status bar (mirror .k-statusbar) ── */
+.lab-foot { display: flex; align-items: center; gap: 18px; padding: 14px 4px 4px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); flex-wrap: wrap; }
+.lab-foot .sys { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-soft); }
+.lab-foot .sys .sq { width: 7px; height: 7px; background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
+.lab-foot .links { margin-left: auto; display: flex; gap: 16px; }
+.lab-foot a { color: var(--ink-soft); text-decoration: none; }
+.lab-foot a:hover { color: var(--signal); }
+
+@media (max-width: 640px) {
+  .lab-bar { gap: 10px; padding: 0 12px; }
+  .lab-path { display: none; }
+  .lab-hero-bd { padding: 26px 20px 24px; }
+}

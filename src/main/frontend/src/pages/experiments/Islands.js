@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import LabShell from '../../components/lab/LabShell';
 import '../../styles/Islands.css';
 
 // 섬(아일랜드) 아키텍처 / 부분 하이드레이션 실험.
@@ -128,15 +128,18 @@ const Islands = () => {
             : schedule.isl.order.filter((c) => playT >= schedule.isl.map[c.id].end).length;
 
     return (
-        <div className="il-container">
-            <div className="il-inner">
-                <Link to="/" className="il-back">← 실험실로 돌아가기</Link>
-
-                <header className="il-header">
-                    <h1 className="il-title">ISLANDS</h1>
-                    <p className="il-sub">{'// 상호작용이 일어나는 곳에만 JS를 실어보낸다 — 섬 아키텍처 · 부분 하이드레이션'}</p>
-                </header>
-
+        <LabShell
+            title="ISLANDS"
+            eyebrow="partial hydration"
+            subtitle={'// 상호작용이 일어나는 곳에만 JS를 실어보낸다 — 섬 아키텍처 · 부분 하이드레이션'}
+            path="islands.exe"
+        >
+            <section className="k-win il-win">
+                <div className="k-win-bar">
+                    <div className="k-dots"><i></i><i></i><i></i></div>
+                    <span className="path k-mono"><span className="dir">/proc/</span>hydration</span>
+                    <span className="meta k-mono">island simulator</span>
+                </div>
                 <div className="il-stage">
                     {/* 좌측: 가상 페이지 목업 */}
                     <section className="il-left">
@@ -251,7 +254,14 @@ const Islands = () => {
                         </button>
                     </aside>
                 </div>
+                <div className="k-resize"></div>
+            </section>
 
+            <section className="k-win il-foot-win">
+                <div className="k-win-bar">
+                    <div className="k-dots"><i></i><i></i><i></i></div>
+                    <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
+                </div>
                 <footer className="il-foot">
                     <p>
                         {'서버-우선 렌더링에선 서버가 페이지를 '}<b>정적 HTML</b>{'로 먼저 그려서 첫 화면은 곧바로 뜬다. '}
@@ -272,8 +282,8 @@ const Islands = () => {
                         {'* 실제 번들러·프레임워크가 아니라 부분 하이드레이션의 비용 구조(JS 전송량 → TTI)를 보여주는 결정적 근사 시뮬레이터입니다.'}
                     </p>
                 </footer>
-            </div>
-        </div>
+            </section>
+        </LabShell>
     );
 };
 
