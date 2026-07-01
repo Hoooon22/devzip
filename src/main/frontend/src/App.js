@@ -52,6 +52,7 @@ import Quantize from './pages/experiments/Quantize';
 import Reach from './pages/experiments/Reach';
 import Synthetic from './pages/experiments/Synthetic';
 import Islands from './pages/experiments/Islands';
+import Converge from './pages/experiments/Converge';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -221,6 +222,7 @@ function App() {
         <Route path="/reach" element={<Reach />} />
         <Route path="/synthetic" element={<Synthetic />} />
         <Route path="/islands" element={<Islands />} />
+        <Route path="/converge" element={<Converge />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

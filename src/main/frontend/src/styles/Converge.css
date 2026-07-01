@@ -1,0 +1,221 @@
+/* CONVERGE — 충돌 없는 복제 데이터(CRDT) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   시그널(코발트)은 상호작용 컨트롤에만, 초록(수렴)·앰버(유실)만 상태 의미색으로 둔다. */
+
+.lab-os {
+    --cv-ok: #12894e;
+    --cv-ok-soft: rgba(18, 137, 78, 0.12);
+    --cv-warn: #b9791b;
+    --cv-warn-soft: rgba(185, 121, 27, 0.14);
+}
+.lab-os[data-theme="dark"] {
+    --cv-ok: #34c17e;
+    --cv-ok-soft: rgba(52, 193, 126, 0.16);
+    --cv-warn: #e0a34a;
+    --cv-warn-soft: rgba(224, 163, 74, 0.16);
+}
+
+/* ---- 툴바 ---- */
+.cv-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+.cv-conn-toggle, .cv-strategy { display: inline-flex; align-items: center; }
+.cv-conn-toggle { border: 1px solid var(--frame); }
+.cv-seg {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: none;
+    padding: 0.42rem 0.7rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.cv-seg + .cv-seg { border-left: 1px solid var(--frame); }
+.cv-seg.is-active { background: var(--ink); color: var(--desk); }
+
+.cv-strategy { gap: 0.6rem; }
+.cv-strategy-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-mute);
+}
+.cv-strategy label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 0.2rem 0.1rem;
+}
+.cv-strategy label.is-sel { color: var(--signal); font-weight: 600; }
+.cv-strategy input[type="radio"] { accent-color: var(--signal); cursor: pointer; }
+
+.cv-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 0.5rem; }
+.cv-btn {
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--desk);
+    background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.cv-btn:hover:not(:disabled) { background: var(--signal); color: var(--on-signal); border-color: var(--signal); transform: translateY(-1px); }
+.cv-btn:disabled { opacity: 0.4; cursor: default; }
+.cv-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.cv-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대: 두 복제본 ---- */
+.cv-stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 18px;
+    align-items: stretch;
+}
+@media (min-width: 860px) {
+    .cv-stage { grid-template-columns: 1fr auto 1fr; align-items: center; }
+}
+
+.cv-replica {
+    background: var(--panel-2);
+    border: 1px solid var(--frame);
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.cv-replica-head { display: flex; align-items: center; justify-content: space-between; }
+.cv-tag {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.18rem 0.5rem;
+    border: 1px solid var(--frame);
+    background: var(--panel);
+    color: var(--ink);
+}
+.cv-conn { font-size: 0.68rem; }
+.cv-conn.is-on { color: var(--cv-ok); }
+.cv-conn.is-off { color: var(--ink-mute); }
+
+.cv-editor {
+    width: 100%;
+    resize: vertical;
+    min-height: 3.4rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    padding: 0.65rem 0.7rem;
+    outline: none;
+    transition: border-color 0.14s, box-shadow 0.14s;
+}
+.cv-editor:focus { border-color: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
+
+.cv-replica-foot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--ink-mute);
+}
+.cv-pending { color: var(--cv-warn); font-weight: 600; }
+
+/* ---- 가운데 연결선 ---- */
+.cv-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-direction: row;
+}
+@media (min-width: 860px) { .cv-link { flex-direction: column; height: 100%; } }
+.cv-link-line { flex: 1; background: var(--frame); }
+.cv-link { --lw: 2px; }
+.cv-link-line { height: var(--lw); min-width: 24px; }
+@media (min-width: 860px) { .cv-link-line { width: var(--lw); min-width: 0; min-height: 24px; } }
+.cv-link.is-diverged .cv-link-line { background: repeating-linear-gradient(90deg, var(--cv-warn), var(--cv-warn) 4px, transparent 4px, transparent 8px); }
+@media (min-width: 860px) { .cv-link.is-diverged .cv-link-line { background: repeating-linear-gradient(180deg, var(--cv-warn), var(--cv-warn) 4px, transparent 4px, transparent 8px); } }
+.cv-link.is-converged .cv-link-line { background: var(--cv-ok); }
+.cv-link-badge {
+    font-size: 0.66rem;
+    font-weight: 600;
+    padding: 0.16rem 0.45rem;
+    border: 1px solid var(--frame);
+    white-space: nowrap;
+}
+.cv-link.is-diverged .cv-link-badge { color: var(--cv-warn); border-color: var(--cv-warn); background: var(--cv-warn-soft); }
+.cv-link.is-converged .cv-link-badge { color: var(--cv-ok); border-color: var(--cv-ok); background: var(--cv-ok-soft); }
+
+/* ---- 병합 결과 비교 ---- */
+.cv-merge {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 18px 4px;
+}
+@media (min-width: 720px) { .cv-merge { grid-template-columns: 1fr 1fr; } }
+
+.cv-merge-col {
+    border: 1px solid var(--frame);
+    background: var(--panel);
+    padding: 0.85rem 0.9rem;
+}
+.cv-merge-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.55rem; }
+.cv-merge-name { font-size: 0.86rem; font-weight: 600; letter-spacing: -0.01em; }
+.cv-merge-flag { font-size: 0.64rem; font-weight: 600; padding: 0.14rem 0.44rem; border: 1px solid transparent; }
+.cv-ok { color: var(--cv-ok); background: var(--cv-ok-soft); border-color: var(--cv-ok); }
+.cv-warn { color: var(--cv-warn); background: var(--cv-warn-soft); border-color: var(--cv-warn); }
+.cv-merge-out {
+    font-size: 0.98rem;
+    color: var(--ink);
+    background: var(--row-alt);
+    border: 1px dashed var(--line);
+    padding: 0.6rem 0.7rem;
+    min-height: 2.2rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.cv-merge-note { margin: 0.55rem 0 0; font-size: 0.74rem; line-height: 1.5; color: var(--ink-mute); }
+.cv-merge-note b { color: var(--ink-soft); }
+
+/* ---- 토스트 · 힌트 ---- */
+.cv-toast {
+    margin: 12px 18px 0;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    border: 1px solid transparent;
+}
+.cv-toast.is-ok { color: var(--cv-ok); background: var(--cv-ok-soft); border-color: var(--cv-ok); }
+.cv-toast.is-warn { color: var(--cv-warn); background: var(--cv-warn-soft); border-color: var(--cv-warn); }
+
+.cv-hint {
+    margin: 14px 18px 20px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--ink-mute);
+}
+.cv-hint b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 설명 ---- */
+.cv-foot { padding: 22px 26px 26px; max-width: 820px; }
+.cv-foot p { margin: 0 0 0.85rem; font-size: 0.92rem; line-height: 1.7; color: var(--ink-soft); }
+.cv-foot b { color: var(--signal); font-weight: 600; }
+.cv-disclaimer { font-size: 0.78rem !important; color: var(--ink-mute) !important; }

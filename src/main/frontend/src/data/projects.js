@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 41,
+        name: 'Converge',
+        subtitle: '충돌 없는 병합 (CRDT)',
+        description: '따로 편집해도 다툼 없이 같은 결과로 수렴하는 CRDT 실험',
+        link: '/converge',
+        active: true,
+        startDate: '2026-07-01',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🔗'
+    },
+    {
         id: 40,
         name: 'Islands',
         subtitle: '섬 아키텍처 (부분 하이드레이션)',
