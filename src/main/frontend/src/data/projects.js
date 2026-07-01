@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 40,
+        name: 'Islands',
+        subtitle: '섬 아키텍처 (부분 하이드레이션)',
+        description: '상호작용이 일어나는 위젯에만 JS를 실어보내는 부분 하이드레이션 실험',
+        link: '/islands',
+        active: true,
+        startDate: '2026-07-01',
+        endDate: '',
+        category: '실험/웹',
+        isProduction: false, // 실험용
+        thumbnail: '🏝️'
+    },
+    {
         id: 39,
         name: 'Synthetic',
         subtitle: '합성 데이터 생성',

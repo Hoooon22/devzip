@@ -1,0 +1,224 @@
+/* ISLANDS — 섬 아키텍처 / 부분 하이드레이션 실험
+   60-30-10: 청사진 슬레이트 배경(60) / 잉크 테두리·패널·정적 조각(30) / 아일랜드 블루 강조(10).
+   라이브 그린은 "살아난 섬" 상태 표시용 기능 색. AI 보라 그라데이션 배제. */
+
+.il-container {
+    --bg: #e4e8e6;
+    --surface: #f5f7f5;
+    --ink: #121611;
+    --muted: #66706a;
+    --edge: #121611;
+    --line: #121611;
+    --accent: #1668e3;   /* 섬(하이드레이션 대상) */
+    --live: #12894e;     /* 살아난 섬 */
+    --inert: #b7473a;    /* 죽은 HTML */
+
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+        linear-gradient(rgba(18, 22, 17, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 22, 17, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: 'Courier New', ui-monospace, monospace;
+    padding: 2rem 1rem 4rem;
+    box-sizing: border-box;
+}
+
+.il-inner { max-width: 1080px; margin: 0 auto; }
+
+.il-back {
+    display: inline-block;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+    border: 3px solid var(--edge);
+    background: var(--surface);
+    box-shadow: 4px 4px 0 var(--line);
+}
+.il-back:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.il-header { margin: 1.8rem 0 1.4rem; }
+.il-title {
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 0;
+    line-height: 0.9;
+}
+.il-sub { margin: 0.5rem 0 0; color: var(--accent); font-size: 0.95rem; font-weight: 700; }
+
+.il-stage { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+@media (min-width: 920px) {
+    .il-stage { grid-template-columns: 1.5fr 1fr; align-items: start; }
+}
+
+/* ---- 좌측: 브라우저 목업 ---- */
+.il-left {
+    background: var(--surface);
+    border: 3px solid var(--edge);
+    box-shadow: 6px 6px 0 var(--line);
+    padding: 1rem;
+}
+
+.il-browser { border: 3px solid var(--edge); background: #fff; }
+.il-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.6rem;
+    border-bottom: 3px solid var(--edge);
+    background: var(--bg);
+    font-size: 0.72rem;
+}
+.il-dot { width: 0.6rem; height: 0.6rem; border: 2px solid var(--edge); border-radius: 50%; display: inline-block; }
+.il-url {
+    flex: 1;
+    margin-left: 0.4rem;
+    padding: 0.2rem 0.5rem;
+    background: #fff;
+    border: 2px solid var(--edge);
+    color: var(--muted);
+    font-weight: 700;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.il-badge { font-weight: 800; padding: 0.15rem 0.4rem; border: 2px solid var(--edge); }
+.il-badge-done { background: var(--live); color: #fff; }
+.il-badge-hy { background: var(--accent); color: #fff; }
+
+.il-page {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px;
+    padding: 8px;
+    background: #fff;
+}
+.il-span-12 { grid-column: span 12; }
+.il-span-8 { grid-column: span 8; }
+.il-span-4 { grid-column: span 4; }
+
+.il-block {
+    font-family: inherit;
+    text-align: left;
+    min-height: 54px;
+    padding: 0.4rem 0.5rem;
+    border: 2.5px solid var(--edge);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.25rem;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.05s ease;
+}
+.il-block:hover:not(:disabled) { transform: translate(1px, 1px); }
+.il-block:disabled { cursor: default; }
+.il-block-top { display: flex; align-items: center; gap: 0.35rem; }
+.il-ico {
+    width: 1.15rem; height: 1.15rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid currentColor;
+    font-size: 0.7rem; font-weight: 800; flex: none;
+}
+.il-name { font-size: 0.78rem; font-weight: 700; }
+.il-block-tag { font-size: 0.66rem; font-weight: 700; opacity: 0.85; }
+
+/* 상태별 색 */
+.il-static { background: repeating-linear-gradient(45deg, #eef0ee, #eef0ee 5px, #e4e7e4 5px, #e4e7e4 10px); color: var(--muted); border-style: dashed; }
+.il-inert { background: #f7e6e3; color: var(--inert); border-color: var(--inert); }
+.il-live { background: #e0f2e9; color: var(--live); border-color: var(--live); }
+.il-live .il-ico { background: var(--live); color: #fff; border-color: var(--live); }
+.il-pending { background: #eaf1fd; color: var(--accent); border-color: var(--accent); border-style: dotted; }
+.il-loading { background: var(--accent); color: #fff; border-color: var(--accent); }
+.il-loading .il-ico { color: #fff; }
+
+.il-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+.il-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.il-key { width: 0.75rem; height: 0.75rem; border: 2px solid var(--edge); display: inline-block; }
+.il-key-static { background: #e4e7e4; }
+.il-key-inert { background: #f7e6e3; border-color: var(--inert); }
+.il-key-live { background: #e0f2e9; border-color: var(--live); }
+.il-tip { margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--muted); }
+
+/* ---- 우측: 패널 ---- */
+.il-panel {
+    background: var(--surface);
+    border: 3px solid var(--edge);
+    box-shadow: 6px 6px 0 var(--line);
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.il-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.il-presets-label { font-size: 0.74rem; font-weight: 700; color: var(--muted); width: 100%; }
+.il-pbtn {
+    font-family: inherit; font-size: 0.78rem; font-weight: 700;
+    color: var(--ink); background: var(--surface);
+    border: 2.5px solid var(--edge); box-shadow: 3px 3px 0 var(--line);
+    padding: 0.35rem 0.55rem; cursor: pointer;
+}
+.il-pbtn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.il-pbtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+.il-pbtn-ghost { background: transparent; color: var(--muted); }
+
+.il-control label { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.4rem; }
+.il-control label b { color: var(--accent); }
+.il-control input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.il-note { display: block; margin-top: 0.35rem; font-size: 0.72rem; color: var(--muted); }
+
+.il-metric-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+.il-metric-head b { font-size: 1.2rem; }
+.il-metric-head small { font-size: 0.7rem; color: var(--muted); }
+.il-bar { height: 0.85rem; border: 2.5px solid var(--edge); background: #fff; overflow: hidden; }
+.il-bar-fill { height: 100%; transition: width 0.15s ease; }
+.il-bar-js { background: var(--accent); }
+.il-bar-keep { background: var(--live); }
+
+.il-tti {
+    border: 3px solid var(--edge);
+    box-shadow: 4px 4px 0 var(--line);
+    background: #fff;
+    padding: 0.7rem 0.8rem;
+}
+.il-tti-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.78rem; font-weight: 700; }
+.il-tti-row:not(:first-child) { margin-top: 0.5rem; }
+.il-tti-label { color: var(--muted); }
+.il-tti-val { font-size: 1.05rem; font-weight: 800; }
+.il-tti-val small { font-size: 0.68rem; font-weight: 700; }
+.il-tti-good { color: var(--live); }
+.il-tti-track { height: 0.6rem; border: 2px solid var(--edge); background: var(--bg); margin-top: 0.25rem; overflow: hidden; }
+.il-tti-fill { height: 100%; background: var(--ink); transition: width 0.2s ease; }
+.il-tti-fill-good { background: var(--live); }
+.il-tti-note { margin: 0.7rem 0 0; font-size: 0.74rem; line-height: 1.5; color: var(--muted); }
+.il-tti-note b { color: var(--live); }
+
+.il-play {
+    font-family: inherit; font-size: 0.88rem; font-weight: 800;
+    color: #fff; background: var(--ink);
+    border: 3px solid var(--edge); box-shadow: 4px 4px 0 var(--line);
+    padding: 0.6rem; cursor: pointer;
+}
+.il-play:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+.il-play:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--line); }
+.il-play:disabled { opacity: 0.45; cursor: default; }
+
+/* ---- 설명 ---- */
+.il-foot { margin-top: 1.6rem; border-top: 3px solid var(--edge); padding-top: 1.1rem; max-width: 760px; }
+.il-foot p { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.65; color: #22261f; }
+.il-foot b { color: var(--accent); font-weight: 800; }
+.il-disclaimer { font-size: 0.78rem !important; color: var(--muted) !important; }

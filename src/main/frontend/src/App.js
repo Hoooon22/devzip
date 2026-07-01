@@ -51,6 +51,7 @@ import FeedRank from './pages/experiments/FeedRank';
 import Quantize from './pages/experiments/Quantize';
 import Reach from './pages/experiments/Reach';
 import Synthetic from './pages/experiments/Synthetic';
+import Islands from './pages/experiments/Islands';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -219,6 +220,7 @@ function App() {
         <Route path="/quantize" element={<Quantize />} />
         <Route path="/reach" element={<Reach />} />
         <Route path="/synthetic" element={<Synthetic />} />
+        <Route path="/islands" element={<Islands />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
