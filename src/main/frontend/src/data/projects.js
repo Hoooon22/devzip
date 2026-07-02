@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 42,
+        name: 'Throttle',
+        subtitle: '요청 속도 제한 (토큰 버킷)',
+        description: '요청 폭주를 다스리며 평균은 묶고 순간 폭주는 받아내는 토큰 버킷 실험',
+        link: '/throttle',
+        active: true,
+        startDate: '2026-07-02',
+        endDate: '',
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '🚦'
+    },
+    {
         id: 41,
         name: 'Converge',
         subtitle: '충돌 없는 병합 (CRDT)',

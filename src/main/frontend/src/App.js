@@ -53,6 +53,7 @@ import Reach from './pages/experiments/Reach';
 import Synthetic from './pages/experiments/Synthetic';
 import Islands from './pages/experiments/Islands';
 import Converge from './pages/experiments/Converge';
+import Throttle from './pages/experiments/Throttle';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -223,6 +224,7 @@ function App() {
         <Route path="/synthetic" element={<Synthetic />} />
         <Route path="/islands" element={<Islands />} />
         <Route path="/converge" element={<Converge />} />
+        <Route path="/throttle" element={<Throttle />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

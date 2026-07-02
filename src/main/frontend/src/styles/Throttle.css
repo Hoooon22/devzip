@@ -1,0 +1,172 @@
+/* THROTTLE — 요청 속도 제한(토큰 버킷) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   시그널(코발트)은 토큰/포인트에만, 초록(수락 200)·빨강(거절 429)만 상태 의미색으로 둔다. */
+
+.lab-os {
+    --tb-ok: #12894e;
+    --tb-ok-soft: rgba(18, 137, 78, 0.14);
+    --tb-rej: #c8402f;
+    --tb-rej-soft: rgba(200, 64, 47, 0.14);
+}
+.lab-os[data-theme="dark"] {
+    --tb-ok: #34c17e;
+    --tb-ok-soft: rgba(52, 193, 126, 0.18);
+    --tb-rej: #ef6a55;
+    --tb-rej-soft: rgba(239, 106, 85, 0.18);
+}
+
+/* ---- 툴바 ---- */
+.tb-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px 22px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.tb-ctrl { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+.tb-ctrl-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-mute);
+}
+.tb-ctrl-label b { color: var(--ink); font-weight: 600; }
+.tb-ctrl input[type="range"] { width: 100%; accent-color: var(--signal); cursor: pointer; }
+
+.tb-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.tb-seg {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    padding: 0.5rem 0.7rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+.tb-seg.is-active { background: var(--ink); color: var(--desk); border-color: var(--frame-strong); }
+.tb-btn {
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--desk);
+    background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.tb-btn:hover { background: var(--signal); color: var(--on-signal); border-color: var(--signal); transform: translateY(-1px); }
+.tb-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.tb-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.tb-stage {
+    display: grid;
+    grid-template-columns: minmax(200px, 300px) 1fr;
+    gap: 20px;
+    padding: 22px 18px;
+}
+
+/* 버킷 (토큰 셀 그리드) */
+.tb-bucket-col { display: flex; flex-direction: column; gap: 10px; }
+.tb-bucket-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 0.74rem; color: var(--ink-mute); letter-spacing: 0.04em;
+}
+.tb-tok-read { color: var(--signal); font-weight: 600; font-size: 0.82rem; }
+.tb-bucket {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 6px;
+    padding: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--frame);
+}
+.tb-cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--row-alt);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: background 0.12s;
+}
+.tb-cell.is-full { background: var(--signal); border-color: var(--signal); }
+.tb-cell-frac {
+    position: absolute; left: 0; bottom: 0; width: 100%;
+    background: var(--signal-soft);
+    border-top: 1px solid var(--signal);
+}
+.tb-bucket-foot { font-size: 0.72rem; color: var(--ink-mute); }
+
+/* 오른쪽: 스트림 + 통계 */
+.tb-right { display: flex; flex-direction: column; gap: 14px; }
+.tb-stream-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.74rem; color: var(--ink-mute); letter-spacing: 0.04em;
+}
+.tb-legend { display: inline-flex; align-items: center; gap: 8px; }
+.tb-dot { display: inline-block; width: 8px; height: 8px; margin-right: 3px; vertical-align: middle; }
+.tb-dot-ok { background: var(--tb-ok); }
+.tb-dot-rej { background: var(--tb-rej); }
+
+.tb-stream {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 4px;
+    min-height: 96px;
+    padding: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--frame);
+}
+.tb-stream-empty { color: var(--ink-mute); font-size: 0.76rem; }
+.tb-tick { width: 10px; height: 18px; }
+.tb-tick.is-ok { background: var(--tb-ok); }
+.tb-tick.is-rej { background: var(--tb-rej); }
+
+.tb-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.tb-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+}
+.tb-stat-num { font-size: 1.35rem; font-weight: 600; line-height: 1.1; color: var(--ink); }
+.tb-stat-num.tb-ok { color: var(--tb-ok); }
+.tb-stat-num.tb-rej { color: var(--tb-rej); }
+.tb-stat-lab { font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+
+.tb-gauge { height: 8px; background: var(--tb-rej-soft); border: 1px solid var(--line); overflow: hidden; }
+.tb-gauge-fill { display: block; height: 100%; background: var(--tb-ok); transition: width 0.2s; }
+
+.tb-ok { color: var(--tb-ok); }
+.tb-rej { color: var(--tb-rej); }
+
+.tb-hint {
+    margin: 0;
+    padding: 14px 18px;
+    border-top: 1px solid var(--line);
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+.tb-hint b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.tb-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.tb-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.tb-foot b { color: var(--ink); font-weight: 600; }
+.tb-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 720px) {
+    .tb-stage { grid-template-columns: 1fr; }
+    .tb-actions { margin-left: 0; width: 100%; }
+    .tb-stats { grid-template-columns: repeat(2, 1fr); }
+}
