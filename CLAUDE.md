@@ -177,6 +177,30 @@ follow these rules so cards stay consistent:
   - ✅ `description: '토큰마다 어울리는 전문가 소수만 깨우는 희소 라우팅(MoE) 실험'`
   - ❌ 두세 문장에 걸친 장문 설명(`— ... 까지 직접 관찰` 식의 긴 서술)
 
+### Lab Origins Convention (실험 계기 연대기 — 자료실)
+자료실의 "실험 계기 연대기" 페이지(`/lab-origins`)는 각 실험이 어떤 사건·이슈에서
+출발했는지 기록하는 정리본이다. **새 실험 페이지를 추가할 때마다
+`src/main/frontend/src/data/labOrigins.js` 에 항목을 함께 추가한다** (projects.js
+카드 추가와 한 세트인 필수 루틴).
+
+항목 형식 — projects.js 카드와 필드를 맞추고, `origin`에 계기를 적는다:
+```js
+{
+    name: 'Throttle',                       // projects.js의 name과 동일
+    subtitle: '요청 속도 제한 (토큰 버킷)',   // projects.js의 subtitle과 동일 (없으면 생략)
+    link: '/throttle',                      // 실험 라우트
+    date: '2026-07-02',                     // projects.js의 startDate와 동일
+    category: '실험/네트워크',               // projects.js의 category와 동일
+    icon: '🚦',                             // projects.js의 thumbnail과 동일
+    origin: '…',                            // 계기가 된 사건/이슈/궁금증 — 2~3문장, "왜 이걸 만들었나"
+    tags: ['rate limiting', '토큰 버킷'],    // 핵심 키워드 2~3개
+}
+```
+
+- **`origin`은 개념 요약이 아니라 "계기"를 쓴다.** 어떤 실서비스 이슈·기술 뉴스·
+  논쟁·이전 실험에서 이어진 궁금증이 출발점이었는지를 남긴다.
+- 배열은 최신 실험이 **맨 앞**에 오도록 추가한다(페이지에서 최신순 정렬·월별 그룹핑됨).
+
 ### Frontend Lint Pitfalls (CRA / react-scripts build)
 The Gradle `:buildFrontendReact` task runs `react-scripts build`, which treats ESLint
 warnings as **build-breaking errors**. The same two rules keep failing the build —

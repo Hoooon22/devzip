@@ -4,8 +4,20 @@ import { Helmet } from 'react-helmet-async';
 import '../styles/Library.css';
 
 // 자료실에 게시하는 학습 자료/문서 목록.
-// href가 /docs/* 인 항목은 정적 HTML 파일을 새 탭으로 연다.
+// href가 /docs/* 인 항목은 정적 HTML 파일을 새 탭으로 열고,
+// internal: true 인 항목은 SPA 내부 라우트로 이동한다.
 const docs = [
+    {
+        title: '실험 계기 연대기',
+        description:
+            '실험실 페이지들이 어떤 사건·이슈·궁금증에서 출발했는지 시간·프로젝트별로 정리한 연대기.',
+        href: '/lab-origins',
+        internal: true,
+        icon: '🧭',
+        category: '실험 아카이브',
+        date: '2026.06.11~',
+        tags: ['실험실', '연대기', '계기'],
+    },
     {
         title: 'GCP PCA v6.1 · 압축 학습 콘솔',
         description:
@@ -17,6 +29,27 @@ const docs = [
         tags: ['GCP', 'PCA', '시험 대비'],
     },
 ];
+
+// 카드 공통 내부 마크업 (내부 라우트/외부 문서 공용, 일반 헬퍼 함수)
+const renderDocCardBody = (doc) => (
+    <>
+        <div className="doc-top">
+            <span className="doc-icon" aria-hidden="true">{doc.icon}</span>
+            <span className="doc-cat">{doc.category}</span>
+        </div>
+        <h2>{doc.title}</h2>
+        <p>{doc.description}</p>
+        <div className="doc-tags">
+            {doc.tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+            ))}
+        </div>
+        <div className="doc-foot">
+            <span className="doc-date">{doc.date}</span>
+            <span className="doc-open">열기 →</span>
+        </div>
+    </>
+);
 
 const Library = () => {
     return (
@@ -36,29 +69,21 @@ const Library = () => {
 
                 <div className="doc-grid">
                     {docs.map((doc) => (
-                        <a
-                            key={doc.href}
-                            className="doc-card"
-                            href={doc.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <div className="doc-top">
-                                <span className="doc-icon" aria-hidden="true">{doc.icon}</span>
-                                <span className="doc-cat">{doc.category}</span>
-                            </div>
-                            <h2>{doc.title}</h2>
-                            <p>{doc.description}</p>
-                            <div className="doc-tags">
-                                {doc.tags.map((tag) => (
-                                    <span key={tag}>{tag}</span>
-                                ))}
-                            </div>
-                            <div className="doc-foot">
-                                <span className="doc-date">{doc.date}</span>
-                                <span className="doc-open">열기 →</span>
-                            </div>
-                        </a>
+                        doc.internal ? (
+                            <Link key={doc.href} className="doc-card" to={doc.href}>
+                                {renderDocCardBody(doc)}
+                            </Link>
+                        ) : (
+                            <a
+                                key={doc.href}
+                                className="doc-card"
+                                href={doc.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {renderDocCardBody(doc)}
+                            </a>
+                        )
                     ))}
                 </div>
             </div>

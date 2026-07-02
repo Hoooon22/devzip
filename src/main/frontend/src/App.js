@@ -22,6 +22,7 @@ import CommandStack from './pages/CommandStack';
 import CommandStackDownload from './pages/CommandStackDownload';
 import ApiExperiment from './pages/ApiExperiment';
 import Library from './pages/Library';
+import LabOrigins from './pages/LabOrigins';
 import RestApi from './pages/experiments/RestApi';
 import JsonApi from './pages/experiments/JsonApi';
 import SoapApi from './pages/experiments/SoapApi';
@@ -228,6 +229,7 @@ function App() {
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
+        <Route path="/lab-origins" element={<LabOrigins />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
