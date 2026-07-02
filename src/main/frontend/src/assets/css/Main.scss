@@ -75,14 +75,20 @@
 .k-brand .dia { color: var(--signal); font-size: 13px; line-height: 1; }
 .k-brand .nm { font-weight: 700; letter-spacing: 0.14em; font-size: 13px; }
 .k-brand .ver { color: var(--ink-mute); font-size: 11px; }
-.k-mb-nav { display: flex; gap: 4px; }
+.k-mb-nav {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--frame); border-radius: 7px;
+  background: var(--panel-2); overflow: hidden;
+}
 .k-mb-nav a, .k-mb-nav button {
   font: inherit; background: none; border: 0; cursor: pointer;
   color: var(--ink-soft); text-decoration: none; text-transform: lowercase;
-  padding: 5px 9px; border-radius: 5px; letter-spacing: 0.02em;
+  padding: 6px 13px; letter-spacing: 0.02em;
+  display: inline-flex; align-items: center; justify-content: center;
 }
+.k-mb-nav > :not(:first-child) { border-left: 1px solid var(--line); }
 .k-mb-nav a:hover, .k-mb-nav button:hover { color: var(--ink); background: var(--hover); }
-.k-mb-nav a.on { color: var(--ink); }
+.k-mb-nav a.on { color: var(--ink); font-weight: 600; background: var(--signal-soft); }
 .k-mb-nav a.on::before { content: '▸ '; color: var(--signal); }
 .k-mb-tray { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 .k-kbd {
@@ -353,13 +359,19 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
   .k-bootlog { border-left: 0; border-top: 1px solid var(--line); }
   .k-gauges, .k-dock { grid-template-columns: 1fr; }
   .k-hero-main h1 { font-size: 44px; }
-  .k-mb-nav { display: none; }
+  /* 좁은 화면에서는 네비게이션을 숨기지 않고 메뉴바 아랫줄로 내려 전체 폭으로 표시 */
+  .k-menubar { flex-wrap: wrap; height: auto; min-height: 46px; padding: 8px 14px; gap: 8px 16px; }
+  .k-mb-nav { order: 3; width: 100%; }
+  .k-mb-nav a, .k-mb-nav button { flex: 1; padding: 7px 4px; }
   .k-row { grid-template-columns: 62px 1fr 34px; }
   .k-row .pid, .k-row .desc, .k-row .cat-cell, .k-row .stack-cell { display: none; }
   .k-row > * { padding: 12px 12px; }
 }
 @media (max-width: 560px) {
-  .k-tray-clock, .k-xp .coins { display: none; }
+  .k-tray-clock, .k-xp .coins, .k-xp .bar { display: none; }
+  /* 트레이가 화면 폭을 넘지 않도록: 세션 표기(who)를 숨기고 넘칠 땐 줄바꿈 허용 */
+  .k-mb-tray { flex-wrap: wrap; }
+  .k-auth .who { display: none; }
   .k-hero-main { padding: 28px 22px; }
   /* 카드 최소폭(300px)이 좁은 화면 내부폭을 넘겨 가로 넘침이 생기므로 1열로 고정 */
   .k-tiles { grid-template-columns: 1fr; padding: 12px; gap: 12px; }

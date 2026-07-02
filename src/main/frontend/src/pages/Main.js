@@ -304,7 +304,10 @@ const Main = () => {
     /* 액션 */
     const scrollToProc = () => {
         const el = document.getElementById('k-proc');
-        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 58, behavior: 'smooth' });
+        if (!el) return;
+        // 모바일에서는 메뉴바가 두 줄로 늘어나므로 실제 높이를 재서 보정한다.
+        const barH = document.querySelector('.k-menubar')?.offsetHeight || 46;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - barH - 12, behavior: 'smooth' });
     };
     const gotoFilter = (m) => { setMode(m); setTimeout(scrollToProc, 30); };
 
