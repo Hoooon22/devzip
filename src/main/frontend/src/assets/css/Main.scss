@@ -361,4 +361,27 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 @media (max-width: 560px) {
   .k-tray-clock, .k-xp .coins { display: none; }
   .k-hero-main { padding: 28px 22px; }
+  /* 카드 최소폭(300px)이 좁은 화면 내부폭을 넘겨 가로 넘침이 생기므로 1열로 고정 */
+  .k-tiles { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+}
+
+/* ───────────────────── a11y: focus & motion ───────────────────── */
+/* 키보드 포커스 표시 — 마우스 클릭에는 나타나지 않고 Tab 이동 시에만 시그널 아웃라인 */
+.k-os a:focus-visible,
+.k-os button:focus-visible,
+.k-os input:focus-visible,
+.k-os [tabindex]:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* 모션 최소화 선호 사용자: 무한 애니메이션(마퀴·깜빡임·shimmer)과 hover 이동 제거 */
+@media (prefers-reduced-motion: reduce) {
+  .k-os *, .k-os *::before, .k-os *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .k-ticker .track { animation: none; transform: none; }
 }

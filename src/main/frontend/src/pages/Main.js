@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
@@ -94,25 +94,39 @@ const PinGlyph = () => (
     </svg>
 );
 
-// 메뉴바 트레이의 라이브 시계 + 세션 업타임.
-const useClock = () => {
-    const [now, setNow] = useState(() => new Date());
-    const startRef = useRef(Date.now());
+// 세션 시작 시각(번들 로드 시점). 업타임 계산 기준이며 페이지 어디서든 동일하게 참조한다.
+const SESSION_START = Date.now();
+const pad2 = (n) => String(n).padStart(2, '0');
+const formatClock = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+const formatUptime = () => {
+    const s = Math.floor((Date.now() - SESSION_START) / 1000);
+    return `${pad2(Math.floor(s / 60))}:${pad2(s % 60)}`;
+};
+
+// 1초마다 리렌더만 유발하는 최소 훅. 이 훅을 쓰는 "작은" 컴포넌트만 매초 갱신되고
+// 홈 전체(프로젝트 목록·게이지 등)는 시계 때문에 리렌더되지 않는다.
+const useTick = () => {
+    const [, setTick] = useState(0);
     useEffect(() => {
-        const id = setInterval(() => setNow(new Date()), 1000);
+        const id = setInterval(() => setTick((t) => t + 1), 1000);
         return () => clearInterval(id);
     }, []);
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    const ss = String(now.getSeconds()).padStart(2, '0');
-    const upS = Math.floor((Date.now() - startRef.current) / 1000);
-    const up = `${String(Math.floor(upS / 60)).padStart(2, '0')}:${String(upS % 60).padStart(2, '0')}`;
-    return { time: `${hh}:${mm}:${ss}`, up };
 };
+
+// 라이브 시계/업타임 — 각자 독립적으로 매초 갱신되는 격리 컴포넌트.
+const TrayClock = () => {
+    useTick();
+    return (
+        <span className="k-tray-clock k-mono">
+            {formatClock(new Date())} <span className="up">· up {formatUptime()}</span>
+        </span>
+    );
+};
+const LiveClock = () => { useTick(); return <>{formatClock(new Date())}</>; };
+const LiveUptime = () => { useTick(); return <>{formatUptime()}</>; };
 
 const Main = () => {
     const { award, xp, level, progress } = useGame();
-    const { time, up } = useClock();
 
     const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
     const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
@@ -418,7 +432,7 @@ const Main = () => {
                         <span className="bar">{[0, 1, 2, 3, 4].map((n) => <i key={n} className={n < filledSegs ? 'f' : ''} />)}</span>
                         <span className="coins">◉ <b>{xp}</b></span>
                     </span>
-                    <span className="k-tray-clock k-mono">{time} <span className="up">· up {up}</span></span>
+                    <TrayClock />
                     {authLoading ? (
                         <span className="k-auth">
                             <span className="who k-mono"><span className="host">guest</span><span className="at">@</span><span className="host">devzip</span><span className="cur">_</span></span>
@@ -459,7 +473,7 @@ const Main = () => {
                     <div className="k-win-bar">
                         <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">~/devzip/</span>MOTD.md</span>
-                        <span className="meta k-mono">read-only · {time}</span>
+                        <span className="meta k-mono">read-only · <LiveClock /></span>
                     </div>
                     <div className="k-hero-bd">
                         <div className="k-hero-main">
@@ -637,7 +651,7 @@ const Main = () => {
                             <span className="lbl k-mono">시스템 상태</span>
                             <h4>all systems go</h4>
                             <div className="k-sys-rows">
-                                <div className="sr"><span className="k">uptime</span><span className="v">{up}</span></div>
+                                <div className="sr"><span className="k">uptime</span><span className="v"><LiveUptime /></span></div>
                                 <div className="sr"><span className="k">level</span><span className="v ok">Lv.{level} · {xp} XP</span></div>
                                 <div className="sr"><span className="k">session</span><span className="v">{user ? user.username : 'guest'}@devzip</span></div>
                             </div>
