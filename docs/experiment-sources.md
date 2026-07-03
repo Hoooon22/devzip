@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-07-04 / Reality Gap (`/reality-gap`)
+
+- **선정 주제**: sim-to-real 격차. 시뮬레이션(SIM)에선 노이즈가 0이라 완벽히 착륙하던 bang-bang 제어기가, 센서 노이즈·액추에이터 지연·외란(바람)이 더해진 현실(REAL)에선 과속 접지로 무너진다. 제어기 파라미터(제동 강도·목표 접지 속도·안전 여유 고도)와 현실 노이즈 슬라이더를 조절하고, 캔버스 라이브 착륙 + SIM vs REAL 25회 배치 성공률 비교로 "리얼리티 갭"을 체험한다. 안전 여유 고도를 키우면 격차가 좁혀지지만 보수적(느림)이 되는 강건성 트레이드오프가 핵심.
+- **선정 이유**: 2026년 최대 기술 트렌드인 휴머노이드/Physical AI("로봇의 해", 공장 대량생산, "simulate-then-procure" 전환)를 특정 로봇·기업을 겨냥하지 않고 그 이면의 보편 개념 — '시뮬레이션에서 학습한 정책이 현실 노이즈에서 열화한다'는 sim-to-real 격차 — 로 변환. 슬라이더·캔버스 애니메이션·배치 시뮬레이션·성공률 막대라는 풍부한 인터랙티브 요소로 풀기 적합하고, 기존 실험(로봇 팔 IK Reach, 엣지 컴퓨팅 Edge Run, 에이전트 자율성, 진화 Evolve 등)과 주제가 겹치지 않음. 디자인은 미션 컨트롤 콘솔 톤의 네오브루탈 + 60-30-10(딥 차콜/스틸 패널/앰버, 녹·적은 상태 신호).
+- **기반 자료**:
+  - [Physical AI and humanoid robots — Deloitte Insights (Tech Trends 2026)](https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends/2026/physical-ai-humanoid-robots.html)
+  - [Robotics Trends 2026: Physical AI, Humanoids & The "Simulate-then-Procure" Shift — dbr77](https://dbr77.com/industrial-robotics-trends-2026/) — 시뮬레이션 우선 학습·조달 전환
+  - [National Robotics Week — Latest Physical AI Research — NVIDIA Blog](https://blogs.nvidia.com/blog/national-robotics-week-2026/) — 시뮬레이션 기반 force model, 일반목적 Physical AI
+  - [Hardware First, Brains Later? The Great American Humanoid Scale-Up of 2026 — Humanoids Daily](https://www.humanoidsdaily.com/news/hardware-first-brains-later-the-great-american-humanoid-scale-up-of-2026)
+  - 표준 제어 개념: bang-bang 제어, 센서 노이즈·액추에이터 지연·외란에 의한 sim-to-real reality gap, 안전 마진을 통한 강건성(robustness) 트레이드오프
+
+---
+
 ## 2026-06-15 / 물리 엔진 놀이터 (`/physics-lab`) + 물리학 퀴즈 업그레이드 (`/physics-quiz`)
 
 - **선정 주제**: 기존 "물리학 퀴즈"를 확장하는 작업. (1) Matter.js 물리 엔진을 전면에 둔 인터랙티브 샌드박스 신설 — 마우스로 물체를 잡아 던지고, 도형을 투하하고, 중력을 조절하며, 6종 예제(샌드박스·뉴턴의 요람·도미노·피라미드 탑·체인·중력 우물)를 직접 조작. (2) 퀴즈 페이지는 문제를 5→9개로 확장(롤러코스터 수직 루프=구심력, 최대 비거리 각도=45°, 진자 주기=√(L/g), 반발 계수/충돌 종류)하고, 정답 확인 후 슬라이더로 시뮬레이션 파라미터(각도·힘·반발 계수·줄 길이 등)를 바꿔 다시 재생하는 인터랙션 추가. 디자인은 네오브루탈 아케이드 톤으로 통일.
