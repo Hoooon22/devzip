@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Evolve',
+        subtitle: '진화 알고리즘 (유전 알고리즘)',
+        link: '/evolve',
+        date: '2026-07-03',
+        category: '실험/시뮬레이션',
+        icon: '🧫',
+        origin: '인터넷 밈이 "복제되고, 조금씩 변형되며, 살아남는 것만 남는다"는 밈의 성장·확산·변이 연구가 회자되던 것이 계기. 문화적 전파의 이면에 있는 보편 원리 — 변이·선택·유전 — 을 유전 알고리즘으로 추상화해, 설계자가 답을 그려주지 않아도 순수한 잡음 집단이 정말 목표 형태로 스스로 수렴하는지 직접 돌려보고 싶었다.',
+        tags: ['유전 알고리즘', '진화', '변이·선택'],
+    },
+    {
         name: 'Throttle',
         subtitle: '요청 속도 제한 (토큰 버킷)',
         link: '/throttle',

@@ -1,0 +1,160 @@
+/* EVOLVE — 유전 알고리즘(진화 알고리즘) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   60-30-10: 중립 배경/패널이 다수, 잉크 톤이 보조, 강조(코발트 시그널)는 채워진 유전자/최고선에만.
+   불일치는 상태 의미색(뮤트 레드)으로만 최소 사용. */
+
+.lab-os {
+    --ev-miss: #c8402f;
+    --ev-miss-soft: rgba(200, 64, 47, 0.16);
+}
+.lab-os[data-theme="dark"] {
+    --ev-miss: #ef6a55;
+    --ev-miss-soft: rgba(239, 106, 85, 0.20);
+}
+
+/* ---- 툴바 ---- */
+.ev-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.ev-ctrl { display: flex; flex-direction: column; gap: 6px; min-width: 132px; }
+.ev-ctrl-wide { min-width: 190px; }
+.ev-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.ev-ctrl-label b { color: var(--ink); font-weight: 600; }
+.ev-ctrl input[type="range"] { width: 100%; accent-color: var(--signal); cursor: pointer; }
+
+.ev-seg-row { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.ev-seg {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    padding: 0.42rem 0.62rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+.ev-seg.is-active { background: var(--ink); color: var(--desk); border-color: var(--frame-strong); }
+
+.ev-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.ev-btn {
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--desk);
+    background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.ev-btn:hover { background: var(--signal); color: var(--on-signal); border-color: var(--signal); transform: translateY(-1px); }
+.ev-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.ev-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.ev-stage {
+    display: grid;
+    grid-template-columns: minmax(220px, 340px) 1fr;
+    gap: 22px;
+    padding: 22px 18px;
+}
+
+/* 최우수 개체 격자 */
+.ev-grid-col { display: flex; flex-direction: column; gap: 10px; }
+.ev-grid-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 0.74rem; color: var(--ink-mute); letter-spacing: 0.04em;
+}
+.ev-badge {
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+    color: var(--signal); padding: 0.1rem 0.4rem; border: 1px solid var(--frame);
+}
+.ev-badge.is-solved { color: var(--on-signal); background: var(--signal); border-color: var(--signal); }
+
+.ev-grid {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 2px;
+    padding: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--frame);
+}
+.ev-grid-main { aspect-ratio: 1 / 1; }
+.ev-cell { aspect-ratio: 1 / 1; background: var(--row-alt); transition: background 0.12s; }
+.ev-cell.is-on { background: var(--signal); }
+.ev-cell.is-off { background: var(--row-alt); }
+.ev-cell.is-miss { background: var(--ev-miss-soft); box-shadow: inset 0 0 0 1px var(--ev-miss); }
+
+.ev-legend { display: flex; gap: 14px; font-size: 0.7rem; color: var(--ink-mute); }
+.ev-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.ev-key { width: 10px; height: 10px; display: inline-block; }
+.ev-key.is-on { background: var(--signal); }
+.ev-key.is-miss { background: var(--ev-miss-soft); box-shadow: inset 0 0 0 1px var(--ev-miss); }
+
+/* 오른쪽: 통계 + 차트 + 분포 */
+.ev-side { display: flex; flex-direction: column; gap: 14px; }
+.ev-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ev-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+}
+.ev-stat-num { font-size: 1.3rem; font-weight: 600; line-height: 1.1; color: var(--ink); }
+.ev-stat-num.ev-accent { color: var(--signal); }
+.ev-stat-lab { font-size: 0.66rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+
+.ev-chart-head, .ev-pop-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem; color: var(--ink-mute); letter-spacing: 0.04em;
+}
+.ev-chart-leg { display: inline-flex; align-items: center; gap: 10px; }
+.ev-line { display: inline-block; width: 14px; height: 0; margin-right: 3px; vertical-align: middle; }
+.ev-line-best { border-top: 2px solid var(--signal); }
+.ev-line-avg { border-top: 2px dashed var(--ink-mute); }
+
+.ev-chart {
+    width: 100%; height: 96px; display: block;
+    background: var(--panel-2); border: 1px solid var(--frame);
+}
+.ev-chart-mid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; }
+.ev-poly { fill: none; vector-effect: non-scaling-stroke; }
+.ev-poly-best { stroke: var(--signal); stroke-width: 2; }
+.ev-poly-avg { stroke: var(--ink-mute); stroke-width: 1.5; stroke-dasharray: 4 3; }
+
+.ev-pop-bars {
+    display: flex; align-items: flex-end; gap: 1px;
+    height: 80px; padding: 8px 10px;
+    background: var(--panel-2); border: 1px solid var(--frame);
+    overflow: hidden;
+}
+.ev-pop-bar { flex: 1 1 0; min-width: 1px; background: var(--signal-soft); border-top: 1px solid var(--signal); }
+
+.ev-hint {
+    margin: 0;
+    padding: 14px 18px;
+    border-top: 1px solid var(--line);
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+.ev-hint b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.ev-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.ev-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.ev-foot b { color: var(--ink); font-weight: 600; }
+.ev-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .ev-stage { grid-template-columns: 1fr; }
+    .ev-actions { margin-left: 0; width: 100%; }
+    .ev-grid-main { max-width: 320px; }
+}

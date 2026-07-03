@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 43,
+        name: 'Evolve',
+        subtitle: '진화 알고리즘 (유전 알고리즘)',
+        description: '변이와 선택만 반복해 잡음에서 목표 패턴을 길러내는 유전 알고리즘 실험',
+        link: '/evolve',
+        active: true,
+        startDate: '2026-07-03',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧫'
+    },
+    {
         id: 42,
         name: 'Throttle',
         subtitle: '요청 속도 제한 (토큰 버킷)',
