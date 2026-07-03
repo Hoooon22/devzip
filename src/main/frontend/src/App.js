@@ -56,6 +56,7 @@ import Islands from './pages/experiments/Islands';
 import Converge from './pages/experiments/Converge';
 import Throttle from './pages/experiments/Throttle';
 import Evolve from './pages/experiments/Evolve';
+import RealityGap from './pages/experiments/RealityGap';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -228,6 +229,7 @@ function App() {
         <Route path="/converge" element={<Converge />} />
         <Route path="/throttle" element={<Throttle />} />
         <Route path="/evolve" element={<Evolve />} />
+        <Route path="/reality-gap" element={<RealityGap />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

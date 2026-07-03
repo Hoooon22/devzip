@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 44,
+        name: 'Reality Gap',
+        subtitle: 'sim-to-real 격차',
+        description: '시뮬레이션에선 완벽하던 제어기가 노이즈·지연·외란이 있는 현실로 나오면 무너지는 sim-to-real 격차를 착륙 시뮬레이터로 체험하는 실험',
+        link: '/reality-gap',
+        active: true,
+        startDate: '2026-07-04',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🚀'
+    },
+    {
         id: 43,
         name: 'Evolve',
         subtitle: '진화 알고리즘 (유전 알고리즘)',

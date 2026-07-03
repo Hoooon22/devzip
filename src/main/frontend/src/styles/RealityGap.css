@@ -1,0 +1,251 @@
+/* REALITY GAP — sim-to-real 격차 착륙 시뮬레이터
+   디자인: 미션 컨트롤 / 네오브루탈 콘솔 · 60-30-10
+   60% 딥 차콜 배경  ·  30% 스틸 패널/구조  ·  10% 앰버 강조 (녹/적은 상태 신호) */
+
+.rg-container {
+    --bg: #0c1113;
+    --panel: #161d20;
+    --panel-2: #1e262a;
+    --steel: #cdd3d1;
+    --steel-dim: #7f8b89;
+    --edge: #313c40;
+    --amber: #ffb020;
+    --safe: #37d67a;
+    --crash: #ff5240;
+
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image:
+        repeating-linear-gradient(0deg, rgba(205, 211, 209, 0.035) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(90deg, rgba(205, 211, 209, 0.035) 0 1px, transparent 1px 26px);
+    color: var(--steel);
+    font-family: 'DM Mono', 'Menlo', 'Consolas', monospace;
+    padding: 1.75rem 1.1rem 3rem;
+}
+
+.rg-inner {
+    max-width: 940px;
+    margin: 0 auto;
+}
+
+.rg-back {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    color: var(--steel);
+    background: var(--panel);
+    border: 2px solid var(--edge);
+    padding: 0.45rem 0.85rem;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.rg-back:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+
+.rg-header { margin: 1.6rem 0 1.4rem; }
+.rg-kicker {
+    color: var(--amber);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    margin: 0 0 0.4rem;
+}
+.rg-title {
+    font-size: clamp(2.3rem, 9vw, 4.2rem);
+    line-height: 0.92;
+    letter-spacing: -1px;
+    margin: 0;
+    font-weight: 700;
+    color: var(--steel);
+    text-shadow: 4px 4px 0 var(--amber);
+}
+.rg-sub {
+    max-width: 640px;
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--steel-dim);
+}
+.rg-sub b { color: var(--steel); }
+
+.rg-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 360px) 1fr;
+    gap: 1.1rem;
+    margin-top: 1.6rem;
+}
+
+/* 스테이지 (캔버스) */
+.rg-stage {
+    background: var(--panel);
+    border: 3px solid var(--edge);
+    box-shadow: 6px 6px 0 #000;
+    padding: 0.9rem;
+}
+.rg-canvas-wrap { position: relative; }
+.rg-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--edge);
+    image-rendering: auto;
+}
+.rg-hud {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 0.6rem;
+    align-items: center;
+    margin-top: 0.7rem;
+    font-size: 0.78rem;
+}
+.rg-badge {
+    grid-row: span 2;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding: 0 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border: 2px solid var(--edge);
+}
+.rg-badge.rg-sim { color: var(--bg); background: var(--steel); }
+.rg-badge.rg-real { color: var(--bg); background: var(--amber); }
+.rg-status { font-weight: 700; }
+.rg-st-safe { color: var(--safe); }
+.rg-st-crash { color: var(--crash); }
+.rg-st-flying { color: var(--amber); }
+.rg-st-idle { color: var(--steel-dim); }
+.rg-speed { color: var(--steel); }
+.rg-thr { color: var(--steel-dim); font-size: 0.72rem; }
+
+.rg-run-btns { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+
+.rg-btn {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--bg);
+    border: 2px solid #000;
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.rg-btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+.rg-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 #000; }
+.rg-btn-sim { background: var(--steel); flex: 1; }
+.rg-btn-real { background: var(--amber); flex: 1; }
+
+/* 컨트롤 패널 */
+.rg-panel {
+    background: var(--panel);
+    border: 3px solid var(--edge);
+    box-shadow: 6px 6px 0 #000;
+    padding: 1.1rem 1.15rem 1.25rem;
+}
+.rg-panel-title {
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--edge);
+    color: var(--steel);
+}
+.rg-real-title { margin-top: 1.4rem; color: var(--amber); border-color: rgba(255, 176, 32, 0.4); }
+
+.rg-slider { display: block; margin-bottom: 0.85rem; }
+.rg-slider-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--steel-dim);
+    margin-bottom: 0.3rem;
+}
+.rg-slider-top b { color: var(--amber); font-weight: 700; }
+.rg-slider input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--panel-2);
+    border: 1px solid var(--edge);
+    outline: none;
+}
+.rg-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 20px;
+    background: var(--steel);
+    border: 2px solid #000;
+    cursor: pointer;
+}
+.rg-slider input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 20px;
+    background: var(--steel);
+    border: 2px solid #000;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+.rg-btn-cmp {
+    width: 100%;
+    margin-top: 1.1rem;
+    background: var(--amber);
+    color: var(--bg);
+}
+
+/* 결과 */
+.rg-result { margin-top: 1.1rem; }
+.rg-res-row {
+    display: grid;
+    grid-template-columns: 3.4rem 1fr 3rem;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.82rem;
+}
+.rg-res-label { font-weight: 700; letter-spacing: 0.06em; }
+.rg-res-label.rg-sim { color: var(--steel); }
+.rg-res-label.rg-real { color: var(--amber); }
+.rg-res-row b { text-align: right; font-weight: 700; }
+.rg-bar {
+    height: 16px;
+    background: var(--panel-2);
+    border: 1px solid var(--edge);
+    overflow: hidden;
+}
+.rg-bar i { display: block; height: 100%; }
+.rg-bar-sim { background: var(--steel); }
+.rg-bar-real { background: var(--amber); }
+.rg-gap {
+    margin: 0.7rem 0 0;
+    font-size: 0.78rem;
+    color: var(--steel-dim);
+    line-height: 1.5;
+}
+.rg-gap strong { color: var(--crash); font-size: 0.95rem; }
+
+/* 해설 */
+.rg-note {
+    margin-top: 1.4rem;
+    background: var(--panel);
+    border: 2px solid var(--edge);
+    border-left: 5px solid var(--amber);
+    padding: 1rem 1.15rem;
+}
+.rg-note p {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--steel-dim);
+}
+.rg-note b { color: var(--steel); }
+
+@media (max-width: 720px) {
+    .rg-grid { grid-template-columns: 1fr; }
+    .rg-stage { max-width: 420px; }
+}
