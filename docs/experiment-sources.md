@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-07-04 / Quorum (`/quorum`)
+
+- **선정 주제**: 분산 합의(consensus) — Raft의 리더 선출·정족수 투표·로그 복제/커밋. 5개 노드가 원형 클러스터를 이루고, 리더의 하트비트가 끊기면 팔로워의 선거 타이머가 만료되어 후보로 출마, 과반(N/2+1=3표)을 얻으면 새 임기(term)의 리더가 된다. 노드를 클릭해 장애/복구를 오가며(특히 리더를 죽여) 재선거가 도는 과정을 보고, "+ 기록 제안"으로 넣은 엔트리가 과반에 복제된 순간에만 확정(commit)되는 것을 로그 매트릭스로 체험한다.
+- **선정 이유**: 2026년 AI 워크로드가 다수 노드로 분산되며 분산 시스템 합의(Raft/Paxos)가 개발자 학습 로드맵의 필수 관문으로 반복 회자되던 기술 트렌드를, 특정 서비스·장애 사건을 겨냥하지 않고 '중앙 조정자 없이 다수결로 대표와 확정 기록에 합의한다'는 보편 개념으로 변환. 노드 클릭(장애 주입)·재선거 관전·로그 복제 애니메이션·커밋 판정이라는 풍부한 인터랙티브 요소로 풀기 적합하고, 기존 실험 중 개념이 가장 가까운 Converge(CRDT, 리더 없는 최종 일관성)와도 명확히 구분(강한 합의·단일 리더·정족수)됨. 디자인은 셸 팔레트 위 60-30-10(중립 패널/잉크·프레임 라인/리더 골드 강조), 네오브루탈 그리드 링.
+- **기반 자료**:
+  - [Understanding Consensus Algorithms in Distributed Systems: A Deep Dive — DEV Community](https://dev.to/dhanush___b/understanding-consensus-algorithms-in-distributed-systems-a-deep-dive-4b70) — Paxos/Raft/BFT, 정족수 개념
+  - [Why Distributed Systems Need Consensus Algorithms Like Raft — arpitbhayani.me](https://arpitbhayani.me/blogs/why-consensus/)
+  - [Overcoming Distributed Systems Challenges for AI and Blockchain in 2026 — WebProNews](https://www.webpronews.com/overcoming-distributed-systems-challenges-for-ai-and-blockchain-in-2026/) — AI 워크로드로 분산 아키텍처 가속
+  - [Consensus Algorithms | System Design — algomaster.io](https://algomaster.io/learn/system-design/consensus-algorithms)
+  - 표준 개념: Raft(리더 선출, term, 랜덤 선거 타임아웃, 하트비트/AppendEntries, 과반 복제 후 commit, 로그 최신성 투표 제약)
+
+---
+
 ## 2026-07-04 / Reality Gap (`/reality-gap`)
 
 - **선정 주제**: sim-to-real 격차. 시뮬레이션(SIM)에선 노이즈가 0이라 완벽히 착륙하던 bang-bang 제어기가, 센서 노이즈·액추에이터 지연·외란(바람)이 더해진 현실(REAL)에선 과속 접지로 무너진다. 제어기 파라미터(제동 강도·목표 접지 속도·안전 여유 고도)와 현실 노이즈 슬라이더를 조절하고, 캔버스 라이브 착륙 + SIM vs REAL 25회 배치 성공률 비교로 "리얼리티 갭"을 체험한다. 안전 여유 고도를 키우면 격차가 좁혀지지만 보수적(느림)이 되는 강건성 트레이드오프가 핵심.

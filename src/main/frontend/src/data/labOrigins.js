@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Quorum',
+        subtitle: '합의 알고리즘 (리더 선출)',
+        link: '/quorum',
+        date: '2026-07-04',
+        category: '실험/시뮬레이션',
+        icon: '🏛️',
+        origin: 'AI 워크로드가 여러 노드로 흩어지면서 분산 시스템의 합의(Raft/Paxos)가 개발자 학습 로드맵의 필수 관문으로 다시 회자되던 것이 계기. 서버는 죽고 네트워크는 끊기는데도 전체가 하나의 일관된 상태로 움직이려면 "누가 대표이고 무엇을 확정할지"에 다수결로 합의해야 한다는 원리를, 리더를 직접 죽여가며 재선거가 도는 과정으로 눈으로 보고 싶었다.',
+        tags: ['Raft', '합의', '리더 선출', '정족수'],
+    },
+    {
         name: 'Evolve',
         subtitle: '진화 알고리즘 (유전 알고리즘)',
         link: '/evolve',

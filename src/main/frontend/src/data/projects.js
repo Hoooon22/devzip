@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 45,
+        name: 'Quorum',
+        subtitle: '합의 알고리즘 (리더 선출)',
+        description: '중앙 조정자 없이 다수결로 리더를 뽑고 기록을 확정하는 Raft 합의 실험',
+        link: '/quorum',
+        active: true,
+        startDate: '2026-07-04',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🏛️'
+    },
+    {
         id: 44,
         name: 'Reality Gap',
         subtitle: 'sim-to-real 격차',
