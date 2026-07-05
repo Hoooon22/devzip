@@ -8,6 +8,16 @@ import '../styles/Library.css';
 // internal: true 인 항목은 SPA 내부 라우트로 이동한다.
 const docs = [
     {
+        title: 'GCP PCA v6.1 · 신호어 → 서비스 매핑 지도',
+        description:
+            '문제 지문의 신호어(signal word)를 보면 GCP 서비스가 바로 떠오르도록 정리한 매핑 지도 — 함정 닮은꼴·케이스 스터디 포함.',
+        href: '/docs/gcp-signal-map.html',
+        icon: '🗺️',
+        category: '클라우드 자격증',
+        date: '2026.07.05~',
+        tags: ['GCP', 'PCA', '신호어'],
+    },
+    {
         title: '실험 계기 연대기',
         description:
             '실험실 페이지들이 어떤 사건·이슈·궁금증에서 출발했는지 시간·프로젝트별로 정리한 연대기.',

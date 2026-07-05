@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCP PCA v6.1 · 신호어 → 서비스 매핑 지도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#15202E; --ink-2:#21303F; --ink-3:#2D3F52;
+  --paper:#F7F3EC; --card:#FFFFFF; --card-2:#F0EADD;
+  --signal:#C4770A; --signal-bg:#FBEED4; --signal-line:#E8CE9A;
+  --service:#0A7A7A; --service-bg:#D7EFEE; --service-line:#A6D8D6;
+  --trap:#C33B29; --trap-bg:#FAE1DC; --trap-line:#EBBBB1;
+  --ok:#2C7A4F; --ok-bg:#DEF0E4;
+  --muted:#6B7885; --line:#E4DCCC; --line-2:#D3C9B5;
+  --mono:'JetBrains Mono',monospace; --sans:'Noto Sans KR',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:112px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* ---------- top bar + search ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:var(--ink);color:#EFE9DC;border-bottom:2px solid var(--signal)}
+.topbar-inner{max-width:1120px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.5px;color:#fff}
+.brand b{color:var(--signal)}
+.searchwrap{margin-left:auto;position:relative;flex:1;min-width:200px;max-width:420px}
+#search{width:100%;font-family:var(--mono);font-size:13px;padding:8px 12px 8px 32px;border-radius:7px;border:1px solid var(--ink-3);background:var(--ink-2);color:#fff}
+#search:focus{outline:2px solid var(--signal);border-color:var(--signal)}
+#search::placeholder{color:#8b97a3}
+.searchwrap .mag{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-family:var(--mono);font-size:13px;pointer-events:none}
+.searchcount{font-family:var(--mono);font-size:11px;color:var(--signal);white-space:nowrap}
+
+.navrow{background:var(--ink-2);position:sticky;top:53px;z-index:55;border-bottom:1px solid var(--ink-3)}
+.navrow-inner{max-width:1120px;margin:0 auto;padding:7px 18px;display:flex;gap:5px;flex-wrap:wrap;overflow-x:auto}
+.navrow a{font-family:var(--mono);font-size:11px;text-decoration:none;color:#C1CBD5;background:transparent;padding:4px 8px;border-radius:5px;border:1px solid transparent;white-space:nowrap;transition:.14s}
+.navrow a:hover,.navrow a:focus{background:var(--signal);color:var(--ink);outline:none}
+
+/* ---------- hero ---------- */
+.hero{background:radial-gradient(120% 140% at 15% 0%,var(--ink-3) 0%,var(--ink) 60%);color:#EFE9DC;padding:44px 18px 38px;position:relative;overflow:hidden}
+.hero-inner{max-width:1120px;margin:0 auto;position:relative;z-index:2}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--signal);text-transform:uppercase}
+.hero h1{font-size:clamp(26px,5.4vw,42px);font-weight:900;line-height:1.12;margin:12px 0 8px}
+.hero h1 em{font-style:normal;color:var(--signal)}
+.hero p.sub{color:#B9C3CE;font-size:14.5px;max-width:660px;margin-top:6px}
+
+/* the hero mental-model diagram */
+.model{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px 20px}
+.model .stage{display:flex;flex-direction:column;gap:6px}
+.model .stagelab{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:#8b97a3;text-transform:uppercase}
+.model .box{font-family:var(--mono);font-size:12.5px;padding:6px 11px;border-radius:7px;font-weight:500}
+.model .box.s{background:var(--signal-bg);color:var(--signal);border:1px solid var(--signal-line)}
+.model .box.c{background:rgba(255,255,255,.08);color:#DCE3EA;border:1px solid rgba(255,255,255,.18)}
+.model .box.v{background:var(--service-bg);color:var(--service);border:1px solid var(--service-line);font-weight:700}
+.model .flow{flex:1;min-width:44px;height:2px;background:linear-gradient(90deg,var(--signal),var(--service));position:relative;margin:0 6px;align-self:center;margin-top:22px}
+.model .flow::after{content:"▶";position:absolute;right:-2px;top:-9px;color:var(--service);font-size:11px}
+@media(max-width:640px){.model{flex-direction:column;align-items:stretch}.model .flow{width:2px;height:26px;margin:2px auto;background:linear-gradient(180deg,var(--signal),var(--service))}.model .flow::after{content:"▼";right:auto;left:-5px;top:auto;bottom:-3px}}
+
+/* ---------- legend ---------- */
+.legend{max-width:1120px;margin:18px auto 0;padding:0 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+.legend .item{display:flex;align-items:center;gap:6px}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.dot.s{background:var(--signal)}.dot.v{background:var(--service)}.dot.t{background:var(--trap)}
+
+/* ---------- chips ---------- */
+.sig,.svc,.trapword{font-family:var(--mono);font-size:.86em;padding:1.5px 7px;border-radius:5px;font-weight:500;white-space:nowrap;display:inline-block;line-height:1.5}
+.sig{background:var(--signal-bg);color:var(--signal);border:1px solid var(--signal-line)}
+.svc{background:var(--service-bg);color:var(--service);border:1px solid var(--service-line)}
+.trapword{background:var(--trap-bg);color:var(--trap);border:1px solid var(--trap-line)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:26px 18px 90px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin:46px 0 8px;padding-bottom:9px;border-bottom:2px solid var(--line-2)}
+.sec-head:first-of-type{margin-top:30px}
+.sec-num{font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;background:var(--ink);padding:4px 9px;border-radius:6px;flex-shrink:0}
+.sec-head h2{font-size:21px;font-weight:900}
+.sec-head .en{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:auto;text-align:right}
+.sec-intro{font-size:14px;color:var(--ink-3);margin:10px 0 18px;max-width:760px}
+
+/* ============ THE SIGNATURE: mapping track ============ */
+.track{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:0;margin:13px 0;overflow:hidden;box-shadow:0 1px 3px rgba(21,32,46,.04)}
+.track-head{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--card-2);border-bottom:1px solid var(--line)}
+.track-head .concept{font-size:15px;font-weight:900}
+.track-head .cen{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.track-head .pin{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--paper);border:1px solid var(--line);padding:2px 7px;border-radius:11px}
+
+.track-body{display:grid;grid-template-columns:1fr 54px minmax(140px,220px);align-items:center;gap:0;padding:16px}
+@media(max-width:680px){.track-body{grid-template-columns:1fr;gap:12px}}
+.tb-signals{display:flex;flex-wrap:wrap;gap:6px;align-content:center}
+.tb-signals .lab,.tb-service .lab{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;width:100%;margin-bottom:3px}
+.tb-arrow{display:grid;place-items:center;position:relative;height:100%}
+.tb-arrow .rail{width:2px;height:70%;background:linear-gradient(180deg,var(--signal-line),var(--service-line))}
+.tb-arrow .tri{position:absolute;color:var(--service);font-size:15px}
+@media(max-width:680px){.tb-arrow{height:26px}.tb-arrow .rail{width:60%;height:2px;background:linear-gradient(90deg,var(--signal-line),var(--service-line))}.tb-arrow .tri{transform:rotate(90deg)}}
+.tb-service{display:flex;flex-direction:column;gap:5px}
+.tb-service .svcbox{background:var(--service-bg);border:1.5px solid var(--service);border-radius:9px;padding:9px 12px;text-align:center}
+.tb-service .svcbox .n{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--service);display:block}
+.tb-service .svcbox .k{font-size:11px;color:var(--ink-3);margin-top:2px}
+
+.track-foot{border-top:1px dashed var(--line-2);padding:11px 16px;display:flex;flex-direction:column;gap:8px}
+.trapline{display:flex;align-items:flex-start;gap:8px;font-size:13px}
+.trapline .x{font-family:var(--mono);color:var(--trap);font-weight:700;flex-shrink:0}
+.rule{display:flex;align-items:flex-start;gap:8px;font-size:13px;background:var(--signal-bg);border-radius:8px;padding:8px 11px}
+.rule .rk{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);flex-shrink:0;letter-spacing:.5px;padding-top:2px}
+
+/* ---------- confusion pair (VS card) ---------- */
+.vs{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;margin:14px 0;align-items:stretch}
+@media(max-width:600px){.vs{grid-template-columns:1fr;gap:10px}}
+.vs .side{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px 15px}
+.vs .side.a{border-color:var(--service-line)}
+.vs .side.b{border-color:var(--trap-line)}
+.vs .side h4{font-family:var(--mono);font-size:15px;font-weight:700;margin-bottom:2px}
+.vs .side.a h4{color:var(--service)}
+.vs .side.b h4{color:var(--trap)}
+.vs .side .role{font-size:12px;color:var(--muted);margin-bottom:9px}
+.vs .side .sigs{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.vs .mid{display:grid;place-items:center;font-family:var(--mono);font-weight:900;font-size:13px;color:var(--muted)}
+@media(max-width:600px){.vs .mid{height:26px}}
+.vs-tell{grid-column:1/-1;margin-top:10px;background:var(--ink);color:#EFE9DC;border-radius:10px;padding:11px 14px;font-size:13px}
+.vs-tell b{color:var(--signal)}
+.vs-tell .tk{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--signal);text-transform:uppercase;display:block;margin-bottom:3px}
+
+/* ---------- spectrum bar ---------- */
+.spectrum{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:18px 20px 14px;margin:14px 0}
+.spectrum .axis{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:8px}
+.spec-bar{height:12px;border-radius:7px;background:linear-gradient(90deg,var(--ok) 0%,var(--signal) 55%,var(--trap) 100%);position:relative;margin:24px 0}
+.spec-mark{position:absolute;top:-8px;transform:translateX(-50%);text-align:center}
+.spec-mark .pk{width:3px;height:28px;background:var(--ink);margin:0 auto;border-radius:2px}
+.spec-mark .pl{font-family:var(--mono);font-size:11px;font-weight:700;white-space:nowrap;margin-top:3px;background:var(--card);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+.spec-mark .ps{font-size:9.5px;color:var(--muted);white-space:nowrap}
+.spec-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:34px}
+.spec-c{border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:12px}
+.spec-c h5{font-family:var(--mono);font-size:12.5px;margin-bottom:4px}
+.spec-c .m{color:var(--muted)}
+
+/* ---------- decision tree ---------- */
+.tree{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px;margin:14px 0}
+.tnode{border-radius:9px;padding:9px 13px;margin:7px 0;font-size:13.5px;position:relative}
+.tnode.q{background:var(--ink);color:#EFE9DC;font-weight:700;display:flex;align-items:center;gap:9px}
+.tnode.q .qi{font-family:var(--mono);font-size:11px;color:var(--signal)}
+.tnode.a{background:var(--card-2);border:1px solid var(--line-2);margin-left:22px}
+.tnode.a .cond{font-family:var(--mono);font-size:11px;color:var(--signal);font-weight:700}
+.tnode.a .then{color:var(--service);font-family:var(--mono);font-weight:700}
+.tnode.lvl2{margin-left:44px}
+.tbranch{border-left:2px dashed var(--line-2);margin-left:12px;padding-left:10px}
+
+/* ---------- stack diagram (pipeline) ---------- */
+.stack{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:14px 0}
+.stack .node{flex:1;min-width:130px;background:var(--card);border:1.5px solid var(--service-line);border-radius:11px;padding:13px 12px;text-align:center}
+.stack .node .st{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.stack .node .nm{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--service);margin:4px 0 3px}
+.stack .node .ds{font-size:11.5px;color:var(--ink-3)}
+.stack .conn{display:grid;place-items:center;padding:0 4px;color:var(--service);font-size:16px;font-family:var(--mono)}
+@media(max-width:640px){.stack{flex-direction:column}.stack .conn{transform:rotate(90deg);padding:3px 0}}
+
+/* ---------- note / callout ---------- */
+.note{background:#FBF6EA;border:1px dashed var(--signal);border-radius:10px;padding:12px 15px;margin:14px 0;font-size:13.5px}
+.note .nh{font-family:var(--mono);font-size:10px;color:var(--signal);font-weight:700;letter-spacing:1px;display:block;margin-bottom:4px;text-transform:uppercase}
+
+/* ---------- case card ---------- */
+.case{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px;margin:12px 0}
+.case-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.case-h .nm{font-size:16px;font-weight:900}
+.case-h .bd{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:11px;background:var(--service-bg);color:var(--service)}
+.case-h .bd.new{background:var(--signal-bg);color:var(--signal)}
+.case .idn{font-size:12.5px;color:var(--muted);font-style:italic;margin-bottom:10px}
+.drivers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.drivers{grid-template-columns:1fr}}
+.driver{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--paper)}
+.driver .rq{font-size:12px;color:var(--ink-3);margin-bottom:6px}
+.driver .rq b{color:var(--trap)}
+.driver .sv{font-family:var(--mono);font-size:12.5px;color:var(--service);font-weight:700}
+
+/* ---------- filter no-result ---------- */
+.noresult{display:none;text-align:center;padding:40px 20px;color:var(--muted);font-family:var(--mono);font-size:14px}
+.hidden{display:none!important}
+.hl{background:var(--signal);color:var(--ink);border-radius:3px;padding:0 2px}
+
+/* ---------- inline figures (SVG) ---------- */
+.fig{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 16px 10px;margin:14px 0}
+.fig svg{width:100%;height:auto;display:block}
+.fig text{font-family:var(--sans)}
+.fig text.m{font-family:var(--mono)}
+.figcap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.5}
+.figttl{font-size:12.5px;font-weight:700;color:var(--ink-3);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.figttl::before{content:"▦";color:var(--service);font-family:var(--mono)}
+
+.foot{text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);margin-top:60px;padding-top:22px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">GCP <b>PCA</b> v6.1 · 신호어 지도</span>
+    <div class="searchwrap">
+      <span class="mag">&#9906;</span>
+      <input id="search" type="search" autocomplete="off" placeholder="영어 신호어 검색 — 예: scale to zero, hallucination, RPO">
+    </div>
+    <span class="searchcount" id="scount"></span>
+  </div>
+</div>
+
+<nav class="navrow">
+  <div class="navrow-inner">
+    <a href="#compute">1·컴퓨트</a>
+    <a href="#gke">2·GKE</a>
+    <a href="#data">3·스토리지·DB</a>
+    <a href="#net">4·네트워킹</a>
+    <a href="#iam">5·IAM</a>
+    <a href="#pipeline">6·데이터파이프라인</a>
+    <a href="#aiml">7·AI/ML</a>
+    <a href="#aisec">8·AI보안</a>
+    <a href="#ops">9·운영·관측</a>
+    <a href="#dr">10·DR</a>
+    <a href="#iac">11·IaC</a>
+    <a href="#cost">12·비용</a>
+    <a href="#migrate">13·마이그레이션</a>
+    <a href="#seccomp">14·보안·컴플라이언스</a>
+    <a href="#cases">15·케이스</a>
+    <a href="#traps">함정모음</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Professional Cloud Architect · Signal → Service Map</span>
+    <h1>영어 <em>신호어(signal word)</em>를 보면<br>손이 먼저 <em>서비스</em>를 고르게</h1>
+    <p class="sub">이 시험은 영어로 출제된다. 문제를 다 읽고 해석하는 게 아니라, 지문 속 트리거 영어 표현을 보는 순간 정답 서비스가 떠오르게 만드는 게 핵심이다. 아래 지도는 시험 전 범위를 <b>신호어 → 개념 → 서비스</b> 한 줄 흐름으로 그려 놓은 것이다. 함정(닮은꼴 서비스)까지 같이 본다.</p>
+
+    <div class="model" aria-hidden="true">
+      <div class="stage">
+        <span class="stagelab">1 · 지문에서 본다</span>
+        <span class="box s">"scale to zero"</span>
+        <span class="box s">"pay per use"</span>
+      </div>
+      <div class="flow"></div>
+      <div class="stage">
+        <span class="stagelab">2 · 개념으로 변환</span>
+        <span class="box c">serverless</span>
+        <span class="box c">완전관리 · 무과금</span>
+      </div>
+      <div class="flow"></div>
+      <div class="stage">
+        <span class="stagelab">3 · 서비스가 떠오른다</span>
+        <span class="box v">Cloud Run</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="legend">
+  <span class="item"><span class="dot s"></span>신호어 signal (영어 트리거)</span>
+  <span class="item"><span class="dot v"></span>서비스 service (정답)</span>
+  <span class="item"><span class="dot t"></span>함정 trap (닮은꼴 오답)</span>
+  <span class="item" style="margin-left:auto;color:var(--ink-3)">상단 검색창에 영어 표현을 넣으면 해당 카드만 남는다.</span>
+</div>
+
+<main class="wrap">
+<div class="noresult" id="noresult">일치하는 신호어가 없습니다. 다른 영어 표현으로 검색해 보세요.</div>
+<!-- ============================ 1. COMPUTE ============================ -->
+<div class="sec-head" id="compute">
+  <span class="sec-num">01</span>
+  <h2>컴퓨트 선택</h2>
+  <span class="en">Compute&nbsp;Engine · GKE · Cloud&nbsp;Run · Cloud&nbsp;Functions</span>
+</div>
+<p class="sec-intro">"어디에 실행할까"는 세 축으로 갈린다: <b>관리 부담(managed?)</b>, <b>0으로 축소되나(scale to zero?)</b>, <b>컨테이너/오케스트레이션이 필요한가</b>. 아래 트랙에서 왼쪽 영어 표현이 보이면 오른쪽 서비스로 손이 가야 한다.</p>
+
+<div class="fig" data-sig="compute spectrum managed control scale to zero, cloud functions cloud run gke compute engine">
+  <div class="figttl">한눈에: 관리 편함 ↔ 제어 많음 스펙트럼</div>
+  <svg viewBox="0 0 680 156" role="img" aria-label="컴퓨트 서비스를 관리 편함에서 제어 많음 순으로 배치한 스펙트럼">
+    <g font-size="13" fill="#0A7A7A">
+      <rect x="40" y="30" width="112" height="52" rx="8" fill="#D7EFEE" stroke="#0A7A7A" stroke-width="1"/>
+      <text x="96" y="52" text-anchor="middle" font-weight="700">Cloud Functions</text>
+      <text x="96" y="70" text-anchor="middle" font-size="11" fill="#2D3F52">이벤트 트리거</text>
+    </g>
+    <g>
+      <rect x="162" y="30" width="112" height="52" rx="8" fill="#D7EFEE" stroke="#0A7A7A" stroke-width="1"/>
+      <text x="218" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#0A7A7A">Cloud Run</text>
+      <text x="218" y="70" text-anchor="middle" font-size="11" fill="#2D3F52">0까지 축소</text>
+    </g>
+    <g>
+      <rect x="284" y="30" width="112" height="52" rx="8" fill="#F0EADD" stroke="#D3C9B5" stroke-width="1"/>
+      <text x="340" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#2D3F52">GKE Autopilot</text>
+      <text x="340" y="70" text-anchor="middle" font-size="11" fill="#6B7885">관리형 k8s</text>
+    </g>
+    <g>
+      <rect x="406" y="30" width="112" height="52" rx="8" fill="#F0EADD" stroke="#D3C9B5" stroke-width="1"/>
+      <text x="462" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#2D3F52">GKE Standard</text>
+      <text x="462" y="70" text-anchor="middle" font-size="11" fill="#6B7885">node 제어</text>
+    </g>
+    <g>
+      <rect x="528" y="30" width="112" height="52" rx="8" fill="#F0EADD" stroke="#D3C9B5" stroke-width="1"/>
+      <text x="584" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#2D3F52">Compute Engine</text>
+      <text x="584" y="70" text-anchor="middle" font-size="11" fill="#6B7885">OS 제어</text>
+    </g>
+    <rect x="40" y="100" width="600" height="12" rx="6" fill="#D7EFEE"/>
+    <rect x="40" y="100" width="600" height="12" rx="6" fill="url(#g1)"/>
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0A7A7A" stop-opacity="0.55"/><stop offset="100%" stop-color="#15202E" stop-opacity="0.55"/></linearGradient></defs>
+    <text class="m" x="40" y="134" font-size="11" fill="#0A7A7A" font-weight="700">◀ 완전관리 · serverless (scale to zero)</text>
+    <text class="m" x="640" y="134" text-anchor="end" font-size="11" fill="#15202E" font-weight="700">완전제어 · IaaS ▶</text>
+  </svg>
+  <div class="figcap">왼쪽일수록 "손 안 대도 됨", 오른쪽일수록 "직접 제어". scale-to-zero는 Cloud Functions·Cloud Run에서만.</div>
+</div>
+
+<div class="track" data-sig="scale to zero, pay per use, pay only for actual usage, serverless, stateless container, minimize operational overhead, event-driven http, request-based">
+  <div class="track-head"><span class="concept">서버리스 컨테이너</span><span class="cen">serverless container</span><span class="pin">§1</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">scale to zero</span><span class="sig">pay per use</span><span class="sig">stateless container</span><span class="sig">minimize ops overhead</span><span class="sig">serverless</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Run</span><span class="k">완전관리 · 컨테이너 · 0까지 축소</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">GKE Standard</span> — Cluster Autoscaler는 <b>node</b> 수만 조절, scale-to-zero 불가 · <span class="trapword">App Engine flexible</span> — 최소 1개 상시 실행(0 불가)</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>scale-to-zero + stateless container + serverless → <b>Cloud Run</b>. "autoscaling"만으론 부족 — <b>zero</b>가 핵심.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="event-driven, triggered by, respond to event, single-purpose function, cloud storage trigger, pub/sub trigger, lightweight glue code">
+  <div class="track-head"><span class="concept">이벤트 기반 단일 함수</span><span class="cen">event-driven function</span><span class="pin">§1</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">triggered by an event</span><span class="sig">respond to a file upload</span><span class="sig">single-purpose</span><span class="sig">lightweight glue</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Functions</span><span class="k">이벤트 트리거 · 짧은 실행</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud Run</span>도 이벤트 처리 가능하나, "<b>single function triggered by X</b>" 문구가 명확하면 Functions. 무거운 처리·긴 실행이면 Cloud Run.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"event / trigger + 짧고 단순한 코드" → <b>Cloud Functions</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="kubernetes, container orchestration, microservices, portability, hybrid multi-cloud, fine-grained control networking scheduling, existing k8s workloads, service mesh">
+  <div class="track-head"><span class="concept">컨테이너 오케스트레이션</span><span class="cen">container orchestration</span><span class="pin">§1</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">Kubernetes</span><span class="sig">container orchestration</span><span class="sig">complex microservices</span><span class="sig">portability / multi-cloud</span><span class="sig">fine-grained control</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">GKE</span><span class="k">관리형 Kubernetes</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud Run</span> — 단순 stateless엔 더 낫지만, K8s 수준의 networking/scheduling 제어·기존 k8s 자산엔 부족.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"Kubernetes / orchestration / 기존 k8s / 세밀한 제어" → <b>GKE</b>. 단순 컨테이너면 Cloud Run 먼저 의심.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="full control over os, gpu tpu specialized, licensed software byol, lift and shift vm, specific machine type, sole tenant, stateful legacy">
+  <div class="track-head"><span class="concept">VM 수준 완전 제어</span><span class="cen">full OS control</span><span class="pin">§1</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">full control over the OS</span><span class="sig">lift and shift</span><span class="sig">BYOL / licensed software</span><span class="sig">specific machine type</span><span class="sig">sole-tenant</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Compute Engine</span><span class="k">IaaS VM · MIG로 autoscale</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>"minimize ops / serverless" 신호와 같이 나오면 GCE가 아니라 관리형(Cloud Run/GKE Autopilot)을 의심.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"OS 제어 / lift-and-shift / BYOL / 특정 하드웨어" → <b>Compute Engine (GCE)</b>.</span></div>
+  </div>
+</div>
+
+<div class="tree" data-sig="compute decision tree, which compute, choose compute platform">
+  <div class="tnode q"><span class="qi">START</span> 어떤 컴퓨트를 고를까? (위에서 아래로 먼저 걸리는 것)</div>
+  <div class="tbranch">
+    <div class="tnode a"><span class="cond">OS/커널 제어 · BYOL · 특정 GPU/머신타입?</span> → <span class="then">Compute Engine</span></div>
+    <div class="tnode a"><span class="cond">Kubernetes · 복잡한 마이크로서비스 · 세밀한 제어?</span> → <span class="then">GKE</span> <span style="font-size:11px;color:var(--muted)">(운영 최소화면 Autopilot)</span></div>
+    <div class="tnode a"><span class="cond">stateless 컨테이너 · scale-to-zero · 완전관리?</span> → <span class="then">Cloud Run</span></div>
+    <div class="tnode a"><span class="cond">단일 이벤트 트리거 · 짧은 코드?</span> → <span class="then">Cloud Functions</span></div>
+  </div>
+</div>
+
+<!-- ============================ 2. GKE ============================ -->
+<div class="sec-head" id="gke">
+  <span class="sec-num">02</span>
+  <h2>GKE 심화 — 모드 &amp; 오토스케일링</h2>
+  <span class="en">Autopilot vs Standard · HPA · VPA · Cluster&nbsp;Autoscaler</span>
+</div>
+<p class="sec-intro">GKE는 두 가지를 물어본다: <b>어떤 모드(mode)</b>냐, 그리고 <b>무엇을 스케일</b>하냐. 오토스케일링 세 종류를 헷갈리면 반드시 틀린다 — 각각 스케일하는 대상이 다르다.</p>
+
+<div class="fig" data-sig="hpa vpa cluster autoscaler visual, pod count pod size node count, more pods bigger pods more nodes">
+  <div class="figttl">한눈에: 무엇을 스케일하나?</div>
+  <svg viewBox="0 0 680 250" role="img" aria-label="HPA는 pod 개수, VPA는 pod 크기, Cluster Autoscaler는 node 개수를 늘리는 비교">
+    <defs><marker id="arw2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+    <!-- Row 1: HPA -->
+    <text class="m" x="40" y="46" font-size="13" font-weight="700" fill="#0A7A7A">HPA</text>
+    <text x="40" y="63" font-size="11" fill="#6B7885">pod 개수↑</text>
+    <rect x="150" y="26" width="60" height="46" rx="7" fill="#F7F3EC" stroke="#15202E" stroke-width="1"/>
+    <rect x="172" y="42" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <line x1="222" y1="49" x2="286" y2="49" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arw2)"/>
+    <rect x="300" y="26" width="118" height="46" rx="7" fill="#F7F3EC" stroke="#15202E" stroke-width="1"/>
+    <rect x="312" y="42" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <rect x="336" y="42" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <rect x="360" y="42" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <rect x="384" y="42" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <text x="470" y="53" font-size="12" fill="#2D3F52">복제본(replica)을 <tspan fill="#0A7A7A" font-weight="700">더 많이</tspan></text>
+
+    <!-- Row 2: VPA -->
+    <text class="m" x="40" y="126" font-size="13" font-weight="700" fill="#0A7A7A">VPA</text>
+    <text x="40" y="143" font-size="11" fill="#6B7885">pod 크기↑</text>
+    <rect x="150" y="106" width="60" height="46" rx="7" fill="#F7F3EC" stroke="#15202E" stroke-width="1"/>
+    <rect x="172" y="122" width="16" height="16" rx="3" fill="#0A7A7A"/>
+    <line x1="222" y1="129" x2="286" y2="129" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arw2)"/>
+    <rect x="300" y="106" width="60" height="46" rx="7" fill="#F7F3EC" stroke="#15202E" stroke-width="1"/>
+    <rect x="312" y="112" width="34" height="34" rx="4" fill="#0A7A7A"/>
+    <text x="470" y="133" font-size="12" fill="#2D3F52">같은 pod를 <tspan fill="#0A7A7A" font-weight="700">더 크게</tspan> (CPU/메모리)</text>
+
+    <!-- Row 3: Cluster Autoscaler -->
+    <text class="m" x="40" y="206" font-size="13" font-weight="700" fill="#0A7A7A">Cluster</text>
+    <text x="40" y="223" font-size="11" fill="#6B7885">node 개수↑</text>
+    <rect x="150" y="186" width="60" height="46" rx="7" fill="#FBEED4" stroke="#C4770A" stroke-width="1.2"/>
+    <text x="180" y="204" text-anchor="middle" font-size="10" class="m" fill="#C4770A">node</text>
+    <rect x="164" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <rect x="184" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <line x1="222" y1="209" x2="286" y2="209" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arw2)"/>
+    <rect x="300" y="186" width="60" height="46" rx="7" fill="#FBEED4" stroke="#C4770A" stroke-width="1.2"/>
+    <text x="330" y="204" text-anchor="middle" font-size="10" class="m" fill="#C4770A">node</text>
+    <rect x="314" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <rect x="334" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <rect x="372" y="186" width="60" height="46" rx="7" fill="#FBEED4" stroke="#C4770A" stroke-width="1.2"/>
+    <text x="402" y="204" text-anchor="middle" font-size="10" class="m" fill="#C4770A">node</text>
+    <rect x="386" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <rect x="406" y="210" width="12" height="12" rx="2" fill="#0A7A7A"/>
+    <text x="470" y="213" font-size="12" fill="#2D3F52"><tspan fill="#C4770A" font-weight="700">node 자체</tspan>를 더 추가 (0 아님)</text>
+  </svg>
+  <div class="figcap">파란 사각형 = pod, 주황 박스 = node. HPA·VPA는 pod를, Cluster Autoscaler는 node를 건드린다.</div>
+</div>
+
+<div class="vs" data-sig="autopilot vs standard, node management, hands-off, per-pod billing, custom daemonset, node level access, gke mode">
+  <div class="side a"><h4>GKE Autopilot</h4><div class="role">노드를 Google이 관리 · pod 단위 과금</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">운영 부담 최소, 보안 기본값 강화. 대부분의 신규 워크로드 권장.</div>
+    <div class="sigs"><span class="sig">hands-off nodes</span><span class="sig">minimize node ops</span><span class="sig">pay per pod</span></div>
+  </div>
+  <div class="mid">VS</div>
+  <div class="side b" style="border-color:var(--service-line)"><h4 style="color:var(--service)">GKE Standard</h4><div class="role">노드 풀을 직접 관리 · node 단위 과금</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">노드 OS·DaemonSet·특수 하드웨어 세밀 제어가 필요할 때.</div>
+    <div class="sigs"><span class="sig">node-level access</span><span class="sig">custom DaemonSet</span><span class="sig">specific node config</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">가르는 한 마디</span>"운영을 줄이고 싶다(<b>hands-off / minimize node management</b>)" → <b>Autopilot</b>. "노드 자체를 만져야 한다(<b>node-level control</b>)" → <b>Standard</b>.</div>
+</div>
+
+<div class="track" data-sig="hpa horizontal pod autoscaler, more pods, cpu utilization high, traffic spike replicas, scale out pods">
+  <div class="track-head"><span class="concept">오토스케일링 ① — pod 개수</span><span class="cen">Horizontal Pod Autoscaler</span><span class="pin">§2</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">add more replicas / pods</span><span class="sig">CPU utilization &gt; target</span><span class="sig">handle traffic spikes</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 스케일 대상</span><div class="svcbox"><span class="n">HPA</span><span class="k">pod <b>개수</b>를 늘림/줄임</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"더 많은 pod / 복제본" → <b>HPA</b> (수평 = 개수).</span></div></div>
+</div>
+
+<div class="track" data-sig="vpa vertical pod autoscaler, right-size cpu memory requests, pod resource tuning, over-provisioned under-provisioned">
+  <div class="track-head"><span class="concept">오토스케일링 ② — pod 크기</span><span class="cen">Vertical Pod Autoscaler</span><span class="pin">§2</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">right-size CPU/memory requests</span><span class="sig">tune resource requests</span><span class="sig">over/under-provisioned pods</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 스케일 대상</span><div class="svcbox"><span class="n">VPA</span><span class="k">pod의 <b>CPU/메모리 요청량</b> 조정</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"요청량(request) 자동 조정 / right-size" → <b>VPA</b> (수직 = 크기).</span></div></div>
+</div>
+
+<div class="track" data-sig="cluster autoscaler, add remove nodes, not enough nodes, pending pods no capacity, node pool scale">
+  <div class="track-head"><span class="concept">오토스케일링 ③ — node 개수</span><span class="cen">Cluster Autoscaler</span><span class="pin">§2</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">add/remove nodes</span><span class="sig">pending pods, no capacity</span><span class="sig">node pool size</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 스케일 대상</span><div class="svcbox"><span class="n">Cluster Autoscaler</span><span class="k"><b>node</b> 수를 늘림/줄임</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>Cluster Autoscaler는 <b>node</b> 스케일이지 pod가 아니다. 그리고 <b>scale-to-zero가 아니다</b> — 이걸 Cloud Run 대체로 고르면 오답(§1 참고).</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"node 부족 / 노드 추가" → <b>Cluster Autoscaler</b>. pod=HPA/VPA, node=Cluster.</span></div>
+  </div>
+</div>
+
+<div class="note" data-sig="autoscaler summary hpa vpa cluster">
+  <span class="nh">한 줄 암기</span>
+  <b>HPA</b> = pod 개수(수평) · <b>VPA</b> = pod 크기(수직) · <b>Cluster Autoscaler</b> = node 개수. "무엇을 스케일하나?"를 먼저 물어라.
+</div>
+<!-- ============================ 3. STORAGE / DB ============================ -->
+<div class="sec-head" id="data">
+  <span class="sec-num">03</span>
+  <h2>스토리지 &amp; 데이터베이스 선택</h2>
+  <span class="en">Cloud&nbsp;SQL · Spanner · Bigtable · Firestore · BigQuery · Cloud&nbsp;Storage</span>
+</div>
+<p class="sec-intro">가장 많이 나오는 선택지. 먼저 <b>관계형(relational/SQL)이냐 NoSQL이냐</b>를 가르고, 그다음 <b>global?·strong consistency?·분석용?·객체?</b>로 좁힌다. 여러 후보가 공유하는 약한 신호(예: "high availability")가 아니라, <b>후보를 갈라주는 결정적 신호</b>를 잡아라.</p>
+
+<div class="fig" data-sig="relational vs nosql map, cloud sql spanner bigquery bigtable firestore cloud storage">
+  <div class="figttl">한눈에: 먼저 관계형이냐 NoSQL이냐로 가른다</div>
+  <svg viewBox="0 0 680 236" role="img" aria-label="관계형 데이터베이스와 NoSQL 계열 서비스를 두 열로 나눈 분류">
+    <!-- Left column: relational -->
+    <rect x="40" y="30" width="290" height="196" rx="12" fill="#F7F3EC" stroke="#0A7A7A" stroke-width="1"/>
+    <text x="56" y="54" font-size="13" font-weight="700" fill="#0A7A7A">Relational · SQL</text>
+    <text class="m" x="314" y="54" text-anchor="end" font-size="10" fill="#6B7885">"relational / SQL"</text>
+    <g font-size="12">
+      <rect x="56" y="70" width="258" height="66" rx="8" fill="#D7EFEE" stroke="#A6D8D6"/>
+      <text class="m" x="68" y="92" font-size="12.5" font-weight="700" fill="#0A7A7A">Cloud Spanner</text>
+      <text x="68" y="110" font-size="11" fill="#2D3F52">global + strong consistency</text>
+      <text x="68" y="126" font-size="11" fill="#2D3F52">수평확장 · no manual sharding</text>
+      <rect x="56" y="146" width="258" height="62" rx="8" fill="#D7EFEE" stroke="#A6D8D6"/>
+      <text class="m" x="68" y="168" font-size="12.5" font-weight="700" fill="#0A7A7A">Cloud SQL</text>
+      <text x="68" y="186" font-size="11" fill="#2D3F52">단일 리전 · OLTP</text>
+      <text x="68" y="202" font-size="11" fill="#2D3F52">lift-and-shift MySQL/PG</text>
+    </g>
+    <!-- Right column: NoSQL / etc -->
+    <rect x="350" y="30" width="290" height="196" rx="12" fill="#F7F3EC" stroke="#D3C9B5" stroke-width="1"/>
+    <text x="366" y="54" font-size="13" font-weight="700" fill="#2D3F52">NoSQL · 분석 · 객체</text>
+    <g font-size="11">
+      <rect x="366" y="66" width="258" height="34" rx="7" fill="#FFFFFF" stroke="#E4DCCC"/>
+      <text class="m" x="378" y="88" font-size="12" font-weight="700" fill="#0A7A7A">BigQuery</text>
+      <text x="612" y="88" text-anchor="end" fill="#6B7885">serverless 분석 DW</text>
+      <rect x="366" y="106" width="258" height="34" rx="7" fill="#FFFFFF" stroke="#E4DCCC"/>
+      <text class="m" x="378" y="128" font-size="12" font-weight="700" fill="#0A7A7A">Bigtable</text>
+      <text x="612" y="128" text-anchor="end" fill="#6B7885">time-series · 초저지연</text>
+      <rect x="366" y="146" width="258" height="34" rx="7" fill="#FFFFFF" stroke="#E4DCCC"/>
+      <text class="m" x="378" y="168" font-size="12" font-weight="700" fill="#0A7A7A">Firestore</text>
+      <text x="612" y="168" text-anchor="end" fill="#6B7885">문서 · 모바일 동기화</text>
+      <rect x="366" y="186" width="258" height="34" rx="7" fill="#FFFFFF" stroke="#E4DCCC"/>
+      <text class="m" x="378" y="208" font-size="12" font-weight="700" fill="#0A7A7A">Cloud Storage</text>
+      <text x="612" y="208" text-anchor="end" fill="#6B7885">비정형 객체 파일</text>
+    </g>
+  </svg>
+  <div class="figcap">1단계: relational/SQL? → 왼쪽(global이면 Spanner, 아니면 Cloud SQL). NoSQL? → 오른쪽에서 용도로 선택.</div>
+</div>
+
+<div class="track" data-sig="global relational strong consistency, horizontal scale sql, no manual sharding, multi-region relational, millions of qps sql, spanner">
+  <div class="track-head"><span class="concept">전역 분산 관계형 DB</span><span class="cen">global relational</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">global + relational/SQL</span><span class="sig">strong consistency</span><span class="sig">horizontal scale</span><span class="sig">no manual sharding</span><span class="sig">99.999% SLA</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Spanner</span><span class="k">전역·수평확장·강한일관성 관계형</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud SQL + read replica</span> — 읽기만 확장, 글로벌 write·수백만 QPS 불가 · <span class="trapword">Bigtable</span> — NoSQL이라 relational/SQL 요건 탈락.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>3종 세트 <b>global + strong consistency + relational SQL</b>가 동시에 나오면 사실상 <b>Spanner</b> 확정.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="managed mysql postgresql sqlserver, traditional relational oltp, lift and shift database, regional relational, transactional app single region">
+  <div class="track-head"><span class="concept">전통적 관계형 (단일 리전)</span><span class="cen">managed relational · OLTP</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">managed MySQL/PostgreSQL</span><span class="sig">lift-and-shift a database</span><span class="sig">traditional OLTP</span><span class="sig">regional</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud SQL</span><span class="k">관리형 MySQL/PG/SQL Server</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"기존 MySQL/PG를 그대로 / 단일 리전 트랜잭션" → <b>Cloud SQL</b>. "global"이 붙으면 Spanner로 승격.</span></div></div>
+</div>
+
+<div class="track" data-sig="nosql wide column, low latency high throughput, time series iot telemetry, millions of writes per second, sensor data, single-key lookups massive scale, bigtable">
+  <div class="track-head"><span class="concept">초고속 대용량 NoSQL</span><span class="cen">NoSQL wide-column</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">low-latency + high-throughput</span><span class="sig">time-series / IoT / telemetry</span><span class="sig">millions of writes/sec</span><span class="sig">single-key lookups at scale</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Bigtable</span><span class="k">NoSQL wide-column · 초저지연</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>"SQL / ad-hoc analytics" 신호가 있으면 Bigtable이 아니라 BigQuery. Bigtable은 복잡한 쿼리·분석용이 아니다.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"time-series/IoT + 초저지연 + 초당 대량 write" → <b>Bigtable</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="serverless data warehouse, ad-hoc sql analytics, business analysts, petabyte analytics, olap reporting, standard sql over huge datasets, bigquery">
+  <div class="track-head"><span class="concept">서버리스 데이터 웨어하우스</span><span class="cen">data warehouse · OLAP</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">serverless data warehouse</span><span class="sig">ad-hoc SQL analytics</span><span class="sig">business analysts</span><span class="sig">petabyte-scale reporting</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">BigQuery</span><span class="k">서버리스 분석 · 표준 SQL</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"serverless data warehouse" ≈ <b>BigQuery</b> 1:1. "analytics / analysts / reporting"도 강한 신호.</span></div></div>
+</div>
+
+<div class="track" data-sig="document database, mobile web app backend, offline sync, real-time listeners, hierarchical json documents, firestore datastore">
+  <div class="track-head"><span class="concept">문서형 NoSQL (앱 백엔드)</span><span class="cen">document DB</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">mobile/web app backend</span><span class="sig">offline sync</span><span class="sig">real-time listeners</span><span class="sig">document model</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Firestore</span><span class="k">문서형 · 모바일 동기화</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"mobile app + offline sync + document" → <b>Firestore</b>.</span></div></div>
+</div>
+
+<div class="track" data-sig="object storage, unstructured data, images videos backups, static assets, data lake landing, archival nearline coldline archive, cloud storage bucket">
+  <div class="track-head"><span class="concept">객체 스토리지</span><span class="cen">object storage</span><span class="pin">§3</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">unstructured data</span><span class="sig">images / videos / backups</span><span class="sig">static assets</span><span class="sig">archival (Nearline/Coldline/Archive)</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Storage</span><span class="k">객체 · 4단계 storage class</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>"streaming ingestion(초당 수백만 이벤트)"엔 부적합 — 그건 Pub/Sub(§6). Cloud Storage는 배치성 객체 저장.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"파일/이미지/백업/아카이브 = 비정형 객체" → <b>Cloud Storage</b>. 접근 빈도↓ → Nearline→Coldline→Archive.</span></div>
+  </div>
+</div>
+
+<div class="note" data-sig="database decision summary relational nosql">
+  <span class="nh">2단계 소거법</span>
+  ① relational/SQL 요구인가? → <b>예</b>: global이면 Spanner, 아니면 Cloud SQL / <b>아니오(NoSQL)</b>: 분석이면 BigQuery, 초저지연 대량이면 Bigtable, 앱·문서면 Firestore, 비정형 파일이면 Cloud Storage.
+</div>
+
+<!-- ============================ 4. NETWORKING ============================ -->
+<div class="sec-head" id="net">
+  <span class="sec-num">04</span>
+  <h2>네트워킹</h2>
+  <span class="en">Cloud&nbsp;NAT · IAP · Private&nbsp;Google&nbsp;Access · Interconnect · Shared&nbsp;VPC</span>
+</div>
+<p class="sec-intro">여기서 제일 많이 실수한다. 핵심은 <b>방향(direction)</b>이다 — 들어오는(inbound) 연결인지, 나가는(outbound) 연결인지 먼저 판단하라. 그리고 "private VM(외부 IP 없음)"이라는 조건이 붙으면 선택지가 확 좁혀진다.</p>
+
+<div class="fig" data-sig="inbound outbound direction diagram, iap inbound ssh cloud nat outbound, private vm no external ip">
+  <div class="figttl">한눈에: 방향으로 갈린다 (inbound=IAP, outbound=NAT)</div>
+  <svg viewBox="0 0 680 218" role="img" aria-label="private VM에 대해 IAP는 inbound SSH, Cloud NAT는 outbound 인터넷을 담당함을 보여주는 방향 다이어그램">
+    <defs>
+      <marker id="arwG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0A7A7A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      <marker id="arwR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#C33B29" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    </defs>
+    <!-- admin -->
+    <rect x="24" y="78" width="96" height="52" rx="9" fill="#FBEED4" stroke="#C4770A"/>
+    <text x="72" y="100" text-anchor="middle" font-size="12.5" font-weight="700" fill="#C4770A">관리자</text>
+    <text x="72" y="117" text-anchor="middle" font-size="10.5" fill="#6B7885">admin</text>
+    <!-- subnet container -->
+    <rect x="250" y="46" width="210" height="126" rx="12" fill="#F7F3EC" stroke="#0A7A7A" stroke-dasharray="5 4" stroke-width="1"/>
+    <text x="355" y="66" text-anchor="middle" font-size="11" fill="#0A7A7A">private subnet · no external IP</text>
+    <rect x="300" y="80" width="110" height="56" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="355" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#0A7A7A">VM</text>
+    <text x="355" y="122" text-anchor="middle" font-size="10.5" fill="#2D3F52">외부 IP 없음</text>
+    <!-- internet -->
+    <rect x="560" y="78" width="96" height="52" rx="9" fill="#F0EADD" stroke="#D3C9B5"/>
+    <text x="608" y="100" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2D3F52">인터넷</text>
+    <text x="608" y="117" text-anchor="middle" font-size="10.5" fill="#6B7885">internet</text>
+
+    <!-- IAP inbound: admin -> VM -->
+    <line x1="122" y1="92" x2="298" y2="92" stroke="#0A7A7A" stroke-width="1.8" marker-end="url(#arwG)"/>
+    <text class="m" x="205" y="82" text-anchor="middle" font-size="11" fill="#0A7A7A" font-weight="700">inbound SSH → IAP</text>
+    <!-- NAT outbound: VM -> internet -->
+    <line x1="412" y1="118" x2="558" y2="118" stroke="#0A7A7A" stroke-width="1.8" marker-end="url(#arwG)"/>
+    <text class="m" x="485" y="140" text-anchor="middle" font-size="11" fill="#0A7A7A" font-weight="700">outbound → Cloud NAT</text>
+    <!-- blocked inbound on NAT side -->
+    <line x1="558" y1="95" x2="470" y2="95" stroke="#C33B29" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arwR)"/>
+    <text x="500" y="200" text-anchor="middle" font-size="11.5" fill="#C33B29" font-weight="700">✗ Cloud NAT는 inbound 불가 (outbound 전용)</text>
+  </svg>
+  <div class="figcap">들어오는 SSH = IAP(초록, 왼→VM). 나가는 인터넷 = Cloud NAT(초록, VM→오른). NAT로 들어오려는 빨간 화살표는 차단.</div>
+</div>
+
+<div class="vs" data-sig="cloud nat vs iap, inbound ssh private vm, outbound internet no public ip, direction inbound outbound, ssh to vm without external ip, download patches from internet">
+  <div class="side a"><h4>IAP TCP forwarding</h4><div class="role">방향: <b>inbound</b> — 외부 → private VM</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">외부 IP 없이 SSH/RDP 접속. Google 프록시에서 IAM으로 신원 검증 → 최소 권한.</div>
+    <div class="sigs"><span class="sig">SSH to private VM</span><span class="sig">no external IP</span><span class="sig">least privilege access</span></div>
+  </div>
+  <div class="mid">방향</div>
+  <div class="side a" style="border-color:var(--service-line)"><h4 style="color:var(--service)">Cloud NAT</h4><div class="role">방향: <b>outbound only</b> — VM → 인터넷</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">외부 IP 없는 VM이 패치 다운로드 등 나갈 때. <b>inbound는 절대 불가.</b></div>
+    <div class="sigs"><span class="sig">outbound internet</span><span class="sig">download OS patches</span><span class="sig">no public IP</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">가르는 한 마디</span>SSH로 <b>들어가기</b>(inbound) = <b>IAP</b>. 인터넷으로 <b>나가기</b>(outbound) = <b>Cloud NAT</b>. <span style="color:#EBBBB1">Cloud NAT는 inbound를 절대 허용하지 않는다</span> — 이걸 SSH에 쓰면 오답.</div>
+</div>
+
+<div class="track" data-sig="private google access, reach google apis without internet, no external ip access bigquery storage api, private connectivity to google services">
+  <div class="track-head"><span class="concept">Google API 사설 접근</span><span class="cen">Private Google Access</span><span class="pin">§4</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">reach Google APIs w/o internet</span><span class="sig">no external IP, use BigQuery/Storage API</span><span class="sig">private path to Google services</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Private Google Access</span><span class="k">외부 IP 없이 Google API 접근</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud NAT</span>는 <b>범용 인터넷</b> 아웃바운드용. "Google API에만 사설로 접근"이면 Private Google Access가 정답.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"외부 IP 없이 <b>Google 서비스</b>(BigQuery/Storage 등)만 접근" → <b>Private Google Access</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="dedicated interconnect, hybrid connectivity, on-premises to gcp, high bandwidth private, 10 gbps consistent, sla private connection to google">
+  <div class="track-head"><span class="concept">온프렘 ↔ GCP 전용 연결</span><span class="cen">hybrid connectivity</span><span class="pin">§4</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">on-premises to GCP</span><span class="sig">high bandwidth (10+ Gbps)</span><span class="sig">dedicated private connection</span><span class="sig">consistent low latency + SLA</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Dedicated Interconnect</span><span class="k">전용 물리 회선</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud VPN</span> — 저대역·빠른 구축·인터넷 경유(암호화 터널). 대역폭이 낮거나 임시면 VPN, 고대역·전용이면 Interconnect. 대역폭이 애매하면 <b>Partner Interconnect</b>.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"high bandwidth + dedicated + SLA" → <b>Dedicated Interconnect</b> · "quick/저비용/암호화 터널" → <b>Cloud VPN</b>.</span></div>
+  </div>
+</div>
+
+<div class="vs" data-sig="vpc peering vs shared vpc, connect two vpcs, central network team admin control, separate projects one network, cross project networking">
+  <div class="side a"><h4>Shared VPC</h4><div class="role">중앙 팀이 하나의 VPC를 여러 프로젝트에 공유</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">host project가 네트워크 소유·통제, service project들이 그 서브넷을 사용. <b>중앙 집중 관리·거버넌스</b>.</div>
+    <div class="sigs"><span class="sig">central network team</span><span class="sig">shared subnets across projects</span><span class="sig">org-level control</span></div>
+  </div>
+  <div class="mid">VS</div>
+  <div class="side b" style="border-color:var(--service-line)"><h4 style="color:var(--service)">VPC Network Peering</h4><div class="role">두 개의 <b>독립된</b> VPC를 사설 연결</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">서로 다른 조직/팀의 VPC를 대등하게 연결. 각자 자기 VPC를 독립 관리(비전이적).</div>
+    <div class="sigs"><span class="sig">connect two separate VPCs</span><span class="sig">decentralized / different orgs</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">가르는 한 마디</span>"<b>중앙 네트워크 팀이 통제</b>, 여러 프로젝트가 한 네트워크 공유" → <b>Shared VPC</b>. "<b>독립된 두 VPC를 연결</b>" → <b>VPC Peering</b>.</div>
+</div>
+<!-- ============================ 5. IAM ============================ -->
+<div class="sec-head" id="iam">
+  <span class="sec-num">05</span>
+  <h2>IAM &amp; 리소스 계층</h2>
+  <span class="en">basic vs predefined vs custom · resource hierarchy · service accounts</span>
+</div>
+<p class="sec-intro">"as restricted as possible / least privilege / most restrictive" 신호가 보이면 <b>1단계로 basic role(Owner·Editor·Viewer)을 무조건 배제</b>하고 시작한다. 그다음 요구된 동사(manage? deploy? view?)에 딱 맞는 predefined role을 고른다.</p>
+
+<div class="fig" data-sig="least privilege ladder visual, basic predefined custom role, most restrictive narrow">
+  <div class="figttl">한눈에: 아래로 갈수록 권한이 좁다 = least privilege</div>
+  <svg viewBox="0 0 680 214" role="img" aria-label="basic role은 넓어서 배제, predefined는 정답, custom은 가장 좁음을 폭으로 표현한 사다리">
+    <rect x="80" y="30" width="520" height="44" rx="8" fill="#FAE1DC" stroke="#EBBBB1"/>
+    <text x="100" y="52" font-size="12.5" font-weight="700" fill="#C33B29">Basic roles</text>
+    <text x="100" y="67" font-size="10.5" fill="#6B7885">Owner · Editor · Viewer — 프로젝트 전체, 너무 넓음</text>
+    <text x="580" y="57" text-anchor="end" font-size="15" fill="#C33B29">✗</text>
+
+    <rect x="160" y="86" width="360" height="44" rx="8" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="180" y="108" font-size="12.5" font-weight="700" fill="#0A7A7A">Predefined roles</text>
+    <text x="180" y="123" font-size="10.5" fill="#2D3F52">서비스별 세분화 — 대부분 정답</text>
+    <text x="500" y="113" text-anchor="end" font-size="15" fill="#0A7A7A">✓</text>
+
+    <rect x="240" y="142" width="200" height="44" rx="8" fill="#FBEED4" stroke="#E8CE9A"/>
+    <text x="260" y="164" font-size="12.5" font-weight="700" fill="#C4770A">Custom roles</text>
+    <text x="260" y="179" font-size="10.5" fill="#6B7885">필요한 권한만</text>
+
+    <text class="m" x="340" y="206" text-anchor="middle" font-size="11" fill="#6B7885">폭이 좁을수록 권한이 적다 → "most restrictive"에 부합</text>
+  </svg>
+  <div class="figcap">"least privilege / as restricted as possible" 신호 → 맨 위 Basic부터 무조건 배제하고 시작.</div>
+</div>
+
+<div class="tree" data-sig="least privilege ladder, most restrictive, basic predefined custom role, as restricted as possible, iam role selection">
+  <div class="tnode q"><span class="qi">"least privilege"</span> 신호가 보이면 이 사다리로 내려간다</div>
+  <div class="tbranch">
+    <div class="tnode a"><span class="cond">① Basic roles</span> = <span class="trapword">roles/owner · editor · viewer</span> — 범위가 프로젝트 전체라 <b>거의 항상 오답</b>. 먼저 버린다.</div>
+    <div class="tnode a"><span class="cond">② Predefined roles</span> → <span class="then">서비스별 세분화</span> — 요구 동사에 맞춰 선택. <b>대부분 정답이 여기</b>.
+      <div class="tnode a lvl2" style="margin-top:6px"><span class="cond">"manage" (IAM policy 포함)</span> → <span class="then">...admin</span> · <span class="cond">"deploy/develop"</span> → <span class="then">...developer</span> · <span class="cond">"read/view"</span> → <span class="then">...viewer</span></div>
+    </div>
+    <div class="tnode a"><span class="cond">③ Custom roles</span> → <span class="then">predefined도 넓을 때</span> 필요한 권한만 조립하는 최종 수단.</div>
+  </div>
+</div>
+
+<div class="track" data-sig="cloud run admin developer, deploy and manage cloud run, service iam policy, run.admin run.developer">
+  <div class="track-head"><span class="concept">동사로 role 고르기 (예: Cloud Run)</span><span class="cen">verb → role</span><span class="pin">§5</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">지문 동사</span>
+      <span class="sig">deploy <b>and manage</b></span><span class="sig">manage services + IAM</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ role</span><div class="svcbox"><span class="n">roles/run.admin</span><span class="k">배포+관리+서비스 IAM</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">run.developer</span> — 배포는 되나 서비스 IAM policy <b>관리 불가</b>. "manage"까지 요구하면 부족 → admin. 단, 프로젝트 전체 IAM 수정은 admin도 못 함(그래서 least privilege 충족).</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"manage(= IAM policy까지)" → <b>...admin</b> / "deploy만" → <b>...developer</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="resource hierarchy, organization folder project, inherited policy, apply policy to all projects, org policy constraint, centralized governance">
+  <div class="track-head"><span class="concept">정책을 어디에 붙일까</span><span class="cen">resource hierarchy 상속</span><span class="pin">§5</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">apply to all projects / whole org</span><span class="sig">inherited automatically</span><span class="sig">group projects by dept</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 붙이는 위치</span><div class="svcbox"><span class="n">Org &gt; Folder &gt; Project</span><span class="k">상위에 붙이면 하위 상속</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"조직 전체/모든 프로젝트에 일괄" → <b>Organization</b>에 정책 · "부서·팀 단위 그룹핑" → <b>Folder</b>. 정책은 위→아래로 상속(inherit)된다.</span></div></div>
+</div>
+
+<div class="track" data-sig="service account, workload identity, app authenticate to gcp api, avoid service account keys, non-human identity, machine to machine auth">
+  <div class="track-head"><span class="concept">워크로드 신원(비인간)</span><span class="cen">service account / Workload Identity</span><span class="pin">§5</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">app authenticates to GCP APIs</span><span class="sig">avoid downloading SA keys</span><span class="sig">GKE pod → GCP service</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Workload Identity</span><span class="k">키 없이 SA로 인증</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">service account key (JSON) 다운로드/배포</span> — 유출 위험. "avoid keys / most secure"면 <b>Workload Identity</b>(또는 attached SA)가 정답.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"앱이 GCP API 인증 + 키 관리 피하고 싶다" → <b>Workload Identity Federation / Workload Identity</b>.</span></div>
+  </div>
+</div>
+
+<!-- ============================ 6. DATA PIPELINE ============================ -->
+<div class="sec-head" id="pipeline">
+  <span class="sec-num">06</span>
+  <h2>데이터 파이프라인</h2>
+  <span class="en">Pub/Sub → Dataflow → BigQuery · Dataproc · Composer · Data&nbsp;Fusion</span>
+</div>
+<p class="sec-intro">스트리밍 분석의 정석 스택(canonical stack)을 통째로 외워라. 그리고 <b>Dataflow(서버리스) vs Dataproc(클러스터)</b>를 provisioning 여부로 가른다.</p>
+
+<div class="stack" data-sig="canonical streaming stack, pubsub dataflow bigquery, ingest transform load, streaming ingestion real-time transform serverless analytics">
+  <div class="node"><span class="st">ingest 수집</span><div class="nm">Pub/Sub</div><div class="ds">초당 수백만 이벤트 버퍼링 · 글로벌 메시징</div></div>
+  <div class="conn">&#9654;</div>
+  <div class="node"><span class="st">transform 변환</span><div class="nm">Dataflow</div><div class="ds">실시간 변환·보강(enrich) · 서버리스(Apache Beam)</div></div>
+  <div class="conn">&#9654;</div>
+  <div class="node"><span class="st">analyze 분석</span><div class="nm">BigQuery</div><div class="ds">서버리스 웨어하우스 · ad-hoc SQL</div></div>
+</div>
+<div class="note" data-sig="pipeline stack mapping signals">
+  <span class="nh">스택 신호 매핑</span>
+  "ingest millions of events/sec" = <b>Pub/Sub</b> · "real-time transform/enrich" = <b>Dataflow</b> · "serverless data warehouse / ad-hoc SQL" = <b>BigQuery</b>. 셋이 함께 나오면 이 스택 확정.
+</div>
+
+<div class="vs" data-sig="dataflow vs dataproc, serverless no cluster, managed spark hadoop, migrate existing spark jobs, apache beam, no cluster provisioning">
+  <div class="side a"><h4>Dataflow</h4><div class="role">서버리스 stream/batch 처리 (Apache Beam)</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">클러스터를 프로비저닝하지 않는다. 새 파이프라인·실시간 변환의 기본값.</div>
+    <div class="sigs"><span class="sig">no cluster provisioning</span><span class="sig">real-time transform</span><span class="sig">fully managed</span></div>
+  </div>
+  <div class="mid">VS</div>
+  <div class="side b" style="border-color:var(--service-line)"><h4 style="color:var(--service)">Dataproc</h4><div class="role">관리형 Spark/Hadoop 클러스터</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">기존 Spark/Hadoop 잡을 그대로 옮길 때. 클러스터를 띄운다.</div>
+    <div class="sigs"><span class="sig">migrate existing Spark/Hadoop</span><span class="sig">existing Hive/Pig jobs</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">가르는 한 마디</span>"<b>no cluster / 새 파이프라인 / 서버리스</b>" → <b>Dataflow</b>. "<b>기존 Spark·Hadoop 마이그레이션</b>" → <b>Dataproc</b>.</div>
+</div>
+
+<div class="track" data-sig="cloud composer, orchestrate workflows, airflow dag, schedule dependencies between jobs, pipeline orchestration">
+  <div class="track-head"><span class="concept">워크플로 오케스트레이션</span><span class="cen">workflow orchestration</span><span class="pin">§6</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">orchestrate multi-step workflow</span><span class="sig">Airflow / DAG</span><span class="sig">schedule job dependencies</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Composer</span><span class="k">관리형 Apache Airflow</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"여러 잡의 순서·의존성 오케스트레이션 / Airflow" → <b>Cloud Composer</b>. 단순 시각적 ETL(코드 없이) → <b>Cloud Data Fusion</b>.</span></div></div>
+</div>
+<!-- ============================ 7. AI/ML ============================ -->
+<div class="sec-head" id="aiml">
+  <span class="sec-num">07</span>
+  <h2>AI / ML</h2>
+  <span class="en">Build-vs-Buy · Vertex&nbsp;AI · Gemini · RAG · symptom→solution</span>
+</div>
+<p class="sec-intro">v6.1에서 대폭 확장. 두 가지만 확실히: <b>①Build-vs-Buy 결정 트리</b>(직접 만들 필요 없으면 만들지 마라)와 <b>②증상→해결 매핑</b>(hallucination? drift? tone?). 증상 단어를 정확히 특정하는 게 채점 포인트다.</p>
+
+<div class="fig" data-sig="rag flow diagram, hallucination grounding vector search company documents gemini grounded answer">
+  <div class="figttl">한눈에: RAG는 어떻게 환각(hallucination)을 줄이나</div>
+  <svg viewBox="0 0 680 196" role="img" aria-label="사용자 질문이 벡터 검색으로 회사 문서를 찾아 Gemini가 근거 있는 답을 생성하는 RAG 흐름">
+    <defs><marker id="arwT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <!-- docs source -->
+    <path d="M244 22 h92 v40 a46 8 0 0 1 -92 0 z" fill="#FBEED4" stroke="#E8CE9A"/>
+    <ellipse cx="290" cy="22" rx="46" ry="8" fill="#FBEED4" stroke="#E8CE9A"/>
+    <text x="290" y="30" text-anchor="middle" font-size="10.5" fill="#C4770A">회사 문서</text>
+    <text x="290" y="46" text-anchor="middle" font-size="10" fill="#6B7885">company docs</text>
+    <line x1="290" y1="70" x2="290" y2="96" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwT)"/>
+    <!-- flow row -->
+    <rect x="24" y="100" width="118" height="52" rx="9" fill="#F7F3EC" stroke="#D3C9B5"/>
+    <text x="83" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#2D3F52">사용자 질문</text>
+    <text x="83" y="139" text-anchor="middle" font-size="10" fill="#6B7885">question</text>
+    <line x1="144" y1="126" x2="178" y2="126" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwT)"/>
+    <rect x="230" y="100" width="120" height="52" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="290" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#0A7A7A">Vector Search</text>
+    <text x="290" y="139" text-anchor="middle" font-size="10" fill="#2D3F52">문서에서 근거 검색</text>
+    <line x1="352" y1="126" x2="386" y2="126" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwT)"/>
+    <rect x="388" y="100" width="110" height="52" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="443" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#0A7A7A">Gemini (LLM)</text>
+    <text x="443" y="139" text-anchor="middle" font-size="10" fill="#2D3F52">근거 + 질문 결합</text>
+    <line x1="500" y1="126" x2="534" y2="126" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwT)"/>
+    <rect x="536" y="100" width="120" height="52" rx="9" fill="#DEF0E4" stroke="#2C7A4F"/>
+    <text x="596" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#2C7A4F">근거 있는 답변</text>
+    <text x="596" y="139" text-anchor="middle" font-size="10" fill="#2D3F52">grounded answer</text>
+    <text class="m" x="340" y="182" text-anchor="middle" font-size="11" fill="#6B7885">retrieve(검색) → ground(근거화) → generate(생성) · 모델 재학습 없음 → 저비용</text>
+  </svg>
+  <div class="figcap">답을 지어내는 대신 회사 문서에서 찾은 근거로 답한다. 그래서 hallucination↓ + cost↓.</div>
+</div>
+
+<div class="tree" data-sig="build vs buy ml, pre-trained api automl custom training, do i need to train a model, ml decision tree, vision speech translation nlp api">
+  <div class="tnode q"><span class="qi">START</span> 모델을 직접 만들어야 하나? (위에서부터 걸리는 것 = 정답. 가능한 한 안 만드는 쪽)</div>
+  <div class="tbranch">
+    <div class="tnode a"><span class="cond">흔한 일반 작업? (이미지 라벨·음성인식·번역·감정분석)</span> → <span class="then">Pre-trained API</span> <span style="font-size:11px;color:var(--muted)">(Vision/Speech/Translation/Natural Language API) — 학습 불필요</span></div>
+    <div class="tnode a"><span class="cond">내 데이터로 커스텀 필요 + ML 전문성 부족?</span> → <span class="then">AutoML (Vertex AI)</span> <span style="font-size:11px;color:var(--muted)">— 코드 최소, 자동 학습</span></div>
+    <div class="tnode a"><span class="cond">완전한 제어·커스텀 아키텍처·전문팀?</span> → <span class="then">Custom Training (Vertex AI)</span> <span style="font-size:11px;color:var(--muted)">— TensorFlow/PyTorch 직접</span></div>
+  </div>
+</div>
+<div class="note" data-sig="build buy rule minimize">
+  <span class="nh">RULE</span>"no ML expertise / quickest / common task" 신호 → 위쪽(API·AutoML). "full control / custom architecture" → Custom Training. 함정: 흔한 작업인데 Custom Training 고르면 과함(오답).
+</div>
+
+<div class="track" data-sig="hallucination, factually incorrect, ground responses in company documents, private knowledge base, reduce hallucination minimize cost, vector search grounding, rag retrieval augmented generation">
+  <div class="track-head"><span class="concept">증상: 환각(hallucination)</span><span class="cen">→ grounding</span><span class="pin">§7</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">증상/요구</span>
+      <span class="sig">confident but incorrect (hallucination)</span><span class="sig">ground in company's own docs</span><span class="sig">minimize cost/effort</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 해결</span><div class="svcbox"><span class="n">RAG</span><span class="k">벡터검색으로 문서 근거화(grounding)</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">fine-tune/retrain</span> — 비용·운영 부담 큼 · <span class="trapword">bigger machine/GPU</span> — 정확성과 무관 · <span class="trapword">Model Monitoring</span> — 탐지일 뿐 grounding 아님.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"hallucination + 내 문서로 근거 + 저비용" → <b>RAG (grounding + vector search)</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="accuracy degradation over time, model drift, data drift, training serving skew, predictions getting worse, model monitoring detect drift">
+  <div class="track-head"><span class="concept">증상: 시간 경과 정확도 저하</span><span class="cen">→ drift 탐지</span><span class="pin">§7</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">증상</span>
+      <span class="sig">accuracy degrades over time</span><span class="sig">data/model drift</span><span class="sig">training-serving skew</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 해결</span><div class="svcbox"><span class="n">Vertex AI Model Monitoring</span><span class="k">drift/skew 탐지·알림</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">machine type 증설</span> — 정확도 저하의 답이 아님(성능≠정확도). 이건 실수 단골.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"시간이 지나며 정확도↓ / drift / skew" → <b>Model Monitoring</b>. (hallucination과 구분!)</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="change model tone style format, brand voice, specialized domain terminology behavior, fine-tune model behavior">
+  <div class="track-head"><span class="concept">증상: 톤·스타일·형식 바꾸기</span><span class="cen">→ fine-tuning</span><span class="pin">§7</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">요구</span>
+      <span class="sig">adopt brand voice / tone</span><span class="sig">specific output format</span><span class="sig">domain-specific behavior</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 해결</span><div class="svcbox"><span class="n">Fine-tuning</span><span class="k">모델 동작 자체를 조정</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>사실(fact) 주입엔 fine-tuning보다 <b>RAG</b>가 낫다. "tone/style/behavior"일 때만 fine-tuning.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"모델의 <b>말투/형식/행동</b>을 바꾼다" → <b>Fine-tuning</b> / "사실 근거"는 → RAG.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="tpu gpu ai hypercomputer, large scale training, matrix heavy deep learning, accelerator choice, train large models fast">
+  <div class="track-head"><span class="concept">대규모 학습 가속기</span><span class="cen">accelerator</span><span class="pin">§7</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">large-scale matrix-heavy training</span><span class="sig">train massive models fast</span><span class="sig">TensorFlow at scale</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">TPU / AI Hypercomputer</span><span class="k">대규모 학습 가속</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"거대 모델·행렬 연산 대량 학습" → <b>TPU</b>(또는 AI Hypercomputer). 범용·다양한 프레임워크·추론 유연성 → <b>GPU</b>.</span></div></div>
+</div>
+
+<!-- ============================ 8. AI SECURITY ============================ -->
+<div class="sec-head" id="aisec">
+  <span class="sec-num">08</span>
+  <h2>AI 보안 (Securing AI)</h2>
+  <span class="en">Model&nbsp;Armor · SAIF · Responsible&nbsp;AI</span>
+</div>
+<p class="sec-intro">v6.1 신규 섹션(2.4/2.5). 핵심 함정은 이름이 닮은 <b>Cloud Armor(네트워크) vs Model Armor(AI 모델)</b>다. "Model"이 붙으면 AI, "Cloud"만 있으면 네트워크.</p>
+
+<div class="fig" data-sig="model armor screening prompt response, prompt injection toxic pii filter, ai safety layer gate">
+  <div class="figttl">한눈에: Model Armor는 입력·출력을 양쪽에서 검문한다</div>
+  <svg viewBox="0 0 680 210" role="img" aria-label="사용자 프롬프트와 모델 응답을 Model Armor가 양방향으로 검사하는 흐름">
+    <defs><marker id="arwM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <!-- blocked chips above gate1 -->
+    <g font-size="10" class="m">
+      <rect x="150" y="24" width="132" height="20" rx="10" fill="#FAE1DC" stroke="#EBBBB1"/>
+      <text x="216" y="38" text-anchor="middle" fill="#C33B29">prompt injection ✗</text>
+    </g>
+    <g font-size="10" class="m">
+      <rect x="398" y="24" width="132" height="20" rx="10" fill="#FAE1DC" stroke="#EBBBB1"/>
+      <text x="464" y="38" text-anchor="middle" fill="#C33B29">toxic · PII ✗</text>
+    </g>
+    <!-- row of 5 -->
+    <g>
+      <rect x="24" y="78" width="104" height="54" rx="9" fill="#F7F3EC" stroke="#D3C9B5"/>
+      <text x="76" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#2D3F52">사용자</text>
+      <text x="76" y="117" text-anchor="middle" font-size="10" fill="#6B7885">prompt</text>
+    </g>
+    <line x1="130" y1="105" x2="162" y2="105" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwM)"/>
+    <g>
+      <rect x="164" y="78" width="104" height="54" rx="9" fill="#FBEED4" stroke="#C4770A" stroke-width="1.3"/>
+      <text x="216" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#C4770A">Model Armor</text>
+      <text x="216" y="117" text-anchor="middle" font-size="10" fill="#6B7885">① 입력 검사</text>
+    </g>
+    <line x1="270" y1="105" x2="302" y2="105" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwM)"/>
+    <g>
+      <rect x="304" y="78" width="104" height="54" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+      <text x="356" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#0A7A7A">Gemini</text>
+      <text x="356" y="117" text-anchor="middle" font-size="10" fill="#2D3F52">LLM</text>
+    </g>
+    <line x1="410" y1="105" x2="442" y2="105" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwM)"/>
+    <g>
+      <rect x="444" y="78" width="104" height="54" rx="9" fill="#FBEED4" stroke="#C4770A" stroke-width="1.3"/>
+      <text x="496" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#C4770A">Model Armor</text>
+      <text x="496" y="117" text-anchor="middle" font-size="10" fill="#6B7885">② 출력 검사</text>
+    </g>
+    <line x1="550" y1="105" x2="582" y2="105" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwM)"/>
+    <g>
+      <rect x="584" y="78" width="72" height="54" rx="9" fill="#DEF0E4" stroke="#2C7A4F"/>
+      <text x="620" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#2C7A4F">안전한</text>
+      <text x="620" y="117" text-anchor="middle" font-size="10" fill="#2D3F52">응답</text>
+    </g>
+    <text class="m" x="340" y="176" text-anchor="middle" font-size="11" fill="#6B7885">"screen both prompts and responses" = 양방향 검사 → Model Armor</text>
+    <text x="340" y="196" text-anchor="middle" font-size="11" fill="#C33B29">Cloud Armor(네트워크 DDoS/WAF)와 혼동 금지</text>
+  </svg>
+  <div class="figcap">주황 게이트 두 개 = Model Armor. 들어가는 prompt와 나오는 response를 모두 검문한다.</div>
+</div>
+
+<div class="vs" data-sig="cloud armor vs model armor, prompt injection, harmful toxic content, screen prompts and responses, ddos waf, gen ai safety layer, jailbreak, pii leakage in prompts">
+  <div class="side a"><h4>Model Armor</h4><div class="role">보호 계층: <b>AI 모델</b> (prompt/response)</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">LLM 입력·출력을 검사. prompt injection·유해 콘텐츠·PII 유출 차단. 관리형 안전 계층(SAIF 맥락).</div>
+    <div class="sigs"><span class="sig">prompt injection / jailbreak</span><span class="sig">screen prompts and responses</span><span class="sig">GenAI safety</span></div>
+  </div>
+  <div class="mid">≠</div>
+  <div class="side b"><h4>Cloud Armor</h4><div class="role">보호 계층: <b>네트워크/웹</b> (HTTP)</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">DDoS 방어·WAF. SQLi/XSS 등 악성 웹 트래픽 차단. LLM prompt와는 무관.</div>
+    <div class="sigs"><span class="trapword">DDoS</span><span class="trapword">WAF</span><span class="trapword">SQL injection / XSS</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">이름 함정 주의</span>"<b>prompt injection · screen prompts and responses · GenAI</b>" → <b>Model Armor</b>. "<b>DDoS · WAF · 웹 트래픽</b>" → <b>Cloud Armor</b>. 이름만 비슷하고 계층이 완전히 다르다.</div>
+</div>
+
+<div class="track" data-sig="saif secure ai framework, responsible ai, fairness bias explainability, ai governance principles">
+  <div class="track-head"><span class="concept">AI 보안·거버넌스 프레임워크</span><span class="cen">SAIF / Responsible AI</span><span class="pin">§8</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">secure AI framework (SAIF)</span><span class="sig">fairness / bias / explainability</span><span class="sig">responsible AI governance</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 개념</span><div class="svcbox"><span class="n">SAIF · Responsible AI</span><span class="k">AI 보안·윤리 원칙</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>Model Armor는 SAIF를 구현하는 도구. "fairness/bias/explainability" → Responsible AI / Vertex Explainable AI.</span></div></div>
+</div>
+<!-- ============================ 9. OPS / OBSERVABILITY ============================ -->
+<div class="sec-head" id="ops">
+  <span class="sec-num">09</span>
+  <h2>운영 &amp; 관측 가능성</h2>
+  <span class="en">Cloud&nbsp;Trace · Logging · Monitoring · SLO / error&nbsp;budget</span>
+</div>
+<p class="sec-intro">observability 3종은 항상 세트다: <b>Trace(추적) · Logging(로그) · Monitoring(지표·SLO·알림)</b>. 요구사항 3개가 도구 3개에 1:1로 매핑된다. Profiler·Debugger를 tracing으로 위장한 함정에 주의.</p>
+
+<div class="fig" data-sig="distributed tracing waterfall, cloud trace latency bottleneck span, request across microservices">
+  <div class="figttl">한눈에: Cloud Trace가 병목 서비스를 짚어준다</div>
+  <svg viewBox="0 0 680 196" role="img" aria-label="요청이 여러 서비스를 거치는 span 워터폴에서 느린 서비스를 강조">
+    <text class="m" x="180" y="26" font-size="10.5" fill="#6B7885">시간(latency) →</text>
+    <line x1="180" y1="34" x2="640" y2="34" stroke="#E4DCCC" stroke-width="1"/>
+    <!-- Service A -->
+    <text x="40" y="60" font-size="11.5" font-weight="700" fill="#2D3F52">Service A</text>
+    <text x="40" y="75" font-size="10" fill="#6B7885">frontend</text>
+    <rect x="180" y="48" width="440" height="22" rx="5" fill="#D7EFEE" stroke="#A6D8D6"/>
+    <!-- Service B (bottleneck) -->
+    <text x="40" y="106" font-size="11.5" font-weight="700" fill="#2D3F52">Service B</text>
+    <text x="40" y="121" font-size="10" fill="#6B7885">payment</text>
+    <rect x="232" y="94" width="300" height="22" rx="5" fill="#FAE1DC" stroke="#C33B29" stroke-width="1.3"/>
+    <text x="382" y="109" text-anchor="middle" font-size="10.5" fill="#C33B29" font-weight="700">← 여기서 지연 발생 (bottleneck)</text>
+    <!-- Service C -->
+    <text x="40" y="152" font-size="11.5" font-weight="700" fill="#2D3F52">Service C</text>
+    <text x="40" y="167" font-size="10" fill="#6B7885">database</text>
+    <rect x="262" y="140" width="70" height="22" rx="5" fill="#D7EFEE" stroke="#A6D8D6"/>
+    <text class="m" x="640" y="188" text-anchor="end" font-size="11" fill="#6B7885">각 막대 = 한 서비스의 처리 구간(span)</text>
+  </svg>
+  <div class="figcap">하나의 요청이 A→B→C를 거치며 각 구간의 소요 시간을 막대로. 빨간 B가 병목 — 이게 distributed tracing.</div>
+</div>
+
+<div class="stack" data-sig="observability trio, cloud trace logging monitoring, distributed tracing centralized logs slo alerting">
+  <div class="node"><span class="st">추적 trace</span><div class="nm">Cloud Trace</div><div class="ds">요청이 서비스들을 거치는 지연 추적(distributed tracing)</div></div>
+  <div class="conn">+</div>
+  <div class="node"><span class="st">로그 logs</span><div class="nm">Cloud Logging</div><div class="ds">모든 서비스 로그를 한 곳에서 수집·쿼리</div></div>
+  <div class="conn">+</div>
+  <div class="node"><span class="st">지표·알림 metrics</span><div class="nm">Cloud Monitoring</div><div class="ds">지표·SLO·error budget 기반 알림</div></div>
+</div>
+
+<div class="track" data-sig="distributed tracing, trace single request across microservices, find where latency introduced, bottleneck service request chain">
+  <div class="track-head"><span class="concept">서비스 간 지연 병목 찾기</span><span class="cen">distributed tracing</span><span class="pin">§9</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">trace a request across microservices</span><span class="sig">where is latency introduced</span><span class="sig">find the bottleneck service</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Trace</span><span class="k">분산 추적</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Cloud Profiler</span> — 코드 CPU/메모리 프로파일링(추적 아님) · <span class="trapword">Cloud Debugger</span> — 라이브 디버깅(deprecated). 둘 다 tracing 아니다.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"요청이 서비스 사이를 지나가는 지연 추적" → <b>Cloud Trace</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="slo sli error budget, burn rate alert, service level objective, alert when reliability target at risk">
+  <div class="track-head"><span class="concept">신뢰성 목표·알림</span><span class="cen">SLO / error budget</span><span class="pin">§9</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">define SLOs</span><span class="sig">error budget burn rate</span><span class="sig">alert when reliability at risk</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud Monitoring</span><span class="k">SLO·SLI·alerting</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"SLO / error budget / alert" → <b>Cloud Monitoring</b>. 용어: <b>SLI</b>=측정 지표, <b>SLO</b>=목표, <b>error budget</b>=허용 오차.</span></div></div>
+</div>
+
+<!-- ============================ 10. DR ============================ -->
+<div class="sec-head" id="dr">
+  <span class="sec-num">10</span>
+  <h2>재해 복구 (DR)</h2>
+  <span class="en">RTO / RPO · backup-restore · cold / warm / hot standby</span>
+</div>
+<p class="sec-intro">DR은 두 숫자로 결정된다: <b>RTO</b>(복구 시간 목표 — 얼마나 빨리)와 <b>RPO</b>(복구 지점 목표 — 데이터 손실 얼마까지). 값이 <b>near-zero</b>일수록 오른쪽(비싸고 강력), 클수록 왼쪽(싸고 느림).</p>
+
+<div class="spectrum" data-sig="dr spectrum rto rpo, backup restore cold warm hot standby, near-zero rto rpo, active-active synchronous replication, availability top priority cost secondary">
+  <div class="axis"><span>← 저비용 · 느린 복구 · 데이터 손실 큼</span><span>고비용 · 무중단 · 무손실 →</span></div>
+  <div class="spec-bar">
+    <div class="spec-mark" style="left:8%"><div class="pk"></div><div class="pl">Backup &amp; Restore</div><div class="ps">RTO/RPO: hours</div></div>
+    <div class="spec-mark" style="left:36%"><div class="pk"></div><div class="pl">Cold standby</div><div class="ps">최소 인프라, 장애 시 기동</div></div>
+    <div class="spec-mark" style="left:64%"><div class="pk"></div><div class="pl">Warm (pilot light)</div><div class="ps">축소본 상시, failover 시 확장</div></div>
+    <div class="spec-mark" style="left:92%"><div class="pk"></div><div class="pl">Hot (active-active)</div><div class="ps">RTO/RPO ≈ 0</div></div>
+  </div>
+  <div class="spec-cards">
+    <div class="spec-c"><h5>Backup &amp; Restore</h5><span class="m">가장 쌈. "cost is priority / data loss acceptable / RTO hours OK" 신호.</span></div>
+    <div class="spec-c"><h5>Cold standby</h5><span class="m">두 번째 리전 최소 인프라. 장애 시 scale-up 시간 필요.</span></div>
+    <div class="spec-c"><h5>Warm / Pilot light</h5><span class="m">축소 복사본 상시 가동. cold보다 빠르나 여전히 확장 시간.</span></div>
+    <div class="spec-c"><h5>Hot / Active-active</h5><span class="m">여러 리전 full 가동 + <b>synchronous replication</b>. "no downtime / no data loss / availability top priority".</span></div>
+  </div>
+</div>
+<div class="note" data-sig="dr rule near zero synchronous">
+  <span class="nh">RULE</span>"near-zero RTO + near-zero RPO + availability 최우선" → <b>Hot standby(active-active)</b>. <b>RPO=0</b>이 나오면 반드시 <b>synchronous replication</b> 필요 → backup·cold·warm은 전부 탈락.
+</div>
+
+<!-- ============================ 11. IaC ============================ -->
+<div class="sec-head" id="iac">
+  <span class="sec-num">11</span>
+  <h2>IaC (Infrastructure as Code)</h2>
+  <span class="en">Terraform · Deployment&nbsp;Manager</span>
+</div>
+<p class="sec-intro">v6.1에서 명시적 요구사항으로 추가됨. "declarative + Google-recommended standard" 신호가 보이면 <b>Terraform</b>이다.</p>
+
+<div class="fig" data-sig="terraform plan apply flow, preview created changed destroyed diff, code review apply">
+  <div class="figttl">한눈에: plan이 "무엇이 바뀔지"를 미리 보여준다</div>
+  <svg viewBox="0 0 680 176" role="img" aria-label="코드에서 terraform plan으로 생성 변경 삭제를 미리 본 뒤 검토하고 apply하는 흐름">
+    <defs><marker id="arwI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <rect x="20" y="58" width="90" height="50" rx="9" fill="#F7F3EC" stroke="#D3C9B5"/>
+    <text x="65" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#2D3F52">코드</text>
+    <text class="m" x="65" y="97" text-anchor="middle" font-size="10" fill="#6B7885">.tf</text>
+    <line x1="112" y1="83" x2="144" y2="83" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwI)"/>
+    <!-- plan box with diff -->
+    <rect x="150" y="30" width="184" height="116" rx="10" fill="#FFFFFF" stroke="#0A7A7A"/>
+    <text class="m" x="242" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#0A7A7A">terraform plan</text>
+    <text x="242" y="65" text-anchor="middle" font-size="10" fill="#6B7885">미리보기 (preview)</text>
+    <text class="m" x="168" y="90" font-size="12" fill="#2C7A4F">+ create</text>
+    <text class="m" x="168" y="110" font-size="12" fill="#C4770A">~ change</text>
+    <text class="m" x="168" y="130" font-size="12" fill="#C33B29">- destroy</text>
+    <line x1="336" y1="88" x2="368" y2="88" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwI)"/>
+    <rect x="372" y="63" width="104" height="50" rx="9" fill="#F7F3EC" stroke="#D3C9B5"/>
+    <text x="424" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#2D3F52">검토</text>
+    <text x="424" y="102" text-anchor="middle" font-size="10" fill="#6B7885">peer review (Git)</text>
+    <line x1="478" y1="88" x2="510" y2="88" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwI)"/>
+    <rect x="514" y="63" width="142" height="50" rx="9" fill="#DEF0E4" stroke="#2C7A4F"/>
+    <text class="m" x="585" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#2C7A4F">terraform apply</text>
+    <text x="585" y="102" text-anchor="middle" font-size="10" fill="#2D3F52">실제 반영</text>
+  </svg>
+  <div class="figcap">지문에 "preview what will be created, changed, or destroyed"가 보이면 = plan = Terraform 신호.</div>
+</div>
+
+<div class="track" data-sig="terraform, infrastructure as code, declarative, google-recommended standard, preview created changed destroyed, terraform plan, reusable modules variable files, version controlled git peer review">
+  <div class="track-head"><span class="concept">인프라를 코드로</span><span class="cen">Infrastructure as Code</span><span class="pin">§11</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">declarative IaC</span><span class="sig">Google-recommended standard</span><span class="sig">preview created/changed/destroyed</span><span class="sig">reuse across environments</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Terraform</span><span class="k">plan=preview · module 재사용</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Deployment Manager</span> — declarative이나 <b>더 이상 권장 표준 아님</b> · <span class="trapword">gcloud scripts</span> — imperative(명령형) · <span class="trapword">manual Console</span> — IaC 아님.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"preview what will be created/changed/destroyed" = <b>terraform plan</b> 신호. "recommended standard" = Terraform.</span></div>
+  </div>
+</div>
+<!-- ============================ 12. COST ============================ -->
+<div class="sec-head" id="cost">
+  <span class="sec-num">12</span>
+  <h2>비용 최적화</h2>
+  <span class="en">CUD · Sustained&nbsp;Use · Spot&nbsp;VM · rightsizing</span>
+</div>
+<p class="sec-intro">할인은 "약속(commitment)이 가능한가"와 "중단돼도 되는가"로 갈린다.</p>
+
+<div class="fig" data-sig="cost optimization decision, committed use discount spot vm, predictable always-on interruptible batch">
+  <div class="figttl">한눈에: 두 질문으로 할인이 갈린다</div>
+  <svg viewBox="0 0 680 168" role="img" aria-label="예측 가능한 상시 워크로드는 CUD, 중단 가능한 배치는 Spot VM으로 갈리는 결정">
+    <defs><marker id="arwC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <rect x="264" y="18" width="152" height="44" rx="9" fill="#15202E"/>
+    <text x="340" y="40" text-anchor="middle" font-size="12.5" font-weight="700" fill="#EFE9DC">워크로드 성격은?</text>
+    <line x1="300" y1="64" x2="200" y2="96" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwC)"/>
+    <line x1="380" y1="64" x2="480" y2="96" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwC)"/>
+    <rect x="40" y="100" width="270" height="52" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="56" y="122" font-size="12" font-weight="700" fill="#0A7A7A">예측 가능 · 상시(always-on)</text>
+    <text class="m" x="56" y="140" font-size="11" fill="#2D3F52">→ Committed Use Discount (1·3년)</text>
+    <rect x="370" y="100" width="270" height="52" rx="9" fill="#FBEED4" stroke="#C4770A"/>
+    <text x="386" y="122" font-size="12" font-weight="700" fill="#C4770A">중단 가능 · fault-tolerant batch</text>
+    <text class="m" x="386" y="140" font-size="11" fill="#2D3F52">→ Spot VM (최대 ~91% ↓)</text>
+  </svg>
+  <div class="figcap">약정 가능 + 상시 = CUD. 중단 감내 가능한 배치 = Spot. "always-on"에 Spot 고르면 오답.</div>
+</div>
+
+<div class="track" data-sig="committed use discount cud, predictable steady workload, commit 1 or 3 years, always-on baseline">
+  <div class="track-head"><span class="concept">예측 가능한 상시 워크로드</span><span class="cen">committed use</span><span class="pin">§12</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">predictable steady-state usage</span><span class="sig">can commit 1/3 years</span><span class="sig">always-on baseline</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 할인</span><div class="svcbox"><span class="n">Committed Use Discount</span><span class="k">1·3년 약정 할인</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"예측 가능·상시 + 약정 가능" → <b>CUD</b>. 약정 없이 오래 켜두면 자동 <b>Sustained Use Discount</b>.</span></div></div>
+</div>
+
+<div class="track" data-sig="spot vm preemptible, fault tolerant batch, interruptible workload, cheapest compute stateless batch, can be interrupted">
+  <div class="track-head"><span class="concept">중단 가능한 배치</span><span class="cen">interruptible</span><span class="pin">§12</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">fault-tolerant / interruptible</span><span class="sig">batch, can be interrupted</span><span class="sig">cheapest compute</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Spot VM</span><span class="k">최대 ~91% 저렴 · 중단 가능</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span>"항상 켜져 있어야 / stateful / SLA 필요"면 Spot 금지. 중단 감내 가능할 때만.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"fault-tolerant batch + 최저가 + 중단 OK" → <b>Spot VM</b>.</span></div>
+  </div>
+</div>
+
+<!-- ============================ 13. MIGRATION ============================ -->
+<div class="sec-head" id="migrate">
+  <span class="sec-num">13</span>
+  <h2>마이그레이션</h2>
+  <span class="en">6R · Migrate&nbsp;to&nbsp;VMs · Transfer&nbsp;Appliance · DMS</span>
+</div>
+<p class="sec-intro">"어떻게 옮길까(전략)"와 "무엇으로 옮길까(도구)"를 구분한다. 데이터 이전은 <b>용량 + 네트워크 대역폭 + 기한</b>으로 도구가 갈린다.</p>
+
+<div class="fig" data-sig="online offline data transfer, storage transfer service vs transfer appliance, petabytes bandwidth deadline">
+  <div class="figttl">한눈에: 네트워크로 보내는 시간이 기한을 넘으면 오프라인</div>
+  <svg viewBox="0 0 680 196" role="img" aria-label="온라인 Storage Transfer Service와 오프라인 Transfer Appliance를 비교한 두 경로">
+    <defs><marker id="arwD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B7885" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <!-- online lane -->
+    <rect x="20" y="34" width="96" height="44" rx="8" fill="#F7F3EC" stroke="#D3C9B5"/>
+    <text x="68" y="52" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2D3F52">온프렘 데이터</text>
+    <text x="68" y="68" text-anchor="middle" font-size="10" fill="#6B7885">on-prem</text>
+    <line x1="118" y1="56" x2="486" y2="56" stroke="#C33B29" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arwD)"/>
+    <text class="m" x="300" y="46" text-anchor="middle" font-size="10.5" fill="#C33B29">가는 파이프(대역폭 부족) — 몇 달 걸림</text>
+    <rect x="490" y="34" width="140" height="44" rx="8" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="560" y="52" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0A7A7A">Cloud Storage</text>
+    <text x="560" y="68" text-anchor="middle" font-size="9.5" class="m" fill="#6B7885">Storage Transfer Service</text>
+    <line x1="340" y1="90" x2="340" y2="106" stroke="#E4DCCC" stroke-width="1"/>
+    <!-- offline lane -->
+    <rect x="20" y="120" width="96" height="44" rx="8" fill="#F7F3EC" stroke="#D3C9B5"/>
+    <text x="68" y="138" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2D3F52">온프렘 데이터</text>
+    <text x="68" y="154" text-anchor="middle" font-size="10" fill="#6B7885">900 TB</text>
+    <line x1="118" y1="142" x2="196" y2="142" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwD)"/>
+    <rect x="200" y="120" width="150" height="44" rx="8" fill="#FBEED4" stroke="#C4770A" stroke-width="1.2"/>
+    <text class="m" x="275" y="138" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C4770A">Transfer Appliance</text>
+    <text x="275" y="154" text-anchor="middle" font-size="10" fill="#6B7885">물리 장비에 적재</text>
+    <text x="400" y="147" text-anchor="middle" font-size="15">🚚</text>
+    <line x1="356" y1="142" x2="486" y2="142" stroke="#6B7885" stroke-width="1.5" marker-end="url(#arwD)"/>
+    <rect x="490" y="120" width="140" height="44" rx="8" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="560" y="138" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0A7A7A">Cloud Storage</text>
+    <text x="560" y="154" text-anchor="middle" font-size="10" fill="#2C7A4F">배송 후 며칠</text>
+  </svg>
+  <div class="figcap">위=온라인(대역폭 충분할 때). 아래=오프라인 배송(PB급 · 느린 망 · 기한 촉박). 이 문제(§13 Q11)의 정답 경로는 아래.</div>
+</div>
+
+<div class="track" data-sig="rehost lift and shift, replatform, refactor rearchitect, migration strategy 6r, move vms as-is">
+  <div class="track-head"><span class="concept">이전 전략 (얼마나 바꾸나)</span><span class="cen">migration strategy</span><span class="pin">§13</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">신호 → 전략</span>
+      <span class="sig">as-is / lift-and-shift → Rehost</span><span class="sig">minor tweaks → Replatform</span><span class="sig">cloud-native rebuild → Refactor</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 도구(rehost)</span><div class="svcbox"><span class="n">Migrate to VMs</span><span class="k">VM 그대로 GCE로</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"빠르게·그대로(as-is)" → <b>Rehost</b> / "약간 최적화" → Replatform / "클라우드 네이티브 재설계" → Refactor.</span></div></div>
+</div>
+
+<div class="track" data-sig="transfer appliance, petabytes limited bandwidth, offline data transfer, ship physical device, huge dataset slow network">
+  <div class="track-head"><span class="concept">대용량 오프라인 이전</span><span class="cen">offline bulk transfer</span><span class="pin">§13</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">petabytes + limited bandwidth</span><span class="sig">network too slow / would take months</span><span class="sig">offline transfer</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Transfer Appliance</span><span class="k">물리 장비 배송</span></div></div>
+  </div>
+  <div class="track-foot">
+    <div class="trapline"><span class="x">✗ 함정</span><span><span class="trapword">Storage Transfer Service</span>는 <b>온라인</b>(대역폭 충분·클라우드↔클라우드). 대역폭이 부족·PB급이면 오프라인 <b>Transfer Appliance</b>.</span></div>
+    <div class="rule"><span class="rk">RULE</span><span>"PB급 + 느린 네트워크 + 기한 촉박" → <b>Transfer Appliance</b>(오프라인). 대역폭 충분·온라인 → <b>Storage Transfer Service</b>.</span></div>
+  </div>
+</div>
+
+<div class="track" data-sig="database migration service dms, migrate mysql postgresql to cloud sql, minimal downtime db migration, continuous replication cutover">
+  <div class="track-head"><span class="concept">DB 마이그레이션</span><span class="cen">database migration</span><span class="pin">§13</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">migrate MySQL/PG to Cloud SQL</span><span class="sig">minimal downtime</span><span class="sig">continuous replication then cutover</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Database Migration Service</span><span class="k">최소 다운타임 DB 이전</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"DB를 Cloud SQL로 + 최소 다운타임" → <b>DMS</b>.</span></div></div>
+</div>
+
+<!-- ============================ 14. SECURITY / COMPLIANCE ============================ -->
+<div class="sec-head" id="seccomp">
+  <span class="sec-num">14</span>
+  <h2>보안 &amp; 컴플라이언스</h2>
+  <span class="en">VPC&nbsp;SC · KMS · Secret&nbsp;Manager · Cloud&nbsp;DLP · BAA/HIPAA</span>
+</div>
+<p class="sec-intro">닮은꼴이 많은 구역. 각 도구가 <b>무엇을 보호</b>하는지로 가른다. 헬스케어 시나리오에선 <b>BAA</b> 요건을 놓치지 마라(메모된 약점).</p>
+
+<div class="fig" data-sig="security layers defense in depth, cloud armor vpc service controls iam kms secret manager dlp, what each protects">
+  <div class="figttl">한눈에: 각 도구가 보호하는 계층 (양파 구조)</div>
+  <svg viewBox="0 0 680 226" role="img" aria-label="Cloud Armor 네트워크, VPC Service Controls 경계, IAM 접근, KMS Secret Manager DLP 데이터의 중첩 방어 계층">
+    <rect x="120" y="18" width="440" height="196" rx="14" fill="#FAE1DC" stroke="#EBBBB1"/>
+    <text class="m" x="136" y="38" font-size="11" font-weight="700" fill="#C33B29">Cloud Armor — 네트워크/웹 (DDoS · WAF)</text>
+    <rect x="150" y="48" width="380" height="150" rx="12" fill="#FBEED4" stroke="#E8CE9A"/>
+    <text class="m" x="166" y="68" font-size="11" font-weight="700" fill="#C4770A">VPC Service Controls — 경계 (exfiltration)</text>
+    <rect x="182" y="80" width="316" height="106" rx="10" fill="#F0EADD" stroke="#D3C9B5"/>
+    <text class="m" x="198" y="100" font-size="11" font-weight="700" fill="#2D3F52">IAM — 누가 접근하나 (access)</text>
+    <rect x="214" y="114" width="252" height="58" rx="9" fill="#D7EFEE" stroke="#0A7A7A"/>
+    <text x="340" y="136" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0A7A7A">데이터 계층 (data)</text>
+    <text class="m" x="340" y="156" text-anchor="middle" font-size="10" fill="#2D3F52">KMS(키) · Secret Manager(비밀) · DLP(PII)</text>
+  </svg>
+  <div class="figcap">바깥(네트워크)에서 안(데이터)으로 갈수록 보호 대상이 구체화. 문제는 "무엇을 보호하나?"로 도구를 가른다.</div>
+</div>
+
+<div class="track" data-sig="vpc service controls, data exfiltration, service perimeter, restrict api access boundary, prevent data leaving">
+  <div class="track-head"><span class="concept">데이터 유출 방지 경계</span><span class="cen">data exfiltration</span><span class="pin">§14</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">prevent data exfiltration</span><span class="sig">service perimeter</span><span class="sig">restrict API access at boundary</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">VPC Service Controls</span><span class="k">서비스 경계(perimeter)</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"data exfiltration / perimeter로 API 경계 통제" → <b>VPC Service Controls</b>.</span></div></div>
+</div>
+
+<div class="vs" data-sig="kms vs secret manager, encryption keys cmek, store api keys passwords credentials, manage secrets rotation, customer managed encryption key">
+  <div class="side a"><h4>Cloud KMS</h4><div class="role">보호 대상: <b>암호화 키</b></div>
+    <div style="font-size:12.5px;color:var(--ink-3)">데이터 암호화 키 생성·관리·회전. CMEK(고객 관리 키) 요구 시.</div>
+    <div class="sigs"><span class="sig">manage encryption keys</span><span class="sig">CMEK</span></div>
+  </div>
+  <div class="mid">≠</div>
+  <div class="side a" style="border-color:var(--service-line)"><h4 style="color:var(--service)">Secret Manager</h4><div class="role">보호 대상: <b>시크릿</b>(비밀 값)</div>
+    <div style="font-size:12.5px;color:var(--ink-3)">API 키·비밀번호·DB 자격증명 등 비밀 문자열 저장·회전.</div>
+    <div class="sigs"><span class="sig">store API keys / passwords</span><span class="sig">credentials rotation</span></div>
+  </div>
+  <div class="vs-tell"><span class="tk">가르는 한 마디</span>"<b>암호화 키</b> 관리(CMEK)" → <b>KMS</b>. "<b>API 키·비밀번호·자격증명</b> 저장" → <b>Secret Manager</b>.</div>
+</div>
+
+<div class="track" data-sig="cloud dlp data loss prevention, detect mask pii, sensitive data classification, redact personal information, de-identify">
+  <div class="track-head"><span class="concept">민감정보 탐지·마스킹</span><span class="cen">sensitive data (PII)</span><span class="pin">§14</span></div>
+  <div class="track-body">
+    <div class="tb-signals"><span class="lab">이 표현이 보이면</span>
+      <span class="sig">detect / mask PII</span><span class="sig">classify sensitive data</span><span class="sig">de-identify / redact</span>
+    </div>
+    <div class="tb-arrow"><span class="rail"></span><span class="tri">&#9654;</span></div>
+    <div class="tb-service"><span class="lab">→ 서비스</span><div class="svcbox"><span class="n">Cloud DLP</span><span class="k">민감정보 탐지·비식별화</span></div></div>
+  </div>
+  <div class="track-foot"><div class="rule"><span class="rk">RULE</span><span>"PII 탐지/마스킹/비식별화" → <b>Cloud DLP</b>. 단, LLM prompt 종합 안전은 Model Armor(§8).</span></div></div>
+</div>
+
+<div class="note" data-sig="baa hipaa healthcare compliance, healthcare data phi ehr">
+  <span class="nh">컴플라이언스 축 — 놓치기 쉬움</span>
+  헬스케어(EHR 등) 시나리오에서 "HIPAA / PHI / 환자 데이터"가 보이면 <b>BAA (Business Associate Agreement)</b> 체결이 전제 조건이다. 아무리 기술이 맞아도 BAA 요건을 빠뜨린 선택지는 오답. GDPR/데이터 레지던시(data residency)는 리전 선택·주권 이슈로 연결.
+</div>
+<!-- ============================ 15. CASE STUDIES ============================ -->
+<div class="sec-head" id="cases">
+  <span class="sec-num">15</span>
+  <h2>케이스 스터디 4종 — 결정 드라이버</h2>
+  <span class="en">EHR&nbsp;Healthcare · Altostrat&nbsp;Media · Cymbal&nbsp;Retail · KnightMotives</span>
+</div>
+<p class="sec-intro">실제 시험은 개념을 케이스에 얹어서 묻는다. 각 케이스의 <b>결정 드라이버(요구 → 서비스)</b>를 미리 매핑해 두면 testlet에서 빨라진다. 아래는 각 케이스가 반복적으로 시험하는 패턴이다.</p>
+
+<div class="case" data-sig="ehr healthcare case, hipaa baa phi, hybrid interconnect on-prem, gke containers legacy, compliance audit logging, patient records">
+  <div class="case-h"><span class="nm">EHR Healthcare</span><span class="bd">유지 (retained)</span></div>
+  <div class="idn">환자 기록 SaaS · 온프렘 → 클라우드 · 규제 강함</div>
+  <div class="drivers">
+    <div class="driver"><div class="rq"><b>HIPAA / PHI / 환자 데이터</b> 규제</div><div class="sv">BAA 전제 · Cloud DLP · CMEK(KMS)</div></div>
+    <div class="driver"><div class="rq">온프렘 데이터센터와 연동, 낮은 지연</div><div class="sv">Dedicated Interconnect (hybrid)</div></div>
+    <div class="driver"><div class="rq">레거시 앱 컨테이너화·확장</div><div class="sv">GKE</div></div>
+    <div class="driver"><div class="rq">감사·규정 준수 로깅, 가용성</div><div class="sv">Cloud Logging · Monitoring · multi-region</div></div>
+  </div>
+</div>
+
+<div class="case" data-sig="altostrat media case, streaming content global, transcoding video, low latency global delivery, ai recommendations personalization, spike traffic">
+  <div class="case-h"><span class="nm">Altostrat Media</span><span class="bd new">신규 (AI 통합)</span></div>
+  <div class="idn">글로벌 미디어 스트리밍 · AI 추천 · 트래픽 급증</div>
+  <div class="drivers">
+    <div class="driver"><div class="rq">글로벌 저지연 콘텐츠 전달</div><div class="sv">Cloud CDN · Global LB · Cloud Storage</div></div>
+    <div class="driver"><div class="rq">변동 큰 트래픽·스파이크</div><div class="sv">Cloud Run / GKE Autopilot autoscale</div></div>
+    <div class="driver"><div class="rq">개인화 추천(AI)</div><div class="sv">Vertex AI · (추천이면 RAG/embedding)</div></div>
+    <div class="driver"><div class="rq">스트리밍 이벤트 분석</div><div class="sv">Pub/Sub → Dataflow → BigQuery</div></div>
+  </div>
+</div>
+
+<div class="case" data-sig="cymbal retail case, ecommerce, clickstream analytics, inventory catalog, chatbot gen ai support, seasonal peak black friday">
+  <div class="case-h"><span class="nm">Cymbal Retail</span><span class="bd new">신규 (AI 통합)</span></div>
+  <div class="idn">이커머스 · 클릭스트림 분석 · GenAI 고객지원 · 시즌 피크</div>
+  <div class="drivers">
+    <div class="driver"><div class="rq">초당 대량 클릭스트림 → 실시간 분석</div><div class="sv">Pub/Sub → Dataflow → BigQuery</div></div>
+    <div class="driver"><div class="rq">시즌 피크(블프) 스파이크</div><div class="sv">Cloud Run / GKE autoscale · Spanner</div></div>
+    <div class="driver"><div class="rq">GenAI 챗봇, 내부 문서 근거</div><div class="sv">Gemini + RAG · Model Armor(§8)</div></div>
+    <div class="driver"><div class="rq">상품 카탈로그·재고</div><div class="sv">Firestore / Spanner (규모에 따라)</div></div>
+  </div>
+  <div class="note" style="margin-top:10px"><span class="nh">확인 필요</span>Cymbal Retail·KnightMotives는 아직 공식 케이스 PDF로 드라이버를 완전히 추출하지 않았다. 위는 케이스 유형상 반복되는 패턴이며, Step 6에서 공식 PDF로 검증하며 채워야 한다.</div>
+</div>
+
+<div class="case" data-sig="knightmotives automotive case, connected vehicles iot telemetry, predictive maintenance ml, real-time sensor data, edge fleet">
+  <div class="case-h"><span class="nm">KnightMotives Automotive</span><span class="bd new">신규 (AI 통합)</span></div>
+  <div class="idn">커넥티드 차량 · IoT 텔레메트리 · 예측 정비(ML)</div>
+  <div class="drivers">
+    <div class="driver"><div class="rq">차량 센서 초당 대량 텔레메트리(time-series)</div><div class="sv">Pub/Sub → Dataflow → Bigtable</div></div>
+    <div class="driver"><div class="rq">예측 정비 모델</div><div class="sv">Vertex AI (Custom/AutoML) · Model Monitoring</div></div>
+    <div class="driver"><div class="rq">대규모 분석·리포팅</div><div class="sv">BigQuery</div></div>
+    <div class="driver"><div class="rq">글로벌 차량 데이터 일관성</div><div class="sv">Cloud Spanner (필요 시)</div></div>
+  </div>
+</div>
+<div class="note" data-sig="case study time-series bigtable vs bigquery">
+  <span class="nh">케이스 공통 포인트</span>IoT·time-series(KnightMotives)는 저장에 <b>Bigtable</b>, 분석에 <b>BigQuery</b>. 미디어/리테일 이벤트 분석은 <b>Pub/Sub→Dataflow→BigQuery</b>. AI 챗봇은 <b>Gemini+RAG</b>, 안전은 <b>Model Armor</b>. 규제(EHR)는 <b>BAA</b>가 전제.
+</div>
+
+<!-- ============================ TRAPS ============================ -->
+<div class="sec-head" id="traps">
+  <span class="sec-num">✗</span>
+  <h2>함정 모음 — 닮은꼴 한눈에</h2>
+  <span class="en">lookalike traps · one-line tells</span>
+</div>
+<p class="sec-intro">틀리는 문제의 절반은 "닮은꼴"에서 나온다. 각 쌍의 <b>가르는 한 마디(the tell)</b>만 손 노트에 옮겨 적어라.</p>
+
+<div class="track" data-sig="trap summary cloud nat iap, cluster autoscaler scale to zero, spanner bigtable, dataflow dataproc, cloud armor model armor, kms secret manager, deployment manager terraform, transfer appliance storage transfer, hpa vpa cluster autoscaler, private google access cloud nat, shared vpc peering">
+  <div class="track-head"><span class="concept">닮은꼴 → 가르는 한 마디</span><span class="cen">the tells</span><span class="pin">전 범위</span></div>
+  <div class="track-foot" style="border-top:none;padding-top:14px;gap:9px">
+    <div class="trapline"><span class="x">1</span><span><span class="trapword">Cloud NAT</span> vs <span class="svc">IAP</span> — NAT=<b>outbound</b>만, IAP=<b>inbound SSH</b>. NAT는 inbound 절대 불가.</span></div>
+    <div class="trapline"><span class="x">2</span><span><span class="trapword">Cluster Autoscaler</span> vs <span class="svc">Cloud Run</span> — Cluster는 <b>node</b> 스케일, <b>scale-to-zero 아님</b>. zero면 Cloud Run.</span></div>
+    <div class="trapline"><span class="x">3</span><span><span class="trapword">Bigtable</span> vs <span class="svc">Spanner</span> — Bigtable=NoSQL, Spanner=<b>relational+global+strong consistency</b>.</span></div>
+    <div class="trapline"><span class="x">4</span><span><span class="trapword">Dataproc</span> vs <span class="svc">Dataflow</span> — Dataproc=<b>기존 Spark/Hadoop 클러스터</b>, Dataflow=<b>서버리스 새 파이프라인</b>.</span></div>
+    <div class="trapline"><span class="x">5</span><span><span class="trapword">Cloud Armor</span> vs <span class="svc">Model Armor</span> — Cloud=네트워크(DDoS/WAF), Model=<b>LLM prompt/response</b>.</span></div>
+    <div class="trapline"><span class="x">6</span><span><span class="trapword">KMS</span> vs <span class="svc">Secret Manager</span> — KMS=<b>암호화 키</b>, Secret Manager=<b>비밀번호/API키</b>.</span></div>
+    <div class="trapline"><span class="x">7</span><span><span class="trapword">Deployment Manager</span> vs <span class="svc">Terraform</span> — 둘 다 declarative지만 <b>권장 표준=Terraform</b>.</span></div>
+    <div class="trapline"><span class="x">8</span><span><span class="trapword">Storage Transfer Service</span> vs <span class="svc">Transfer Appliance</span> — 온라인(대역폭 충분) vs <b>오프라인(PB급·느린 망)</b>.</span></div>
+    <div class="trapline"><span class="x">9</span><span><span class="trapword">Private Google Access</span> vs <span class="svc">Cloud NAT</span> — Google API 전용 사설 vs <b>범용 인터넷 아웃바운드</b>.</span></div>
+    <div class="trapline"><span class="x">10</span><span><span class="trapword">HPA / VPA / Cluster Autoscaler</span> — pod 개수 / pod 크기 / <b>node 개수</b>.</span></div>
+    <div class="trapline"><span class="x">11</span><span><span class="trapword">basic role(Owner/Editor)</span> vs <span class="svc">predefined role</span> — "least privilege"면 basic 먼저 <b>배제</b>.</span></div>
+    <div class="trapline"><span class="x">12</span><span><span class="trapword">machine type 증설</span> vs <span class="svc">RAG / Model Monitoring</span> — 정확도 문제에 하드웨어 증설은 거의 <b>항상 오답</b>.</span></div>
+  </div>
+</div>
+
+<div class="foot">
+  GCP PCA v6.1 · 신호어 → 서비스 매핑 지도 · 개념은 공식 문서 기준, 케이스는 공식 PDF로 최종 검증<br>
+  결정적 신호를 잡고, 손으로 압축 노트를 옮겨 적는 순간 실력이 된다.
+</div>
+</main>
+
+<script>
+/* accordion-free: everything open. Search filters .track / .vs / .case / .spectrum / .tree by data-sig */
+(function(){
+  const q=document.getElementById('search');
+  const count=document.getElementById('scount');
+  const noresult=document.getElementById('noresult');
+  const cards=()=>Array.from(document.querySelectorAll('[data-sig]'));
+  const secHeads=()=>Array.from(document.querySelectorAll('.sec-head'));
+
+  function run(){
+    const term=q.value.trim().toLowerCase();
+    const all=cards();
+    if(!term){
+      all.forEach(c=>c.classList.remove('hidden'));
+      secHeads().forEach(h=>h.classList.remove('hidden'));
+      document.querySelectorAll('.sec-intro').forEach(p=>p.classList.remove('hidden'));
+      noresult.style.display='none';
+      count.textContent='';
+      return;
+    }
+    let shown=0;
+    all.forEach(c=>{
+      const hay=(c.getAttribute('data-sig')+' '+c.textContent).toLowerCase();
+      if(hay.includes(term)){c.classList.remove('hidden');shown++;}
+      else c.classList.add('hidden');
+    });
+    // hide section head if no visible card until next head
+    secHeads().forEach(h=>{
+      let el=h.nextElementSibling,vis=false;
+      while(el&&!el.classList.contains('sec-head')){
+        if(el.hasAttribute('data-sig')&&!el.classList.contains('hidden')){vis=true;break;}
+        el=el.nextElementSibling;
+      }
+      h.classList.toggle('hidden',!vis);
+    });
+    document.querySelectorAll('.sec-intro').forEach(p=>p.classList.add('hidden'));
+    noresult.style.display=shown?'none':'block';
+    count.textContent=shown?shown+' matches':'0';
+  }
+  q.addEventListener('input',run);
+})();
+</script>
+</body>
+</html>
