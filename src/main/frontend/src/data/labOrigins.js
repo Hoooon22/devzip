@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Consistent Hash',
+        subtitle: '일관성 해싱 (해시 링)',
+        link: '/consistent-hash',
+        date: '2026-07-05',
+        category: '실험/네트워크',
+        icon: '💍',
+        origin: '분산 캐시·샤딩을 늘리거나 줄일 때마다 hash % N이 키를 통째로 재배치해 캐시가 한꺼번에 비워지는 캐시 스탬피드 이야기가 계기. CDN·분산 KV 스토어가 노드를 넣고 빼면서도 흔들리지 않는 비결이 정말 "링 하나"에 있는지, 노드 추가 시 실제로 몇 %의 키만 움직이는지 두 방식을 나란히 놓고 눈으로 확인하고 싶었다.',
+        tags: ['consistent hashing', '해시 링', '분산 캐시'],
+    },
+    {
         name: 'Quorum',
         subtitle: '합의 알고리즘 (리더 선출)',
         link: '/quorum',

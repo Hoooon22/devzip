@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 46,
+        name: 'Consistent Hash',
+        subtitle: '일관성 해싱 (해시 링)',
+        description: '노드가 드나들어도 몇몇 키만 옮겨지는 해시 링으로 캐시 붕괴를 막는 실험',
+        link: '/consistent-hash',
+        active: true,
+        startDate: '2026-07-05',
+        endDate: '',
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '💍'
+    },
+    {
         id: 45,
         name: 'Quorum',
         subtitle: '합의 알고리즘 (리더 선출)',
