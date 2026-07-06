@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 47,
+        name: 'Retrieval',
+        subtitle: '벡터 검색 (의미 최근접 이웃)',
+        description: '쿼리와 가장 가까운 벡터를 골라 context로 삼는 RAG 검색을 드래그로 체험하는 실험',
+        link: '/retrieval',
+        active: true,
+        startDate: '2026-07-06',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🧲'
+    },
+    {
         id: 46,
         name: 'Consistent Hash',
         subtitle: '일관성 해싱 (해시 링)',

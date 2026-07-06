@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Retrieval',
+        subtitle: '벡터 검색 (의미 최근접 이웃)',
+        link: '/retrieval',
+        date: '2026-07-06',
+        category: '실험/AI',
+        icon: '🧲',
+        origin: 'AI 에이전트가 방대한 문서·기억에서 필요한 조각만 골라 답에 쓰는 RAG가 2026년 개발 트렌드의 중심으로 회자되던 것이 계기. 그 심장인 "벡터 검색"이 결국 의미 공간에서 최근접 이웃을 고르는 일이라는데, 무엇을 가깝다고 볼지(유클리드 거리 vs 코사인 유사도)에 따라 골라오는 context가 정말 달라지는지 쿼리를 직접 드래그하며 눈으로 확인하고 싶었다.',
+        tags: ['벡터 검색', 'RAG', '코사인 유사도', '최근접 이웃'],
+    },
+    {
         name: 'Consistent Hash',
         subtitle: '일관성 해싱 (해시 링)',
         link: '/consistent-hash',

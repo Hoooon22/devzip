@@ -1,0 +1,143 @@
+/* RETRIEVAL — 벡터 검색(의미 최근접 이웃) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   시그널(코발트)은 쿼리·연결선(강조 10%)에만, 테마 색은 데이터(점/막대)에만 쓴다. */
+
+/* ---- 툴바 ---- */
+.rt-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px 22px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+/* 지표 세그먼트 토글 */
+.rt-seg { display: inline-flex; border: 1px solid var(--frame-strong); }
+.rt-seg-btn {
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.rt-seg-btn + .rt-seg-btn { border-left: 1px solid var(--frame); }
+.rt-seg-btn.is-on { background: var(--signal); color: var(--on-signal); }
+
+.rt-ctrl { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+.rt-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.rt-ctrl-label b { color: var(--ink); font-weight: 600; }
+.rt-ctrl input[type="range"] { width: 100%; accent-color: var(--signal); cursor: pointer; }
+
+.rt-chips { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 0.4rem; }
+.rt-chip {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--frame);
+    padding: 0.34rem 0.6rem;
+    cursor: pointer;
+    transition: color 0.14s, border-color 0.14s;
+}
+.rt-chip::before {
+    content: "";
+    display: inline-block;
+    width: 8px; height: 8px;
+    margin-right: 6px;
+    background: var(--sw, var(--ink-mute));
+    vertical-align: middle;
+}
+.rt-chip:hover { color: var(--ink); border-color: var(--sw, var(--frame-strong)); }
+
+/* ---- 무대 ---- */
+.rt-stage {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) 1fr;
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+
+/* 벡터 공간 지도 */
+.rt-map-col { display: flex; flex-direction: column; gap: 10px; }
+.rt-map {
+    width: 100%; height: auto; display: block;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    touch-action: none;
+    cursor: grab;
+}
+.rt-map.is-drag { cursor: grabbing; }
+
+.rt-axis { stroke: var(--line); stroke-width: 1; }
+.rt-unit { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 5; opacity: 0.7; }
+
+.rt-link { stroke: var(--signal); stroke-width: 1.4; opacity: 0.45; }
+.rt-qvec { stroke: var(--signal); stroke-width: 1.4; stroke-dasharray: 4 4; opacity: 0.7; }
+
+.rt-node { cursor: pointer; }
+.rt-node circle { stroke: var(--panel); stroke-width: 1.5; transition: r 0.14s; }
+.rt-node.is-on circle { stroke: var(--signal); stroke-width: 2; }
+.rt-label {
+    fill: var(--ink); font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+    paint-order: stroke; stroke: var(--panel); stroke-width: 3px;
+}
+
+.rt-query-halo { fill: var(--signal); opacity: 0.14; }
+.rt-query-mark { fill: var(--signal); stroke: var(--on-signal); stroke-width: 1.5; }
+.rt-query-cap { fill: var(--signal); font-size: 10px; letter-spacing: 0.1em; }
+
+.rt-map-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.5; }
+.rt-map-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 패널 ---- */
+.rt-right { display: flex; flex-direction: column; gap: 16px; }
+.rt-panel { display: flex; flex-direction: column; gap: 10px; }
+.rt-panel-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 0.74rem; color: var(--ink-mute); letter-spacing: 0.04em;
+}
+.rt-qmeta { color: var(--signal); font-weight: 600; font-size: 0.72rem; }
+.rt-note {
+    margin: 0; font-size: 0.72rem; color: var(--ink-soft); line-height: 1.6;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+
+/* 검색 결과 리스트 */
+.rt-results { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; counter-reset: none; }
+.rt-res { display: flex; align-items: center; gap: 8px; }
+.rt-rank { font-size: 0.72rem; color: var(--ink-mute); width: 14px; text-align: right; flex-shrink: 0; }
+.rt-sw { width: 11px; height: 11px; flex-shrink: 0; border: 1px solid var(--frame); }
+.rt-word { font-size: 0.84rem; color: var(--ink); width: 72px; flex-shrink: 0; }
+.rt-theme { font-size: 0.66rem; color: var(--ink-mute); width: 28px; flex-shrink: 0; }
+.rt-bar { flex: 1; height: 11px; background: var(--row-alt); border: 1px solid var(--line); overflow: hidden; }
+.rt-bar-fill { display: block; height: 100%; transition: width 0.2s; }
+.rt-score { font-size: 0.78rem; color: var(--ink); width: 42px; text-align: right; flex-shrink: 0; }
+
+.rt-hint {
+    margin: 0;
+    padding: 14px 18px;
+    border-top: 1px solid var(--line);
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+.rt-hint b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.rt-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.rt-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.rt-foot b { color: var(--ink); font-weight: 600; }
+.rt-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 720px) {
+    .rt-stage { grid-template-columns: 1fr; }
+    .rt-chips { margin-left: 0; width: 100%; }
+    .rt-map-col { max-width: 420px; margin: 0 auto; width: 100%; }
+}
