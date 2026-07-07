@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import Footer from '../components/Footer';
@@ -9,6 +10,7 @@ import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
 import { useGame } from '../contexts/GameContext';
 import KCommandPalette from '../components/KCommandPalette';
+import HeroTerminal from '../components/HeroTerminal';
 import "../assets/css/Main.scss";
 
 const websiteSchema = {
@@ -127,8 +129,10 @@ const LiveUptime = () => { useTick(); return <>{formatUptime()}</>; };
 
 const Main = () => {
     const { award, xp, level, progress } = useGame();
+    const navigate = useNavigate();
 
     const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
+    const [terminalOn, setTerminalOn] = useState(false); // 히어로 부트 로그 → 검색 터미널 전환
     const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
     const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
     const [dailyTip, setDailyTip] = useState('');
@@ -311,13 +315,8 @@ const Main = () => {
     };
     const gotoFilter = (m) => { setMode(m); setTimeout(scrollToProc, 30); };
 
-    const handleProjectClick = (e, project) => {
-        if (project.requiresAdmin && !authService.isAdmin()) {
-            e.preventDefault();
-            alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
-            return;
-        }
-        // 조회수 증가 (로그인 불필요, 세션당 프로젝트별 1회만 집계)
+    // 조회수 집계(세션당 프로젝트별 1회) + 탐험 보상 — 카드 클릭과 터미널 검색이 공유한다.
+    const registerProjectVisit = useCallback((project) => {
         const seenKey = `viewed:${project.link}`;
         if (!sessionStorage.getItem(seenKey)) {
             sessionStorage.setItem(seenKey, '1');
@@ -333,11 +332,34 @@ const Main = () => {
             key: `proj-${project.id}`,
             icon: project.thumbnail || '🧭',
         });
+    }, [award]);
+
+    const handleProjectClick = (e, project) => {
+        if (project.requiresAdmin && !authService.isAdmin()) {
+            e.preventDefault();
+            alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
+            return;
+        }
+        registerProjectVisit(project);
         if (project.link?.startsWith('http://') || project.link?.startsWith('https://')) {
             e.preventDefault();
             window.open(project.link, '_blank', 'noopener,noreferrer');
         }
     };
+
+    // 터미널 검색 결과에서 프로젝트 열기 — 앵커 기본이동이 없으므로 직접 라우팅한다.
+    const openProject = useCallback((project) => {
+        if (project.requiresAdmin && !authService.isAdmin()) {
+            alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
+            return;
+        }
+        registerProjectVisit(project);
+        if (project.link?.startsWith('http://') || project.link?.startsWith('https://')) {
+            window.open(project.link, '_blank', 'noopener,noreferrer');
+        } else {
+            navigate(project.link);
+        }
+    }, [registerProjectVisit, navigate]);
 
     const toggleDark = () => {
         setDark(d => !d);
@@ -488,14 +510,31 @@ const Main = () => {
                                 <button type="button" className="k-btn ghost" onClick={() => setPaletteOpen(true)}>⌘K 명령 팔레트</button>
                             </div>
                         </div>
-                        <aside className="k-bootlog" aria-hidden="true">
-                            <div className="ln"><span className="ok">[ ok ]</span> kernel devzip v3.0 booted</div>
-                            <div className="ln"><span className="ok">[ ok ]</span> mounted {totalCount} projects</div>
-                            <div className="ln"><span className="ok">[ ok ]</span> {heroStats.production.active} services online</div>
-                            <div className="ln"><span className="dim">[ .. ]</span> {heroStats.experiments.running} experiments running</div>
-                            <div className="ln"><span className="ok">[ ok ]</span> command palette ready ⌘K</div>
-                            <div className="coin">insert coin to continue <span className="cur">▌</span></div>
-                        </aside>
+                        {terminalOn ? (
+                            <aside className="k-bootlog is-term">
+                                <HeroTerminal
+                                    projects={projects}
+                                    username={user ? user.username : 'guest'}
+                                    onOpen={openProject}
+                                    onClose={() => setTerminalOn(false)}
+                                />
+                            </aside>
+                        ) : (
+                            <button
+                                type="button"
+                                className="k-bootlog k-bootlog-btn"
+                                onClick={() => setTerminalOn(true)}
+                                aria-label="프로젝트 검색 터미널 열기"
+                                title="클릭해서 프로젝트 검색"
+                            >
+                                <span className="ln"><span className="ok">[ ok ]</span> kernel devzip v3.0 booted</span>
+                                <span className="ln"><span className="ok">[ ok ]</span> mounted {totalCount} projects</span>
+                                <span className="ln"><span className="ok">[ ok ]</span> {heroStats.production.active} services online</span>
+                                <span className="ln"><span className="dim">[ .. ]</span> {heroStats.experiments.running} experiments running</span>
+                                <span className="ln"><span className="ok">[ ok ]</span> command palette ready ⌘K</span>
+                                <span className="coin">click to search projects <span className="cur">▌</span></span>
+                            </button>
+                        )}
                     </div>
                     <div className="k-resize"></div>
                 </section>

@@ -208,6 +208,42 @@
 .k-bootlog .coin { margin-top: 14px; color: var(--ink); }
 .k-bootlog .coin .cur { color: var(--signal); animation: k-blink 1.1s steps(2) infinite; }
 
+/* boot log → 클릭하면 검색 터미널로 전환 */
+.k-bootlog-btn {
+  border: 0; border-left: 1px solid var(--line); text-align: left; width: 100%;
+  font: inherit; font-family: var(--font-mono); font-size: 12px; align-items: stretch;
+  cursor: pointer; transition: background .15s, color .15s; outline: none;
+}
+.k-bootlog-btn:hover,
+.k-bootlog-btn:focus-visible { background: var(--desk); }
+.k-bootlog-btn:hover .coin,
+.k-bootlog-btn:focus-visible .coin { color: var(--signal); }
+.k-bootlog.is-term { padding: 0; justify-content: stretch; }
+
+/* 히어로 검색 터미널 */
+.k-term { display: flex; flex-direction: column; width: 100%; font-family: var(--font-mono); font-size: 12px; }
+.k-term-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px 8px; color: var(--ink-soft); }
+.k-term-prompt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k-term-prompt .user { color: var(--signal); }
+.k-term-prompt .path { color: var(--ink-mute); }
+.k-term-x { flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--ink-mute); font: inherit; padding: 1px 6px; cursor: pointer; border-radius: 3px; }
+.k-term-x:hover { color: var(--ink); border-color: var(--ink-soft); }
+.k-term-in { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--desk); }
+.k-term-in .caret { color: var(--signal); }
+.k-term-in input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
+.k-term-in input::placeholder { color: var(--ink-mute); }
+.k-term-out { padding: 8px 12px; min-height: 96px; max-height: 190px; overflow-y: auto; }
+.k-term-hint { color: var(--ink-mute); padding: 6px 4px; }
+.k-term-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.k-term-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 4px; color: var(--ink-soft); text-decoration: none; }
+.k-term-item .gl { flex: 0 0 auto; }
+.k-term-item .nm { flex: 0 0 auto; color: var(--ink); font-weight: 600; }
+.k-term-item .sub { color: var(--ink-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-term-item .go { margin-left: auto; flex: 0 0 auto; color: var(--signal); opacity: 0; }
+.k-term-item.sel { background: var(--desk-2); color: var(--ink); }
+.k-term-item.sel .go { opacity: 1; }
+.k-term-foot { padding: 6px 16px 12px; color: var(--ink-mute); border-top: 1px solid var(--line); }
+
 /* ── gauges row ── */
 .k-gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .k-gauge-bd { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 14px; min-height: 132px; }
