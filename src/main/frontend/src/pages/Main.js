@@ -5,6 +5,7 @@ import projects from '../data/projects';
 import Footer from '../components/Footer';
 import viewService from '../services/viewService';
 import pinService from '../services/pinService';
+import presenceService, { PRESENCE_EVENT } from '../services/presenceService';
 import AuthModal from '../components/auth/AuthModal';
 import csTipService from '../services/csTipService';
 import authService from '../services/AuthService';
@@ -113,6 +114,59 @@ const useTick = () => {
         const id = setInterval(() => setTick((t) => t + 1), 1000);
         return () => clearInterval(id);
     }, []);
+};
+
+// presence 페이지 경로 → 표시 이름. 프로젝트 데이터에 없는 경로는 원문 그대로 보여준다.
+const PAGE_NAMES = projects.reduce((acc, p) => {
+    if (p.link?.startsWith('/')) acc[p.link] = p.name;
+    return acc;
+}, { '/': '홈', '/library': '자료실', '/lab-origins': '실험 계기 연대기', '/constellation': '별자리 맵' });
+
+// 실시간 접속자(who) 트레이 — PresencePing이 발행하는 스냅샷 이벤트를 구독한다.
+// 스냅샷이 아직 없으면(백엔드 미응답 포함) 아무것도 그리지 않는다.
+const TrayWho = () => {
+    const [snap, setSnap] = useState(() => presenceService.getLastSnapshot());
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const onUpdate = (e) => setSnap(e.detail);
+        window.addEventListener(PRESENCE_EVENT, onUpdate);
+        return () => window.removeEventListener(PRESENCE_EVENT, onUpdate);
+    }, []);
+
+    useEffect(() => {
+        if (!open) return undefined;
+        const close = () => setOpen(false);
+        document.addEventListener('click', close);
+        return () => document.removeEventListener('click', close);
+    }, [open]);
+
+    if (!snap || !snap.total) return null;
+    const rows = Object.entries(snap.pages || {}).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    return (
+        <span className="k-who-wrap">
+            <button
+                type="button"
+                className="k-who-btn k-mono"
+                aria-expanded={open}
+                title="지금 접속 중인 사람들"
+                onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}
+            >
+                <span className="dot" />who: {snap.total}
+            </button>
+            {open && (
+                <div className="k-who-pop k-mono" role="dialog" aria-label="실시간 접속 현황">
+                    <div className="hd">{'$ who — '}{snap.total}명 접속 중</div>
+                    {rows.map(([page, count]) => (
+                        <div className="rw" key={page}>
+                            <span className="pg">{PAGE_NAMES[page] || page}</span>
+                            <span className="ct">×{count}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </span>
+    );
 };
 
 // 라이브 시계/업타임 — 각자 독립적으로 매초 갱신되는 격리 컴포넌트.
@@ -393,6 +447,7 @@ const Main = () => {
             { id: 'n-home', group: '탐색', icon: '⌂', title: '홈', hint: '/', run: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { id: 'n-prod', group: '탐색', icon: '◆', title: '프로젝트 — 운영 중', hint: 'filter', run: () => gotoFilter('production') },
             { id: 'n-lab', group: '탐색', icon: '⚗', title: '실험실', hint: 'filter', run: () => gotoFilter('experiment') },
+            { id: 'n-map', group: '탐색', icon: '✦', title: '실험 별자리 맵', hint: '/constellation', run: () => window.location.assign('/constellation') },
             { id: 'n-lib', group: '탐색', icon: '▤', title: '자료실', hint: '/library', run: () => window.location.assign('/library') },
             { id: 'n-gh', group: '탐색', icon: '⎇', title: 'GitHub — Hoooon22', hint: 'external', run: () => openExternal('https://github.com/Hoooon22') },
         ];
@@ -445,6 +500,7 @@ const Main = () => {
                     <a className="on" href="/" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>home</a>
                     <button type="button" onClick={() => gotoFilter('production')}>projects</button>
                     <button type="button" onClick={() => gotoFilter('experiment')}>lab</button>
+                    <a href="/constellation">map</a>
                     <a href="/library">library</a>
                     <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">github</a>
                 </nav>
@@ -457,6 +513,7 @@ const Main = () => {
                         <span className="bar">{[0, 1, 2, 3, 4].map((n) => <i key={n} className={n < filledSegs ? 'f' : ''} />)}</span>
                         <span className="coins">◉ <b>{xp}</b></span>
                     </span>
+                    <TrayWho />
                     <TrayClock />
                     {authLoading ? (
                         <span className="k-auth">

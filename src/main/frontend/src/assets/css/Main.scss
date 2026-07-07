@@ -100,6 +100,32 @@
 .k-kbd kbd { font: inherit; font-size: 10px; color: var(--ink-mute); }
 .k-tray-clock { color: var(--ink-soft); letter-spacing: 0.06em; }
 .k-tray-clock .up { color: var(--ink-mute); }
+
+/* who — 실시간 접속자 트레이 */
+.k-who-wrap { position: relative; display: inline-flex; }
+.k-who-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: 11px; cursor: pointer;
+  border: 1px solid var(--frame); background: var(--panel-2); color: var(--ink-soft);
+  padding: 5px 9px; border-radius: 6px;
+}
+.k-who-btn:hover { border-color: var(--signal); color: var(--ink); }
+.k-who-btn .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #2FBF71; box-shadow: 0 0 6px rgba(47, 191, 113, 0.7);
+  animation: k-who-pulse 2.4s ease-in-out infinite;
+}
+@keyframes k-who-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.k-who-pop {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+  min-width: 220px; padding: 10px 12px;
+  background: var(--panel); border: 1px solid var(--frame); border-radius: 8px;
+  box-shadow: var(--shadow); font-size: 11.5px;
+}
+.k-who-pop .hd { color: var(--ink); font-weight: 600; padding-bottom: 7px; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+.k-who-pop .rw { display: flex; justify-content: space-between; gap: 14px; padding: 3px 0; color: var(--ink-soft); }
+.k-who-pop .rw .pg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-who-pop .rw .ct { color: var(--signal); flex-shrink: 0; }
 .k-theme {
   font: inherit; font-size: 11px; cursor: pointer;
   border: 1px solid var(--frame); background: var(--panel-2); color: var(--ink-soft);

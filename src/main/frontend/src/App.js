@@ -23,6 +23,7 @@ import CommandStackDownload from './pages/CommandStackDownload';
 import ApiExperiment from './pages/ApiExperiment';
 import Library from './pages/Library';
 import LabOrigins from './pages/LabOrigins';
+import Constellation from './pages/Constellation';
 import RestApi from './pages/experiments/RestApi';
 import JsonApi from './pages/experiments/JsonApi';
 import SoapApi from './pages/experiments/SoapApi';
@@ -64,6 +65,7 @@ import Attention from './pages/experiments/Attention';
 import Pathfind from './pages/experiments/Pathfind';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
+import PresencePing from './components/PresencePing';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { GameProvider } from './contexts/GameContext';
 import GameHud from './components/game/GameHud';
@@ -97,7 +99,10 @@ function App() {
       
       {/* 라우트 추적 컴포넌트 */}
       <RouteTracker />
-      
+
+      {/* 실시간 접속자(presence) 하트비트 */}
+      <PresencePing />
+
       <Routes>
         {/* 메인 페이지 */}
         <Route path="/" element={<Main />} /> 
@@ -244,6 +249,9 @@ function App() {
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
         <Route path="/lab-origins" element={<LabOrigins />} />
+
+        {/* 실험 별자리 맵 */}
+        <Route path="/constellation" element={<Constellation />} />
 
         {/* 롤 패치노트 페이지 */}
         {/* <Route path="/Lolpatch" element={<Lolpatch />} /> */}
