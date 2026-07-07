@@ -305,14 +305,6 @@ const Main = () => {
             .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0] || null
     ), []);
 
-    const tickerItems = useMemo(() => [
-        `${totalCount} projects mounted`,
-        `${heroStats.production.active} services online`,
-        `${heroStats.experiments.running} experiments running`,
-        'built by one dev',
-        'insert coin to continue',
-    ], [totalCount, heroStats]);
-
     const isAdmin = user?.role === 'ROLE_ADMIN';
 
     // 고정 여부의 유일한 기준은 관리자가 설정한 백엔드 핀(pinOverrides)이다.
@@ -537,17 +529,6 @@ const Main = () => {
                     <button type="button" className="k-theme k-mono" onClick={toggleDark} aria-label="테마 전환">{dark ? '☀ light' : '☾ dark'}</button>
                 </div>
             </header>
-
-            {/* ── 티커 ── */}
-            <div className="k-ticker" aria-hidden="true">
-                <div className="track">
-                    {[0, 1].map((half) => (
-                        <span className="seq" key={half}>
-                            {tickerItems.map((it) => <span className="item" key={it}>{it}<span className="star">★</span></span>)}
-                        </span>
-                    ))}
-                </div>
-            </div>
 
             <main className="k-desk">
                 {/* ── 히어로 / 부트 매니페스트 ── */}

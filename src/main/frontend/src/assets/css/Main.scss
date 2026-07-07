@@ -159,20 +159,6 @@
 .k-auth-btn.primary:hover { filter: brightness(1.06); }
 @keyframes k-blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
 
-/* ───────────────────────── ticker ───────────────────────── */
-.k-ticker {
-  height: 30px; overflow: hidden; position: relative;
-  background: var(--desk-2); border-bottom: 1px solid var(--line);
-  display: flex; align-items: center;
-  font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-  letter-spacing: 0.04em;
-}
-.k-ticker .track { display: flex; white-space: nowrap; animation: k-marq 30s linear infinite; }
-.k-ticker .seq { display: flex; }
-.k-ticker .item { display: inline-flex; align-items: center; padding: 0 22px; }
-.k-ticker .star { color: var(--signal); margin-left: 12px; opacity: 0.8; }
-@keyframes k-marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
 /* ───────────────────────── desktop ───────────────────────── */
 .k-desk { max-width: 1340px; margin: 0 auto; padding: 26px 22px 22px; display: grid; gap: 18px; }
 
@@ -457,5 +443,4 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-  .k-ticker .track { animation: none; transform: none; }
 }
