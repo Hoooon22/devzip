@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Pathfind',
+        subtitle: '최단 경로 탐색 (A*)',
+        link: '/pathfind',
+        date: '2026-07-07',
+        category: '실험/시뮬레이션',
+        icon: '🧭',
+        origin: '자율주행차가 여러 대도시에서 24시간 돌아다니며 도시 설계를 다시 쓴다는 이야기가 회자되던 것이 계기. 특정 회사·차량이 아니라 그 밑바탕의 보편 원리 — "장애물 사이에서 목표까지 가장 짧은 길 찾기" — 를 소재로 삼았다. 같은 미로를 두고 Dijkstra는 사방으로 퍼지고 Greedy는 곧장 달려가 최단을 놓치는데, A*는 왜 훨씬 적게 헤매면서도 최단을 지키는지 "헤맨 칸" 수를 직접 세어 비교하고 싶었다.',
+        tags: ['A*', '경로 탐색', 'heuristic', 'Dijkstra'],
+    },
+    {
         name: 'Attention',
         subtitle: '어텐션 메커니즘 (self-attention)',
         link: '/attention',

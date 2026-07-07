@@ -61,6 +61,7 @@ import Quorum from './pages/experiments/Quorum';
 import ConsistentHash from './pages/experiments/ConsistentHash';
 import Retrieval from './pages/experiments/Retrieval';
 import Attention from './pages/experiments/Attention';
+import Pathfind from './pages/experiments/Pathfind';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -238,6 +239,7 @@ function App() {
         <Route path="/consistent-hash" element={<ConsistentHash />} />
         <Route path="/retrieval" element={<Retrieval />} />
         <Route path="/attention" element={<Attention />} />
+        <Route path="/pathfind" element={<Pathfind />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

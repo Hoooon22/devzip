@@ -1,0 +1,168 @@
+/* PATHFIND — 격자 최단 경로 탐색 실험 (A* / Dijkstra / Greedy)
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   60(격자 배경/빈칸) · 30(탐색이 열어본 칸=코발트 소프트) · 10(경로=앰버 강조).
+   장애물은 잉크 블록, 시작=초록/목표=빨강. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --pf-visited: rgba(45, 79, 255, 0.16);
+    --pf-visited-b: rgba(45, 79, 255, 0.34);
+    --pf-path: #d98a00;
+    --pf-path-b: #a86800;
+    --pf-start: #12894e;
+    --pf-goal: #c8402f;
+}
+.lab-os[data-theme="dark"] {
+    --pf-visited: rgba(90, 128, 255, 0.22);
+    --pf-visited-b: rgba(120, 152, 255, 0.5);
+    --pf-path: #f0a52a;
+    --pf-path-b: #ffbe4d;
+    --pf-start: #34c17e;
+    --pf-goal: #ef6a55;
+}
+
+/* ---- 툴바 ---- */
+.pf-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+.pf-modes { display: inline-flex; border: 1px solid var(--frame-strong); }
+.pf-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    font-family: var(--font-ui);
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--frame);
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.pf-mode:last-child { border-right: none; }
+.pf-mode b { font-size: 0.9rem; font-weight: 600; }
+.pf-mode-f { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.pf-mode:hover { background: var(--row-alt); }
+.pf-mode.is-on { background: var(--ink); color: var(--desk); }
+.pf-mode.is-on .pf-mode-f { color: var(--desk); opacity: 0.7; }
+
+.pf-check {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.76rem; color: var(--ink-soft); cursor: pointer; user-select: none;
+}
+.pf-check input { accent-color: var(--signal); cursor: pointer; }
+
+.pf-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 150px; }
+.pf-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.pf-ctrl-label b { color: var(--ink); font-weight: 600; }
+.pf-ctrl input[type="range"] { width: 100%; accent-color: var(--signal); cursor: pointer; }
+
+.pf-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.pf-btn {
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--desk);
+    background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.pf-btn:hover { background: var(--signal); color: var(--on-signal); border-color: var(--signal); transform: translateY(-1px); }
+.pf-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.pf-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.pf-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.pf-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(200px, 250px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+
+/* 격자 */
+.pf-grid-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pf-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--frame);
+    border: 2px solid var(--frame-strong);
+    touch-action: none;
+    user-select: none;
+    aspect-ratio: 25 / 15;
+    width: 100%;
+}
+.pf-cell {
+    background: var(--panel);
+    aspect-ratio: 1 / 1;
+    cursor: crosshair;
+    transition: background 0.12s ease;
+}
+.pf-cell:hover { background: var(--row-alt); }
+.pf-wall { background: var(--ink); }
+.pf-wall:hover { background: var(--ink); }
+.pf-visited { background: var(--pf-visited); box-shadow: inset 0 0 0 1px var(--pf-visited-b); }
+.pf-path { background: var(--pf-path); }
+.pf-start { background: var(--pf-start); cursor: grab; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45); }
+.pf-goal { background: var(--pf-goal); cursor: grab; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45); }
+.pf-start:hover, .pf-goal:hover { background: var(--pf-start); }
+.pf-goal:hover { background: var(--pf-goal); }
+
+.pf-grid-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; }
+.pf-grid-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* 오른쪽 패널 */
+.pf-right { display: flex; flex-direction: column; gap: 16px; }
+
+.pf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pf-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.pf-stat-lab { font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.pf-stat-num { font-size: 1.6rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.pf-stat-sub { font-size: 0.66rem; color: var(--ink-mute); }
+
+.pf-legend { display: flex; flex-direction: column; gap: 8px; }
+.pf-legend-head { font-size: 0.72rem; color: var(--ink-mute); letter-spacing: 0.04em; }
+.pf-legend-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pf-legend-list li { display: flex; align-items: center; gap: 8px; font-size: 0.76rem; color: var(--ink-soft); }
+.pf-sw { width: 14px; height: 14px; flex-shrink: 0; border: 1px solid var(--frame); }
+.pf-sw-start { background: var(--pf-start); }
+.pf-sw-goal { background: var(--pf-goal); }
+.pf-sw-wall { background: var(--ink); }
+.pf-sw-visited { background: var(--pf-visited); box-shadow: inset 0 0 0 1px var(--pf-visited-b); }
+.pf-sw-path { background: var(--pf-path); }
+
+.pf-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 68px; display: flex; flex-direction: column; gap: 5px;
+}
+.pf-verdict.is-on { border-color: var(--pf-path-b); }
+.pf-verdict-lab { font-size: 0.68rem; color: var(--pf-path-b); letter-spacing: 0.04em; font-weight: 600; }
+.pf-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.pf-verdict-txt b { color: var(--ink); font-weight: 600; }
+.pf-verdict-hint { margin: 0; font-size: 0.74rem; line-height: 1.6; color: var(--ink-mute); }
+.pf-verdict-hint b { color: var(--ink-soft); }
+
+/* ---- README ---- */
+.pf-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.pf-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.pf-foot b { color: var(--ink); font-weight: 600; }
+.pf-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .pf-stage { grid-template-columns: 1fr; }
+    .pf-actions { margin-left: 0; }
+    .pf-stats { grid-template-columns: 1fr 1fr; }
+}

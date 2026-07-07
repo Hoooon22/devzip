@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 49,
+        name: 'Pathfind',
+        subtitle: '최단 경로 탐색 (A*)',
+        description: '벽을 그리고 시작·목표를 끌어 A*·Dijkstra·Greedy가 헤매는 넓이를 비교하는 실험',
+        link: '/pathfind',
+        active: true,
+        startDate: '2026-07-07',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧭'
+    },
+    {
         id: 48,
         name: 'Attention',
         subtitle: '어텐션 메커니즘 (self-attention)',
