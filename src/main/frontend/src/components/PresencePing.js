@@ -4,10 +4,15 @@ import presenceService from '../services/presenceService';
 
 const PING_INTERVAL_MS = 30_000;
 
-// 라우트 변경 시 + 30초 주기로 presence 하트비트를 보내는 무렌더 컴포넌트.
+// 라우트 변경 시 + 30초 주기로 presence 하트비트를 보내고,
+// /topic/presence STOMP 구독으로 다른 방문자의 변화를 실시간 수신하는 무렌더 컴포넌트.
 // App 최상단(BrowserRouter 안)에 한 번만 마운트한다.
 const PresencePing = () => {
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    presenceService.subscribeLive();
+  }, []);
 
   useEffect(() => {
     presenceService.ping(pathname);
