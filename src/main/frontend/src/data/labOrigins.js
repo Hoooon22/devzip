@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Attention',
+        subtitle: '어텐션 메커니즘 (self-attention)',
+        link: '/attention',
+        date: '2026-07-07',
+        category: '실험/AI',
+        icon: '👁️',
+        origin: '2026년 개발 트렌드가 온통 에이전틱 AI·멀티 에이전트로 회자되는데, 그 모든 것의 바탕인 트랜스포머의 심장은 결국 self-attention 한 가지라는 점이 계기. 앞서 만든 RAG·MoE·양자화·추측 디코딩 실험이 전부 이 어텐션 위에 올라탄 응용이었다는 걸 깨닫고, 정작 그 근원인 "각 토큰이 다른 토큰을 얼마나 쳐다볼지"를 정하는 softmax 가중치 행렬 자체를 눈으로 보고 싶었다. temperature를 돌려 어텐션이 한 곳에 쏠렸다 골고루 퍼지는 걸 직접 만지며 확인한다.',
+        tags: ['self-attention', 'transformer', 'softmax', 'QKV'],
+    },
+    {
         name: 'Retrieval',
         subtitle: '벡터 검색 (의미 최근접 이웃)',
         link: '/retrieval',

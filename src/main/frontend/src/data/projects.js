@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 48,
+        name: 'Attention',
+        subtitle: '어텐션 메커니즘 (self-attention)',
+        description: '토큰마다 다른 토큰을 얼마나 볼지 정하는 softmax 가중치를 행렬로 체험하는 실험',
+        link: '/attention',
+        active: true,
+        startDate: '2026-07-07',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '👁️'
+    },
+    {
         id: 47,
         name: 'Retrieval',
         subtitle: '벡터 검색 (의미 최근접 이웃)',
