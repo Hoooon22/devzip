@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 50,
+        name: 'Bracket',
+        subtitle: '단판 토너먼트의 운',
+        description: '최강팀도 자주 지는 단판 승부 — 운과 대진 크기로 우승 분포가 어떻게 흔들리는지 보는 실험',
+        link: '/bracket',
+        active: true,
+        startDate: '2026-07-08',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🏆'
+    },
+    {
         id: 49,
         name: 'Pathfind',
         subtitle: '최단 경로 탐색 (A*)',

@@ -63,6 +63,7 @@ import ConsistentHash from './pages/experiments/ConsistentHash';
 import Retrieval from './pages/experiments/Retrieval';
 import Attention from './pages/experiments/Attention';
 import Pathfind from './pages/experiments/Pathfind';
+import Bracket from './pages/experiments/Bracket';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -245,6 +246,7 @@ function App() {
         <Route path="/retrieval" element={<Retrieval />} />
         <Route path="/attention" element={<Attention />} />
         <Route path="/pathfind" element={<Pathfind />} />
+        <Route path="/bracket" element={<Bracket />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
