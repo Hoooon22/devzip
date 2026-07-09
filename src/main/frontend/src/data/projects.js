@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 51,
+        name: 'Lotto',
+        subtitle: '로또 1등 확률 (8,145,060분의 1)',
+        description: '번호를 계속 사도 1등은 오지 않는 로또 1/814만 확률을 눈으로 체감하는 실험',
+        link: '/lotto',
+        active: true,
+        startDate: '2026-07-08',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🎰'
+    },
+    {
         id: 50,
         name: 'Bracket',
         subtitle: '단판 토너먼트의 운',

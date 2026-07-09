@@ -1,0 +1,167 @@
+/* LOTTO — 로또 1등 확률 체감 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   60(패널/필드 배경) · 30(프레임·잉크로 짠 카드/히스토그램 구조) · 10(1등=금색 강조 소량).
+   AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --lo-gold: #d98a00;
+    --lo-gold-b: #a86800;
+    --lo-gold-soft: rgba(217, 138, 0, 0.12);
+    --lo-neg: #c8402f;
+    --lo-pos: #1c8a52;
+}
+.lab-os[data-theme="dark"] {
+    --lo-gold: #f0a52a;
+    --lo-gold-b: #ffbe4d;
+    --lo-gold-soft: rgba(240, 165, 42, 0.14);
+    --lo-neg: #ef6a55;
+    --lo-pos: #46c98a;
+}
+
+/* ---- 당첨 번호 ---- */
+.lo-draw {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.lo-draw-lab { font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
+.lo-balls { display: inline-flex; align-items: center; gap: 6px; }
+.lo-ball {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700;
+    color: #1a1a1a; border: 1px solid rgba(0, 0, 0, 0.18);
+}
+.lo-ball--y { background: #fbc400; }
+.lo-ball--b { background: #69c8f2; }
+.lo-ball--r { background: #ff7272; }
+.lo-ball--k { background: #b1b1b1; }
+.lo-ball--g { background: #b0d840; }
+.lo-ball.is-bonus { box-shadow: 0 0 0 2px var(--panel-2), 0 0 0 3px var(--ink); }
+.lo-plus { color: var(--ink-mute); font-weight: 600; margin: 0 1px; }
+.lo-draw-redraw { margin-left: auto; }
+
+/* ---- 툴바 ---- */
+.lo-toolbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+    padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+}
+.lo-speeds { display: inline-flex; border: 1px solid var(--frame-strong); }
+.lo-speed {
+    font-family: var(--font-ui); font-size: 0.82rem; font-weight: 600;
+    color: var(--ink-soft); background: transparent; border: none;
+    border-right: 1px solid var(--frame); padding: 0.42rem 0.85rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.lo-speed:last-child { border-right: none; }
+.lo-speed:hover { background: var(--row-alt); }
+.lo-speed.is-on { background: var(--ink); color: var(--desk); }
+
+.lo-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.lo-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink); border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.95rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.lo-btn:hover:not(:disabled) { background: var(--signal); color: var(--on-signal); border-color: var(--signal); transform: translateY(-1px); }
+.lo-btn:disabled { opacity: 0.4; cursor: default; }
+.lo-btn.is-live { background: var(--lo-neg); border-color: var(--lo-neg); color: #fff; }
+.lo-btn.is-live:hover { background: var(--lo-neg); border-color: var(--lo-neg); transform: none; }
+.lo-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.lo-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.lo-stage {
+    display: grid; grid-template-columns: 1fr minmax(250px, 320px);
+    gap: 22px; padding: 20px 18px; align-items: start;
+}
+.lo-field-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.lo-field {
+    width: 100%; height: 300px; display: block;
+    border: 1px solid var(--frame); background: var(--panel-2);
+}
+.lo-field-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.7; }
+.lo-inline-dim { color: var(--ink-mute); font-weight: 600; }
+.lo-inline-5 { color: var(--ink-soft); font-weight: 600; }
+.lo-inline-4, .lo-inline-3 { color: var(--signal); font-weight: 600; }
+.lo-inline-1 { color: var(--lo-gold-b); font-weight: 700; }
+
+/* ---- 우측 패널 ---- */
+.lo-right { display: flex; flex-direction: column; gap: 14px; }
+.lo-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lo-card {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.lo-card-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.04em; text-transform: uppercase; }
+.lo-card-num { font-size: 1.5rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.lo-card-num b { font-size: 0.9rem; font-weight: 600; color: var(--ink-mute); margin-left: 2px; }
+.lo-card-sub { font-size: 0.62rem; color: var(--ink-mute); }
+.lo-card-jackpot { border-color: var(--frame); }
+.lo-card-jackpot .lo-card-num { color: var(--ink-mute); }
+.lo-card-jackpot.is-hit { border-color: var(--lo-gold-b); background: var(--lo-gold-soft); }
+.lo-card-jackpot.is-hit .lo-card-num { color: var(--lo-gold-b); }
+
+/* 히스토그램 */
+.lo-hist { display: flex; flex-direction: column; gap: 7px; }
+.lo-hist-head { font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.05em; text-transform: uppercase; }
+.lo-hist-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.lo-hist-row { display: grid; grid-template-columns: 34px 84px 1fr 46px; align-items: center; gap: 8px; }
+.lo-hist-rank { font-size: 0.74rem; font-weight: 700; color: var(--ink-soft); }
+.lo-hist-odds { font-size: 0.62rem; color: var(--ink-mute); }
+.lo-hist-track { height: 12px; background: var(--row-alt); border: 1px solid var(--line); position: relative; }
+.lo-hist-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ink-soft); transition: width 0.2s ease; }
+.lo-hist-cnt { font-size: 0.7rem; color: var(--ink-mute); text-align: right; }
+.lo-hist-row.is-on .lo-hist-cnt { color: var(--ink); font-weight: 600; }
+/* 등수별 색 — 1등만 금색 강조, 나머지는 잉크/신호 계열 */
+.lo-tier-1 .lo-hist-rank { color: var(--lo-gold-b); }
+.lo-tier-1.is-on .lo-hist-fill { background: var(--lo-gold); }
+.lo-tier-1.is-on .lo-hist-cnt { color: var(--lo-gold-b); }
+.lo-tier-2.is-on .lo-hist-fill,
+.lo-tier-3.is-on .lo-hist-fill { background: var(--signal); }
+.lo-tier-4.is-on .lo-hist-fill { background: color-mix(in srgb, var(--signal) 55%, var(--panel-2)); }
+.lo-tier-5.is-on .lo-hist-fill { background: var(--ink-soft); }
+
+/* 수익률 */
+.lo-roi { padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2); min-height: 58px; display: flex; align-items: center; }
+.lo-roi.is-on { border-color: var(--frame); }
+.lo-roi-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.lo-roi-txt b { color: var(--ink); font-weight: 700; }
+.lo-neg { color: var(--lo-neg) !important; }
+.lo-pos { color: var(--lo-pos) !important; }
+.lo-roi-sub { display: block; margin-top: 3px; font-size: 0.64rem; color: var(--ink-mute); }
+.lo-roi-hint { margin: 0; font-size: 0.73rem; line-height: 1.6; color: var(--ink-mute); }
+
+/* ---- 확률 사다리 ---- */
+.lo-scale { padding: 20px 20px 24px; }
+.lo-scale-lead { margin: 0 0 16px; font-size: 0.98rem; color: var(--ink-soft); }
+.lo-scale-lead b { color: var(--ink); font-weight: 700; }
+.lo-anchors { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.lo-anchor {
+    display: flex; flex-direction: column; gap: 5px;
+    padding: 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    position: relative;
+}
+.lo-anchor-ico { font-size: 1.5rem; line-height: 1; }
+.lo-anchor-num { font-size: 1.15rem; font-weight: 700; color: var(--lo-gold-b); letter-spacing: -0.01em; }
+.lo-anchor-tt { font-size: 0.88rem; color: var(--ink); line-height: 1.5; }
+.lo-anchor-tt b { font-weight: 700; }
+.lo-anchor-sub { font-size: 0.72rem; color: var(--ink-mute); line-height: 1.55; }
+
+/* ---- README ---- */
+.lo-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.lo-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.lo-foot b { color: var(--ink); font-weight: 600; }
+.lo-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .lo-stage { grid-template-columns: 1fr; }
+    .lo-actions { margin-left: 0; }
+    .lo-anchors { grid-template-columns: 1fr; }
+    .lo-hist-row { grid-template-columns: 30px 72px 1fr 42px; }
+}
