@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 52,
+        name: 'Thermal',
+        subtitle: '열 확산과 라우팅 (열방정식)',
+        description: '재료를 칠해 열이 흐르는 길을 직접 설계하는 열 확산 실험',
+        link: '/thermal',
+        active: true,
+        startDate: '2026-07-10',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🌡️'
+    },
+    {
         id: 51,
         name: 'Lotto',
         subtitle: '로또 1등 확률 (8,145,060분의 1)',
