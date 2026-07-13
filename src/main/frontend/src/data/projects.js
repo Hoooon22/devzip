@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 53,
+        name: 'Grid',
+        subtitle: '실시간 수급 균형 (계통 주파수)',
+        description: '전기는 저장되지 않는다 — 폭염 부하 급증에 발전을 맞춰 60Hz를 지키는 계통 제어 실험',
+        link: '/grid',
+        active: true,
+        startDate: '2026-07-13',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '⚡'
+    },
+    {
         id: 52,
         name: 'Thermal',
         subtitle: '열 확산과 라우팅 (열방정식)',

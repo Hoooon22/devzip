@@ -1,0 +1,173 @@
+/* GRID — 실시간 수급 균형 실험 (계통 주파수)
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   계측 화면은 어두운 SCADA 패널로 고정(테마 무관): 검정 60 · 계기 스틸/앰버 30 · 상태색(정격/주의/정전) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --gr-ok: #2f9e6e;
+    --gr-warn: #d99413;
+    --gr-trip: #d0432f;
+    --gr-supply: #3f86c9;
+    --gr-demand: #e0851a;
+}
+.lab-os[data-theme="dark"] {
+    --gr-ok: #3fc389;
+    --gr-warn: #efb23c;
+    --gr-trip: #e85a48;
+    --gr-supply: #5aa0e6;
+    --gr-demand: #f0972e;
+}
+
+/* ---- 툴바 ---- */
+.gr-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+.gr-ctrls { display: flex; gap: 16px; }
+.gr-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 150px; }
+.gr-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.gr-ctrl-label b { color: var(--ink); font-weight: 600; }
+.gr-ctrl input[type="range"] { width: 100%; accent-color: var(--gr-supply); cursor: pointer; }
+.gr-ctrl input[type="range"]:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.gr-cards { display: inline-flex; gap: 10px; }
+.gr-card {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    font-family: var(--font-ui);
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.8rem; cursor: pointer;
+    transition: background 0.14s, transform 0.14s, opacity 0.14s;
+}
+.gr-card b { font-size: 0.84rem; font-weight: 600; }
+.gr-card-h { font-size: 0.62rem; opacity: 0.72; }
+.gr-card:hover:not(:disabled) { background: var(--gr-supply); border-color: var(--gr-supply); transform: translateY(-1px); }
+.gr-card:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.gr-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.gr-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.gr-btn:hover:not(:disabled) { background: var(--gr-supply); color: #fff; border-color: var(--gr-supply); transform: translateY(-1px); }
+.gr-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.gr-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.gr-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+.gr-btn.is-hot { background: var(--gr-trip); border-color: var(--gr-trip); color: #fff; }
+.gr-btn.is-on { background: var(--gr-ok); border-color: var(--gr-ok); color: #fff; }
+
+/* ---- 무대 ---- */
+.gr-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(210px, 250px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+
+.gr-chart-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.gr-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #0c0f16;
+    padding: 6px;
+    line-height: 0;
+}
+.gr-canvas { width: 100%; height: auto; display: block; aspect-ratio: 640 / 240; }
+
+.gr-blackout {
+    position: absolute; inset: 6px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    background: rgba(10, 8, 8, 0.82); text-align: center; padding: 20px;
+}
+.gr-blackout-t { font-family: var(--font-ui); font-size: 1.5rem; font-weight: 700; color: var(--gr-trip); letter-spacing: 0.04em; line-height: 1.1; }
+.gr-blackout-s { font-size: 0.72rem; color: rgba(233,232,226,0.72); max-width: 380px; line-height: 1.6; }
+
+.gr-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.68rem; color: var(--ink-mute); }
+.gr-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.gr-key { width: 16px; height: 3px; display: inline-block; }
+.gr-key-dem { background: var(--gr-demand); }
+.gr-key-sup { background: var(--gr-supply); }
+.gr-key-peak { background: repeating-linear-gradient(to right, var(--gr-trip) 0 5px, transparent 5px 9px); }
+
+.gr-chart-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; }
+.gr-chart-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.gr-right { display: flex; flex-direction: column; gap: 14px; }
+
+.gr-gauge {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.gr-gauge.gr-ok { border-color: var(--gr-ok); }
+.gr-gauge.gr-warn { border-color: var(--gr-warn); background: rgba(217, 148, 19, 0.06); }
+.gr-gauge.gr-trip { border-color: var(--gr-trip); background: rgba(208, 67, 47, 0.08); }
+.gr-gauge-svg { width: 100%; max-width: 210px; height: auto; overflow: visible; }
+
+.gr-arc { fill: none; stroke-width: 12; stroke-linecap: butt; opacity: 0.9; }
+.gr-arc-trip { stroke: var(--gr-trip); }
+.gr-arc-warn { stroke: var(--gr-warn); }
+.gr-arc-ok { stroke: var(--gr-ok); }
+.gr-needle { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; transition: none; }
+.gr-hub { fill: var(--ink); }
+
+.gr-freq-read { display: flex; align-items: baseline; gap: 4px; margin-top: -6px; }
+.gr-freq-num { font-size: 2.2rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.gr-gauge.gr-ok .gr-freq-num { color: var(--gr-ok); }
+.gr-gauge.gr-warn .gr-freq-num { color: var(--gr-warn); }
+.gr-gauge.gr-trip .gr-freq-num { color: var(--gr-trip); }
+.gr-freq-unit { font-size: 0.9rem; color: var(--ink-mute); }
+.gr-band { font-size: 0.7rem; letter-spacing: 0.04em; font-weight: 600; margin-top: 2px; }
+.gr-band-ok { color: var(--gr-ok); }
+.gr-band-warn { color: var(--gr-warn); }
+.gr-band-trip { color: var(--gr-trip); }
+
+.gr-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gr-stat {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.gr-stat:first-child { grid-column: 1 / -1; }
+.gr-stat-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.gr-stat-num { font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.gr-stat-sub { font-size: 0.6rem; color: var(--ink-mute); }
+
+.gr-score {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.gr-score-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.72rem; color: var(--ink-mute); }
+.gr-score-row b { font-size: 1rem; color: var(--ink); }
+
+.gr-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 62px; display: flex; align-items: center;
+}
+.gr-verdict.gr-warn { border-color: var(--gr-warn); }
+.gr-verdict.gr-trip { border-color: var(--gr-trip); }
+.gr-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.gr-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.gr-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.gr-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.gr-foot b { color: var(--ink); font-weight: 600; }
+.gr-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .gr-stage { grid-template-columns: 1fr; }
+    .gr-actions { margin-left: 0; }
+    .gr-ctrls, .gr-cards { width: 100%; }
+    .gr-ctrl { flex: 1; }
+    .gr-cards { flex-wrap: wrap; }
+}
