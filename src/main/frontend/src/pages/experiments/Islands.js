@@ -146,7 +146,7 @@ const Islands = () => {
                         <div className="il-browser">
                             <div className="il-chrome">
                                 <i className="il-dot" /><i className="il-dot" /><i className="il-dot" />
-                                <span className="il-url">devzip.cloud/article</span>
+                                <span className="il-url">devzip.site/article</span>
                                 <span className={'il-badge ' + (playT === null ? 'il-badge-done' : 'il-badge-hy')}>
                                     {playT === null ? '정착됨' : '하이드레이션 중…'}
                                 </span>

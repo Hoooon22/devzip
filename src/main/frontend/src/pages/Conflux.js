@@ -80,7 +80,7 @@ const Conflux = () => {
                 
                 {/* Open Graph */}
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://devzip.cloud/conflux" />
+                <meta property="og:url" content="https://devzip.site/conflux" />
                 <meta property="og:title" content="Conflux - Unified Notification Hub for Developers" />
                 <meta property="og:description" content="Where all streams merge. A personalized notification control center that aggregates GitHub, Jira, Sentry alerts into one timeline." />
                 <meta property="og:locale" content="ko_KR" />
@@ -92,12 +92,12 @@ const Conflux = () => {
                 <meta property="twitter:description" content="Where all streams merge. Aggregate your development tool notifications in one place." />
                 
                 {/* hrefLang */}
-                <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/conflux" />
-                <link rel="alternate" hrefLang="en" href="https://devzip.cloud/conflux" />
-                <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/conflux" />
+                <link rel="alternate" hrefLang="ko" href="https://devzip.site/conflux" />
+                <link rel="alternate" hrefLang="en" href="https://devzip.site/conflux" />
+                <link rel="alternate" hrefLang="x-default" href="https://devzip.site/conflux" />
                 
                 {/* Canonical */}
-                <link rel="canonical" href="https://devzip.cloud/conflux" />
+                <link rel="canonical" href="https://devzip.site/conflux" />
                 
                 {/* JSON-LD 구조화된 데이터 */}
                 <script type="application/ld+json">
@@ -109,7 +109,7 @@ const Conflux = () => {
                         "applicationCategory": "DeveloperApplication",
                         "operatingSystem": "macOS, Windows, Web",
                         "description": "A unified notification hub for developers. Aggregate GitHub, Jira, Sentry alerts into one timeline. 개발 도구 알림을 하나로 통합하는 관제 센터.",
-                        "url": "https://devzip.cloud/conflux",
+                        "url": "https://devzip.site/conflux",
                         "author": {
                             "@type": "Person",
                             "name": "Hoooon22"

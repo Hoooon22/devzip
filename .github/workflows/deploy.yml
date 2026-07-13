@@ -179,7 +179,7 @@ jobs:
     - name: Send Build Failure Webhook
       if: failure()
       run: |
-        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
+        curl -k -X POST https://devzip.site/api/webhook/github-actions \
           -H "Content-Type: application/json" \
           -d '{
             "workflow_name": "${{ github.workflow }}",
@@ -244,7 +244,7 @@ jobs:
     - name: Health Check - External (informational)
       run: |
         echo "🌐 Running external health check (non-blocking, informational)..."
-        response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://devzip.cloud/actuator/health || echo "000")
+        response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://devzip.site/actuator/health || echo "000")
         echo "ℹ️  External status: $response"
         if [ "$response" != "200" ]; then
           echo "⚠️ External check did not return 200. This may be due to firewall or DNS restrictions from GitHub runners."
@@ -256,7 +256,7 @@ jobs:
       run: |
         echo "🔐 Testing JWT authentication system..."
 
-        login_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://devzip.cloud/api/auth/signin \
+        login_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://devzip.site/api/auth/signin \
           -H "Content-Type: application/json" \
           -d '{"username":"test","password":"test"}' || echo "000")
 
@@ -272,7 +272,7 @@ jobs:
       run: |
         echo "🌐 Testing frontend loading..."
 
-        main_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/ || echo "000")
+        main_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.site/ || echo "000")
 
         if [ "$main_response" = "200" ]; then
           echo "✅ Main page: Loading successfully"
@@ -284,8 +284,8 @@ jobs:
       run: |
         echo "🛡️ Testing protected routes..."
 
-        dashboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/dashboard || echo "000")
-        traceboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.cloud/traceboard || echo "000")
+        dashboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.site/dashboard || echo "000")
+        traceboard_response=$(curl -s -o /dev/null -w "%{http_code}" https://devzip.site/traceboard || echo "000")
 
         if [ "$dashboard_response" = "200" ] || [ "$dashboard_response" = "302" ] || [ "$dashboard_response" = "401" ]; then
           echo "✅ Dashboard protection: Working"
@@ -305,7 +305,7 @@ jobs:
         echo "📊 Deployment Status Summary:"
         echo "=========================================="
         echo "🎯 Application: DevZip"
-        echo "🌐 URL: https://devzip.cloud"
+        echo "🌐 URL: https://devzip.site"
         echo "🔐 Authentication: JWT-based admin system"
         echo "🛡️ Protected Routes: Dashboard, Traceboard"
         echo "⚡ Features: Real-time analytics, User tracking"
@@ -316,7 +316,7 @@ jobs:
     - name: Send Success Webhook
       if: success()
       run: |
-        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
+        curl -k -X POST https://devzip.site/api/webhook/github-actions \
           -H "Content-Type: application/json" \
           -d '{
             "workflow_name": "${{ github.workflow }}",
@@ -335,7 +335,7 @@ jobs:
     - name: Send Failure Webhook
       if: failure()
       run: |
-        curl -k -X POST https://devzip.cloud/api/webhook/github-actions \
+        curl -k -X POST https://devzip.site/api/webhook/github-actions \
           -H "Content-Type: application/json" \
           -d '{
             "workflow_name": "${{ github.workflow }}",

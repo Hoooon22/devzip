@@ -11,6 +11,6 @@ public class RobotsController {
     public String getRobots() {
         return "User-agent: *\n" +
                 "Allow: /\n" +
-                "Sitemap: https://devzip.cloud/sitemap.xml";
+                "Sitemap: https://devzip.site/sitemap.xml";
     }
 }

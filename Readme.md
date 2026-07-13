@@ -14,43 +14,43 @@ DevZip은 기획 → 개발 → 배포 → 운영까지 전 과정을 혼자 수
 
 #### 🚀 실서비스
 
-- ⚡ [Command Stack](https://devzip.cloud/commandstack) - 개발자를 위한 개인 일정 관리 시스템
-- 🌊 [Conflux](https://devzip.cloud/conflux) - 개발자를 위한 통합 알림 관제 센터
+- ⚡ [Command Stack](https://devzip.site/commandstack) - 개발자를 위한 개인 일정 관리 시스템
+- 🌊 [Conflux](https://devzip.site/conflux) - 개발자를 위한 통합 알림 관제 센터
 
 #### 🧪 실험실 (인터랙티브 실험)
 
 > 개념을 직접 만지며 체험하는 단발성 인터랙티브 실험들입니다.
 
-- 🗜️ [Lossy](https://devzip.cloud/lossy) - 해상도·색 심도를 줄여 데이터량과 화질의 거래를 체험하는 손실 압축 실험
-- 🛰️ [Edge Run](https://devzip.cloud/edge-run) - 연산을 엣지 노드로 분산해 왕복 지연이 줄어드는 과정을 보는 엣지 컴퓨팅 실험
-- 🎮 [Rubber Band](https://devzip.cloud/rubber-band) - 보이지 않는 손이 난이도를 조절하는 동적 난이도(DDA) 실험
-- 🐦 [Murmuration](https://devzip.cloud/murmuration) - 세 줄의 규칙(분리·정렬·응집)만으로 군무가 태어나는 창발 시뮬레이터
-- 🧪 [물리 엔진 놀이터](https://devzip.cloud/physics-lab) - Matter.js 기반 인터랙티브 물리 샌드박스
-- 🎭 [Uncanny Valley](https://devzip.cloud/uncanny-valley) - 인간 유사도와 호감도의 골짜기를 그려보는 실험
-- 📡 [Latency Arena](https://devzip.cloud/latency-arena) - 여러 엔드포인트의 왕복 시간(RTT)을 측정·비교하는 실험
-- 🧠 [Context Window](https://devzip.cloud/context-window) - 컨텍스트 창이 차면 오래된 기억부터 밀려나는 망각 시뮬레이터
-- 📼 [Nostalgia Engine](https://devzip.cloud/nostalgia-engine) - 점점 짧아지는 향수 사이클 시뮬레이터
-- ⚛️ [Qubit Lab](https://devzip.cloud/qubit-lab) - 양자 중첩·측정 붕괴 실험실
-- 👻 [Ghost Feed](https://devzip.cloud/ghost-feed) - 사람과 봇을 가려내는 죽은 인터넷 이론 판별 게임
-- 💥 [Tipping Point](https://devzip.cloud/tipping-point) - 하나의 신호가 모두에게 번지는 확산 메커니즘 시뮬레이터
-- 🧪 [API 실험실](https://devzip.cloud/api-experiment) - REST, JSON, SOAP, gRPC, GraphQL 등 다양한 API 실험
+- 🗜️ [Lossy](https://devzip.site/lossy) - 해상도·색 심도를 줄여 데이터량과 화질의 거래를 체험하는 손실 압축 실험
+- 🛰️ [Edge Run](https://devzip.site/edge-run) - 연산을 엣지 노드로 분산해 왕복 지연이 줄어드는 과정을 보는 엣지 컴퓨팅 실험
+- 🎮 [Rubber Band](https://devzip.site/rubber-band) - 보이지 않는 손이 난이도를 조절하는 동적 난이도(DDA) 실험
+- 🐦 [Murmuration](https://devzip.site/murmuration) - 세 줄의 규칙(분리·정렬·응집)만으로 군무가 태어나는 창발 시뮬레이터
+- 🧪 [물리 엔진 놀이터](https://devzip.site/physics-lab) - Matter.js 기반 인터랙티브 물리 샌드박스
+- 🎭 [Uncanny Valley](https://devzip.site/uncanny-valley) - 인간 유사도와 호감도의 골짜기를 그려보는 실험
+- 📡 [Latency Arena](https://devzip.site/latency-arena) - 여러 엔드포인트의 왕복 시간(RTT)을 측정·비교하는 실험
+- 🧠 [Context Window](https://devzip.site/context-window) - 컨텍스트 창이 차면 오래된 기억부터 밀려나는 망각 시뮬레이터
+- 📼 [Nostalgia Engine](https://devzip.site/nostalgia-engine) - 점점 짧아지는 향수 사이클 시뮬레이터
+- ⚛️ [Qubit Lab](https://devzip.site/qubit-lab) - 양자 중첩·측정 붕괴 실험실
+- 👻 [Ghost Feed](https://devzip.site/ghost-feed) - 사람과 봇을 가려내는 죽은 인터넷 이론 판별 게임
+- 💥 [Tipping Point](https://devzip.site/tipping-point) - 하나의 신호가 모두에게 번지는 확산 메커니즘 시뮬레이터
+- 🧪 [API 실험실](https://devzip.site/api-experiment) - REST, JSON, SOAP, gRPC, GraphQL 등 다양한 API 실험
 
 #### 🛠️ 서비스 & 도구
 
-- 🎵 [카오틱 뮤직박스](https://devzip.cloud/chaotic-music-box) - 실시간으로 함께 음악을 만드는 참여형 시퀀서
-- 🤖 [Hopperbox](https://devzip.cloud/hopperbox) - AI 기반 생산성 도구
-- 💬 [실시간 라이브 채팅](https://devzip.cloud/livechat) - 실시간 채팅 서비스
-- 🔥 [트렌드챗](https://devzip.cloud/trendchat) - 실시간 트렌드 검색어 채팅
-- 🔬 [물리학 퀴즈](https://devzip.cloud/physics-quiz) - 물리 문제 풀이와 시뮬레이션
-- 📚 [자료실](https://devzip.cloud/library) - 공부하며 정리한 학습 자료·요약 문서 모음
-- 📝 [방명록](https://devzip.cloud/Guestbook) - 방문자 메시지 작성
-- 🔌 [API 문서](https://devzip.cloud/apiPage) - DevZip API 목록
-- 😂 [코딩 농담 사전](https://devzip.cloud/Joke) - 코딩 관련 농담 번역
+- 🎵 [카오틱 뮤직박스](https://devzip.site/chaotic-music-box) - 실시간으로 함께 음악을 만드는 참여형 시퀀서
+- 🤖 [Hopperbox](https://devzip.site/hopperbox) - AI 기반 생산성 도구
+- 💬 [실시간 라이브 채팅](https://devzip.site/livechat) - 실시간 채팅 서비스
+- 🔥 [트렌드챗](https://devzip.site/trendchat) - 실시간 트렌드 검색어 채팅
+- 🔬 [물리학 퀴즈](https://devzip.site/physics-quiz) - 물리 문제 풀이와 시뮬레이션
+- 📚 [자료실](https://devzip.site/library) - 공부하며 정리한 학습 자료·요약 문서 모음
+- 📝 [방명록](https://devzip.site/Guestbook) - 방문자 메시지 작성
+- 🔌 [API 문서](https://devzip.site/apiPage) - DevZip API 목록
+- 😂 [코딩 농담 사전](https://devzip.site/Joke) - 코딩 관련 농담 번역
 
 #### 🔒 관리자용
 
-- 📈 [트레이스보드](https://devzip.cloud/traceboard) - 웹사이트 사용자 행동 시각화
-- 📊 [대시보드](https://devzip.cloud/dashboard) - 서버 상태 및 정보 대시보드
+- 📈 [트레이스보드](https://devzip.site/traceboard) - 웹사이트 사용자 행동 시각화
+- 📊 [대시보드](https://devzip.site/dashboard) - 서버 상태 및 정보 대시보드
 
 ## 🎯 주요 서비스
 
@@ -250,7 +250,7 @@ devzip/
 
 DevZip은 AWS 인프라에 배포되어 운영 중입니다.
 
-- **웹사이트**: [https://devzip.cloud](https://devzip.cloud)
+- **웹사이트**: [https://devzip.site](https://devzip.site)
 - **GitHub**: [https://github.com/Hoooon22/devzip](https://github.com/Hoooon22/devzip)
 
 ### CI/CD 파이프라인

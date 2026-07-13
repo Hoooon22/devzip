@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This project is a Dev + zip website containing web development ideas from the developer of hoooon22. It has developed the front end with React and the back end with Springboot, and is distributing it to an external Ubuntu server and distributing it to devzip.cloud.
+This project is a Dev + zip website containing web development ideas from the developer of hoooon22. It has developed the front end with React and the back end with Springboot, and is distributing it to an external Ubuntu server and distributing it to devzip.site.
 
 ## Architecture
 
@@ -256,10 +256,10 @@ the same ESLint pass that Gradle runs.
 
 ### Production Server
 - **Live Server**: Running on external Ubuntu server
-- **Domain**: devzip.cloud (production environment)
+- **Domain**: devzip.site (production environment)
 - **Local Network**: 192.168.75.224 (same network access)
 - **SSH Access**: `ssh -p 3323 hoooon22@192.168.75.224`
-- **Note**: All functions should work identically on both devzip.cloud and local network IP
+- **Note**: All functions should work identically on both devzip.site and local network IP
 
 ### Rule: Run & Manage Backend Application
 # When the user requests to run, test, or check logs for the backend server,

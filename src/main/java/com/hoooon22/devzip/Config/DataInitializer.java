@@ -28,7 +28,7 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${app.admin.username:admin}")
     private String adminUsername;
 
-    @Value("${app.admin.email:admin@devzip.cloud}")
+    @Value("${app.admin.email:admin@devzip.site}")
     private String adminEmail;
 
     @Value("${app.admin.password:}")

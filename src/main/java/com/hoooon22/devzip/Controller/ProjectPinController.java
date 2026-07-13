@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * 조회(GET)는 모두에게 공개되며, 설정 변경(POST)은 관리자만 가능합니다.
  * (POST 권한은 WebSecurityConfig 에서 hasRole("ADMIN") 으로 보호됩니다.)
  */
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.cloud", "http://devzip.cloud", "https://www.devzip.cloud", "http://www.devzip.cloud"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.site", "http://devzip.site", "https://www.devzip.site", "http://www.devzip.site"})
 @Slf4j
 @RestController
 @RequestMapping("/api/pins")

@@ -19,11 +19,11 @@ const websiteSchema = {
     "@type": "WebSite",
     "name": "DevZip",
     "alternateName": ["devzip", "데브집"],
-    "url": "https://devzip.cloud",
+    "url": "https://devzip.site",
     "description": "Developer's Side Project Hub - 개발자의 사이드 프로젝트 허브",
     "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://devzip.cloud/?q={search_term_string}",
+        "target": "https://devzip.site/?q={search_term_string}",
         "query-input": "required name=search_term_string"
     }
 };
@@ -32,8 +32,8 @@ const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "DevZip",
-    "url": "https://devzip.cloud",
-    "logo": "https://devzip.cloud/logo192.png",
+    "url": "https://devzip.site",
+    "logo": "https://devzip.site/logo192.png",
     "sameAs": ["https://github.com/Hoooon22"]
 };
 
@@ -468,15 +468,15 @@ const Main = () => {
                 <meta name="description" content="DevZip은 개발자를 위한 사이드 프로젝트 허브입니다. Command Stack, Conflux 등 개발자 도구와 실험적인 프로젝트를 만나보세요." />
                 <meta name="keywords" content="DevZip, devzip, Command Stack, commandstack, Conflux, conflux, 개발자도구, developer tools, side project, 사이드프로젝트" />
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://devzip.cloud/" />
+                <meta property="og:url" content="https://devzip.site/" />
                 <meta property="og:title" content="DevZip - Developer's Side Project Hub" />
                 <meta property="og:description" content="A hub for developer side projects. Discover Command Stack, Conflux, and more experimental tools." />
                 <meta property="og:locale" content="ko_KR" />
                 <meta property="og:locale:alternate" content="en_US" />
-                <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/" />
-                <link rel="alternate" hrefLang="en" href="https://devzip.cloud/" />
-                <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/" />
-                <link rel="canonical" href="https://devzip.cloud/" />
+                <link rel="alternate" hrefLang="ko" href="https://devzip.site/" />
+                <link rel="alternate" hrefLang="en" href="https://devzip.site/" />
+                <link rel="alternate" hrefLang="x-default" href="https://devzip.site/" />
+                <link rel="canonical" href="https://devzip.site/" />
                 <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
                 <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
             </Helmet>
@@ -742,7 +742,7 @@ const Main = () => {
                 {/* ── 상태 바 ── */}
                 <footer className="k-statusbar">
                     <span className="sys"><span className="sq"></span>all systems go</span>
-                    <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    <span>© {new Date().getFullYear()} hoooon22 · devzip.site</span>
                     <span className="dir">build f7c4a3b · master</span>
                     <div className="links">
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>

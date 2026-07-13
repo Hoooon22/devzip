@@ -22,18 +22,18 @@ logging.level.com.hoooon22.devzip=DEBUG
 logging.level.org.springframework.web.client=DEBUG
 
 # CORS Settings for Docker environment
-app.cors.allowed-origins=${CORS_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.cloud,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
+app.cors.allowed-origins=${CORS_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.site,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
 app.cors.max-age=${CORS_MAX_AGE:3600}
 
 # WebSocket Settings for Docker environment
-app.websocket.allowed-origins=${WEBSOCKET_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.cloud,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
+app.websocket.allowed-origins=${WEBSOCKET_ORIGINS:http://localhost:8080,http://localhost:3000,https://devzip.site,https://192.168.75.224,http://192.168.75.224,http://192.168.75.224:8080}
 
 # Spring Security Settings for Docker environment
 spring.security.csrf.enabled=false
 
 # Admin Account Configuration
 app.admin.username=${APP_ADMIN_USERNAME:admin}
-app.admin.email=${APP_ADMIN_EMAIL:admin@devzip.cloud}
+app.admin.email=${APP_ADMIN_EMAIL:admin@devzip.site}
 app.admin.password=${APP_ADMIN_PASSWORD:change-me}
 app.admin.auto-create=${APP_ADMIN_AUTO_CREATE:true}
 

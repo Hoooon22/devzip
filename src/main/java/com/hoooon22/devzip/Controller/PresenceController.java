@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  * 인증이 필요 없으며, 클라이언트가 30초 주기로 하트비트를 보내면
  * 현재 접속 스냅샷(전체 인원 + 페이지별 인원)을 돌려줍니다.
  */
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.cloud", "http://devzip.cloud", "https://www.devzip.cloud", "http://www.devzip.cloud"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.site", "http://devzip.site", "https://www.devzip.site", "http://www.devzip.site"})
 @Slf4j
 @RestController
 @RequestMapping("/api/presence")

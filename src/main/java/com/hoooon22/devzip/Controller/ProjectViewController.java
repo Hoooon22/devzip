@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * 프로젝트(카드) 조회수 API.
  * 인증이 필요 없으며 비회원도 조회수를 올릴 수 있습니다.
  */
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.cloud", "http://devzip.cloud", "https://www.devzip.cloud", "http://www.devzip.cloud"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080", "https://192.168.75.224", "http://192.168.75.224", "http://192.168.75.224:8080", "https://devzip.site", "http://devzip.site", "https://www.devzip.site", "http://www.devzip.site"})
 @Slf4j
 @RestController
 @RequestMapping("/api/views")

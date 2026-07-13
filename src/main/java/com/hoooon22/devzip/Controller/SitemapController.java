@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SitemapController {
 
-    private static final String BASE_URL = "https://devzip.cloud";
+    private static final String BASE_URL = "https://devzip.site";
 
     @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
     public String getSitemap() {

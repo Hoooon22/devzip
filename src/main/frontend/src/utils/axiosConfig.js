@@ -12,7 +12,7 @@ const getApiBaseUrl = () => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         return 'http://localhost:8080';
     }
-    // 프로덕션 환경 (devzip.cloud에서 실행)
+    // 프로덕션 환경 (devzip.site에서 실행)
     return ''; // 상대 경로 사용 (Nginx 프록시를 통해)
 };
 

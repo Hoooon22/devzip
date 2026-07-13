@@ -7,105 +7,105 @@
 <!-- created with Gemini - Updated 2026-02-05 -->
 
 <url>
-  <loc>https://devzip.cloud/</loc>
+  <loc>https://devzip.site/</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>1.00</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/Guestbook</loc>
+  <loc>https://devzip.site/Guestbook</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>0.80</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/Joke</loc>
+  <loc>https://devzip.site/Joke</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>0.80</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/apiPage</loc>
+  <loc>https://devzip.site/apiPage</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.80</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/trendchat</loc>
+  <loc>https://devzip.site/trendchat</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>daily</changefreq>
   <priority>0.80</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/physics-quiz</loc>
+  <loc>https://devzip.site/physics-quiz</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.80</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/conflux</loc>
+  <loc>https://devzip.site/conflux</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.70</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/commandstack</loc>
+  <loc>https://devzip.site/commandstack</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>0.90</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/commandstack/download</loc>
+  <loc>https://devzip.site/commandstack/download</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>0.85</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment</loc>
+  <loc>https://devzip.site/api-experiment</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.70</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment/rest</loc>
+  <loc>https://devzip.site/api-experiment/rest</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.60</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment/json</loc>
+  <loc>https://devzip.site/api-experiment/json</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.60</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment/soap</loc>
+  <loc>https://devzip.site/api-experiment/soap</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.60</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment/grpc</loc>
+  <loc>https://devzip.site/api-experiment/grpc</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.60</priority>
 </url>
 
 <url>
-  <loc>https://devzip.cloud/api-experiment/graphql</loc>
+  <loc>https://devzip.site/api-experiment/graphql</loc>
   <lastmod>2026-02-05T00:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.60</priority>

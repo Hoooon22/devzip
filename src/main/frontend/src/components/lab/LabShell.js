@@ -77,7 +77,7 @@ const LabShell = ({ title, subtitle, eyebrow, path = 'experiment', children }) =
 
                 <footer className="lab-foot">
                     <span className="sys"><span className="sq"></span>experiment mounted</span>
-                    <span>© {new Date().getFullYear()} hoooon22 · devzip.cloud</span>
+                    <span>© {new Date().getFullYear()} hoooon22 · devzip.site</span>
                     <div className="links">
                         <Link to="/">홈으로</Link>
                         <a href="https://github.com/Hoooon22" target="_blank" rel="noopener noreferrer">GitHub</a>

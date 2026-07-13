@@ -273,7 +273,7 @@ const CommandStackDownload = () => {
         <meta property="og:type" content="website" />
         <meta
           property="og:url"
-          content="https://devzip.cloud/commandstack/download"
+          content="https://devzip.site/commandstack/download"
         />
         <meta
           name="keywords"

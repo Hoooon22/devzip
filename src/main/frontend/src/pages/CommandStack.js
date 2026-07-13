@@ -98,7 +98,7 @@ const CommandStack = () => {
                 
                 {/* Open Graph */}
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://devzip.cloud/commandstack" />
+                <meta property="og:url" content="https://devzip.site/commandstack" />
                 <meta property="og:title" content="Command Stack - Terminal-style Task Manager for Developers" />
                 <meta property="og:description" content="A developer-friendly personal management system using terminal metaphors. Manage your tasks as Commands, projects as Contexts." />
                 <meta property="og:locale" content="ko_KR" />
@@ -110,12 +110,12 @@ const CommandStack = () => {
                 <meta property="twitter:description" content="Control your life's runtime. A terminal-based task management app for developers." />
                 
                 {/* hrefLang */}
-                <link rel="alternate" hrefLang="ko" href="https://devzip.cloud/commandstack" />
-                <link rel="alternate" hrefLang="en" href="https://devzip.cloud/commandstack" />
-                <link rel="alternate" hrefLang="x-default" href="https://devzip.cloud/commandstack" />
+                <link rel="alternate" hrefLang="ko" href="https://devzip.site/commandstack" />
+                <link rel="alternate" hrefLang="en" href="https://devzip.site/commandstack" />
+                <link rel="alternate" hrefLang="x-default" href="https://devzip.site/commandstack" />
                 
                 {/* Canonical */}
-                <link rel="canonical" href="https://devzip.cloud/commandstack" />
+                <link rel="canonical" href="https://devzip.site/commandstack" />
                 
                 {/* JSON-LD 구조화된 데이터 */}
                 <script type="application/ld+json">
@@ -127,8 +127,8 @@ const CommandStack = () => {
                         "applicationCategory": "ProductivityApplication",
                         "operatingSystem": "macOS, Windows, Linux",
                         "description": "A developer-friendly task management app using terminal and OS metaphors. 터미널 메타포를 활용한 개발자 친화적 작업 관리 앱.",
-                        "url": "https://devzip.cloud/commandstack",
-                        "downloadUrl": "https://devzip.cloud/commandstack/download",
+                        "url": "https://devzip.site/commandstack",
+                        "downloadUrl": "https://devzip.site/commandstack/download",
                         "softwareVersion": "1.0.13",
                         "author": {
                             "@type": "Person",
