@@ -139,6 +139,19 @@
     border-radius: 12px;
     box-shadow: 5px 5px 0 var(--ink);
     padding: 16px 18px;
+    scroll-margin-top: 80px;
+}
+
+/* 홈 카드의 "계기" 링크로 딥링크되어 도착한 항목 — 파란 강조로 잠깐 짚어준다 */
+.origin-card.is-target {
+    border-color: var(--c-blue);
+    box-shadow: 6px 6px 0 var(--c-blue);
+    animation: origin-pop 0.45s ease;
+}
+@keyframes origin-pop {
+    0% { transform: translate(0, 0); }
+    45% { transform: translate(-2px, -2px); }
+    100% { transform: translate(0, 0); }
 }
 .origin-card::before {
     content: '';

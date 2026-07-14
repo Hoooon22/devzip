@@ -200,6 +200,12 @@ follow these rules so cards stay consistent:
 - **`origin`은 개념 요약이 아니라 "계기"를 쓴다.** 어떤 실서비스 이슈·기술 뉴스·
   논쟁·이전 실험에서 이어진 궁금증이 출발점이었는지를 남긴다.
 - 배열은 최신 실험이 **맨 앞**에 오도록 추가한다(페이지에서 최신순 정렬·월별 그룹핑됨).
+- **홈 카드의 "계기" 링크는 자동이다 — 추가 작업 불필요.** 홈(`pages/Main.js`)의
+  프로젝트 카드/표 행은 `labOrigins.js` 에 같은 `link` 항목이 있으면 "★ 계기" 버튼을
+  자동으로 표시하고, 클릭 시 `/lab-origins#origin-<link>` 로 딥링크해 해당 항목으로
+  스크롤·강조한다(`data/labOrigins.js` 의 `originAnchorId`/`originLinkSet` 공유).
+  따라서 위 `labOrigins.js` 항목만 빠뜨리지 않으면 카드 링크는 늘 따라 붙는다.
+  앵커 규칙(`link '/feed-rank'` → `id 'origin-feed-rank'`)은 `originAnchorId` 한 곳에서만 관리한다.
 
 ### Frontend Lint Pitfalls (CRA / react-scripts build)
 The Gradle `:buildFrontendReact` task runs `react-scripts build`, which treats ESLint

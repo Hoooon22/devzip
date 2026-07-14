@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import labOrigins from '../data/labOrigins';
+import labOrigins, { originAnchorId } from '../data/labOrigins';
 import '../styles/LabOrigins.css';
 
 // 실험 계기 연대기 — 각 실험실 페이지가 "어떤 사건/이슈에서 출발했는지"를
@@ -12,6 +12,25 @@ const ALL = '전체';
 
 const LabOrigins = () => {
     const [cat, setCat] = useState(ALL);
+    const location = useLocation();
+    const [targetId, setTargetId] = useState('');
+
+    // 홈 카드의 "계기" 링크(/lab-origins#origin-xxx)로 진입하면 해당 항목으로 스크롤하고 잠깐 강조한다.
+    useEffect(() => {
+        const id = location.hash.replace(/^#/, '');
+        if (!id) return undefined;
+        setCat(ALL); // 필터로 대상이 가려져 있을 수 있으니 전체 보기로 되돌린다
+        setTargetId(id);
+        // 마운트 직후 레이아웃이 안정되도록 짧게 지연한 뒤 해당 항목으로 즉시 스크롤한다.
+        // setTimeout 사용: requestAnimationFrame은 탭이 비가시(hidden)일 때 콜백이 멈추지만
+        // setTimeout 은 발화하므로 배경 탭·프리렌더 상황에서도 안전하다. behavior:'auto'(즉시) —
+        // 딥링크 점프는 아래 is-target 강조 펄스로 위치를 알려주므로 스크롤 애니메이션이 불필요하다.
+        const scrollT = setTimeout(() => {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'center' });
+        }, 60);
+        const clear = setTimeout(() => setTargetId(''), 2600);
+        return () => { clearTimeout(scrollT); clearTimeout(clear); };
+    }, [location.hash]);
 
     // 카테고리 목록 (데이터 등장 순서 유지) + 항목 수
     const cats = useMemo(() => {
@@ -73,7 +92,11 @@ const LabOrigins = () => {
                         <h2>{month.replace('-', '.')}</h2>
                         <ul className="origins-list">
                             {items.map((o) => (
-                                <li key={o.link} className="origin-card">
+                                <li
+                                    key={o.link}
+                                    id={originAnchorId(o.link)}
+                                    className={`origin-card ${targetId === originAnchorId(o.link) ? 'is-target' : ''}`}
+                                >
                                     <div className="origin-top">
                                         <span className="origin-icon" aria-hidden="true">{o.icon}</span>
                                         <h3>{o.name}</h3>

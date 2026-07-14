@@ -393,4 +393,11 @@ const labOrigins = [
     },
 ];
 
+// 실험 계기 항목의 앵커 id — 홈 카드의 "계기" 링크가 /lab-origins#<id> 로 딥링크하고,
+// LabOrigins 페이지가 해당 항목으로 스크롤할 때 같은 규칙을 공유한다. link '/feed-rank' → 'origin-feed-rank'.
+export const originAnchorId = (link) => `origin-${String(link).replace(/^\/+/, '').replace(/\//g, '-')}`;
+
+// 프로젝트 카드가 "이 실험에 계기 기록이 있는지" 를 O(1) 로 판별하기 위한 link 집합.
+export const originLinkSet = new Set(labOrigins.map((o) => o.link));
+
 export default labOrigins;

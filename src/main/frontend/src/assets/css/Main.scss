@@ -312,6 +312,11 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-pin-badge { display: inline-flex; align-items: center; gap: 4px; margin-left: 9px; vertical-align: middle; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--signal); }
 .k-pin-badge .k-pin-svg { width: 13px; height: 13px; }
 .k-tile-bar .k-pin-mark { display: inline-flex; width: 18px; height: 18px; padding: 3px; margin-left: auto; flex-shrink: 0; background: var(--signal); color: var(--on-signal); }
+/* "계기" 링크 — 실험 계기 연대기의 해당 항목으로 딥링크. labOrigins 기록이 있는 실험 카드에만 자동 표시 */
+.k-origin-btn { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.01em; color: var(--ink-mute); background: transparent; border: 1px solid var(--line); padding: 3px 8px; cursor: pointer; white-space: nowrap; transition: color 0.14s, border-color 0.14s, background 0.14s; }
+.k-origin-btn:hover { color: var(--signal); border-color: var(--signal); background: var(--signal-soft); }
+.k-origin-btn .ic { font-size: 10px; line-height: 1; }
+.k-row .name .k-origin-btn { margin-top: 8px; }
 .k-chip { display: inline-block; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; background: var(--row-alt); border: 1px solid var(--line); color: var(--ink-soft); }
 .k-stack { display: flex; flex-wrap: wrap; gap: 4px; }
 .k-stack span { font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; border: 1px solid var(--line); color: var(--ink-soft); }

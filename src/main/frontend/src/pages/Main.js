@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
+import { originAnchorId, originLinkSet } from '../data/labOrigins';
 import Footer from '../components/Footer';
 import viewService from '../services/viewService';
 import pinService from '../services/pinService';
@@ -86,6 +87,11 @@ const isNewProject = (p) =>
     Boolean(p.startDate) && (Date.now() - new Date(p.startDate).getTime()) < NEW_WINDOW_MS;
 
 const openExternal = (url) => window.open(url, '_blank', 'noopener,noreferrer');
+
+// 이 실험에 "실험 계기 연대기" 기록이 있으면 해당 항목으로의 딥링크를 돌려준다(없으면 null).
+// labOrigins.js 에 항목이 추가되면 카드에 자동으로 "계기" 링크가 붙는다(별도 작업 불필요).
+const originHrefFor = (project) =>
+    originLinkSet.has(project.link) ? `/lab-origins#${originAnchorId(project.link)}` : null;
 
 // 고정(핀) 글리프 — 터미널/커널 테마에 맞춘 얇은 압정 아이콘. 색은 currentColor 를 따른다.
 const PinGlyph = () => (
@@ -425,6 +431,30 @@ const Main = () => {
         return list.map(tag => <span key={`tech-${tag}`}>{tag}</span>);
     };
 
+    // 카드 내부의 "계기" 링크 — 카드 자체의 이동을 막고 실험 계기 연대기의 해당 항목으로 딥링크한다.
+    const handleOriginClick = (e, href) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(href);
+    };
+
+    // 이 실험에 계기 기록이 있을 때만 렌더된다(없으면 null). 표/카드 뷰 공용.
+    const renderOriginLink = (project) => {
+        const href = originHrefFor(project);
+        if (!href) return null;
+        return (
+            <button
+                type="button"
+                className="k-origin-btn"
+                title="이 실험을 시작한 계기 — 실험 계기 연대기"
+                aria-label={`${project.name} 실험 계기 보기`}
+                onClick={(e) => handleOriginClick(e, href)}
+            >
+                <span className="ic" aria-hidden="true">★</span> 계기
+            </button>
+        );
+    };
+
     /* 인증 */
     const openAuth = (m) => { setModalMode(m); setModalOpen(true); };
     const handleLogout = () => { authService.logout(); setUser(null); };
@@ -652,7 +682,7 @@ const Main = () => {
                                         <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
                                     ) : isPinned(p) && (
                                         <span className="k-pin-badge"><PinGlyph />고정</span>
-                                    )}{p.subtitle && <span className="k-subtitle">{p.subtitle}</span>}</div>
+                                    )}{p.subtitle && <span className="k-subtitle">{p.subtitle}</span>}{renderOriginLink(p)}</div>
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
                                     <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
@@ -684,6 +714,7 @@ const Main = () => {
                                         <div className="foot">
                                             <span className="k-stack">{renderTechTags(p, 2)}</span>
                                             <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
+                                            {renderOriginLink(p)}
                                             <span className="open">열기 →</span>
                                         </div>
                                     </div>
