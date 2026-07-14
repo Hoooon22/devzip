@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 54,
+        name: 'Crossflow',
+        subtitle: '무신호 교차로 예약 통행 (자율주행 협조)',
+        description: '신호등 대신 교차로 슬롯을 예약해 틈마다 끼어드는 자율주행 협조(AIM) 실험',
+        link: '/crossflow',
+        active: true,
+        startDate: '2026-07-14',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🛣️'
+    },
+    {
         id: 53,
         name: 'Grid',
         subtitle: '실시간 수급 균형 (계통 주파수)',

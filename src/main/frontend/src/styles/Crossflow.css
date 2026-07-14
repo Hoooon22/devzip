@@ -1,0 +1,131 @@
+/* CROSSFLOW — 무신호 교차로 예약 통행 실험 (자율주행 협조 / AIM)
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   교차로 화면은 어두운 아스팔트 콘솔로 고정(테마 무관):
+   아스팔트 60 · 강철 마킹 30 · 축/신호 강조색(남북 앰버 / 동서 시안 / 정지 적색) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --cf-ns: #d98a24;
+    --cf-ew: #2f9aac;
+    --cf-stop: #d0432f;
+}
+.lab-os[data-theme="dark"] {
+    --cf-ns: #f0a53a;
+    --cf-ew: #3fb6c9;
+    --cf-stop: #e85a48;
+}
+
+/* ---- 툴바 ---- */
+.cf-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+.cf-modes { display: inline-flex; border: 1px solid var(--frame-strong); }
+.cf-seg {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--ink-soft); background: transparent;
+    border: none; padding: 0.5rem 1rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.cf-seg + .cf-seg { border-left: 1px solid var(--frame); }
+.cf-seg.is-on { background: var(--ink); color: var(--desk); }
+
+.cf-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
+.cf-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.cf-ctrl-label b { color: var(--ink); font-weight: 600; }
+.cf-ctrl input[type="range"] { width: 100%; accent-color: var(--cf-ew); cursor: pointer; }
+
+.cf-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.cf-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.cf-btn:hover:not(:disabled) { background: var(--cf-ew); color: #fff; border-color: var(--cf-ew); transform: translateY(-1px); }
+.cf-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.cf-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+.cf-btn-ghost.is-on { background: var(--cf-ns); color: #fff; border-color: var(--cf-ns); }
+
+/* ---- 무대 ---- */
+.cf-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(200px, 240px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+
+.cf-screen-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.cf-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #151820;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+}
+.cf-canvas { display: block; width: 100%; height: 100%; }
+
+.cf-modechip {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 0.66rem; letter-spacing: 0.05em;
+    padding: 3px 8px; border: 1px solid;
+    background: rgba(0,0,0,0.4);
+}
+.cf-modechip.is-aim { color: var(--cf-ew); border-color: var(--cf-ew); }
+.cf-modechip.is-sig { color: var(--cf-ns); border-color: var(--cf-ns); }
+
+.cf-legend {
+    display: flex; flex-wrap: wrap; gap: 8px 16px;
+    font-size: 0.68rem; color: var(--ink-soft);
+}
+.cf-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cf-key { width: 12px; height: 12px; display: inline-block; border-radius: 2px; }
+.cf-key-ns { background: var(--cf-ns); }
+.cf-key-ew { background: var(--cf-ew); }
+.cf-key-stop { background: transparent; border: 1.6px solid var(--cf-stop); }
+
+/* ---- 우측 계기 ---- */
+.cf-right { display: flex; flex-direction: column; gap: 14px; }
+.cf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cf-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.cf-stat-hero { grid-column: 1 / -1; border-color: var(--cf-ew); }
+.cf-stat-lab { font-size: 0.66rem; letter-spacing: 0.04em; color: var(--ink-mute); }
+.cf-stat-num { font-size: 1.5rem; font-weight: 600; color: var(--ink); line-height: 1.1; }
+.cf-stat-hero .cf-stat-num { font-size: 2rem; color: var(--cf-ew); }
+.cf-stat-sub { font-size: 0.62rem; color: var(--ink-mute); }
+
+.cf-verdict {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--cf-ew);
+    background: var(--panel-2);
+}
+.cf-verdict.cf-signal { border-left-color: var(--cf-ns); }
+.cf-verdict-txt { margin: 0; font-size: 0.82rem; line-height: 1.55; color: var(--ink-soft); }
+.cf-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.cf-foot-win { margin-top: 4px; }
+.cf-foot { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.cf-foot p { margin: 0; font-size: 0.9rem; line-height: 1.7; color: var(--ink-soft); max-width: 74ch; }
+.cf-foot p b { color: var(--ink); font-weight: 600; }
+.cf-disclaimer { font-size: 0.76rem !important; color: var(--ink-mute) !important; }
+
+@media (max-width: 720px) {
+    .cf-stage { grid-template-columns: 1fr; }
+    .cf-actions { margin-left: 0; }
+}
