@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Spiking',
+        subtitle: '스파이킹 뉴런 (Leaky Integrate-and-Fire)',
+        link: '/spiking',
+        date: '2026-07-15',
+        category: '실험/AI',
+        icon: '🧠',
+        origin: '뉴로모픽 칩과 AI 슈퍼컴퓨팅이 올해의 기술 화두로 오르내리며, "왜 이벤트 구동 하드웨어가 저전력으로 도는가"가 궁금했던 것이 계기. 특정 칩·회사가 아니라 그 밑바탕의 보편 원리 — "보통의 신경망은 매 스텝 모든 뉴런을 동기적으로 계산하지만, 스파이킹 신경망은 막전위가 문턱을 넘는 그 순간에만 스파이크 한 번을 쏘고 리셋한다" — 를 소재로 삼았다. 조용한 뉴런은 에너지를 쓰지 않는 이 희소·이벤트 구동이 어떻게 물결처럼 번지고, 문턱을 낮추면 왜 폭주하며, 억제가 어떻게 과열을 눌러 균형을 되찾는지를 직접 슬라이더로 밀고 당기며 확인하고 싶었다.',
+        tags: ['스파이킹 신경망', 'LIF 뉴런', '뉴로모픽', '이벤트 구동'],
+    },
+    {
         name: 'Crossflow',
         subtitle: '무신호 교차로 예약 통행 (자율주행 협조)',
         link: '/crossflow',

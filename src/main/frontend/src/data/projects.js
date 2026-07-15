@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 55,
+        name: 'Spiking',
+        subtitle: '스파이킹 뉴런 (Leaky Integrate-and-Fire)',
+        description: '문턱을 넘는 순간에만 한 번 쏘는 이벤트 구동 뉴로모픽 신경망 실험',
+        link: '/spiking',
+        active: true,
+        startDate: '2026-07-15',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🧠'
+    },
+    {
         id: 54,
         name: 'Crossflow',
         subtitle: '무신호 교차로 예약 통행 (자율주행 협조)',

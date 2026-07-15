@@ -1,0 +1,121 @@
+/* SPIKING — 스파이킹 뉴런 실험 (Leaky Integrate-and-Fire / 뉴로모픽)
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   화면 콘솔은 어두운 계측기 톤으로 고정(테마 무관):
+   딥 슬레이트 60 · 강철 배선/링 30 · 점화 앰버(발화) 10 · 억제 시안은 보조.
+   AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --sp-fire: #d98a24;
+    --sp-inh: #2f8fb0;
+    --sp-steel: #6f7d92;
+}
+.lab-os[data-theme="dark"] {
+    --sp-fire: #f2a93b;
+    --sp-inh: #3f9fd0;
+    --sp-steel: #8a99ae;
+}
+
+/* ---- 툴바 ---- */
+.sp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 22px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.sp-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 150px; flex: 1 1 150px; }
+.sp-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.sp-ctrl-label b { color: var(--ink); font-weight: 600; }
+.sp-ctrl input[type="range"] { width: 100%; accent-color: var(--sp-fire); cursor: pointer; }
+
+.sp-actions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.sp-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.sp-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.sp-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); }
+
+/* ---- 무대 ---- */
+.sp-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(200px, 240px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+.sp-screen-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+.sp-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #14161c;
+    aspect-ratio: 540 / 360;
+    width: 100%;
+}
+.sp-canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+.sp-hint {
+    position: absolute; bottom: 8px; right: 10px;
+    font-size: 0.62rem; letter-spacing: 0.04em;
+    color: rgba(180,190,205,0.6);
+    pointer-events: none;
+}
+
+.sp-raster-wrap { display: flex; flex-direction: column; gap: 5px; }
+.sp-raster-lab { font-size: 0.64rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.sp-raster {
+    display: block; width: 100%;
+    aspect-ratio: 540 / 132;
+    border: 1px solid var(--frame-strong);
+    background: #101216;
+}
+
+.sp-legend {
+    display: flex; flex-wrap: wrap; gap: 8px 16px;
+    font-size: 0.68rem; color: var(--ink-soft);
+}
+.sp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sp-key { width: 12px; height: 12px; display: inline-block; border-radius: 50%; }
+.sp-key-exc { background: var(--sp-steel); }
+.sp-key-inh { background: var(--sp-inh); }
+.sp-key-fire { background: var(--sp-fire); box-shadow: 0 0 6px var(--sp-fire); }
+
+/* ---- 우측 계기 ---- */
+.sp-right { display: flex; flex-direction: column; gap: 14px; }
+.sp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sp-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.sp-stat-hero { grid-column: 1 / -1; border-color: var(--sp-fire); }
+.sp-stat-lab { font-size: 0.66rem; letter-spacing: 0.04em; color: var(--ink-mute); }
+.sp-stat-num { font-size: 1.5rem; font-weight: 600; color: var(--ink); line-height: 1.1; }
+.sp-stat-num small { font-size: 0.9rem; font-weight: 500; color: var(--ink-mute); }
+.sp-stat-hero .sp-stat-num { font-size: 2rem; color: var(--sp-fire); }
+.sp-stat-sub { font-size: 0.62rem; color: var(--ink-mute); }
+
+.sp-verdict {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--sp-fire);
+    background: var(--panel-2);
+}
+.sp-verdict-txt { margin: 0; font-size: 0.82rem; line-height: 1.55; color: var(--ink-soft); }
+.sp-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.sp-foot-win { margin-top: 4px; }
+.sp-foot { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.sp-foot p { margin: 0; font-size: 0.9rem; line-height: 1.7; color: var(--ink-soft); max-width: 74ch; }
+.sp-foot p b { color: var(--ink); font-weight: 600; }
+.sp-disclaimer { font-size: 0.76rem !important; color: var(--ink-mute) !important; }
+
+@media (max-width: 720px) {
+    .sp-stage { grid-template-columns: 1fr; }
+}

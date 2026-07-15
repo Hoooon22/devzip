@@ -68,6 +68,7 @@ import Lotto from './pages/experiments/Lotto';
 import Thermal from './pages/experiments/Thermal';
 import Grid from './pages/experiments/Grid';
 import Crossflow from './pages/experiments/Crossflow';
+import Spiking from './pages/experiments/Spiking';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -255,6 +256,7 @@ function App() {
         <Route path="/thermal" element={<Thermal />} />
         <Route path="/grid" element={<Grid />} />
         <Route path="/crossflow" element={<Crossflow />} />
+        <Route path="/spiking" element={<Spiking />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
