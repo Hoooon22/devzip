@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 56,
+        name: 'Merkle',
+        subtitle: '변조 감지 (해시 트리)',
+        description: '블록 하나만 바뀌어도 루트 해시가 달라지는 변조 감지 트리 실험',
+        link: '/merkle',
+        active: true,
+        startDate: '2026-07-16',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🌳'
+    },
+    {
         id: 55,
         name: 'Spiking',
         subtitle: '스파이킹 뉴런 (Leaky Integrate-and-Fire)',
