@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 57,
+        name: 'Bullwhip',
+        subtitle: '채찍 효과 (공급망 수요 증폭)',
+        description: '소비자의 작은 수요 변동이 상류로 갈수록 눈덩이처럼 커지는 공급망 채찍 효과 실험',
+        link: '/bullwhip',
+        active: true,
+        startDate: '2026-07-19',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '📦'
+    },
+    {
         id: 56,
         name: 'Merkle',
         subtitle: '변조 감지 (해시 트리)',
