@@ -1,0 +1,139 @@
+/* KESSLER — 궤도 파편 연쇄충돌 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   궤도 뷰 화면은 어두운 우주 패널로 고정(테마 무관): 검정 60 · 지구/위성(쿨) 30 · 파편/경보(핫) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다.
+   상태 색은 안정(쿨 그린)에서 폭주(뜨거운 레드)로 이어지는 히트 밴드 — 임계 넘김을 색으로 읽게 한다. */
+
+.lab-os {
+    --ks-sat: #34b8cc;   /* 위성 */
+    --ks-deb: #ee6a30;   /* 파편 */
+    --ks-earth: #2d5a86; /* 지구 */
+    --ks-stable: #2f9e6e;
+    --ks-critical: #d99413;
+    --ks-runaway: #d0432f;
+}
+.lab-os[data-theme="dark"] {
+    --ks-sat: #4fd0e0;
+    --ks-deb: #ff7a3c;
+    --ks-earth: #356a9c;
+    --ks-stable: #3fc389;
+    --ks-critical: #efb23c;
+    --ks-runaway: #e85a48;
+}
+
+/* ---- 툴바 ---- */
+.ks-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.ks-ctrls { display: flex; flex-wrap: wrap; gap: 16px; }
+.ks-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 170px; }
+.ks-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.ks-ctrl-label b { color: var(--ink); font-weight: 600; }
+.ks-ctrl input[type="range"] { width: 100%; accent-color: var(--ks-deb); cursor: pointer; }
+
+.ks-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.ks-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.ks-btn:hover:not(:disabled) { background: var(--ks-sat); color: #06222a; border-color: var(--ks-sat); transform: translateY(-1px); }
+.ks-btn-hot { background: var(--ks-runaway); border-color: var(--ks-runaway); color: #fff; }
+.ks-btn-hot:hover:not(:disabled) { background: var(--ks-deb); border-color: var(--ks-deb); color: #fff; }
+.ks-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.ks-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+.ks-btn-ghost.is-on { background: var(--ks-stable); border-color: var(--ks-stable); color: #fff; }
+
+/* ---- 무대 ---- */
+.ks-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 260px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+.ks-view-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; align-items: center; }
+.ks-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #080b12;
+    padding: 6px;
+    line-height: 0;
+    width: 100%;
+    max-width: 402px;
+}
+.ks-canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+
+.ks-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.7rem; color: var(--ink-mute); }
+.ks-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ks-key { width: 10px; height: 10px; display: inline-block; }
+.ks-key-sat { background: var(--ks-sat); }
+.ks-key-deb { background: var(--ks-deb); border-radius: 50%; }
+
+.ks-view-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; }
+.ks-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.ks-right { display: flex; flex-direction: column; gap: 14px; }
+
+.ks-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.ks-amp.ks-stable { border-color: var(--ks-stable); }
+.ks-amp.ks-critical { border-color: var(--ks-critical); background: rgba(217, 148, 19, 0.06); }
+.ks-amp.ks-runaway { border-color: var(--ks-runaway); background: rgba(208, 67, 47, 0.08); }
+.ks-amp.ks-closed { border-color: var(--ks-runaway); background: rgba(208, 67, 47, 0.14); }
+.ks-amp-lab { font-size: 0.66rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.ks-amp-num { font-size: 1.7rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.ks-amp.ks-stable .ks-amp-num { color: var(--ks-stable); }
+.ks-amp.ks-critical .ks-amp-num { color: var(--ks-critical); }
+.ks-amp.ks-runaway .ks-amp-num,
+.ks-amp.ks-closed .ks-amp-num { color: var(--ks-runaway); }
+.ks-amp-sub { font-size: 0.6rem; color: var(--ink-mute); text-align: center; }
+
+.ks-spark-wrap {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.ks-spark-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.ks-spark { width: 100%; height: auto; display: block; aspect-ratio: 250 / 60; border: 1px solid var(--line); }
+
+.ks-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ks-stat {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.ks-stat-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.ks-stat-num { font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+
+.ks-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 62px; display: flex; align-items: center;
+}
+.ks-verdict.ks-critical { border-color: var(--ks-critical); }
+.ks-verdict.ks-runaway,
+.ks-verdict.ks-closed { border-color: var(--ks-runaway); }
+.ks-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.ks-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.ks-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.ks-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.ks-foot b { color: var(--ink); font-weight: 600; }
+.ks-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .ks-stage { grid-template-columns: 1fr; }
+    .ks-actions { margin-left: 0; }
+    .ks-ctrls { width: 100%; }
+    .ks-ctrl { flex: 1; }
+}

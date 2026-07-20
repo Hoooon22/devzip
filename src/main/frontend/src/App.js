@@ -71,6 +71,7 @@ import Crossflow from './pages/experiments/Crossflow';
 import Spiking from './pages/experiments/Spiking';
 import Merkle from './pages/experiments/Merkle';
 import Bullwhip from './pages/experiments/Bullwhip';
+import Kessler from './pages/experiments/Kessler';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -261,6 +262,7 @@ function App() {
         <Route path="/spiking" element={<Spiking />} />
         <Route path="/merkle" element={<Merkle />} />
         <Route path="/bullwhip" element={<Bullwhip />} />
+        <Route path="/kessler" element={<Kessler />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

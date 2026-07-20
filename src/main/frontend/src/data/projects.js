@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 58,
+        name: 'Kessler',
+        subtitle: '궤도 파편 연쇄충돌 (케슬러 증후군)',
+        description: '위성을 더 안 쏴도 파편이 스스로 파편을 낳는 저궤도 연쇄충돌 실험',
+        link: '/kessler',
+        active: true,
+        startDate: '2026-07-20',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🛰️'
+    },
+    {
         id: 57,
         name: 'Bullwhip',
         subtitle: '채찍 효과 (공급망 수요 증폭)',
