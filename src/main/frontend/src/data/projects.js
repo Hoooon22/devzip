@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 59,
+        name: 'Kalman',
+        subtitle: '센서 융합 상태 추정 (칼만 필터)',
+        description: '예측과 여러 잡음 센서를 불확실성으로 저울질해 진짜 위치를 추정하는 센서 융합 실험',
+        link: '/kalman',
+        active: true,
+        startDate: '2026-07-21',
+        endDate: '',
+        category: '실험/AI',
+        isProduction: false, // 실험용
+        thumbnail: '🎯'
+    },
+    {
         id: 58,
         name: 'Kessler',
         subtitle: '궤도 파편 연쇄충돌 (케슬러 증후군)',
