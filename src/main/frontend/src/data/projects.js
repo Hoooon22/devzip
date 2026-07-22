@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 60,
+        name: 'Biodegrade',
+        subtitle: '효소 분해 캐스케이드 (생분해성 플라스틱)',
+        description: '자르기만 하면 미세플라스틱, 끝을 갉아 모노머까지 풀어야 완전 분해되는 효소 협업 실험',
+        link: '/biodegrade',
+        active: true,
+        startDate: '2026-07-22',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🦠'
+    },
+    {
         id: 59,
         name: 'Kalman',
         subtitle: '센서 융합 상태 추정 (칼만 필터)',

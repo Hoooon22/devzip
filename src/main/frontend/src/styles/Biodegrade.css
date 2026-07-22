@@ -1,0 +1,143 @@
+/* BIODEGRADE — 효소 분해 캐스케이드(생분해성 플라스틱) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   바이오리액터 뷰는 어두운 배양액 패널로 고정(테마 무관): 검정 60 · 긴 사슬(청록) 30 · 미세조각/모노머(앰버·그린) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다.
+   상태 색은 휴면(회색) → 미세플라스틱화(앰버 경고) → 분해 진행(청록) → 완전 분해(그린)로 읽힌다. */
+
+.lab-os {
+    --bd-long: #2e9e92;   /* 긴 사슬(원형 플라스틱) */
+    --bd-micro: #d9822b;  /* 미세플라스틱 조각(경고) */
+    --bd-mono: #45a557;   /* 자유 모노머(완전 분해) */
+    --bd-dormant: #7c8a86;
+}
+.lab-os[data-theme="dark"] {
+    --bd-long: #3fc4b4;
+    --bd-micro: #f0a044;
+    --bd-mono: #5fc873;
+    --bd-dormant: #94a29e;
+}
+
+/* ---- 툴바 ---- */
+.bd-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.bd-ctrls { display: flex; flex-wrap: wrap; gap: 16px; }
+.bd-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 168px; }
+.bd-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.bd-ctrl-label b { color: var(--ink); font-weight: 600; }
+.bd-ctrl input[type="range"] { width: 100%; accent-color: var(--bd-long); cursor: pointer; }
+.bd-dim { color: var(--ink-mute); font-size: 0.66rem; }
+.bd-on { color: var(--bd-mono); font-weight: 600; }
+.bd-off { color: var(--bd-dormant); font-weight: 600; }
+
+.bd-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.bd-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.bd-btn:hover:not(:disabled) { background: var(--bd-long); color: #06231f; border-color: var(--bd-long); transform: translateY(-1px); }
+.bd-btn-hot { background: var(--bd-micro); border-color: var(--bd-micro); color: #2a1600; }
+.bd-btn-hot:hover:not(:disabled) { background: var(--bd-mono); border-color: var(--bd-mono); color: #06231f; transform: translateY(-1px); }
+.bd-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.bd-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.bd-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 260px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+.bd-view-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; align-items: center; }
+.bd-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #0a1310;
+    padding: 6px;
+    line-height: 0;
+    width: 100%;
+    max-width: 434px;
+}
+.bd-canvas { width: 100%; height: auto; display: block; aspect-ratio: 420 / 300; }
+
+.bd-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.7rem; color: var(--ink-mute); }
+.bd-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bd-key { width: 10px; height: 10px; display: inline-block; border-radius: 50%; }
+.bd-key-long { background: var(--bd-long); }
+.bd-key-micro { background: var(--bd-micro); }
+.bd-key-mono { background: var(--bd-mono); }
+
+.bd-view-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; }
+.bd-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.bd-right { display: flex; flex-direction: column; gap: 14px; }
+
+.bd-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.bd-amp.bd-dormant { border-color: var(--bd-dormant); }
+.bd-amp.bd-shredding { border-color: var(--bd-micro); background: rgba(217, 130, 43, 0.08); }
+.bd-amp.bd-working { border-color: var(--bd-long); }
+.bd-amp.bd-degrading { border-color: var(--bd-long); background: rgba(46, 158, 146, 0.07); }
+.bd-amp.bd-complete { border-color: var(--bd-mono); background: rgba(69, 165, 87, 0.12); }
+.bd-amp-lab { font-size: 0.66rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.bd-amp-num { font-size: 1.6rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.bd-amp.bd-dormant .bd-amp-num { color: var(--bd-dormant); }
+.bd-amp.bd-shredding .bd-amp-num { color: var(--bd-micro); }
+.bd-amp.bd-working .bd-amp-num,
+.bd-amp.bd-degrading .bd-amp-num { color: var(--bd-long); }
+.bd-amp.bd-complete .bd-amp-num { color: var(--bd-mono); }
+.bd-amp-sub { font-size: 0.6rem; color: var(--ink-mute); text-align: center; }
+
+.bd-bar-wrap {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.bd-bar-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.bd-bar { width: 100%; height: auto; display: block; aspect-ratio: 250 / 16; border: 1px solid var(--line); }
+.bd-bar-key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.6rem; color: var(--ink-mute); }
+.bd-bar-key span { display: inline-flex; align-items: center; gap: 5px; }
+
+.bd-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bd-stat {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.bd-stat-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.bd-stat-num { font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+
+.bd-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 62px; display: flex; align-items: center;
+}
+.bd-verdict.bd-shredding { border-color: var(--bd-micro); }
+.bd-verdict.bd-degrading,
+.bd-verdict.bd-working { border-color: var(--bd-long); }
+.bd-verdict.bd-complete { border-color: var(--bd-mono); }
+.bd-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.bd-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.bd-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.bd-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.bd-foot b { color: var(--ink); font-weight: 600; }
+.bd-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .bd-stage { grid-template-columns: 1fr; }
+    .bd-actions { margin-left: 0; }
+    .bd-ctrls { width: 100%; }
+    .bd-ctrl { flex: 1; }
+}
