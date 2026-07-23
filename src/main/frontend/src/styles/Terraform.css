@@ -1,0 +1,161 @@
+/* TERRAFORM — 행성 기후 되먹임과 임계(테라포밍) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   행성 뷰는 어두운 우주 패널로 고정(테마 무관): 검정 60 · 녹슨 지표/극관(러스트·아이스) 30 · 물·생명대(초록)와 폭주(앰버) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다.
+   상태 색은 동결(아이스) → 가열/폭주(앰버 경고) → 온난·물(초록)로 읽힌다. */
+
+.lab-os {
+    --tf-rust: #c65a2e;   /* 지표(녹슨 붉은색) */
+    --tf-ice: #6fb6d0;    /* 극관·동결 대기(차가움) */
+    --tf-warm: #3f9d5c;   /* 물·생명대(온난) */
+    --tf-hot: #d9822b;    /* 폭주 전이(경고) */
+}
+.lab-os[data-theme="dark"] {
+    --tf-rust: #d96a3a;
+    --tf-ice: #7fcbe4;
+    --tf-warm: #4bb36b;
+    --tf-hot: #f0a044;
+}
+
+/* ---- 툴바 ---- */
+.tf-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.tf-ctrls { display: flex; flex-wrap: wrap; gap: 16px; }
+.tf-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 176px; }
+.tf-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.tf-ctrl-label b { color: var(--ink); font-weight: 600; }
+.tf-ctrl input[type="range"] { width: 100%; accent-color: var(--tf-hot); cursor: pointer; }
+.tf-dim { color: var(--ink-mute); font-size: 0.66rem; }
+
+.tf-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.tf-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.tf-btn:hover:not(:disabled) { background: var(--tf-warm); color: #04210f; border-color: var(--tf-warm); transform: translateY(-1px); }
+.tf-btn-hot { background: var(--tf-hot); border-color: var(--tf-hot); color: #2a1600; }
+.tf-btn-hot:hover:not(:disabled) { background: var(--tf-warm); border-color: var(--tf-warm); color: #04210f; transform: translateY(-1px); }
+.tf-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.tf-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.tf-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+.tf-view-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; align-items: center; }
+.tf-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #07090d;
+    padding: 6px;
+    line-height: 0;
+    width: 100%;
+    max-width: 434px;
+}
+.tf-canvas { width: 100%; height: auto; display: block; aspect-ratio: 420 / 300; }
+
+.tf-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.7rem; color: var(--ink-mute); }
+.tf-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.tf-key { width: 10px; height: 10px; display: inline-block; border-radius: 50%; }
+.tf-key-ice { background: var(--tf-ice); }
+.tf-key-rust { background: var(--tf-rust); }
+.tf-key-warm { background: var(--tf-warm); }
+
+.tf-spark-wrap {
+    display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 434px;
+    padding: 8px 10px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.tf-spark-lab { font-size: 0.62rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.tf-spark { width: 100%; height: auto; display: block; aspect-ratio: 250 / 60; border: 1px solid var(--line); background: #07090d; }
+
+.tf-view-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; }
+.tf-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.tf-right { display: flex; flex-direction: column; gap: 14px; }
+
+.tf-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.tf-amp.tf-frozen { border-color: var(--tf-ice); }
+.tf-amp.tf-warming { border-color: var(--tf-hot); }
+.tf-amp.tf-runaway { border-color: var(--tf-hot); background: rgba(217, 130, 43, 0.10); }
+.tf-amp.tf-collapsing { border-color: var(--tf-ice); background: rgba(111, 182, 208, 0.08); }
+.tf-amp.tf-selfsustain { border-color: var(--tf-warm); background: rgba(63, 157, 92, 0.06); }
+.tf-amp.tf-temperate { border-color: var(--tf-warm); background: rgba(63, 157, 92, 0.12); }
+.tf-amp-lab { font-size: 0.66rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.tf-amp-num { font-size: 1.6rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.tf-amp.tf-frozen .tf-amp-num, .tf-amp.tf-collapsing .tf-amp-num { color: var(--tf-ice); }
+.tf-amp.tf-warming .tf-amp-num, .tf-amp.tf-runaway .tf-amp-num { color: var(--tf-hot); }
+.tf-amp.tf-selfsustain .tf-amp-num, .tf-amp.tf-temperate .tf-amp-num { color: var(--tf-warm); }
+.tf-amp-sub { font-size: 0.6rem; color: var(--ink-mute); text-align: center; }
+
+/* ---- 강제력 게이지(이중안정 구간 시각화) ---- */
+.tf-force {
+    display: flex; flex-direction: column; gap: 7px;
+    padding: 11px 13px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.tf-force-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.tf-force-lab b { color: var(--ink); font-weight: 700; font-size: 0.8rem; }
+.tf-force-track {
+    position: relative; height: 16px; border: 1px solid var(--line);
+    background: var(--desk); overflow: hidden;
+}
+.tf-force-window {
+    position: absolute; top: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, rgba(217,130,43,0.22) 0 5px, transparent 5px 10px);
+    border-left: 1px dashed var(--tf-hot); border-right: 1px dashed var(--tf-hot);
+}
+.tf-force-fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--tf-warm); opacity: 0.55; }
+.tf-force-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; }
+.tf-force-low { background: var(--tf-ice); }
+.tf-force-tip { background: var(--tf-hot); }
+.tf-force-key { display: flex; justify-content: space-between; gap: 6px; font-size: 0.58rem; color: var(--ink-mute); }
+.tf-force-bistable { color: var(--tf-hot); }
+
+.tf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tf-stat {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.tf-stat-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.tf-stat-num { font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.tf-unit { font-size: 0.62rem; font-weight: 500; color: var(--ink-mute); margin-left: 3px; }
+
+.tf-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 62px; display: flex; align-items: center;
+}
+.tf-verdict.tf-frozen, .tf-verdict.tf-collapsing { border-color: var(--tf-ice); }
+.tf-verdict.tf-warming, .tf-verdict.tf-runaway { border-color: var(--tf-hot); }
+.tf-verdict.tf-selfsustain, .tf-verdict.tf-temperate { border-color: var(--tf-warm); }
+.tf-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.tf-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.tf-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.tf-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.tf-foot b { color: var(--ink); font-weight: 600; }
+.tf-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .tf-stage { grid-template-columns: 1fr; }
+    .tf-actions { margin-left: 0; }
+    .tf-ctrls { width: 100%; }
+    .tf-ctrl { flex: 1; }
+}

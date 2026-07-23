@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 61,
+        name: 'Terraform',
+        subtitle: '행성 기후 되먹임 (테라포밍)',
+        description: '임계를 넘기면 CO₂ 되먹임이 스스로 굴러 폭주하는 행성 온난화 이중안정 실험',
+        link: '/terraform',
+        active: true,
+        startDate: '2026-07-23',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🪐'
+    },
+    {
         id: 60,
         name: 'Biodegrade',
         subtitle: '효소 분해 캐스케이드 (생분해성 플라스틱)',
