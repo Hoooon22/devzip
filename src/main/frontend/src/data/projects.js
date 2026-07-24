@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 62,
+        name: 'Slime',
+        subtitle: '점균 수송망 (스티그머지)',
+        description: '뇌 없는 점균이 흔적만 따라 먹이 사이 최적 망을 스스로 그리는 자기조직화 실험',
+        link: '/slime',
+        active: true,
+        startDate: '2026-07-24',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🟡'
+    },
+    {
         id: 61,
         name: 'Terraform',
         subtitle: '행성 기후 되먹임 (테라포밍)',

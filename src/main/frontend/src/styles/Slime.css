@@ -1,0 +1,247 @@
+/* Slime — 점균 수송망 실험 (스티그머지)
+   팔레트 60-30-10: 어두운 배양판(주조) / 호박색 패널(보조) / 점균 노랑+먹이 주황(강조) */
+.slm-container {
+    --bg: #14110a;
+    --plate: #1d180d;
+    --panel: #221c10;
+    --line: #3a2f18;
+    --slime: #ffd23a;
+    --amber: #d99a1c;
+    --food: #ff5a1f;
+    --ink: #f4ead0;
+    --muted: #9c8f6f;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 18% 0%, #1f1a0e 0%, var(--bg) 55%);
+    color: var(--ink);
+    font-family: 'Courier New', ui-monospace, monospace;
+    padding: 28px 20px 60px;
+    box-sizing: border-box;
+}
+
+.slm-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.slm-back {
+    display: inline-block;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    margin-bottom: 18px;
+    padding: 6px 12px;
+    border: 2px solid var(--line);
+    background: var(--panel);
+    transition: color 0.15s, border-color 0.15s;
+}
+.slm-back:hover {
+    color: var(--slime);
+    border-color: var(--amber);
+}
+
+.slm-header {
+    margin-bottom: 22px;
+}
+.slm-title {
+    font-size: clamp(2.2rem, 7vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    margin: 0;
+    color: var(--slime);
+    text-shadow: 4px 4px 0 #000;
+}
+.slm-sub {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.slm-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(240px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.slm-canvas-wrap {
+    border: 3px solid var(--line);
+    background: var(--plate);
+    padding: 10px;
+    box-shadow: 8px 8px 0 #000;
+}
+.slm-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    background: #14110a;
+    cursor: crosshair;
+    border: 1px solid #000;
+}
+.slm-hint {
+    margin: 10px 2px 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.slm-panel {
+    border: 3px solid var(--line);
+    background: var(--panel);
+    padding: 16px 16px 18px;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.slm-readout {
+    display: grid;
+    gap: 6px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 2px dashed var(--line);
+}
+.slm-readout-num {
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: var(--slime);
+    line-height: 1;
+}
+.slm-readout-label {
+    font-size: 0.8rem;
+    color: var(--ink);
+}
+.slm-readout-bar {
+    height: 12px;
+    background: #100d07;
+    border: 2px solid var(--line);
+    overflow: hidden;
+}
+.slm-readout-bar > span {
+    display: block;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg, var(--amber) 0 6px, var(--slime) 6px 12px
+    );
+    transition: width 0.3s ease;
+}
+.slm-readout-food {
+    font-size: 0.76rem;
+    color: var(--food);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.slm-presets {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.slm-preset {
+    flex: 1;
+    padding: 9px 4px;
+    background: var(--plate);
+    color: var(--ink);
+    border: 2px solid var(--line);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.05s;
+}
+.slm-preset:hover {
+    background: var(--amber);
+    color: #100d07;
+}
+.slm-preset:active {
+    transform: translate(1px, 1px);
+}
+
+.slm-control {
+    margin-bottom: 13px;
+}
+.slm-control label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 5px;
+}
+.slm-control label b {
+    color: var(--slime);
+    font-weight: 700;
+}
+.slm-control input[type='range'] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #100d07;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: pointer;
+}
+.slm-control input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--slime);
+    border: 2px solid #100d07;
+    cursor: pointer;
+}
+.slm-control input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--slime);
+    border: 2px solid #100d07;
+    cursor: pointer;
+}
+
+.slm-reset {
+    width: 100%;
+    margin-top: 6px;
+    padding: 11px;
+    background: var(--food);
+    color: #100d07;
+    border: 2px solid #000;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.05s, box-shadow 0.05s;
+}
+.slm-reset:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 #000;
+}
+
+.slm-foot {
+    margin-top: 24px;
+    border: 2px solid var(--line);
+    background: var(--panel);
+    padding: 16px 18px;
+}
+.slm-foot p {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.75;
+    color: var(--muted);
+}
+.slm-foot b {
+    color: var(--slime);
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .slm-stage {
+        grid-template-columns: 1fr;
+    }
+    .slm-canvas-wrap,
+    .slm-panel {
+        box-shadow: 5px 5px 0 #000;
+    }
+}
