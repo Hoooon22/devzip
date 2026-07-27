@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 63,
+        name: 'Ergosphere',
+        subtitle: '회전 블랙홀 에너지 추출 (펜로즈 과정)',
+        description: '에르고권에서 입자를 쪼개 회전하는 블랙홀의 에너지를 뽑아내는 펜로즈 과정 실험',
+        link: '/ergosphere',
+        active: true,
+        startDate: '2026-07-27',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🕳️'
+    },
+    {
         id: 62,
         name: 'Slime',
         subtitle: '점균 수송망 (스티그머지)',

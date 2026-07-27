@@ -1,0 +1,151 @@
+/* ERGOSPHERE — 회전 블랙홀 에너지 추출(펜로즈 과정) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 화면은 어두운 우주 패널로 고정(테마 무관): 딥 스페이스(검정) 60 · 에르고권/끌림(쿨 틸·스틸) 30 · 회전 에너지(핫 골드) 10.
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다.
+   상태 색은 저수지 충만(쿨)에서 소진·정지(골드→뮤트)로 이어진다 — 회전 에너지가 바닥나는 걸 색으로 읽게 한다. */
+
+.lab-os {
+    --er-ergo: #1f6f74;   /* 에르고권 껍질 */
+    --er-drag: #3f6f9c;   /* 관성계 끌림 소용돌이 */
+    --er-in: #35b8cc;     /* 투입 입자 */
+    --er-cap: #d0432f;    /* 음에너지 조각(포획) */
+    --er-out: #e3a11e;    /* 탈출 조각·회전 에너지(핫 골드) */
+    --er-full: #2f9e6e;
+    --er-low: #d0432f;
+}
+.lab-os[data-theme="dark"] {
+    --er-ergo: #2e8f96;
+    --er-drag: #5a90c4;
+    --er-in: #4fd0e0;
+    --er-cap: #e85a48;
+    --er-out: #f2b134;
+    --er-full: #3fc389;
+    --er-low: #e85a48;
+}
+
+/* ---- 툴바 ---- */
+.er-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.er-ctrls { display: flex; flex-wrap: wrap; gap: 16px; }
+.er-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 168px; }
+.er-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.er-ctrl-label b { color: var(--ink); font-weight: 600; }
+.er-ctrl input[type="range"] { width: 100%; accent-color: var(--er-out); cursor: pointer; }
+
+.er-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.er-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.er-btn:hover:not(:disabled) { background: var(--er-in); color: #06222a; border-color: var(--er-in); transform: translateY(-1px); }
+.er-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.er-btn-hot { background: var(--er-out); border-color: var(--er-out); color: #2a1c00; font-weight: 600; }
+.er-btn-hot:hover:not(:disabled) { background: #f2b840; border-color: #f2b840; color: #2a1c00; transform: translateY(-1px); }
+.er-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.er-btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.er-stage {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px;
+    padding: 22px 18px;
+    align-items: start;
+}
+.er-view-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; align-items: center; }
+.er-screen {
+    position: relative;
+    border: 2px solid var(--frame-strong);
+    background: #07090f;
+    padding: 6px;
+    line-height: 0;
+    width: 100%;
+    max-width: 402px;
+}
+.er-canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+
+.er-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.68rem; color: var(--ink-mute); justify-content: center; }
+.er-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.er-key { width: 10px; height: 10px; display: inline-block; border-radius: 50%; }
+.er-key-in { background: var(--er-in); }
+.er-key-cap { background: var(--er-cap); }
+.er-key-out { background: var(--er-out); }
+
+.er-view-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; text-align: center; }
+.er-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.er-right { display: flex; flex-direction: column; gap: 14px; }
+
+.er-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.er-amp.er-full { border-color: var(--er-full); }
+.er-amp.er-half { border-color: var(--er-out); background: rgba(227, 161, 30, 0.06); }
+.er-amp.er-low { border-color: var(--er-low); background: rgba(208, 67, 47, 0.08); }
+.er-amp.er-spent { border-color: var(--ink-mute); background: rgba(120, 120, 120, 0.08); }
+.er-amp-lab { font-size: 0.66rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.er-amp-num { font-size: 1.35rem; font-weight: 700; line-height: 1.15; color: var(--ink); text-align: center; }
+.er-amp.er-full .er-amp-num { color: var(--er-full); }
+.er-amp.er-half .er-amp-num { color: var(--er-out); }
+.er-amp.er-low .er-amp-num { color: var(--er-low); }
+.er-amp-sub { font-size: 0.6rem; color: var(--ink-mute); text-align: center; }
+
+/* ---- 추출 진행 배터리 ---- */
+.er-battery-wrap {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.er-battery-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.er-battery {
+    position: relative; width: 100%; height: 14px;
+    border: 1px solid var(--frame); background: rgba(120, 130, 150, 0.12); overflow: hidden;
+}
+.er-battery-fill {
+    height: 100%; background: linear-gradient(90deg, var(--er-out), #f2c04a);
+    transition: width 0.35s ease;
+}
+.er-battery-sub { font-size: 0.6rem; color: var(--ink-mute); }
+
+.er-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.er-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.er-stat-lab { font-size: 0.62rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.er-stat-num { font-size: 1.24rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.er-stat-foot { font-size: 0.58rem; color: var(--ink-mute); }
+
+.er-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 74px; display: flex; align-items: center;
+}
+.er-verdict.er-half { border-color: var(--er-out); }
+.er-verdict.er-low { border-color: var(--er-low); }
+.er-verdict.er-spent { border-color: var(--ink-mute); }
+.er-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.er-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.er-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.er-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.er-foot b { color: var(--ink); font-weight: 600; }
+.er-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .er-stage { grid-template-columns: 1fr; }
+    .er-actions { margin-left: 0; }
+    .er-ctrls { width: 100%; }
+    .er-ctrl { flex: 1; }
+}
