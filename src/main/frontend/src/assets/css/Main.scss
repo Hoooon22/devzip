@@ -275,6 +275,35 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-gauge .latest .gl { font-size: 24px; }
 .k-gauge .latest .go { margin-left: auto; color: var(--ink-mute); transition: transform 0.15s, color 0.15s; }
 
+/* ── service showcase (홈의 주인공: 운영 중인 서비스) ── */
+/* 실험 목록과 확실히 구분되도록 시그널 톱 라인 + 큰 카드로 띄운다. */
+.k-srv { border-color: var(--frame-strong); }
+.k-srv::before { content: ''; display: block; height: 3px; background: var(--signal); }
+.k-srv-hd { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 26px 24px 20px; flex-wrap: wrap; }
+.k-srv-hd .tx { min-width: 0; }
+.k-srv-hd .k-eyebrow { margin-bottom: 14px; }
+.k-srv-hd h2 { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 8px; }
+.k-srv-hd p { font-size: 14.5px; color: var(--ink-soft); margin: 0; max-width: 54ch; }
+.k-srv-hd .k-btn { flex-shrink: 0; }
+.k-srv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; padding: 0 24px 26px; }
+.k-srv-card {
+  position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  background: var(--panel-2); border: 1px solid var(--frame); padding: 24px 24px 18px;
+  transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s;
+}
+.k-srv-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--signal); opacity: 0; transition: opacity 0.16s; }
+.k-srv-card:hover { transform: translateY(-3px); border-color: var(--signal); box-shadow: 0 20px 40px -24px rgba(45,79,255,0.65); }
+.k-srv-card:hover::before { opacity: 1; }
+.k-srv-card .hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.k-srv-card .glw { width: 56px; height: 56px; border: 1px solid var(--frame); background: var(--panel); display: grid; place-items: center; font-size: 30px; }
+.k-srv-card h3 { font-size: 27px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+.k-srv-card .sub { display: block; margin-top: 6px; font-family: var(--font-mono); font-size: 12px; color: var(--signal); }
+.k-srv-card > p { font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); margin: 12px 0 20px; }
+.k-srv-card .foot { margin-top: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--line); }
+.k-srv-card .foot .since, .k-srv-card .foot .views { font-size: 11px; color: var(--ink-mute); white-space: nowrap; }
+.k-srv-card .foot .open { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--signal); white-space: nowrap; }
+.k-srv-card:hover .foot .open { letter-spacing: 0.02em; }
+
 /* ── process monitor / toolbar ── */
 .k-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .k-tabs { display: flex; gap: 6px; }
@@ -428,6 +457,11 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
   .k-hero-main { padding: 28px 22px; }
   /* 카드 최소폭(300px)이 좁은 화면 내부폭을 넘겨 가로 넘침이 생기므로 1열로 고정 */
   .k-tiles { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+  /* 서비스 카드도 같은 이유로 1열 고정 (minmax 320px) */
+  .k-srv-grid { grid-template-columns: 1fr; padding: 0 16px 18px; }
+  .k-srv-hd { padding: 20px 16px 16px; }
+  .k-srv-hd h2 { font-size: 24px; }
+  .k-srv-card { padding: 18px 18px 14px; }
 }
 
 /* ───────────────────── a11y: focus & motion ───────────────────── */

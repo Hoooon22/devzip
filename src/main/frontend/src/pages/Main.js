@@ -191,7 +191,8 @@ const Main = () => {
     const { award, xp, level, progress } = useGame();
     const navigate = useNavigate();
 
-    const [mode, setMode] = useState('all'); // 'all' | 'production' | 'experiment'
+    // 홈의 기본 시야는 "실험실"이 아니라 운영 중인 서비스다.
+    const [mode, setMode] = useState('production'); // 'production' | 'experiment' | 'all'
     const [terminalOn, setTerminalOn] = useState(false); // 히어로 부트 로그 → 검색 터미널 전환
     const [layout, setLayout] = useState(() => readPref(STORAGE_KEYS.layout, 'cards'));
     const [dark, setDark] = useState(() => readPref(STORAGE_KEYS.dark, false));
@@ -301,6 +302,12 @@ const Main = () => {
     }, [award]);
 
     const heroStats = useMemo(() => buildHeroStats(projects), []);
+    // 홈 상단 쇼케이스에 크게 노출할 운영 서비스 — 최신 시작순.
+    const services = useMemo(() => (
+        projects
+            .filter(p => p.isProduction)
+            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+    ), []);
     const totalCount = projects.length;
     const prodCount = heroStats.production.total;
     const expCount  = heroStats.experiments.total;
@@ -358,14 +365,14 @@ const Main = () => {
     }, [isPinned]);
 
     /* 액션 */
-    const scrollToProc = () => {
-        const el = document.getElementById('k-proc');
+    const scrollToId = (id) => {
+        const el = document.getElementById(id);
         if (!el) return;
         // 모바일에서는 메뉴바가 두 줄로 늘어나므로 실제 높이를 재서 보정한다.
         const barH = document.querySelector('.k-menubar')?.offsetHeight || 46;
         window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - barH - 12, behavior: 'smooth' });
     };
-    const gotoFilter = (m) => { setMode(m); setTimeout(scrollToProc, 30); };
+    const gotoFilter = (m) => { setMode(m); setTimeout(() => scrollToId('k-proc'), 30); };
 
     // 조회수 집계(세션당 프로젝트별 1회) + 탐험 보상 — 카드 클릭과 터미널 검색이 공유한다.
     const registerProjectVisit = useCallback((project) => {
@@ -467,7 +474,7 @@ const Main = () => {
     const paletteItems = useMemo(() => {
         const nav = [
             { id: 'n-home', group: '탐색', icon: '⌂', title: '홈', hint: '/', run: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-            { id: 'n-prod', group: '탐색', icon: '◆', title: '프로젝트 — 운영 중', hint: 'filter', run: () => gotoFilter('production') },
+            { id: 'n-prod', group: '탐색', icon: '◆', title: '서비스 — 운영 중', hint: 'filter', run: () => scrollToId('k-srv') },
             { id: 'n-lab', group: '탐색', icon: '⚗', title: '실험실', hint: 'filter', run: () => gotoFilter('experiment') },
             { id: 'n-map', group: '탐색', icon: '✦', title: '실험 별자리 맵', hint: '/constellation', run: () => window.location.assign('/constellation') },
             { id: 'n-lib', group: '탐색', icon: '▤', title: '자료실', hint: '/library', run: () => window.location.assign('/library') },
@@ -574,8 +581,8 @@ const Main = () => {
                             <h1>한 사람이 만드는 <span className="box">제품</span>의 <span className="mk">모든 단계</span>.</h1>
                             <p>아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 하나의 커널 위에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스가 마운트되어 있습니다.</p>
                             <div className="k-cta">
-                                <button type="button" className="k-btn" onClick={scrollToProc}>프로세스 모니터 열기 →</button>
-                                <button type="button" className="k-btn ghost" onClick={() => setPaletteOpen(true)}>⌘K 명령 팔레트</button>
+                                <button type="button" className="k-btn" onClick={() => scrollToId('k-srv')}>운영 중인 서비스 보기 →</button>
+                                <button type="button" className="k-btn ghost" onClick={() => gotoFilter('experiment')}>실험실 둘러보기</button>
                             </div>
                         </div>
                         {terminalOn ? (
@@ -603,6 +610,43 @@ const Main = () => {
                                 <span className="coin">click to search projects <span className="cur">▌</span></span>
                             </button>
                         )}
+                    </div>
+                    <div className="k-resize"></div>
+                </section>
+
+                {/* ── 서비스 쇼케이스 (홈의 주인공) ── */}
+                <section id="k-srv" className="k-win k-srv" aria-label="운영 중인 서비스">
+                    <div className="k-win-bar">
+                        <div className="k-dots"><i></i><i></i><i></i></div>
+                        <span className="path k-mono"><span className="dir">/srv/</span>services</span>
+                        <span className="meta k-mono">{heroStats.production.active} online · {prodCount} mounted</span>
+                    </div>
+                    <div className="k-srv-hd">
+                        <div className="tx">
+                            <span className="k-eyebrow"><span className="sq"></span>production</span>
+                            <h2>지금 운영 중인 서비스</h2>
+                            <p>실험이 아니라 계속 쓰라고 만들고, 계속 고치고 있는 것들입니다.</p>
+                        </div>
+                        <button type="button" className="k-btn ghost" onClick={() => gotoFilter('experiment')}>실험실 {expCount}개 보기 →</button>
+                    </div>
+                    <div className="k-srv-grid">
+                        {services.map((p) => (
+                            <a key={p.id} href={p.link} className="k-srv-card" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                                <div className="hd">
+                                    <span className="glw">{p.thumbnail || '📦'}</span>
+                                    <span className={`k-stat live ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.active === false ? 'paused' : 'live'}</span>
+                                </div>
+                                <h3>{p.name}{isNewProject(p) && <span className="k-new">NEW</span>}</h3>
+                                {p.subtitle && <span className="sub">{p.subtitle}</span>}
+                                <p>{p.description}</p>
+                                <div className="foot">
+                                    <span className="k-chip">{cleanCategory(p.category)}</span>
+                                    <span className="since k-mono">since {p.startDate}</span>
+                                    <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
+                                    <span className="open k-mono">열기 →</span>
+                                </div>
+                            </a>
+                        ))}
                     </div>
                     <div className="k-resize"></div>
                 </section>
@@ -651,9 +695,9 @@ const Main = () => {
                     </div>
                     <div className="k-toolbar">
                         <div className="k-tabs">
-                            <button type="button" className={`k-tab ${mode === 'all' ? 'on' : ''}`} onClick={() => setMode('all')}>전체 <span className="num">{totalCount}</span></button>
-                            <button type="button" className={`k-tab ${mode === 'production' ? 'on' : ''}`} onClick={() => setMode('production')}>운영 중 <span className="num">{prodCount}</span></button>
+                            <button type="button" className={`k-tab ${mode === 'production' ? 'on' : ''}`} onClick={() => setMode('production')}>서비스 <span className="num">{prodCount}</span></button>
                             <button type="button" className={`k-tab ${mode === 'experiment' ? 'on' : ''}`} onClick={() => setMode('experiment')}>실험실 <span className="num">{expCount}</span></button>
+                            <button type="button" className={`k-tab ${mode === 'all' ? 'on' : ''}`} onClick={() => setMode('all')}>전체 <span className="num">{totalCount}</span></button>
                         </div>
                         <div className="k-seg k-mono">
                             <span>render</span>
