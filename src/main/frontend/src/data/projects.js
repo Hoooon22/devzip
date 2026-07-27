@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 64,
+        name: 'Arago Spot',
+        subtitle: '그림자 속 밝은 점 (프레넬 회절)',
+        description: '원반 그림자 정중앙이 오히려 밝아지는 푸아송·아라고 점 실험',
+        link: '/arago',
+        active: true,
+        startDate: '2026-07-28',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🔦'
+    },
+    {
         id: 63,
         name: 'Ergosphere',
         subtitle: '회전 블랙홀 에너지 추출 (펜로즈 과정)',

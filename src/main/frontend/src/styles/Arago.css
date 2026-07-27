@@ -1,0 +1,132 @@
+/* ARAGO SPOT — 원형 장애물의 그림자 속 밝은 점(푸아송/아라고 점) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 화면은 광학 암실 톤으로 고정(테마 무관): 칠흑 배경(암실) 60 · 계측기 강철/패널 30 · 황동(brass) 강조 10.
+   패턴 자체의 스펙트럼 색은 파장 슬라이더가 실시간으로 정한다(그 색이 진짜 주인공).
+   페이지 크롬은 셸 테마를 따른다. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --ar-brass: #c08a2e;   /* 계측기 황동 강조(10%) */
+    --ar-steel: #6f7b8a;   /* 강철·보조 */
+    --ar-clean: #3f9e7a;
+    --ar-weak: #b98a2c;
+    --ar-dense: #4d79c4;
+}
+.lab-os[data-theme="dark"] {
+    --ar-brass: #dba63f;
+    --ar-steel: #8794a4;
+    --ar-clean: #4fc394;
+    --ar-weak: #e0ab3f;
+    --ar-dense: #6b9ae0;
+}
+
+/* ---- 툴바 ---- */
+.ar-toolbar {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 20px;
+    padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+}
+.ar-ctrls { display: flex; flex-wrap: wrap; gap: 16px; }
+.ar-ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 168px; }
+.ar-ctrl-label { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-mute); }
+.ar-ctrl-label b { color: var(--ink); font-weight: 600; }
+.ar-ctrl input[type="range"] { width: 100%; accent-color: var(--ar-brass); cursor: pointer; }
+
+.ar-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.ar-btn {
+    font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.ar-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.ar-btn-hot { background: var(--ar-brass); border-color: var(--ar-brass); color: #241800; font-weight: 600; }
+.ar-btn-hot:hover { background: #d8a13a; border-color: #d8a13a; }
+.ar-btn-on { background: var(--ar-steel); border-color: var(--ar-steel); color: #0d1116; font-weight: 600; }
+.ar-btn-on:hover { filter: brightness(1.08); }
+.ar-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.ar-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 무대 ---- */
+.ar-stage {
+    display: grid; grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.ar-view-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; align-items: center; }
+.ar-screen {
+    position: relative; border: 2px solid var(--frame-strong); background: #05070a;
+    padding: 6px; line-height: 0; width: 100%; max-width: 402px;
+}
+.ar-canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+.ar-overlay {
+    position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+    font-size: 0.62rem; letter-spacing: 0.04em; color: rgba(220,225,235,0.8);
+    background: rgba(10,14,20,0.7); border: 1px solid rgba(160,170,185,0.3);
+    padding: 3px 8px; white-space: nowrap;
+}
+.ar-profile {
+    width: 100%; max-width: 402px; height: auto; display: block;
+    border: 1px solid var(--frame); background: #07090d; aspect-ratio: 390 / 96;
+}
+.ar-view-foot { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.6; text-align: center; }
+.ar-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.ar-right { display: flex; flex-direction: column; gap: 14px; }
+
+.ar-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.ar-amp.ar-clean { border-color: var(--ar-clean); background: rgba(63, 158, 122, 0.06); }
+.ar-amp.ar-weak { border-color: var(--ar-weak); background: rgba(185, 138, 44, 0.07); }
+.ar-amp.ar-dense { border-color: var(--ar-dense); background: rgba(77, 121, 196, 0.07); }
+.ar-amp-lab { font-size: 0.64rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.ar-amp-num { font-size: 1.5rem; font-weight: 700; line-height: 1.1; color: var(--ink); font-family: var(--font-mono); }
+.ar-amp.ar-clean .ar-amp-num { color: var(--ar-clean); }
+.ar-amp.ar-weak .ar-amp-num { color: var(--ar-weak); }
+.ar-amp.ar-dense .ar-amp-num { color: var(--ar-dense); }
+.ar-amp-sub { font-size: 0.62rem; color: var(--ink-mute); text-align: center; }
+
+.ar-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ar-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.ar-stat-lab { font-size: 0.62rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.ar-stat-num { font-size: 1.06rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.ar-stat-foot { font-size: 0.56rem; color: var(--ink-mute); }
+
+/* ---- 1818 예측/관측 카드 ---- */
+.ar-predict {
+    display: flex; flex-direction: column; gap: 7px;
+    padding: 11px 13px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.ar-predict-lab { font-size: 0.62rem; color: var(--ar-brass); letter-spacing: 0.05em; font-weight: 600; }
+.ar-predict-row { display: flex; flex-direction: column; gap: 1px; }
+.ar-predict-name { font-size: 0.6rem; color: var(--ink-mute); }
+.ar-predict-val { font-size: 0.72rem; color: var(--ink-soft); line-height: 1.4; }
+.ar-predict-val.ar-ok { color: var(--ar-clean); font-weight: 600; }
+.ar-predict-val.ar-off { color: var(--ink-mute); }
+
+.ar-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 74px; display: flex; align-items: center;
+}
+.ar-verdict.ar-clean { border-color: var(--ar-clean); }
+.ar-verdict.ar-weak { border-color: var(--ar-weak); }
+.ar-verdict.ar-dense { border-color: var(--ar-dense); }
+.ar-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+.ar-verdict-txt b { color: var(--ink); font-weight: 600; }
+
+/* ---- README ---- */
+.ar-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.ar-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.ar-foot b { color: var(--ink); font-weight: 600; }
+.ar-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .ar-stage { grid-template-columns: 1fr; }
+    .ar-actions { margin-left: 0; }
+    .ar-ctrls { width: 100%; }
+    .ar-ctrl { flex: 1; }
+}

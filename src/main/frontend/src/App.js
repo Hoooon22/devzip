@@ -77,6 +77,7 @@ import Biodegrade from './pages/experiments/Biodegrade';
 import Terraform from './pages/experiments/Terraform';
 import Slime from './pages/experiments/Slime';
 import Ergosphere from './pages/experiments/Ergosphere';
+import Arago from './pages/experiments/Arago';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -273,6 +274,7 @@ function App() {
         <Route path="/terraform" element={<Terraform />} />
         <Route path="/slime" element={<Slime />} />
         <Route path="/ergosphere" element={<Ergosphere />} />
+        <Route path="/arago" element={<Arago />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
