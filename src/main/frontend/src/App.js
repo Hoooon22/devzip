@@ -78,6 +78,7 @@ import Terraform from './pages/experiments/Terraform';
 import Slime from './pages/experiments/Slime';
 import Ergosphere from './pages/experiments/Ergosphere';
 import Arago from './pages/experiments/Arago';
+import SlowLight from './pages/experiments/SlowLight';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -275,6 +276,7 @@ function App() {
         <Route path="/slime" element={<Slime />} />
         <Route path="/ergosphere" element={<Ergosphere />} />
         <Route path="/arago" element={<Arago />} />
+        <Route path="/slow-light" element={<SlowLight />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 65,
+        name: 'Slow Light',
+        subtitle: '느린 빛 광버퍼 (군속도 제어)',
+        description: '셀마다 빛의 속도를 늦춰 두 광펄스를 검출기에서 동시 도착시키는 광버퍼 실험',
+        link: '/slow-light',
+        active: true,
+        startDate: '2026-07-28',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🐢'
+    },
+    {
         id: 64,
         name: 'Arago Spot',
         subtitle: '그림자 속 밝은 점 (프레넬 회절)',

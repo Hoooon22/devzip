@@ -1,0 +1,129 @@
+/* SLOW LIGHT — 군속도 제어(느린 빛)로 광버퍼/지연선을 만드는 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 스테이지는 광학 벤치 톤으로 고정(테마 무관): 칠흑 배경 60 · 강철 도파로/패널 30 · 광자(호박/청록) 강조 10.
+   AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --sl-photon: #c08a2e;   /* A 펄스·느린 셀(호박) — 강조 10% */
+    --sl-ref: #2f9e94;      /* B 기준 도파로(청록) */
+    --sl-steel: #6f7b8a;    /* 강철·보조 30% */
+    --sl-ok: #35a06f;
+    --sl-warn: #b98a2c;
+}
+.lab-os[data-theme="dark"] {
+    --sl-photon: #f2b24a;
+    --sl-ref: #35c0b4;
+    --sl-steel: #8794a4;
+    --sl-ok: #46c88a;
+    --sl-warn: #e0ab3f;
+}
+
+/* ---- 무대 ---- */
+.sl-stage {
+    display: grid; grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.sl-view-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.sl-screen {
+    position: relative; border: 2px solid var(--frame-strong); background: #05070a;
+    padding: 6px; line-height: 0; width: 100%;
+}
+.sl-canvas { width: 100%; height: auto; display: block; aspect-ratio: 720 / 250; }
+
+/* ---- 셀 컨트롤 ---- */
+.sl-cellbar {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.sl-cellbar-lab { font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sl-cells { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.sl-cell {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 0 5px; cursor: pointer; user-select: none;
+    border: 1px solid var(--frame); background: var(--ink);
+    color: var(--desk); font-family: var(--font-mono);
+    transition: border-color 0.14s, transform 0.1s, background 0.14s;
+}
+.sl-cell:hover { transform: translateY(-1px); border-color: var(--sl-photon); }
+.sl-cell:active { transform: translateY(0); }
+.sl-cell-on {
+    /* --f: 0..1(느림). 배경을 강철→호박으로 보간해 지연 크기를 즉시 보여준다 */
+    background: color-mix(in srgb, var(--sl-photon) calc(var(--f) * 85%), var(--ink));
+    border-color: var(--sl-photon);
+    color: #1a1305;
+}
+.sl-cell-n { font-size: 0.9rem; font-weight: 700; line-height: 1; }
+.sl-cell-bar { width: 60%; height: 3px; background: currentColor; opacity: 0.5; }
+
+.sl-view-foot { font-size: 0.7rem; color: var(--ink-mute); line-height: 1.6; }
+.sl-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.sl-right { display: flex; flex-direction: column; gap: 14px; }
+
+.sl-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.sl-amp.sl-sync { border-color: var(--sl-ok); background: color-mix(in srgb, var(--sl-ok) 8%, transparent); }
+.sl-amp.sl-fast { border-color: var(--sl-warn); background: color-mix(in srgb, var(--sl-warn) 8%, transparent); }
+.sl-amp.sl-slow { border-color: var(--sl-ref); background: color-mix(in srgb, var(--sl-ref) 8%, transparent); }
+.sl-amp-lab { font-size: 0.62rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sl-amp-num { font-size: 1.6rem; font-weight: 700; line-height: 1.1; color: var(--ink); font-family: var(--font-mono); }
+.sl-amp-num u { font-size: 0.8rem; font-weight: 500; color: var(--ink-mute); text-decoration: none; }
+.sl-amp.sl-sync .sl-amp-num { color: var(--sl-ok); }
+.sl-amp-sub { font-size: 0.64rem; color: var(--ink-mute); }
+
+.sl-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sl-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.sl-stat-lab { font-size: 0.58rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sl-stat-num { font-size: 1.04rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.sl-stat-foot { font-size: 0.54rem; color: var(--ink-mute); }
+
+.sl-arrivals {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 11px 13px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.sl-arr-row { display: flex; align-items: center; justify-content: space-between; }
+.sl-arr-name { font-size: 0.72rem; font-weight: 600; }
+.sl-arr-val { font-size: 0.78rem; color: var(--ink-soft); }
+
+.sl-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 56px; display: flex; align-items: center;
+}
+.sl-verdict.sl-sync { border-color: var(--sl-ok); background: color-mix(in srgb, var(--sl-ok) 7%, transparent); }
+.sl-verdict.sl-fast { border-color: var(--sl-warn); }
+.sl-verdict.sl-slow { border-color: var(--sl-ref); }
+.sl-verdict-txt { margin: 0; font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); font-weight: 600; }
+.sl-verdict.sl-sync .sl-verdict-txt { color: var(--sl-ok); }
+
+/* ---- 액션 버튼 ---- */
+.sl-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sl-btn {
+    font-family: var(--font-ui); font-size: 0.82rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.8rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.sl-btn:hover { transform: translateY(-1px); }
+.sl-btn-hot { background: var(--sl-photon); border-color: var(--sl-photon); color: #241800; font-weight: 600; }
+.sl-btn-hot:hover { filter: brightness(1.08); }
+.sl-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.sl-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- README ---- */
+.sl-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.sl-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.sl-foot b { color: var(--ink); font-weight: 600; }
+.sl-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .sl-stage { grid-template-columns: 1fr; }
+    .sl-cells { gap: 4px; }
+    .sl-cell-n { font-size: 0.8rem; }
+}
