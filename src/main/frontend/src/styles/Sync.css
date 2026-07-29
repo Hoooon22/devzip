@@ -1,0 +1,124 @@
+/* SYNC — 결합 진동자의 자발적 동기화(쿠라모토 모형·반딧불) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 스테이지는 밤 강가 톤으로 고정(테마 무관): 칠흑 배경 60 · 강철 패널 30 · 반딧불 빛(연둣빛)/질서 벡터(청록) 강조 10.
+   AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --sy-glow: #8a9a1e;    /* 반딧불 빛(연둣빛) — 강조 10% */
+    --sy-vec: #2f9e94;     /* 질서변수 벡터(청록) */
+    --sy-steel: #6f7b8a;   /* 강철·보조 30% */
+    --sy-ok: #6f9e26;
+}
+.lab-os[data-theme="dark"] {
+    --sy-glow: #bed63c;
+    --sy-vec: #3fc8bb;
+    --sy-steel: #8794a4;
+    --sy-ok: #a8c832;
+}
+
+/* ---- 무대 ---- */
+.sy-stage {
+    display: grid; grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.sy-view-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.sy-screen {
+    position: relative; border: 2px solid var(--frame-strong); background: #05070a;
+    padding: 6px; line-height: 0; width: 100%;
+}
+.sy-canvas { width: 100%; height: auto; display: block; aspect-ratio: 560 / 300; }
+
+/* ---- 슬라이더 ---- */
+.sy-sliders {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.sy-slider { display: flex; flex-direction: column; gap: 4px; }
+.sy-slider:last-child { grid-column: 1 / -1; }
+.sy-slider-lab { font-size: 0.7rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sy-slider-lab b { color: var(--sy-glow); font-weight: 700; }
+.sy-slider input[type="range"] {
+    width: 100%; accent-color: var(--sy-glow); cursor: pointer; height: 20px;
+}
+.sy-slider-foot { font-size: 0.56rem; color: var(--ink-mute); }
+
+.sy-view-foot { font-size: 0.7rem; color: var(--ink-mute); line-height: 1.6; }
+.sy-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.sy-right { display: flex; flex-direction: column; gap: 14px; }
+
+.sy-ring {
+    border: 1px solid var(--line); background: #05070a; padding: 6px; line-height: 0;
+    transition: border-color 0.2s;
+}
+.sy-ring.sy-lock { border-color: var(--sy-ok); }
+.sy-ring.sy-part { border-color: var(--sy-vec); }
+.sy-ring-canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+
+.sy-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 12px 16px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.sy-amp.sy-lock { border-color: var(--sy-ok); background: color-mix(in srgb, var(--sy-ok) 9%, transparent); }
+.sy-amp.sy-part { border-color: var(--sy-vec); background: color-mix(in srgb, var(--sy-vec) 8%, transparent); }
+.sy-amp-lab { font-size: 0.6rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sy-amp-num { font-size: 1.7rem; font-weight: 700; line-height: 1.1; color: var(--ink); font-family: var(--font-mono); }
+.sy-amp.sy-lock .sy-amp-num { color: var(--sy-ok); }
+.sy-amp-sub { font-size: 0.62rem; color: var(--ink-mute); }
+
+/* ---- r 미터 ---- */
+.sy-meter { padding: 0 2px; }
+.sy-meter-track {
+    position: relative; height: 10px; border: 1px solid var(--frame);
+    background: var(--ink); overflow: hidden;
+}
+.sy-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sy-steel), var(--sy-glow));
+    transition: width 0.12s linear;
+}
+
+.sy-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sy-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.sy-stat-lab { font-size: 0.56rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.sy-stat-num { font-size: 1.04rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.sy-stat-foot { font-size: 0.54rem; color: var(--ink-mute); }
+
+.sy-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 56px; display: flex; align-items: center;
+}
+.sy-verdict.sy-lock { border-color: var(--sy-ok); background: color-mix(in srgb, var(--sy-ok) 7%, transparent); }
+.sy-verdict.sy-part { border-color: var(--sy-vec); }
+.sy-verdict-txt { margin: 0; font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); font-weight: 600; }
+.sy-verdict.sy-lock .sy-verdict-txt { color: var(--sy-ok); }
+
+/* ---- 액션 버튼 ---- */
+.sy-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sy-btn {
+    font-family: var(--font-ui); font-size: 0.82rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.8rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.sy-btn:hover { transform: translateY(-1px); }
+.sy-btn-hot { background: var(--sy-glow); border-color: var(--sy-glow); color: #17200a; font-weight: 600; }
+.sy-btn-hot:hover { filter: brightness(1.08); }
+.sy-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.sy-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- README ---- */
+.sy-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.sy-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.sy-foot b { color: var(--ink); font-weight: 600; }
+.sy-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .sy-stage { grid-template-columns: 1fr; }
+    .sy-sliders { grid-template-columns: 1fr; }
+}

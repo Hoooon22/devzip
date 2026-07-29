@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 66,
+        name: 'Sync',
+        subtitle: '자발적 동기화 (쿠라모토 모형)',
+        description: '결합만 세지면 흩어진 반딧불 무리가 툭 하고 한 박자로 잠기는 위상 전이 실험',
+        link: '/sync',
+        active: true,
+        startDate: '2026-07-29',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '✨'
+    },
+    {
         id: 65,
         name: 'Slow Light',
         subtitle: '느린 빛 광버퍼 (군속도 제어)',
