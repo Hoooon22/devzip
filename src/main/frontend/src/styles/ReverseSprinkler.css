@@ -1,0 +1,131 @@
+/* REVERSE SPRINKLER — 파인만 스프링클러(흡입 시 회전 방향) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 스테이지는 물탱크 톤으로 고정(테마 무관): 칠흑 배경 60 · 강철 본체/패널 30 ·
+   물(시안)/역회전 경고(앰버) 강조 10. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --rs-water: #1f86ad;   /* 물(시안) — 강조 10% */
+    --rs-warn: #c07a1b;    /* 역회전/충돌(앰버) */
+    --rs-steel: #6f7b8a;   /* 강철·보조 30% */
+}
+.lab-os[data-theme="dark"] {
+    --rs-water: #46c2ec;
+    --rs-warn: #e6a53a;
+    --rs-steel: #8794a4;
+}
+
+/* ---- 무대 ---- */
+.rs-stage {
+    display: grid; grid-template-columns: 1fr minmax(220px, 264px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.rs-view-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.rs-screen {
+    position: relative; border: 2px solid var(--frame-strong); background: #06090d;
+    padding: 6px; line-height: 0; width: 100%; transition: border-color 0.2s;
+}
+.rs-screen.rs-suck { border-color: color-mix(in srgb, var(--rs-warn) 55%, var(--frame-strong)); }
+.rs-canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; max-width: 380px; margin: 0 auto; }
+
+/* ---- 모드 세그먼트 ---- */
+.rs-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--frame); }
+.rs-seg-btn {
+    font-family: var(--font-ui); font-size: 0.84rem; font-weight: 500;
+    color: var(--ink-soft); background: var(--panel-2);
+    border: none; padding: 0.62rem 0.5rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s;
+}
+.rs-seg-btn + .rs-seg-btn { border-left: 1px solid var(--frame); }
+.rs-seg-btn:hover { background: var(--ink); color: var(--desk); }
+.rs-seg-btn.on { background: var(--rs-water); color: #04121a; font-weight: 700; }
+.rs-seg-btn.on:hover { background: var(--rs-water); color: #04121a; }
+
+/* ---- 슬라이더/체크 ---- */
+.rs-sliders {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.rs-slider { display: flex; flex-direction: column; gap: 4px; }
+.rs-slider-lab { font-size: 0.7rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.rs-slider-lab b { color: var(--rs-water); font-weight: 700; }
+.rs-slider input[type="range"] { width: 100%; accent-color: var(--rs-water); cursor: pointer; height: 20px; }
+.rs-slider-foot { font-size: 0.56rem; color: var(--ink-mute); }
+
+.rs-check { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--ink-soft); cursor: pointer; }
+.rs-check input { accent-color: var(--rs-warn); width: 16px; height: 16px; cursor: pointer; }
+.rs-check b { color: var(--rs-warn); font-weight: 700; }
+.rs-check.off { opacity: 0.45; cursor: not-allowed; }
+.rs-check.off input { cursor: not-allowed; }
+
+.rs-view-foot { font-size: 0.7rem; color: var(--ink-mute); line-height: 1.6; }
+.rs-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.rs-right { display: flex; flex-direction: column; gap: 14px; }
+
+.rs-amp {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 12px 16px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.rs-amp.rs-spray { border-color: var(--rs-water); background: color-mix(in srgb, var(--rs-water) 8%, transparent); }
+.rs-amp.rs-suck { border-color: var(--rs-warn); background: color-mix(in srgb, var(--rs-warn) 8%, transparent); }
+.rs-amp-lab { font-size: 0.6rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.rs-amp-num { font-size: 1.7rem; font-weight: 700; line-height: 1.1; color: var(--ink); font-family: var(--font-mono); }
+.rs-amp.rs-spray .rs-amp-num { color: var(--rs-water); }
+.rs-amp.rs-suck .rs-amp-num { color: var(--rs-warn); }
+.rs-amp-sub { font-size: 0.62rem; color: var(--ink-mute); }
+
+.rs-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rs-stat {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.rs-stat-lab { font-size: 0.56rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.rs-stat-num { font-size: 1.04rem; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.rs-stat-foot { font-size: 0.54rem; color: var(--ink-mute); }
+
+/* ---- 양방향 미터(중앙 0, 좌 시계 / 우 반시계) ---- */
+.rs-meter { display: flex; flex-direction: column; gap: 4px; padding: 0 2px; }
+.rs-meter-track {
+    position: relative; height: 12px; border: 1px solid var(--frame);
+    background: var(--ink); overflow: hidden;
+}
+.rs-meter-mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(150,160,175,0.6); }
+.rs-meter-fill { position: absolute; top: 0; bottom: 0; transition: width 0.12s linear; }
+.rs-meter-fill.rs-spray { background: var(--rs-water); }
+.rs-meter-fill.rs-suck { background: var(--rs-warn); }
+.rs-meter-foot { font-size: 0.52rem; color: var(--ink-mute); text-align: center; }
+
+.rs-verdict {
+    padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2);
+    min-height: 72px; display: flex; align-items: center;
+}
+.rs-verdict.rs-spray { border-color: var(--rs-water); background: color-mix(in srgb, var(--rs-water) 6%, transparent); }
+.rs-verdict.rs-suck { border-color: var(--rs-warn); }
+.rs-verdict.rs-amp { border-color: var(--rs-warn); background: color-mix(in srgb, var(--rs-warn) 8%, transparent); }
+.rs-verdict-txt { margin: 0; font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 액션 버튼 ---- */
+.rs-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.rs-btn {
+    font-family: var(--font-ui); font-size: 0.82rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.5rem 0.8rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s;
+}
+.rs-btn:hover { transform: translateY(-1px); }
+.rs-btn-hot { background: var(--rs-water); border-color: var(--rs-water); color: #04121a; font-weight: 600; }
+.rs-btn-hot:hover { filter: brightness(1.08); }
+.rs-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.rs-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- README ---- */
+.rs-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.rs-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.rs-foot b { color: var(--ink); font-weight: 600; }
+.rs-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .rs-stage { grid-template-columns: 1fr; }
+}

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 67,
+        name: 'Reverse Sprinkler',
+        subtitle: '빨아들이는 스프링클러의 회전 (파인만 문제)',
+        description: '물을 뿜을 때와 빨아들일 때 회전이 반대·50배 느린 파인만 스프링클러 실험',
+        link: '/reverse-sprinkler',
+        active: true,
+        startDate: '2026-07-30',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '💧'
+    },
+    {
         id: 66,
         name: 'Sync',
         subtitle: '자발적 동기화 (쿠라모토 모형)',
