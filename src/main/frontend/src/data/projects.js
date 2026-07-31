@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 68,
+        name: 'Bell',
+        subtitle: '얽힘의 비국소 상관 (CHSH 게임)',
+        description: '멀리 떨어진 두 사람이 고전 한계 0.75를 넘겨 이기는 벨 부등식 위반 게임',
+        link: '/bell',
+        active: true,
+        startDate: '2026-07-31',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🪢'
+    },
+    {
         id: 67,
         name: 'Reverse Sprinkler',
         subtitle: '빨아들이는 스프링클러의 회전 (파인만 문제)',

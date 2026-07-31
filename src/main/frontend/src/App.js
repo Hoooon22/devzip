@@ -81,6 +81,7 @@ import Arago from './pages/experiments/Arago';
 import SlowLight from './pages/experiments/SlowLight';
 import Sync from './pages/experiments/Sync';
 import ReverseSprinkler from './pages/experiments/ReverseSprinkler';
+import Bell from './pages/experiments/Bell';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -281,6 +282,7 @@ function App() {
         <Route path="/slow-light" element={<SlowLight />} />
         <Route path="/sync" element={<Sync />} />
         <Route path="/reverse-sprinkler" element={<ReverseSprinkler />} />
+        <Route path="/bell" element={<Bell />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
