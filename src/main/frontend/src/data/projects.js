@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 69,
+        name: 'Deniable',
+        subtitle: '그럴듯한 부인 (랜덤 응답 · ε-차등 프라이버시)',
+        description: '각자 확률적으로 거짓말해도 집계는 되살아나는, 프라이버시와 정확도의 거래 실험',
+        link: '/deniable',
+        active: true,
+        startDate: '2026-08-02',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🎲'
+    },
+    {
         id: 68,
         name: 'Bell',
         subtitle: '얽힘의 비국소 상관 (CHSH 게임)',
