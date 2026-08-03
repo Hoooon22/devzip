@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 70,
+        name: 'Criticality',
+        subtitle: '연쇄반응 제어 (지연 중성자 · 원자로 동역학)',
+        description: '0.65%의 지연 중성자가 폭주하는 연쇄반응을 사람 손에 맡기는 원자로 제어 실험',
+        link: '/criticality',
+        active: true,
+        startDate: '2026-08-03',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '☢️'
+    },
+    {
         id: 69,
         name: 'Deniable',
         subtitle: '그럴듯한 부인 (랜덤 응답 · ε-차등 프라이버시)',
