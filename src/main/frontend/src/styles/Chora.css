@@ -1,585 +1,795 @@
-/* Chora 소개 페이지
-   홈(Main.scss)의 커널 테마 위에 얹는다 — .k-os / .k-win / .k-btn / .k-eyebrow 는
-   그대로 쓰고, 이 파일은 이 페이지에만 필요한 배치와 활자만 정의한다.
-   색은 전부 Main.scss 의 CSS 변수를 쓰므로 라이트/다크가 자동으로 따라온다. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
-.chora-desk {
-    max-width: 1120px;
+/* Chora — 야간 항공사진 위에 얹은 지도 레이어.
+   devzip 홈의 커널 테마와 의도적으로 다른 정체성을 갖는다.
+   색은 지도에서 가져왔다: 도로선, 물·공원의 청록, 그리고 README 캡처에서
+   "도로망을 따라 걷는 에이전트"를 표시하던 주황 점.
+
+   CSS는 하나의 번들로 합쳐지므로 .panel / .log / .stack 같은 흔한 이름이
+   다른 페이지로 새지 않도록 모든 규칙을 .chora 아래로 스코프한다. */
+
+body.chora-body { background: #080B10; }
+
+.chora {
+    --deep: #080B10;
+    --land: #0E141C;
+    --road: rgba(120, 152, 186, 0.26);
+    --edge: rgba(140, 172, 204, 0.16);
+    --paper: #E9ECEF;
+    --paper-soft: rgba(233, 236, 239, 0.66);
+    --paper-mute: rgba(233, 236, 239, 0.40);
+    --agent: #FF7A45;
+    --tide: #4DD8C0;
+
+    --f-display: 'Archivo', system-ui, sans-serif;
+    --f-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    min-height: 100vh;
+    background: var(--deep);
+    color: var(--paper);
+    font-family: var(--f-display);
+    font-variation-settings: 'wdth' 100;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* .k-btn 은 홈에서 <button> 에만 쓰여 밑줄 해제가 없다 — 링크로 쓰는 이 페이지에서 끈다. */
-.chora-os a.k-btn {
+.chora *,
+.chora *::before,
+.chora *::after { box-sizing: border-box; }
+
+.chora :focus-visible {
+    outline: 2px solid var(--agent);
+    outline-offset: 3px;
+}
+
+/* ── 계기판 ── */
+.chora .chora-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    height: 46px;
+    padding: 0 20px;
+    background: rgba(8, 11, 16, 0.82);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--edge);
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+}
+
+.chora .chora-bar .back {
+    color: var(--paper-soft);
     text-decoration: none;
 }
 
-/* Main.scss 의 `.k-os[data-theme="dark"] .k-btn`(0,3,0)이 `.k-btn.ghost`(0,2,0)를 이겨
-   다크에서 ghost 버튼 글자가 배경과 같은 색이 된다. 이 페이지에서만 되돌린다. */
-.chora-os[data-theme="dark"] a.k-btn.ghost {
-    color: var(--ink);
+.chora .chora-bar .back:hover { color: var(--agent); }
+
+.chora .chora-bar .mark {
+    font-family: var(--f-display);
+    font-variation-settings: 'wdth' 125;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.24em;
 }
 
-.chora-os[data-theme="dark"] a.k-btn.ghost:hover {
-    color: var(--desk);
+.chora .chora-bar .coords {
+    color: var(--paper-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.chora-os code {
-    font-family: var(--font-mono);
-    font-size: 0.9em;
-    padding: 1px 6px;
-    border: 1px solid var(--line);
-    background: var(--row-alt);
-    color: var(--ink-soft);
-}
-
-/* 공통 본문 블록 */
-.chora-bd {
-    padding: 30px 32px 32px;
-}
-
-.chora-bd.center {
-    text-align: center;
-    padding: 44px 32px 48px;
-}
-
-.chora-h2 {
-    font-size: 27px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    margin: 0 0 10px;
-}
-
-.chora-sub {
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    margin: 0 0 26px;
-    max-width: 62ch;
-}
-
-.chora-bd.center .chora-sub {
+.chora .chora-bar .wip {
     margin-left: auto;
-    margin-right: auto;
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border: 1px solid rgba(255, 122, 69, 0.45);
+    color: var(--agent);
+    letter-spacing: 0.06em;
 }
 
-/* ── 히어로 ── */
-.chora-hero {
-    border-color: var(--frame-strong);
-}
-
-.chora-hero::before {
-    content: '';
-    display: block;
-    height: 3px;
-    background: var(--signal);
-}
-
-.chora-hero-bd {
+/* ── 무대: 살아 있는 보행 그래프 ── */
+.chora .chora-stage {
+    position: relative;
+    min-height: calc(100vh - 46px);
+    padding: 60px 20px 28px;
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+    align-items: center;
+    gap: 40px;
+    max-width: 1280px;
+    margin: 0 auto;
+    overflow: hidden;
 }
 
-.chora-hero-bd .tx {
-    padding: 40px 40px 38px;
-    min-width: 0;
+.chora .chora-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-.chora-hero-bd h1 {
-    font-size: 52px;
-    font-weight: 600;
-    line-height: 1.06;
-    letter-spacing: -0.04em;
-    margin: 0 0 20px;
+.chora .scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(72% 62% at 0% 42%, rgba(8, 11, 16, 0.93) 0%, rgba(8, 11, 16, 0.55) 46%, transparent 78%),
+        linear-gradient(180deg, rgba(8, 11, 16, 0.72) 0%, transparent 16%, transparent 82%, rgba(8, 11, 16, 0.88) 100%);
 }
 
-.chora-hero-bd h1 .mk {
-    color: var(--signal);
+.chora .stage-copy {
+    position: relative;
+    z-index: 2;
+    max-width: 34rem;
 }
 
-.chora-hero-bd .lead {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    letter-spacing: 0.02em;
-    color: var(--ink-soft);
-    margin: 0 0 16px;
+.chora .stage-copy h1 {
+    margin: 0 0 22px;
+    font-weight: 800;
+    font-size: clamp(34px, 4.4vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-variation-settings: 'wdth' 92;
+    text-wrap: balance;
 }
 
-.chora-hero-bd .tx > p {
+.chora .stage-copy h1 em {
+    display: block;
+    font-style: normal;
+    color: var(--agent);
+}
+
+.chora .stage-copy > p {
+    margin: 0 0 30px;
+    max-width: 30rem;
     font-size: 16px;
-    line-height: 1.7;
-    color: var(--ink-soft);
-    margin: 0 0 28px;
-    max-width: 50ch;
+    line-height: 1.72;
+    color: var(--paper-soft);
 }
 
-/* 히어로 우측: 자연어 명령 → 환경 op 로그 */
-.chora-prompt {
-    border-left: 1px solid var(--line);
-    background: var(--desk-2);
-    padding: 26px 24px;
-    font-size: 12px;
-    line-height: 1.9;
-    color: var(--ink-soft);
+.chora .stage-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.chora .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--agent);
+    color: #180903;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--agent);
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.chora .btn:hover { transform: translateY(-2px); }
+
+.chora .btn.ghost {
+    background: transparent;
+    color: var(--paper);
+    border-color: rgba(233, 236, 239, 0.28);
+}
+
+.chora .btn.ghost:hover { border-color: var(--paper); }
+
+/* 우측 계기 패널 */
+.chora .stage-panel {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 12px;
 }
 
-.chora-prompt .ln.in {
-    color: var(--ink);
-    margin-bottom: 12px;
-    line-height: 1.7;
+.chora .panel {
+    background: rgba(14, 20, 28, 0.82);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--edge);
+    padding: 16px 18px 18px;
 }
 
-.chora-prompt .caret {
-    color: var(--signal);
-    margin-right: 6px;
+.chora .panel-hd {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-mute);
 }
 
-.chora-prompt .ok {
-    color: var(--signal);
+.chora .panel-hd .clock {
+    color: var(--tide);
+    letter-spacing: 0.06em;
 }
 
-.chora-prompt .dim {
-    color: var(--ink-mute);
+.chora .panel-note {
+    margin: 12px 0 0;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--paper-mute);
 }
 
-.chora-prompt .out {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
-    color: var(--ink);
-    line-height: 1.75;
+.chora .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.chora-prompt .cur {
-    color: var(--signal);
-    margin-left: 4px;
+.chora .chips button {
+    font: inherit;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    padding: 8px 12px;
+    min-height: 36px;
+    cursor: pointer;
+    color: var(--paper-soft);
+    background: transparent;
+    border: 1px solid rgba(140, 172, 204, 0.28);
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 
-/* ── 왜 만드는가 ── */
-.chora-two {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-    margin-top: 22px;
+.chora .chips button:hover {
+    color: var(--paper);
+    border-color: var(--paper-mute);
 }
 
-.chora-note {
-    padding: 24px;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
+.chora .chips button.on {
+    color: #0A1512;
+    background: var(--tide);
+    border-color: var(--tide);
 }
 
-.chora-note h3 {
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin: 0 0 12px;
-}
-
-.chora-note p {
-    font-size: 14.5px;
-    line-height: 1.7;
-    color: var(--ink-soft);
-    margin: 0;
-}
-
-.chora-note b {
-    color: var(--signal);
-    font-weight: 600;
-}
-
-.chora-lede {
-    margin: 26px 0 0;
-    padding-left: 16px;
-    border-left: 3px solid var(--signal);
-    font-size: 16px;
-    line-height: 1.75;
-    color: var(--ink);
-    max-width: 66ch;
-}
-
-/* ── 결정 로그 ── */
-.chora-log {
-    margin: 0;
-    padding: 24px 26px;
-    overflow-x: auto;
-    background: var(--desk-2);
-    border: 1px solid var(--line);
-    font-size: 12.5px;
-    line-height: 1.9;
-    color: var(--ink-soft);
-    white-space: pre;
-}
-
-.chora-log code {
-    padding: 0;
-    border: 0;
-    background: none;
-    font-size: inherit;
-    color: inherit;
-}
-
-.chora-cap {
-    margin: 16px 0 0;
-    font-size: 13.5px;
-    line-height: 1.7;
-    color: var(--ink-mute);
-    max-width: 72ch;
-}
-
-/* ── 기능 카드 ── */
-/* 4개 카드가 2×2 로 떨어지도록 — auto-fit 3열이면 마지막 한 장이 혼자 남는다. */
-.chora-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 16px;
-    margin-top: 22px;
-}
-
-.chora-card {
-    padding: 24px 22px 22px;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    transition: border-color 0.16s, transform 0.16s;
-}
-
-.chora-card:hover {
-    border-color: var(--signal);
-    transform: translateY(-2px);
-}
-
-.chora-card .glw {
-    width: 46px;
-    height: 46px;
-    display: grid;
-    place-items: center;
-    font-size: 24px;
-    background: var(--panel);
-    border: 1px solid var(--frame);
-    margin-bottom: 16px;
-}
-
-.chora-card h3 {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin: 0;
-}
-
-.chora-card .sub {
-    display: block;
-    margin-top: 4px;
-    font-size: 11.5px;
-    color: var(--signal);
-}
-
-.chora-card > p {
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    margin: 12px 0 16px;
-}
-
-.chora-card ul {
+/* 방문 분포 */
+.chora .bars {
     list-style: none;
     margin: 0;
-    padding: 14px 0 0;
-    border-top: 1px solid var(--line);
-}
-
-.chora-card li {
-    position: relative;
-    padding-left: 14px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--ink-mute);
-}
-
-.chora-card li:last-child {
-    margin-bottom: 0;
-}
-
-.chora-card li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 8px;
-    width: 5px;
-    height: 5px;
-    background: var(--signal);
-}
-
-/* ── 동작 원리 ── */
-.chora-rules {
+    padding: 0;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--line);
+    gap: 9px;
 }
 
-.chora-rule {
+.chora .bars li {
     display: grid;
-    grid-template-columns: 76px 1fr;
-    gap: 18px;
-    padding: 22px 24px;
-    border-bottom: 1px solid var(--line);
-    background: var(--panel-2);
+    grid-template-columns: 34px 1fr 38px;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
 }
 
-.chora-rule:last-child {
-    border-bottom: 0;
+.chora .bars .nm { color: var(--paper-soft); }
+
+.chora .bars .track {
+    position: relative;
+    height: 8px;
+    background: rgba(140, 172, 204, 0.12);
 }
 
-.chora-rule .no {
-    font-size: 20px;
+.chora .bars .track i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: block;
+    transition: width 0.4s ease;
+}
+
+.chora .bars .track b {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 2px;
+    background: var(--paper);
+    opacity: 0.55;
+    transition: left 0.4s ease;
+}
+
+.chora .bars .pc {
+    text-align: right;
+    color: var(--paper-mute);
+    font-variant-numeric: tabular-nums;
+}
+
+/* 결정 피드 */
+.chora .log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chora .log li {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 4px 10px;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    animation: chora-in 0.35s ease;
+}
+
+.chora .log .t { color: var(--paper-mute); }
+.chora .log .go { color: var(--agent); }
+.chora .log .why {
+    grid-column: 2;
+    color: var(--paper-soft);
+}
+
+@keyframes chora-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+}
+
+.chora .stage-disclaimer {
+    position: relative;
+    z-index: 2;
+    grid-column: 1 / -1;
+    margin: 0;
+    max-width: 74ch;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--paper-mute);
+}
+
+/* ── 본문 공통 ── */
+.chora .chora-sec {
+    padding: 96px 20px;
+    border-top: 1px solid var(--edge);
+}
+
+.chora .chora-sec .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.chora .eyebrow {
+    display: block;
+    margin-bottom: 14px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--tide);
+}
+
+.chora .chora-sec h2 {
+    margin: 0 0 18px;
+    font-weight: 800;
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    font-variation-settings: 'wdth' 92;
+    max-width: 22ch;
+}
+
+.chora .sec-lede {
+    margin: 0 0 38px;
+    max-width: 62ch;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--paper-soft);
+}
+
+/* 문제 */
+.chora .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+    margin-top: 32px;
+}
+
+.chora .why-grid p {
+    margin: 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--edge);
+    font-size: 15.5px;
+    line-height: 1.78;
+    color: var(--paper-soft);
+}
+
+.chora .why-lede {
+    margin: 40px 0 0;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.4;
+    letter-spacing: -0.025em;
     font-weight: 600;
-    color: var(--signal);
-    line-height: 1.3;
 }
 
-.chora-rule h3 {
+/* 레이어 */
+.chora .layer-list {
+    margin-top: 34px;
+    border-top: 1px solid var(--edge);
+}
+
+.chora .layer {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 30px;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--edge);
+}
+
+.chora .layer-tag {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--agent);
+    padding-top: 5px;
+}
+
+.chora .layer-bd h3 {
+    margin: 0 0 10px;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.chora .layer-bd > p {
+    margin: 0 0 16px;
+    max-width: 64ch;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--paper-soft);
+}
+
+.chora .layer-bd ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chora .layer-bd li {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border: 1px solid var(--edge);
+    color: var(--paper-mute);
+}
+
+/* A/B */
+.chora .ab-toggle {
+    display: inline-flex;
+    margin-bottom: 26px;
+    border: 1px solid var(--edge);
+}
+
+.chora .ab-toggle button {
+    font: inherit;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    padding: 9px 16px;
+    min-height: 38px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--paper-soft);
+    border: 0;
+}
+
+.chora .ab-toggle button + button { border-left: 1px solid var(--edge); }
+
+.chora .ab-toggle button.on {
+    background: var(--tide);
+    color: #0A1512;
+    font-weight: 600;
+}
+
+.chora .ab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+}
+
+.chora .heat { margin: 0; }
+
+.chora .heat figcaption {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+}
+
+.chora .heat-name {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-soft);
+}
+
+.chora .heat-total { color: var(--paper-mute); }
+
+.chora .heat-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    border: 1px solid var(--edge);
+    padding: 2px;
+}
+
+.chora .heat-grid i {
+    display: block;
+    aspect-ratio: 1;
+    transition: background 0.35s ease;
+}
+
+.chora .ab-verdict {
+    margin: 22px 0 0;
+    padding: 14px 16px;
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    border-left: 3px solid var(--tide);
+    background: rgba(77, 216, 192, 0.07);
+    color: var(--paper-soft);
+}
+
+.chora .ab-verdict.warn {
+    border-left-color: var(--agent);
+    background: rgba(255, 122, 69, 0.08);
+}
+
+/* 설계 규율 */
+/* 규율은 4개 — 2×2 로 떨어지게 한다. auto-fit 3열이면 마지막 한 장이 혼자 남는다. */
+.chora .rule-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 1px;
+    background: var(--edge);
+    border: 1px solid var(--edge);
+}
+
+.chora .rule {
+    padding: 26px 24px;
+    background: var(--land);
+}
+
+.chora .rule h3 {
+    margin: 0 0 12px;
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: -0.02em;
-    margin: 0 0 8px;
+    color: var(--agent);
 }
 
-.chora-rule p {
+.chora .rule p {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--paper-soft);
+}
+
+.chora .cost {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+    padding: 22px 24px;
+    border: 1px solid var(--edge);
+}
+
+.chora .cost-val {
+    font-family: var(--f-mono);
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--tide);
+}
+
+.chora .cost p {
+    margin: 0;
+    flex: 1 1 340px;
     font-size: 14.5px;
     line-height: 1.7;
-    color: var(--ink-soft);
-    margin: 0;
-    max-width: 72ch;
+    color: var(--paper-soft);
 }
 
-/* ── 게이지 ── */
-.chora-gauges {
+/* 상태 */
+.chora .phases {
+    list-style: none;
+    margin: 0 0 40px;
+    padding: 0;
+    border-top: 1px solid var(--edge);
+}
+
+.chora .phases li {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 90px 1fr 70px;
     gap: 18px;
-}
-
-.chora-gauge {
-    padding: 22px 24px 24px;
-}
-
-.chora-gauge .val {
-    font-size: 36px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    color: var(--signal);
-}
-
-.chora-gauge .label {
-    margin-top: 10px;
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    color: var(--ink-mute);
-}
-
-.chora-gauge p {
-    margin: 14px 0 0;
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
-    font-size: 13.5px;
-    line-height: 1.65;
-    color: var(--ink-soft);
-}
-
-.chora-gauge b {
-    color: var(--ink);
-    font-weight: 600;
-}
-
-/* ── 기술 스택 ── */
-.chora-stack .row {
-    display: grid;
-    grid-template-columns: 130px 1fr 1.1fr;
-    gap: 16px;
-    align-items: baseline;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--line);
-}
-
-.chora-stack .row:last-child {
-    border-bottom: 0;
-}
-
-.chora-stack .row:nth-child(even) {
-    background: var(--row-alt);
-}
-
-.chora-stack .area {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--signal);
-}
-
-.chora-stack .name {
-    font-size: 15.5px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-.chora-stack .note {
-    font-size: 12px;
-    color: var(--ink-mute);
-}
-
-/* ── 로드맵 ── */
-.chora-phases .row {
-    display: grid;
-    grid-template-columns: 90px 1fr 72px;
-    gap: 16px;
     align-items: center;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--line);
+    padding: 15px 0;
+    border-bottom: 1px solid var(--edge);
+    opacity: 0.45;
 }
 
-.chora-phases .row:nth-child(even) {
-    background: var(--row-alt);
-}
+.chora .phases li.done { opacity: 1; }
 
-.chora-phases .row.backlog {
-    opacity: 0.55;
-}
-
-.chora-phases .tag {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--signal);
-}
-
-.chora-phases .bd {
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-}
-
-.chora-phases .st {
+.chora .phases .ph {
+    font-family: var(--f-mono);
     font-size: 11.5px;
-    text-align: right;
-    color: var(--ink-mute);
-    white-space: nowrap;
-}
-
-/* 아직 검증되지 않은 것 — 시그널 대신 눈에 띄되 경고처럼 보이지 않게 */
-.chora-warn {
-    padding: 22px 24px;
-    background: var(--signal-soft);
-    border: 1px solid var(--signal);
-}
-
-.chora-warn h3 {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--signal);
-    margin: 0 0 12px;
+    color: var(--tide);
 }
 
-.chora-warn ul {
-    margin: 0 0 12px;
+.chora .phases .bd {
+    font-size: 15px;
+    color: var(--paper-soft);
+}
+
+.chora .phases .st {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    text-align: right;
+    color: var(--paper-mute);
+}
+
+.chora .status-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.chora .unverified {
+    padding: 24px;
+    border: 1px solid rgba(255, 122, 69, 0.35);
+    background: rgba(255, 122, 69, 0.06);
+}
+
+.chora .unverified h3 {
+    margin: 0 0 14px;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--agent);
+}
+
+.chora .unverified ul {
+    margin: 0 0 14px;
     padding-left: 18px;
 }
 
-.chora-warn li {
-    font-size: 14.5px;
-    line-height: 1.75;
-    color: var(--ink);
+.chora .unverified li {
+    font-size: 15px;
+    line-height: 1.8;
 }
 
-.chora-warn p {
+.chora .unverified p {
     margin: 0;
-    font-size: 13px;
-    color: var(--ink-soft);
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    color: var(--paper-mute);
 }
 
-/* ── CTA ── */
-.chora-cta {
-    border-color: var(--frame-strong);
+.chora .stack {
+    margin: 0;
+    padding: 0;
 }
 
-.k-cta.center {
-    justify-content: center;
+.chora .stack > div {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--edge);
 }
+
+.chora .stack > div:first-child { padding-top: 0; }
+
+.chora .stack dt {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--paper-mute);
+    padding-top: 2px;
+}
+
+.chora .stack dd {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--paper-soft);
+}
+
+/* 맺음 */
+.chora .chora-sec.end { padding-bottom: 0; }
+
+.chora .chora-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1080px;
+    margin: 80px auto 0;
+    padding: 22px 0;
+    border-top: 1px solid var(--edge);
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    color: var(--paper-mute);
+}
+
+.chora .chora-foot a {
+    color: var(--paper-mute);
+    text-decoration: none;
+}
+
+.chora .chora-foot a:hover { color: var(--agent); }
 
 /* ── 반응형 ── */
-@media (max-width: 940px) {
-    .chora-hero-bd {
+@media (max-width: 1000px) {
+    .chora .chora-stage {
         grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 44px 18px 24px;
+        gap: 28px;
     }
 
-    .chora-prompt {
-        border-left: 0;
-        border-top: 1px solid var(--line);
+    .chora .scrim {
+        background: linear-gradient(180deg, rgba(8, 11, 16, 0.9) 0%, rgba(8, 11, 16, 0.72) 45%, rgba(8, 11, 16, 0.94) 100%);
     }
 
-    .chora-hero-bd h1 {
-        font-size: 40px;
-    }
+    .chora .stage-copy { max-width: none; }
 
-    .chora-gauges {
+    .chora .layer {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 
-    .chora-stack .row {
-        grid-template-columns: 1fr;
-        gap: 6px;
-    }
+    .chora .layer-tag { padding-top: 0; }
 }
 
-@media (max-width: 620px) {
-    .chora-bd,
-    .chora-bd.center {
-        padding: 24px 18px 26px;
+@media (max-width: 640px) {
+    .chora .chora-bar { gap: 12px; padding: 0 14px; }
+    .chora .chora-bar .coords { display: none; }
+
+    .chora .chora-sec { padding: 64px 18px; }
+
+    .chora .btn { flex: 1 1 100%; justify-content: center; }
+
+    .chora .phases li {
+        grid-template-columns: 1fr auto;
+        gap: 4px 12px;
     }
 
-    .chora-hero-bd .tx {
-        padding: 28px 18px 26px;
+    .chora .phases .bd { grid-column: 1 / -1; }
+
+    .chora .stack > div { grid-template-columns: 1fr; gap: 4px; }
+
+    .chora .cost { gap: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chora *,
+    .chora *::before,
+    .chora *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
     }
 
-    .chora-hero-bd h1 {
-        font-size: 32px;
-    }
-
-    .chora-h2 {
-        font-size: 22px;
-    }
-
-    .chora-rule {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        padding: 18px;
-    }
-
-    .chora-phases .row {
-        grid-template-columns: 1fr;
-        gap: 6px;
-        padding: 14px 18px;
-    }
-
-    .chora-phases .st {
-        text-align: left;
-    }
-
-    .chora-stack .row {
-        padding: 14px 18px;
-    }
-
-    .chora-log {
-        font-size: 11.5px;
-        padding: 16px 18px;
-    }
-
-    .chora-os .k-btn {
-        width: 100%;
-        justify-content: center;
-        min-height: 44px;
-    }
+    .chora .btn:hover { transform: none; }
 }
