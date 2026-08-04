@@ -18,6 +18,7 @@ import LiveChatRoomPage from "./pages/LiveChatRoomPage";
 import Hopperbox from './pages/Hopperbox';
 import ChaoticMusicBox from './pages/ChaoticMusicBox';
 import Conflux from './pages/Conflux';
+import Chora from './pages/Chora';
 import CommandStack from './pages/CommandStack';
 import CommandStackDownload from './pages/CommandStackDownload';
 import ApiExperiment from './pages/ApiExperiment';
@@ -221,6 +222,9 @@ function App() {
 
         {/* Conflux 소개 페이지 */}
         <Route path="/conflux" element={<Conflux />} />
+
+        {/* Chora 소개 페이지 */}
+        <Route path="/chora" element={<Chora />} />
 
         {/* Command Stack 소개 및 다운로드 페이지 */}
         <Route path="/commandstack" element={<CommandStack />} />

@@ -86,8 +86,8 @@ const NEW_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 const isNewProject = (p) =>
     Boolean(p.startDate) && (Date.now() - new Date(p.startDate).getTime()) < NEW_WINDOW_MS;
 
-// 아직 공개하지 않은 프로젝트. 카드는 "개발 중"으로 보이되 링크로 열리지 않는다
-// (App.js에 라우트가 없으므로 열리면 404가 된다).
+// 소개 페이지는 열려 있지만 서비스로는 아직 개발 중인 프로젝트.
+// 카드에 "개발 중" 배지를 달고 "운영 중" 집계에서는 빼되, 링크는 정상 동작한다.
 const isWip = (p) => p.wip === true;
 
 const openExternal = (url) => window.open(url, '_blank', 'noopener,noreferrer');
@@ -318,7 +318,7 @@ const Main = () => {
 
     const latestProject = useMemo(() => (
         [...projects]
-            .filter(p => p.startDate && !isWip(p))
+            .filter(p => p.startDate)
             .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0] || null
     ), []);
 
@@ -398,10 +398,6 @@ const Main = () => {
     }, [award]);
 
     const handleProjectClick = (e, project) => {
-        if (isWip(project)) {
-            e.preventDefault();
-            return;
-        }
         if (project.requiresAdmin && !authService.isAdmin()) {
             e.preventDefault();
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
@@ -416,7 +412,6 @@ const Main = () => {
 
     // 터미널 검색 결과에서 프로젝트 열기 — 앵커 기본이동이 없으므로 직접 라우팅한다.
     const openProject = useCallback((project) => {
-        if (isWip(project)) return;
         if (project.requiresAdmin && !authService.isAdmin()) {
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
             return;
@@ -639,16 +634,11 @@ const Main = () => {
                         <button type="button" className="k-btn ghost" onClick={() => gotoFilter('experiment')}>실험실 {expCount}개 보기 →</button>
                     </div>
                     <div className="k-srv-grid">
-                        {services.map((p) => {
-                            const wip = isWip(p);
-                            // 개발 중인 서비스는 열 수 없으므로 앵커가 아닌 div로 그린다.
-                            const Card = wip ? 'div' : 'a';
-                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
-                            return (
-                            <Card key={p.id} {...nav} className={`k-srv-card ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
+                        {services.map((p) => (
+                            <a key={p.id} href={p.link} className="k-srv-card" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                 <div className="hd">
                                     <span className="glw">{p.thumbnail || '📦'}</span>
-                                    {wip ? (
+                                    {isWip(p) ? (
                                         <span className="k-stat wip"><span className="sq"></span>개발 중</span>
                                     ) : (
                                         <span className={`k-stat live ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.active === false ? 'paused' : 'live'}</span>
@@ -660,12 +650,11 @@ const Main = () => {
                                 <div className="foot">
                                     <span className="k-chip">{cleanCategory(p.category)}</span>
                                     <span className="since k-mono">since {p.startDate}</span>
-                                    {!wip && <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>}
-                                    <span className="open k-mono">{wip ? '준비 중' : '열기 →'}</span>
+                                    <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
+                                    <span className="open k-mono">열기 →</span>
                                 </div>
-                            </Card>
-                            );
-                        })}
+                            </a>
+                        ))}
                     </div>
                     <div className="k-resize"></div>
                 </section>
@@ -735,15 +724,11 @@ const Main = () => {
                                 <div className="pid">PID</div><div className="state">STATE</div><div className="name">PROCESS</div>
                                 <div className="desc">DESC</div><div className="cat-cell">CAT</div><div className="stack-cell">STACK</div><div className="arrow"></div>
                             </div>
-                            {filtered.map((p, n) => {
-                            const wip = isWip(p);
-                            const Row = wip ? 'div' : 'a';
-                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
-                            return (
-                                <Row key={p.id} {...nav} className={`k-row data ${isPinned(p) ? 'is-pinned' : ''} ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
+                            {filtered.map((p, n) => (
+                                <a key={p.id} href={p.link} className={`k-row data ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="pid">{String(n + 1).padStart(2, '0')}</div>
                                     <div className="state">
-                                        {wip ? (
+                                        {isWip(p) ? (
                                             <span className="k-stat wip"><span className="sq"></span>개발 중</span>
                                         ) : (
                                             <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
@@ -757,19 +742,14 @@ const Main = () => {
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
                                     <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
-                                    <div className="arrow">{wip ? '' : '→'}</div>
-                                </Row>
-                            );
-                            })}
+                                    <div className="arrow">→</div>
+                                </a>
+                            ))}
                         </div>
                     ) : (
                         <div className="k-tiles">
-                            {filtered.map((p) => {
-                            const wip = isWip(p);
-                            const Tile = wip ? 'div' : 'a';
-                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
-                            return (
-                                <Tile key={p.id} {...nav} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''} ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
+                            {filtered.map((p) => (
+                                <a key={p.id} href={p.link} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="k-tile-bar">
                                         <div className="k-dots"><i></i><i></i><i></i></div>
                                         <span className="tname">{p.name}</span>
@@ -778,7 +758,7 @@ const Main = () => {
                                         ) : isPinned(p) && (
                                             <span className="k-pin-mark" title="고정됨"><PinGlyph /></span>
                                         )}
-                                        <span className={`tdot ${wip ? 'wip' : (p.isProduction ? 'live' : '')}`}></span>
+                                        <span className={`tdot ${isWip(p) ? 'wip' : (p.isProduction ? 'live' : '')}`}></span>
                                     </div>
                                     <div className="k-tile-bd">
                                         <div className="gl-row">
@@ -789,14 +769,13 @@ const Main = () => {
                                         <p>{p.description}</p>
                                         <div className="foot">
                                             <span className="k-stack">{renderTechTags(p, 2)}</span>
-                                            {!wip && <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>}
+                                            <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
                                             {renderOriginLink(p)}
-                                            <span className={`open ${wip ? 'wip' : ''}`}>{wip ? '개발 중' : '열기 →'}</span>
+                                            <span className="open">열기 →</span>
                                         </div>
                                     </div>
-                                </Tile>
-                            );
-                            })}
+                                </a>
+                            ))}
                         </div>
                     )}
                     <div className="k-resize"></div>
