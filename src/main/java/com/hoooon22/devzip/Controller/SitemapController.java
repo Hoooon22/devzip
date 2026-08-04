@@ -25,6 +25,7 @@ public class SitemapController {
         addUrl(sitemap, BASE_URL + "/trendchat", "0.8", "daily");
         addUrl(sitemap, BASE_URL + "/physics-quiz", "0.8", "monthly");
         addUrl(sitemap, BASE_URL + "/conflux", "0.7", "monthly");
+        addUrl(sitemap, BASE_URL + "/chora", "0.7", "monthly");
 
         // CommandStack 페이지
         addUrl(sitemap, BASE_URL + "/commandstack", "0.9", "weekly");
