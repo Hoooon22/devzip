@@ -84,6 +84,7 @@ import ReverseSprinkler from './pages/experiments/ReverseSprinkler';
 import Bell from './pages/experiments/Bell';
 import Deniable from './pages/experiments/Deniable';
 import Criticality from './pages/experiments/Criticality';
+import Desalinate from './pages/experiments/Desalinate';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -287,6 +288,7 @@ function App() {
         <Route path="/bell" element={<Bell />} />
         <Route path="/deniable" element={<Deniable />} />
         <Route path="/criticality" element={<Criticality />} />
+        <Route path="/desalinate" element={<Desalinate />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

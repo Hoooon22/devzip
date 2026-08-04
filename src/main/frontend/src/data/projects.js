@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 71,
+        name: 'Desalinate',
+        subtitle: '역삼투압 담수화 (바닷물 → 식수)',
+        description: '삼투압보다 세게 밀어 물만 막을 넘기고 소금은 튕겨내는 역삼투 담수화 실험',
+        link: '/desalinate',
+        active: true,
+        startDate: '2026-08-04',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🧂'
+    },
+    {
         id: 70,
         name: 'Criticality',
         subtitle: '연쇄반응 제어 (지연 중성자 · 원자로 동역학)',

@@ -1,0 +1,188 @@
+/* DESALINATE — 역삼투(RO) 담수화 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   해수 계기판 톤(테마 무관): 심해 남청/식수 청록 배경 60 · 강철 패널 30 ·
+   식수(청록)/삼투(호박)/벽(벽돌) 강조 10. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --de-sea: #2a93b8;     /* 바닷물·식수 (청록) */
+    --de-fresh: #2f9fb8;   /* 역삼투 생산 (청록) */
+    --de-salt: #d1691f;    /* 소금·삼투 (호박) */
+    --de-wall: #b0392c;    /* 삼투압 벽 (벽돌) */
+    --de-steel: #6f7b8a;   /* 강철·보조 */
+    --de-ink0: #08171d;
+}
+.lab-os[data-theme="dark"] {
+    --de-sea: #57c8e6;
+    --de-fresh: #3fc2dd;
+    --de-salt: #e8863a;
+    --de-wall: #d75a4b;
+    --de-steel: #8794a4;
+}
+
+/* ---- 무대 ---- */
+.de-stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.de-cell-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* ---- 셀 (막 시각화) ---- */
+.de-cell {
+    border: 2px solid var(--frame-strong); background: #06121a;
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s;
+}
+.de-cell-head {
+    display: flex; justify-content: space-between;
+    font-size: 0.62rem; letter-spacing: 0.08em;
+    padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.de-tag { font-weight: 700; }
+.de-tag-feed { color: var(--de-steel); }
+.de-tag-perm { color: var(--de-fresh); }
+
+.de-canvas {
+    display: block; width: 100%; height: auto; background: #06121a;
+    image-rendering: auto;
+}
+.de-cell-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.62rem; letter-spacing: 0.05em; color: var(--ink-mute);
+    padding: 8px 12px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.de-badge {
+    font-weight: 700; padding: 2px 8px; border: 1px solid currentColor;
+    font-size: 0.6rem; letter-spacing: 0.04em;
+}
+.de-badge-ro { color: var(--de-fresh); }
+.de-badge-osmo { color: var(--de-salt); }
+.de-badge-eq { color: var(--de-steel); }
+.de-badge-wall { color: var(--de-wall); }
+
+/* ---- 컨트롤 ---- */
+.de-controls { display: flex; flex-direction: column; gap: 16px; }
+.de-ctl { display: flex; flex-direction: column; gap: 7px; }
+.de-ctl-lab {
+    display: flex; flex-direction: column; gap: 2px;
+    font-size: 0.68rem; color: var(--ink-soft);
+}
+.de-ctl-lab b { color: var(--ink); font-size: 0.9rem; }
+.de-ctl-hint { color: var(--ink-mute); font-size: 0.6rem; }
+
+.de-range {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; background: var(--line);
+    border: 1px solid var(--frame); cursor: pointer;
+}
+.de-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 22px; border: 2px solid var(--frame-strong);
+    background: var(--de-fresh); cursor: pointer;
+}
+.de-range-s::-webkit-slider-thumb { background: var(--de-salt); }
+.de-range::-moz-range-thumb {
+    width: 16px; height: 22px; border: 2px solid var(--frame-strong);
+    background: var(--de-fresh); cursor: pointer; border-radius: 0;
+}
+.de-range-s::-moz-range-thumb { background: var(--de-salt); }
+
+.de-scale {
+    display: flex; justify-content: space-between;
+    font-size: 0.58rem; color: var(--ink-mute);
+}
+.de-scale-pi { color: var(--de-salt); font-weight: 700; }
+
+/* ---- 액션 ---- */
+.de-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.de-btn {
+    font-family: inherit; font-size: 0.68rem; font-weight: 700;
+    padding: 7px 12px; border: 2px solid var(--frame-strong);
+    background: var(--panel-2); color: var(--ink); cursor: pointer;
+    letter-spacing: 0.03em; transition: transform 0.05s, background 0.15s;
+}
+.de-btn:active { transform: translateY(1px); }
+.de-btn-warm { background: var(--de-fresh); color: var(--de-ink0); border-color: var(--de-fresh); }
+.de-btn-ghost { background: transparent; }
+.de-speed { display: flex; gap: 4px; margin-left: auto; }
+.de-sbtn {
+    font-family: inherit; font-size: 0.62rem; font-weight: 700;
+    padding: 6px 9px; border: 1px solid var(--frame);
+    background: transparent; color: var(--ink-mute); cursor: pointer;
+}
+.de-sbtn-on { color: var(--ink); border-color: var(--frame-strong); background: var(--panel-2); }
+
+/* ---- 오른쪽 계기판 ---- */
+.de-right { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* 식수 탱크 */
+.de-tank-box {
+    border: 2px solid var(--frame-strong); background: var(--panel);
+    padding: 12px;
+}
+.de-tank-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 0.64rem; color: var(--ink-soft); margin-bottom: 8px;
+}
+.de-rval { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+.de-rval-hit { color: var(--de-fresh); }
+.de-tank {
+    position: relative; height: 26px; border: 1px solid var(--frame);
+    background: #06121a; overflow: hidden;
+}
+.de-tank-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--de-fresh) 80%, transparent) 0 10px,
+        color-mix(in srgb, var(--de-fresh) 55%, transparent) 10px 20px);
+    transition: width 0.12s linear;
+}
+.de-tank-goal {
+    position: absolute; top: 0; bottom: 0; width: 0;
+    border-left: 2px dashed var(--de-salt);
+}
+.de-tank-goal span {
+    position: absolute; top: -1px; left: 4px; font-size: 0.52rem;
+    color: var(--de-salt); white-space: nowrap;
+}
+.de-tank-foot {
+    display: flex; justify-content: space-between;
+    font-size: 0.58rem; color: var(--ink-mute); margin-top: 8px;
+}
+
+/* 게이지 */
+.de-gauges {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.de-gauge {
+    border: 1px solid var(--frame); background: var(--panel-2);
+    padding: 10px; display: flex; flex-direction: column; gap: 2px;
+}
+.de-g-lab { font-size: 0.58rem; color: var(--ink-mute); letter-spacing: 0.03em; }
+.de-g-val { font-size: 1.15rem; font-weight: 700; color: var(--ink); line-height: 1.1; }
+.de-g-sub { font-size: 0.55rem; color: var(--ink-mute); }
+.de-g-ro { border-color: var(--de-fresh); }
+.de-g-osmo { border-color: var(--de-salt); }
+.de-g-wall { border-color: var(--de-wall); }
+
+/* 판정 */
+.de-verdict {
+    border: 1px solid var(--frame); border-left: 4px solid var(--de-steel);
+    background: var(--panel-2); padding: 12px;
+}
+.de-v-ro { border-left-color: var(--de-fresh); }
+.de-v-osmo { border-left-color: var(--de-salt); }
+.de-v-wall { border-left-color: var(--de-wall); }
+.de-verdict-txt { margin: 0; font-size: 0.7rem; line-height: 1.6; color: var(--ink-soft); }
+
+/* ---- 하단 설명 ---- */
+.de-foot { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.de-foot p { margin: 0; font-size: 0.78rem; line-height: 1.75; color: var(--ink-soft); }
+.de-foot b { color: var(--ink); font-weight: 700; }
+.de-disclaimer { font-size: 0.66rem !important; color: var(--ink-mute) !important; }
+
+/* ---- 반응형 ---- */
+@media (max-width: 860px) {
+    .de-stage { grid-template-columns: 1fr; }
+    .de-gauges { grid-template-columns: 1fr 1fr; }
+}
