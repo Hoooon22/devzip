@@ -1,5 +1,20 @@
 const projects = [
     {
+        id: 72,
+        name: 'Chora',
+        subtitle: 'LLM 페르소나 GIS 시뮬레이션',
+        description: '실제 지도로 만든 3D 도시에 LLM 페르소나 에이전트를 풀어 놓는 시뮬레이터',
+        link: '/chora',
+        active: true,
+        wip: true, // 개발 중 — 소개 페이지 공개 전이라 카드는 열리지 않는다
+        startDate: '2026-08-04',
+        endDate: '',
+        category: '프로젝트/시뮬레이션',
+        isProduction: true, // 프로덕션
+        techStack: ['Unity', 'FastAPI'],
+        thumbnail: '🏙️'
+    },
+    {
         id: 71,
         name: 'Desalinate',
         subtitle: '역삼투압 담수화 (바닷물 → 식수)',

@@ -328,6 +328,19 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 .k-stat .sq { width: 7px; height: 7px; background: var(--ink-mute); flex-shrink: 0; }
 .k-stat.live .sq { background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
 .k-stat.off { opacity: 0.5; }
+/* 개발 중(WIP) — 아직 공개 전이라 카드가 열리지 않는다. 링크가 아니므로 hover 반응도 끈다. */
+.k-stat.wip { color: #B0770F; }
+.k-os[data-theme="dark"] .k-stat.wip { color: #E0A44A; }
+.k-stat.wip .sq { background: currentColor; box-shadow: 0 0 0 3px rgba(224,164,74,0.20); }
+.k-srv-card.is-wip, .k-row.data.is-wip, .k-tile.is-wip { cursor: default; }
+.k-srv-card.is-wip:hover { transform: none; border-color: var(--frame); box-shadow: none; }
+.k-srv-card.is-wip:hover::before { opacity: 0; }
+.k-tile.is-wip:hover { transform: none; border-color: var(--frame); box-shadow: none; }
+.k-row.data.is-wip:hover { background: transparent; box-shadow: none; }
+.k-row.data.is-wip:nth-child(even):hover { background: var(--row-alt); }
+.k-srv-card.is-wip .foot .open, .k-tile .foot .open.wip { color: var(--ink-mute); }
+.k-tile .foot .open.wip { margin-left: auto; }
+.k-tile-bar .tdot.wip { background: #E0A44A; box-shadow: 0 0 0 3px rgba(224,164,74,0.20); }
 .k-new { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; background: var(--signal); color: var(--on-signal); padding: 2px 5px; margin-left: 8px; vertical-align: 2px; }
 /* 고정(핀) — 압정 아이콘 하나로 통일. 관리자는 토글 버튼, 일반 사용자는 정적 마크/배지 */
 .k-pin-svg { width: 100%; height: 100%; display: block; }

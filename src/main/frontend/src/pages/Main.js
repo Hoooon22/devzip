@@ -58,7 +58,7 @@ const writePref = (key, value) => {
 const buildHeroStats = (allProjects) => allProjects.reduce((acc, p) => {
     if (p.isProduction) {
         acc.production.total += 1;
-        if (p.active !== false) {
+        if (p.active !== false && p.wip !== true) {
             acc.production.active += 1;
             acc.production.names.push(p.name);
         }
@@ -85,6 +85,10 @@ const cleanCategory = (raw) => {
 const NEW_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 const isNewProject = (p) =>
     Boolean(p.startDate) && (Date.now() - new Date(p.startDate).getTime()) < NEW_WINDOW_MS;
+
+// 아직 공개하지 않은 프로젝트. 카드는 "개발 중"으로 보이되 링크로 열리지 않는다
+// (App.js에 라우트가 없으므로 열리면 404가 된다).
+const isWip = (p) => p.wip === true;
 
 const openExternal = (url) => window.open(url, '_blank', 'noopener,noreferrer');
 
@@ -302,11 +306,11 @@ const Main = () => {
     }, [award]);
 
     const heroStats = useMemo(() => buildHeroStats(projects), []);
-    // 홈 상단 쇼케이스에 크게 노출할 운영 서비스 — 최신 시작순.
+    // 홈 상단 쇼케이스에 크게 노출할 운영 서비스 — 최신 시작순, 개발 중인 것은 맨 뒤.
     const services = useMemo(() => (
         projects
             .filter(p => p.isProduction)
-            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+            .sort((a, b) => (isWip(a) - isWip(b)) || (new Date(b.startDate) - new Date(a.startDate)))
     ), []);
     const totalCount = projects.length;
     const prodCount = heroStats.production.total;
@@ -314,7 +318,7 @@ const Main = () => {
 
     const latestProject = useMemo(() => (
         [...projects]
-            .filter(p => p.startDate)
+            .filter(p => p.startDate && !isWip(p))
             .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0] || null
     ), []);
 
@@ -394,6 +398,10 @@ const Main = () => {
     }, [award]);
 
     const handleProjectClick = (e, project) => {
+        if (isWip(project)) {
+            e.preventDefault();
+            return;
+        }
         if (project.requiresAdmin && !authService.isAdmin()) {
             e.preventDefault();
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
@@ -408,6 +416,7 @@ const Main = () => {
 
     // 터미널 검색 결과에서 프로젝트 열기 — 앵커 기본이동이 없으므로 직접 라우팅한다.
     const openProject = useCallback((project) => {
+        if (isWip(project)) return;
         if (project.requiresAdmin && !authService.isAdmin()) {
             alert('이 프로젝트에 접근하려면 관리자 권한이 필요합니다.');
             return;
@@ -489,7 +498,7 @@ const Main = () => {
         ];
         const projs = filtered.map((p) => ({
             id: `p-${p.id}`, group: '프로젝트', icon: p.thumbnail || '📦', title: p.name,
-            hint: p.isProduction ? 'live' : 'lab', keywords: `${p.description} ${cleanCategory(p.category)}`,
+            hint: isWip(p) ? 'wip' : (p.isProduction ? 'live' : 'lab'), keywords: `${p.description} ${cleanCategory(p.category)}`,
             run: () => handleProjectClick({ preventDefault() {} }, p),
         }));
         return [...nav, ...sys, ...projs];
@@ -630,11 +639,20 @@ const Main = () => {
                         <button type="button" className="k-btn ghost" onClick={() => gotoFilter('experiment')}>실험실 {expCount}개 보기 →</button>
                     </div>
                     <div className="k-srv-grid">
-                        {services.map((p) => (
-                            <a key={p.id} href={p.link} className="k-srv-card" onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                        {services.map((p) => {
+                            const wip = isWip(p);
+                            // 개발 중인 서비스는 열 수 없으므로 앵커가 아닌 div로 그린다.
+                            const Card = wip ? 'div' : 'a';
+                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
+                            return (
+                            <Card key={p.id} {...nav} className={`k-srv-card ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
                                 <div className="hd">
                                     <span className="glw">{p.thumbnail || '📦'}</span>
-                                    <span className={`k-stat live ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.active === false ? 'paused' : 'live'}</span>
+                                    {wip ? (
+                                        <span className="k-stat wip"><span className="sq"></span>개발 중</span>
+                                    ) : (
+                                        <span className={`k-stat live ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.active === false ? 'paused' : 'live'}</span>
+                                    )}
                                 </div>
                                 <h3>{p.name}{isNewProject(p) && <span className="k-new">NEW</span>}</h3>
                                 {p.subtitle && <span className="sub">{p.subtitle}</span>}
@@ -642,11 +660,12 @@ const Main = () => {
                                 <div className="foot">
                                     <span className="k-chip">{cleanCategory(p.category)}</span>
                                     <span className="since k-mono">since {p.startDate}</span>
-                                    <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
-                                    <span className="open k-mono">열기 →</span>
+                                    {!wip && <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>}
+                                    <span className="open k-mono">{wip ? '준비 중' : '열기 →'}</span>
                                 </div>
-                            </a>
-                        ))}
+                            </Card>
+                            );
+                        })}
                     </div>
                     <div className="k-resize"></div>
                 </section>
@@ -716,11 +735,19 @@ const Main = () => {
                                 <div className="pid">PID</div><div className="state">STATE</div><div className="name">PROCESS</div>
                                 <div className="desc">DESC</div><div className="cat-cell">CAT</div><div className="stack-cell">STACK</div><div className="arrow"></div>
                             </div>
-                            {filtered.map((p, n) => (
-                                <a key={p.id} href={p.link} className={`k-row data ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                            {filtered.map((p, n) => {
+                            const wip = isWip(p);
+                            const Row = wip ? 'div' : 'a';
+                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
+                            return (
+                                <Row key={p.id} {...nav} className={`k-row data ${isPinned(p) ? 'is-pinned' : ''} ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="pid">{String(n + 1).padStart(2, '0')}</div>
                                     <div className="state">
-                                        <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
+                                        {wip ? (
+                                            <span className="k-stat wip"><span className="sq"></span>개발 중</span>
+                                        ) : (
+                                            <span className={`k-stat ${p.isProduction ? 'live' : 'lab'} ${p.active === false ? 'off' : ''}`}><span className="sq"></span>{p.isProduction ? 'live' : 'lab'}</span>
+                                        )}
                                     </div>
                                     <div className="name">{p.thumbnail} {p.name}{isNewProject(p) && <span className="k-new">NEW</span>}{isAdmin ? (
                                         <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
@@ -730,14 +757,19 @@ const Main = () => {
                                     <div className="desc">{p.description}</div>
                                     <div className="cat-cell"><span className="k-chip">{cleanCategory(p.category)}</span></div>
                                     <div className="stack-cell"><span className="k-stack">{renderTechTags(p, 2)}</span></div>
-                                    <div className="arrow">→</div>
-                                </a>
-                            ))}
+                                    <div className="arrow">{wip ? '' : '→'}</div>
+                                </Row>
+                            );
+                            })}
                         </div>
                     ) : (
                         <div className="k-tiles">
-                            {filtered.map((p) => (
-                                <a key={p.id} href={p.link} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
+                            {filtered.map((p) => {
+                            const wip = isWip(p);
+                            const Tile = wip ? 'div' : 'a';
+                            const nav = wip ? {} : { href: p.link, onClick: (e) => handleProjectClick(e, p) };
+                            return (
+                                <Tile key={p.id} {...nav} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''} ${wip ? 'is-wip' : ''}`} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="k-tile-bar">
                                         <div className="k-dots"><i></i><i></i><i></i></div>
                                         <span className="tname">{p.name}</span>
@@ -746,7 +778,7 @@ const Main = () => {
                                         ) : isPinned(p) && (
                                             <span className="k-pin-mark" title="고정됨"><PinGlyph /></span>
                                         )}
-                                        <span className={`tdot ${p.isProduction ? 'live' : ''}`}></span>
+                                        <span className={`tdot ${wip ? 'wip' : (p.isProduction ? 'live' : '')}`}></span>
                                     </div>
                                     <div className="k-tile-bd">
                                         <div className="gl-row">
@@ -757,13 +789,14 @@ const Main = () => {
                                         <p>{p.description}</p>
                                         <div className="foot">
                                             <span className="k-stack">{renderTechTags(p, 2)}</span>
-                                            <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>
+                                            {!wip && <span className="views k-mono">👁 {(viewCounts[p.link] || 0).toLocaleString()}</span>}
                                             {renderOriginLink(p)}
-                                            <span className="open">열기 →</span>
+                                            <span className={`open ${wip ? 'wip' : ''}`}>{wip ? '개발 중' : '열기 →'}</span>
                                         </div>
                                     </div>
-                                </a>
-                            ))}
+                                </Tile>
+                            );
+                            })}
                         </div>
                     )}
                     <div className="k-resize"></div>

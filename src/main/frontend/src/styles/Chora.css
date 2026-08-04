@@ -1,0 +1,585 @@
+/* Chora 소개 페이지
+   홈(Main.scss)의 커널 테마 위에 얹는다 — .k-os / .k-win / .k-btn / .k-eyebrow 는
+   그대로 쓰고, 이 파일은 이 페이지에만 필요한 배치와 활자만 정의한다.
+   색은 전부 Main.scss 의 CSS 변수를 쓰므로 라이트/다크가 자동으로 따라온다. */
+
+.chora-desk {
+    max-width: 1120px;
+}
+
+/* .k-btn 은 홈에서 <button> 에만 쓰여 밑줄 해제가 없다 — 링크로 쓰는 이 페이지에서 끈다. */
+.chora-os a.k-btn {
+    text-decoration: none;
+}
+
+/* Main.scss 의 `.k-os[data-theme="dark"] .k-btn`(0,3,0)이 `.k-btn.ghost`(0,2,0)를 이겨
+   다크에서 ghost 버튼 글자가 배경과 같은 색이 된다. 이 페이지에서만 되돌린다. */
+.chora-os[data-theme="dark"] a.k-btn.ghost {
+    color: var(--ink);
+}
+
+.chora-os[data-theme="dark"] a.k-btn.ghost:hover {
+    color: var(--desk);
+}
+
+.chora-os code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    background: var(--row-alt);
+    color: var(--ink-soft);
+}
+
+/* 공통 본문 블록 */
+.chora-bd {
+    padding: 30px 32px 32px;
+}
+
+.chora-bd.center {
+    text-align: center;
+    padding: 44px 32px 48px;
+}
+
+.chora-h2 {
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+.chora-sub {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin: 0 0 26px;
+    max-width: 62ch;
+}
+
+.chora-bd.center .chora-sub {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── 히어로 ── */
+.chora-hero {
+    border-color: var(--frame-strong);
+}
+
+.chora-hero::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: var(--signal);
+}
+
+.chora-hero-bd {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+}
+
+.chora-hero-bd .tx {
+    padding: 40px 40px 38px;
+    min-width: 0;
+}
+
+.chora-hero-bd h1 {
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    margin: 0 0 20px;
+}
+
+.chora-hero-bd h1 .mk {
+    color: var(--signal);
+}
+
+.chora-hero-bd .lead {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+}
+
+.chora-hero-bd .tx > p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+    max-width: 50ch;
+}
+
+/* 히어로 우측: 자연어 명령 → 환경 op 로그 */
+.chora-prompt {
+    border-left: 1px solid var(--line);
+    background: var(--desk-2);
+    padding: 26px 24px;
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--ink-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chora-prompt .ln.in {
+    color: var(--ink);
+    margin-bottom: 12px;
+    line-height: 1.7;
+}
+
+.chora-prompt .caret {
+    color: var(--signal);
+    margin-right: 6px;
+}
+
+.chora-prompt .ok {
+    color: var(--signal);
+}
+
+.chora-prompt .dim {
+    color: var(--ink-mute);
+}
+
+.chora-prompt .out {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    line-height: 1.75;
+}
+
+.chora-prompt .cur {
+    color: var(--signal);
+    margin-left: 4px;
+}
+
+/* ── 왜 만드는가 ── */
+.chora-two {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.chora-note {
+    padding: 24px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+}
+
+.chora-note h3 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+}
+
+.chora-note p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin: 0;
+}
+
+.chora-note b {
+    color: var(--signal);
+    font-weight: 600;
+}
+
+.chora-lede {
+    margin: 26px 0 0;
+    padding-left: 16px;
+    border-left: 3px solid var(--signal);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink);
+    max-width: 66ch;
+}
+
+/* ── 결정 로그 ── */
+.chora-log {
+    margin: 0;
+    padding: 24px 26px;
+    overflow-x: auto;
+    background: var(--desk-2);
+    border: 1px solid var(--line);
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: var(--ink-soft);
+    white-space: pre;
+}
+
+.chora-log code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: inherit;
+    color: inherit;
+}
+
+.chora-cap {
+    margin: 16px 0 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-mute);
+    max-width: 72ch;
+}
+
+/* ── 기능 카드 ── */
+/* 4개 카드가 2×2 로 떨어지도록 — auto-fit 3열이면 마지막 한 장이 혼자 남는다. */
+.chora-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.chora-card {
+    padding: 24px 22px 22px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    transition: border-color 0.16s, transform 0.16s;
+}
+
+.chora-card:hover {
+    border-color: var(--signal);
+    transform: translateY(-2px);
+}
+
+.chora-card .glw {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    margin-bottom: 16px;
+}
+
+.chora-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.chora-card .sub {
+    display: block;
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--signal);
+}
+
+.chora-card > p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin: 12px 0 16px;
+}
+
+.chora-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+}
+
+.chora-card li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-mute);
+}
+
+.chora-card li:last-child {
+    margin-bottom: 0;
+}
+
+.chora-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    background: var(--signal);
+}
+
+/* ── 동작 원리 ── */
+.chora-rules {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+}
+
+.chora-rule {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 18px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+
+.chora-rule:last-child {
+    border-bottom: 0;
+}
+
+.chora-rule .no {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--signal);
+    line-height: 1.3;
+}
+
+.chora-rule h3 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+}
+
+.chora-rule p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 72ch;
+}
+
+/* ── 게이지 ── */
+.chora-gauges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.chora-gauge {
+    padding: 22px 24px 24px;
+}
+
+.chora-gauge .val {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--signal);
+}
+
+.chora-gauge .label {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-mute);
+}
+
+.chora-gauge p {
+    margin: 14px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+}
+
+.chora-gauge b {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+/* ── 기술 스택 ── */
+.chora-stack .row {
+    display: grid;
+    grid-template-columns: 130px 1fr 1.1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.chora-stack .row:last-child {
+    border-bottom: 0;
+}
+
+.chora-stack .row:nth-child(even) {
+    background: var(--row-alt);
+}
+
+.chora-stack .area {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal);
+}
+
+.chora-stack .name {
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.chora-stack .note {
+    font-size: 12px;
+    color: var(--ink-mute);
+}
+
+/* ── 로드맵 ── */
+.chora-phases .row {
+    display: grid;
+    grid-template-columns: 90px 1fr 72px;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.chora-phases .row:nth-child(even) {
+    background: var(--row-alt);
+}
+
+.chora-phases .row.backlog {
+    opacity: 0.55;
+}
+
+.chora-phases .tag {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--signal);
+}
+
+.chora-phases .bd {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+}
+
+.chora-phases .st {
+    font-size: 11.5px;
+    text-align: right;
+    color: var(--ink-mute);
+    white-space: nowrap;
+}
+
+/* 아직 검증되지 않은 것 — 시그널 대신 눈에 띄되 경고처럼 보이지 않게 */
+.chora-warn {
+    padding: 22px 24px;
+    background: var(--signal-soft);
+    border: 1px solid var(--signal);
+}
+
+.chora-warn h3 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin: 0 0 12px;
+}
+
+.chora-warn ul {
+    margin: 0 0 12px;
+    padding-left: 18px;
+}
+
+.chora-warn li {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--ink);
+}
+
+.chora-warn p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+/* ── CTA ── */
+.chora-cta {
+    border-color: var(--frame-strong);
+}
+
+.k-cta.center {
+    justify-content: center;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 940px) {
+    .chora-hero-bd {
+        grid-template-columns: 1fr;
+    }
+
+    .chora-prompt {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+    }
+
+    .chora-hero-bd h1 {
+        font-size: 40px;
+    }
+
+    .chora-gauges {
+        grid-template-columns: 1fr;
+    }
+
+    .chora-stack .row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 620px) {
+    .chora-bd,
+    .chora-bd.center {
+        padding: 24px 18px 26px;
+    }
+
+    .chora-hero-bd .tx {
+        padding: 28px 18px 26px;
+    }
+
+    .chora-hero-bd h1 {
+        font-size: 32px;
+    }
+
+    .chora-h2 {
+        font-size: 22px;
+    }
+
+    .chora-rule {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 18px;
+    }
+
+    .chora-phases .row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 14px 18px;
+    }
+
+    .chora-phases .st {
+        text-align: left;
+    }
+
+    .chora-stack .row {
+        padding: 14px 18px;
+    }
+
+    .chora-log {
+        font-size: 11.5px;
+        padding: 16px 18px;
+    }
+
+    .chora-os .k-btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+    }
+}
