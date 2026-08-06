@@ -1,0 +1,156 @@
+/* RADIANT — 유성우 복사점 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   밤하늘 계기판 톤(테마 무관): 심야 남청 하늘 배경 60 · 강철 슬레이트 패널 30 ·
+   유성(따뜻한 아이보리·호박) + 복사점(청록) 강조 10. AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --rad-meteor: #e2963f;   /* 유성 꼬리 (호박) */
+    --rad-radiant: #38b2c8;  /* 복사점 (청록) */
+    --rad-steel: #6f7b8a;    /* 강철·보조 */
+    --rad-hi: #4bb87a;       /* 활발 (초록) */
+    --rad-lo: #c4703a;       /* 한산 (구리) */
+}
+.lab-os[data-theme="dark"] {
+    --rad-meteor: #f0a656;
+    --rad-radiant: #4fd0e0;
+    --rad-steel: #8794a4;
+    --rad-hi: #5fce8e;
+    --rad-lo: #d8834a;
+}
+
+/* ---- 무대 ---- */
+.rad-stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.rad-sky-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* ---- 하늘 캔버스 ---- */
+.rad-sky {
+    border: 2px solid var(--frame-strong); background: #05070f;
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s;
+}
+.rad-canvas {
+    display: block; width: 100%; height: auto; background: #05070f;
+}
+.rad-sky-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.62rem; letter-spacing: 0.04em; color: var(--ink-mute);
+    padding: 8px 12px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.rad-badge {
+    font-weight: 700; padding: 2px 8px; border: 1px solid currentColor;
+    font-size: 0.6rem; letter-spacing: 0.04em;
+}
+.rad-badge-hi { color: var(--rad-hi); }
+.rad-badge-mid { color: var(--rad-radiant); }
+.rad-badge-lo { color: var(--rad-lo); }
+.rad-badge-down { color: var(--rad-meteor); }
+
+/* ---- 컨트롤 ---- */
+.rad-controls { display: flex; flex-direction: column; gap: 16px; }
+.rad-ctl { display: flex; flex-direction: column; gap: 7px; }
+.rad-ctl-lab {
+    display: flex; flex-direction: column; gap: 2px;
+    font-size: 0.68rem; color: var(--ink-soft);
+}
+.rad-ctl-lab b { color: var(--ink); font-size: 0.9rem; }
+.rad-ctl-hint { color: var(--ink-mute); font-size: 0.6rem; }
+
+.rad-range {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; background: var(--line);
+    border: 1px solid var(--frame); cursor: pointer;
+}
+.rad-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 22px; border: 2px solid var(--frame-strong);
+    background: var(--rad-radiant); cursor: pointer;
+}
+.rad-range-z::-webkit-slider-thumb { background: var(--rad-meteor); }
+.rad-range-m::-webkit-slider-thumb { background: var(--rad-steel); }
+.rad-range::-moz-range-thumb {
+    width: 16px; height: 22px; border: 2px solid var(--frame-strong);
+    background: var(--rad-radiant); cursor: pointer; border-radius: 0;
+}
+.rad-range-z::-moz-range-thumb { background: var(--rad-meteor); border-radius: 0; }
+.rad-range-m::-moz-range-thumb { background: var(--rad-steel); border-radius: 0; }
+
+.rad-scale {
+    display: flex; justify-content: space-between;
+    font-size: 0.56rem; color: var(--ink-mute); letter-spacing: 0.02em;
+}
+
+/* ---- 토글 ---- */
+.rad-toggles { display: flex; gap: 10px; flex-wrap: wrap; }
+.rad-toggle {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 12px; font-size: 0.66rem; letter-spacing: 0.03em;
+    border: 1px solid var(--frame); background: transparent;
+    color: var(--ink-soft); cursor: pointer; transition: all 0.15s;
+}
+.rad-toggle .dot {
+    width: 9px; height: 9px; border: 1px solid var(--rad-steel);
+    background: transparent; display: inline-block;
+}
+.rad-toggle.on { color: var(--ink); border-color: var(--rad-radiant); }
+.rad-toggle.on .dot { background: var(--rad-radiant); border-color: var(--rad-radiant); }
+
+/* ---- 재생/가속 ---- */
+.rad-run { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.rad-btn {
+    padding: 8px 14px; font-size: 0.68rem; font-weight: 700;
+    border: 1px solid var(--frame-strong); background: var(--rad-radiant);
+    color: #05070f; cursor: pointer; letter-spacing: 0.03em;
+}
+.rad-btn-ghost { background: transparent; color: var(--ink-soft); }
+.rad-accel {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.6rem; color: var(--ink-mute); margin-left: auto;
+}
+.rad-accel-b {
+    padding: 4px 8px; font-size: 0.6rem; border: 1px solid var(--frame);
+    background: transparent; color: var(--ink-soft); cursor: pointer;
+}
+.rad-accel-b.on { background: var(--rad-meteor); color: #05070f; border-color: var(--rad-meteor); }
+
+/* ---- 오른쪽 계기판 ---- */
+.rad-side { display: flex; flex-direction: column; gap: 14px; }
+.rad-hud {
+    border: 1px solid var(--frame); padding: 14px;
+    background: color-mix(in srgb, var(--rad-radiant) 6%, transparent);
+}
+.rad-hud-row { display: flex; justify-content: space-between; align-items: baseline; }
+.rad-hud-k { font-size: 0.66rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+.rad-hud-big { font-size: 2rem; font-weight: 800; color: var(--rad-radiant); line-height: 1; }
+.rad-hud-big em { font-size: 0.7rem; font-weight: 600; color: var(--ink-mute); margin-left: 4px; font-style: normal; }
+.rad-hud-sub { font-size: 0.62rem; color: var(--ink-mute); margin-top: 4px; }
+.rad-hud-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px;
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+}
+.rad-hud-grid div { display: flex; flex-direction: column; gap: 2px; }
+.rad-hud-grid span { font-size: 0.58rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.rad-hud-grid b { font-size: 1rem; color: var(--ink); }
+.rad-hud-note {
+    margin-top: 12px; font-size: 0.6rem; line-height: 1.5;
+    color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 10px;
+}
+
+.rad-read { border: 1px solid var(--frame); padding: 14px; }
+.rad-read h3 {
+    font-size: 0.74rem; color: var(--rad-meteor); margin: 0 0 6px;
+    letter-spacing: 0.02em;
+}
+.rad-read h3:not(:first-child) { margin-top: 14px; }
+.rad-read p {
+    font-size: 0.7rem; line-height: 1.65; color: var(--ink-soft); margin: 0;
+}
+.rad-read b { color: var(--ink); font-weight: 700; }
+
+/* ---- 반응형 ---- */
+@media (max-width: 880px) {
+    .rad-stage { grid-template-columns: 1fr; }
+    .rad-accel { margin-left: 0; }
+}

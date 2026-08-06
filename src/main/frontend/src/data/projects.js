@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 73,
+        name: 'Radiant',
+        subtitle: '유성우의 복사점 (평행 유성의 원근 착시)',
+        description: '나란히 떨어지는 유성이 하늘 한 점에서 뻗어 나오는 것처럼 보이는 복사점 실험',
+        link: '/radiant',
+        active: true,
+        startDate: '2026-08-06',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '☄️'
+    },
+    {
         id: 72,
         name: 'Chora',
         subtitle: 'LLM 페르소나 GIS 시뮬레이션',
