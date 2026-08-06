@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 74,
+        name: 'Syzygy',
+        subtitle: '식(蝕)의 그림자 기하 (엄브라·안텀브라)',
+        description: '각지름이 맞으면 개기, 모자라면 금환 — 세 천체 정렬과 그림자 원뿔 실험',
+        link: '/syzygy',
+        active: true,
+        startDate: '2026-08-06',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🌑'
+    },
+    {
         id: 73,
         name: 'Radiant',
         subtitle: '유성우의 복사점 (평행 유성의 원근 착시)',
