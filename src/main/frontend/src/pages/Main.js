@@ -629,7 +629,7 @@ const Main = () => {
                         <div className="tx">
                             <span className="k-eyebrow"><span className="sq"></span>production</span>
                             <h2>지금 운영 중인 서비스</h2>
-                            <p>실험이 아니라 계속 쓰라고 만들고, 계속 고치고 있는 것들입니다.</p>
+                            <p>직접 쓰려고 만들었고, 쓰면서 불편한 곳을 계속 다듬고 있습니다. 편하게 둘러보세요.</p>
                         </div>
                         <button type="button" className="k-btn ghost" onClick={() => gotoFilter('experiment')}>실험실 {expCount}개 보기 →</button>
                     </div>
