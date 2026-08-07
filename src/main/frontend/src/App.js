@@ -88,6 +88,7 @@ import Criticality from './pages/experiments/Criticality';
 import Desalinate from './pages/experiments/Desalinate';
 import Radiant from './pages/experiments/Radiant';
 import Syzygy from './pages/experiments/Syzygy';
+import Drydown from './pages/experiments/Drydown';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -297,6 +298,7 @@ function App() {
         <Route path="/desalinate" element={<Desalinate />} />
         <Route path="/radiant" element={<Radiant />} />
         <Route path="/syzygy" element={<Syzygy />} />
+        <Route path="/drydown" element={<Drydown />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

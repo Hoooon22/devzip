@@ -1,0 +1,147 @@
+/* DRYDOWN — 향의 시간 전개(차등 휘발·향 피라미드) 실험
+   공용 커널 셸(.lab-os)의 팔레트·창 크롬·모노 폰트를 소비한다.
+   뷰 스테이지는 향수를 연상시키는 웜톤으로 고정(테마 무관):
+   짙은 앰버-브라운 배경 60 · 강철 패널 30 · 노트 3색(라임/로즈/앰버) 강조 10.
+   AI풍 보라 그라데이션은 쓰지 않는다. */
+
+.lab-os {
+    --dd-top: #8fae2a;    /* 탑(시트러스·라임) */
+    --dd-heart: #d0657f;  /* 미들(플로럴·로즈) */
+    --dd-base: #c8892f;   /* 베이스(웜·앰버) — 강조 10% */
+    --dd-steel: #6f7b8a;  /* 강철·보조 30% */
+}
+.lab-os[data-theme="dark"] {
+    --dd-top: #b6d43e;
+    --dd-heart: #e58aa2;
+    --dd-base: #e0a53f;
+    --dd-steel: #8794a4;
+}
+
+/* ---- 무대 ---- */
+.dd-stage {
+    display: grid; grid-template-columns: 1fr minmax(230px, 280px);
+    gap: 22px; padding: 22px 18px; align-items: start;
+}
+.dd-view-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.dd-screen {
+    position: relative; border: 2px solid var(--frame-strong); background: #17120c;
+    padding: 6px; line-height: 0; width: 100%;
+}
+.dd-canvas { width: 100%; height: auto; display: block; aspect-ratio: 620 / 300; }
+
+/* ---- 범례 ---- */
+.dd-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 0 2px; }
+.dd-leg { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--ink-soft); }
+.dd-leg i { width: 12px; height: 12px; border: 1px solid var(--frame); }
+.dd-leg b { color: var(--ink); font-weight: 600; }
+.dd-leg-note { font-size: 0.56rem; color: var(--ink-mute); margin-left: auto; }
+
+/* ---- 시간 스크러버 ---- */
+.dd-scrub {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border: 1px solid var(--line); background: var(--panel-2);
+}
+.dd-time { flex: 1; accent-color: var(--dd-base); cursor: pointer; height: 20px; }
+.dd-clock { font-size: 0.82rem; color: var(--ink); font-weight: 600; min-width: 74px; text-align: right; }
+
+.dd-view-foot { font-size: 0.7rem; color: var(--ink-mute); line-height: 1.6; }
+.dd-view-foot b { color: var(--ink-soft); font-weight: 600; }
+
+/* ---- 오른쪽 계기판 ---- */
+.dd-right { display: flex; flex-direction: column; gap: 14px; }
+
+.dd-now {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 14px 16px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.2s, background 0.2s;
+}
+.dd-now-lab { font-size: 0.6rem; color: var(--ink-mute); letter-spacing: 0.02em; }
+.dd-now-phase { font-size: 1.7rem; font-weight: 700; line-height: 1.05; color: var(--ink); }
+.dd-now-note { font-size: 0.64rem; color: var(--ink-mute); }
+.dd-top .dd-now-phase { color: var(--dd-top); }
+.dd-heart .dd-now-phase { color: var(--dd-heart); }
+.dd-base .dd-now-phase { color: var(--dd-base); }
+.dd-now.dd-top { border-color: color-mix(in srgb, var(--dd-top) 55%, var(--line)); background: color-mix(in srgb, var(--dd-top) 8%, transparent); }
+.dd-now.dd-heart { border-color: color-mix(in srgb, var(--dd-heart) 55%, var(--line)); background: color-mix(in srgb, var(--dd-heart) 8%, transparent); }
+.dd-now.dd-base { border-color: color-mix(in srgb, var(--dd-base) 55%, var(--line)); background: color-mix(in srgb, var(--dd-base) 8%, transparent); }
+
+/* ---- 구성비 막대 ---- */
+.dd-shares { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2); }
+.dd-share { display: grid; grid-template-columns: 52px 1fr 40px; align-items: center; gap: 8px; }
+.dd-share-lab { display: inline-flex; align-items: center; gap: 5px; font-size: 0.66rem; color: var(--ink-soft); }
+.dd-share-lab i { width: 9px; height: 9px; }
+.dd-share-track { height: 9px; border: 1px solid var(--frame); background: var(--ink); overflow: hidden; }
+.dd-share-fill { height: 100%; transition: width 0.12s linear; }
+.dd-share-num { font-size: 0.66rem; color: var(--ink-soft); text-align: right; }
+
+/* ---- 잔향(실라주) 미터 ---- */
+.dd-proj { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2); }
+.dd-proj-lab { font-size: 0.62rem; color: var(--ink-mute); }
+.dd-proj-track { height: 12px; border: 1px solid var(--frame); background: var(--ink); overflow: hidden; }
+.dd-proj-fill {
+    height: 100%; transition: width 0.12s linear;
+    background: linear-gradient(90deg, var(--dd-steel), var(--dd-base));
+}
+.dd-proj-num { font-size: 0.78rem; color: var(--ink); font-weight: 600; text-align: right; }
+
+/* ---- 한줄 판정 ---- */
+.dd-verdict { padding: 12px 14px; border: 1px solid var(--line); background: var(--panel-2); min-height: 54px; display: flex; align-items: center; }
+.dd-verdict p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); font-weight: 600; }
+.dd-verdict.dd-top { border-color: color-mix(in srgb, var(--dd-top) 45%, var(--line)); }
+.dd-verdict.dd-heart { border-color: color-mix(in srgb, var(--dd-heart) 45%, var(--line)); }
+.dd-verdict.dd-base { border-color: color-mix(in srgb, var(--dd-base) 45%, var(--line)); }
+
+/* ---- 프리셋 ---- */
+.dd-presets { display: flex; flex-direction: column; gap: 7px; }
+.dd-presets-lab { font-size: 0.58rem; color: var(--ink-mute); letter-spacing: 0.04em; }
+.dd-presets-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+/* ---- 버튼 ---- */
+.dd-btn {
+    font-family: var(--font-ui); font-size: 0.8rem; font-weight: 500;
+    color: var(--desk); background: var(--ink);
+    border: 1px solid var(--frame-strong); padding: 0.44rem 0.72rem; cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s, transform 0.14s, filter 0.14s;
+}
+.dd-btn:hover { transform: translateY(-1px); }
+.dd-btn-hot { background: var(--dd-base); border-color: var(--dd-base); color: #201404; font-weight: 600; }
+.dd-btn-hot:hover { filter: brightness(1.08); }
+.dd-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); font-size: 0.74rem; }
+.dd-btn-ghost:hover { background: var(--ink); color: var(--desk); transform: none; }
+
+/* ---- 팔레트 ---- */
+.dd-palette {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px; padding: 18px;
+}
+.dd-card {
+    display: flex; flex-direction: column; gap: 5px;
+    padding: 11px 12px; border: 1px solid var(--line); background: var(--panel-2);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.dd-card.on { border-color: var(--c); box-shadow: inset 3px 0 0 var(--c); }
+.dd-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.dd-card-name { font-size: 0.94rem; font-weight: 600; color: var(--ink); }
+.dd-card-tag { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.04em; }
+.dd-card-hint { font-size: 0.6rem; color: var(--ink-mute); }
+.dd-card-hl { font-size: 0.58rem; color: var(--ink-soft); }
+.dd-card-ctl { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.dd-step {
+    width: 26px; height: 26px; flex-shrink: 0; font-size: 1rem; line-height: 1;
+    border: 1px solid var(--frame); background: var(--panel); color: var(--ink);
+    cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.dd-step:hover { background: var(--ink); color: var(--desk); border-color: var(--ink); }
+.dd-card-drops { font-size: 0.9rem; font-weight: 700; color: var(--ink); min-width: 14px; text-align: center; }
+
+/* ---- README ---- */
+.dd-foot { padding: 22px 24px 26px; display: grid; gap: 12px; }
+.dd-foot p { margin: 0; font-size: 0.92rem; line-height: 1.72; color: var(--ink-soft); }
+.dd-foot b { color: var(--ink); font-weight: 600; }
+.dd-disclaimer { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--ink-mute) !important; line-height: 1.6 !important; }
+
+@media (max-width: 760px) {
+    .dd-stage { grid-template-columns: 1fr; }
+    .dd-legend { flex-direction: row; }
+    .dd-leg-note { margin-left: 0; width: 100%; }
+}

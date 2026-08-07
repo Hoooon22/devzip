@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 75,
+        name: 'Drydown',
+        subtitle: '향의 시간 전개 (탑·미들·베이스 노트)',
+        description: '휘발 속도가 다른 향 분자가 시간에 따라 층층이 드러나는 잔향 전개 실험',
+        link: '/drydown',
+        active: true,
+        startDate: '2026-08-07',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🌸'
+    },
+    {
         id: 74,
         name: 'Syzygy',
         subtitle: '식(蝕)의 그림자 기하 (엄브라·안텀브라)',
