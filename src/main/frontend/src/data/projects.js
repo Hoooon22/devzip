@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 76,
+        name: 'Wildcard',
+        subtitle: '조별 3위 줄 세우기 (와일드카드 진출)',
+        description: '서로 만난 적 없는 12개 조의 3위를 한 줄로 세워 8팀만 살리는 와일드카드 진출 실험',
+        link: '/wildcard',
+        active: true,
+        startDate: '2026-08-10',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '⚽'
+    },
+    {
         id: 75,
         name: 'Drydown',
         subtitle: '향의 시간 전개 (탑·미들·베이스 노트)',

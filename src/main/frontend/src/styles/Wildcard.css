@@ -1,0 +1,162 @@
+/* WILDCARD — 조별 3위 줄 세우기(와일드카드 진출).
+   LabShell 토큰(--panel/--ink/--frame …) 위에 스코어보드 톤을 얹는다.
+   색 배분 60-30-10: 중립 패널(60%) / 진출 그린(30%) / 와일드카드 앰버(10%). 빨강은 탈락 표시용 최소. */
+
+.lab-os .wc-ctrl-win,
+.lab-os .wc-metric-win,
+.lab-os .wc-groups-win,
+.lab-os .wc-lead-win,
+.lab-os .wc-mc-win,
+.lab-os .wc-foot-win {
+  --wc-go: #2f9e44;          /* 진출(직행) — 그린, 보조색 30% */
+  --wc-go-soft: rgba(47,158,68,0.12);
+  --wc-flag: #e8590c;        /* 와일드카드/강조 — 번트 오렌지, 포인트 10% */
+  --wc-flag-soft: rgba(232,89,12,0.12);
+  --wc-out: #c92a2a;         /* 탈락 — 레드, 기능색 */
+  --wc-out-soft: rgba(201,42,42,0.08);
+}
+.lab-os[data-theme="dark"] .wc-ctrl-win,
+.lab-os[data-theme="dark"] .wc-metric-win,
+.lab-os[data-theme="dark"] .wc-groups-win,
+.lab-os[data-theme="dark"] .wc-lead-win,
+.lab-os[data-theme="dark"] .wc-mc-win,
+.lab-os[data-theme="dark"] .wc-foot-win {
+  --wc-go: #51cf66;
+  --wc-go-soft: rgba(81,207,102,0.14);
+  --wc-flag: #ff922b;
+  --wc-flag-soft: rgba(255,146,43,0.16);
+  --wc-out: #ff6b6b;
+  --wc-out-soft: rgba(255,107,107,0.12);
+}
+
+/* ── 컨트롤 ── */
+.wc-ctrl { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; padding: 18px; }
+.wc-ctrl-block { display: flex; flex-direction: column; gap: 9px; }
+.wc-grow { flex: 1 1 240px; min-width: 220px; }
+.wc-ctrl-lab { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+.wc-ctrl-lab b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.wc-hint { font-size: 11px; color: var(--ink-mute); }
+
+.wc-seg { display: inline-flex; border: 1px solid var(--frame-strong); }
+.wc-seg-btn {
+  font: inherit; font-size: 13px; cursor: pointer; padding: 9px 14px;
+  background: var(--panel-2); color: var(--ink-soft); border: none; border-right: 1px solid var(--frame);
+}
+.wc-seg-btn:last-child { border-right: none; }
+.wc-seg-btn.on { background: var(--ink); color: var(--desk); font-weight: 600; }
+
+.wc-range { width: 100%; accent-color: var(--wc-flag); cursor: pointer; }
+
+.wc-ctrl-actions { display: flex; gap: 10px; margin-left: auto; }
+.wc-btn {
+  font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  padding: 11px 16px; border: 1px solid var(--frame-strong);
+  transition: transform 0.12s, background 0.14s, color 0.14s;
+}
+.wc-btn:hover { transform: translateY(-1px); }
+.wc-btn-hot { background: var(--wc-flag); border-color: var(--wc-flag); color: #fff; }
+.wc-btn-ghost { background: transparent; color: var(--ink); }
+.wc-btn-ghost:hover { background: var(--ink); color: var(--desk); }
+
+/* ── 요약 계기판 ── */
+.wc-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--frame); }
+.wc-metric { display: flex; flex-direction: column; gap: 5px; padding: 18px 16px; background: var(--panel); }
+.wc-metric-num { font-family: var(--font-mono); font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+.wc-metric-lab { font-size: 12.5px; color: var(--ink); font-weight: 500; }
+.wc-metric-sub { font-size: 10.5px; color: var(--ink-mute); }
+
+/* ── 12개 조 ── */
+.wc-key { display: inline-block; width: 9px; height: 9px; margin: 0 4px 0 10px; vertical-align: middle; }
+.wc-key-q { background: var(--wc-go); }
+.wc-key-w { background: var(--wc-flag); }
+.wc-key-x { background: var(--wc-out); opacity: 0.55; }
+
+.wc-groups {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 1px; background: var(--frame); padding: 1px;
+}
+.wc-group { background: var(--panel); }
+.wc-group-hd {
+  padding: 7px 10px; background: var(--panel-2); border-bottom: 1px solid var(--frame);
+}
+.wc-group-name { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink); }
+
+.wc-table { padding: 4px 0; }
+.wc-th, .wc-tr {
+  display: grid; grid-template-columns: 20px 1fr 40px 40px; align-items: center;
+  gap: 4px; padding: 4px 10px; font-size: 12px;
+}
+.wc-th { color: var(--ink-mute); font-size: 10px; padding-bottom: 5px; }
+.wc-c-pos { color: var(--ink-mute); text-align: center; }
+.wc-c-code { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); }
+.wc-c-n { text-align: right; color: var(--ink-soft); }
+.wc-pts { color: var(--ink); font-weight: 600; }
+.wc-badge {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.04em; padding: 1px 4px;
+  background: var(--wc-flag); color: #fff;
+}
+
+/* 결과별 좌측 컬러 바 */
+.wc-tr { border-left: 3px solid transparent; }
+.wc-tr.wc-Q { border-left-color: var(--wc-go); background: var(--wc-go-soft); }
+.wc-tr.wc-W { border-left-color: var(--wc-flag); background: var(--wc-flag-soft); }
+.wc-tr.wc-X { border-left-color: var(--wc-out); opacity: 0.6; }
+
+/* ── 와일드카드 리더보드 ── */
+.wc-lead { padding: 8px 0; }
+.wc-lead-row {
+  display: grid; grid-template-columns: 30px 90px 1fr 56px 66px 52px; align-items: center;
+  gap: 8px; padding: 9px 16px; font-size: 12.5px; border-left: 3px solid transparent;
+}
+.wc-lead-row.wc-W { border-left-color: var(--wc-flag); background: var(--wc-flag-soft); }
+.wc-lead-row.wc-X { border-left-color: var(--wc-out); color: var(--ink-mute); opacity: 0.72; }
+.wc-lead-rank { color: var(--ink-mute); text-align: center; font-weight: 600; }
+.wc-lead-code { font-weight: 700; color: var(--ink); display: flex; align-items: baseline; gap: 7px; }
+.wc-lead-grp { font-size: 10px; color: var(--ink-mute); font-weight: 400; }
+.wc-lead-stat { text-align: right; color: var(--ink-soft); }
+.wc-lead-stat b { color: var(--ink); }
+.wc-lead-tag { text-align: right; font-size: 11px; font-weight: 600; }
+.wc-lead-row.wc-W .wc-lead-tag { color: var(--wc-flag); }
+.wc-lead-row.wc-X .wc-lead-tag { color: var(--wc-out); }
+
+.wc-cut {
+  display: flex; align-items: center; justify-content: center;
+  padding: 3px 0; margin: 2px 16px; border-top: 2px dashed var(--wc-flag);
+}
+.wc-cut span { font-size: 10.5px; color: var(--wc-flag); letter-spacing: 0.08em; background: var(--panel); padding: 0 8px; transform: translateY(-11px); }
+
+/* ── 몬테카를로 ── */
+.wc-mc { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: 1px; background: var(--frame); }
+.wc-mc-stats { display: flex; flex-direction: column; gap: 1px; background: var(--frame); }
+.wc-mc-stat { display: flex; flex-direction: column; gap: 4px; padding: 16px; background: var(--panel); flex: 1; }
+.wc-mc-num { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 600; line-height: 1; color: var(--wc-flag); }
+.wc-mc-lab { font-size: 11px; color: var(--ink-soft); }
+
+.wc-mc-hist { padding: 16px; background: var(--panel); display: flex; flex-direction: column; gap: 8px; }
+.wc-mc-hist-lab { font-size: 12px; color: var(--ink); }
+.wc-mc-bars { display: flex; align-items: flex-end; gap: 6px; height: 150px; }
+.wc-mc-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+.wc-mc-cval { font-size: 10px; color: var(--ink-soft); height: 12px; }
+.wc-mc-bar { width: 100%; background: var(--wc-go); min-height: 2px; }
+.wc-mc-cpts { font-size: 11px; color: var(--ink-mute); }
+.wc-mc-hist-foot { font-size: 10.5px; color: var(--ink-mute); }
+
+/* ── 해설 ── */
+.wc-foot { padding: 22px 24px 26px; max-width: 74ch; }
+.wc-foot p { margin: 0 0 14px; font-size: 14.5px; line-height: 1.72; color: var(--ink-soft); }
+.wc-foot p b { color: var(--ink); font-weight: 600; }
+.wc-disclaimer { font-family: var(--font-mono); font-size: 11.5px !important; line-height: 1.65 !important; color: var(--ink-mute) !important; border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* ── 반응형 ── */
+@media (max-width: 720px) {
+  .wc-metrics { grid-template-columns: repeat(2, 1fr); }
+  .wc-mc { grid-template-columns: 1fr; }
+  .wc-mc-stats { flex-direction: row; }
+  .wc-ctrl-actions { margin-left: 0; width: 100%; }
+  .wc-lead-row { grid-template-columns: 24px 74px 1fr 48px 46px; }
+  .wc-lead-row .wc-lead-tag { display: none; }
+}
+@media (max-width: 480px) {
+  .wc-metrics { grid-template-columns: 1fr; }
+  .wc-mc-stats { flex-direction: column; }
+}
