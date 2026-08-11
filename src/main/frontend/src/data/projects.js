@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 77,
+        name: 'Sandpile',
+        subtitle: '자기조직화 임계 (모래더미 사태)',
+        description: '한 알씩 쌓다 임계 밀도에 이르면 한 알이 격자를 휩쓰는 멱법칙 사태 실험',
+        link: '/sandpile',
+        active: true,
+        startDate: '2026-08-11',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '⏳'
+    },
+    {
         id: 76,
         name: 'Wildcard',
         subtitle: '조별 3위 줄 세우기 (와일드카드 진출)',
