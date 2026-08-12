@@ -91,6 +91,7 @@ import Syzygy from './pages/experiments/Syzygy';
 import Drydown from './pages/experiments/Drydown';
 import Wildcard from './pages/experiments/Wildcard';
 import Sandpile from './pages/experiments/Sandpile';
+import Pirouette from './pages/experiments/Pirouette';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -303,6 +304,7 @@ function App() {
         <Route path="/drydown" element={<Drydown />} />
         <Route path="/wildcard" element={<Wildcard />} />
         <Route path="/sandpile" element={<Sandpile />} />
+        <Route path="/pirouette" element={<Pirouette />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

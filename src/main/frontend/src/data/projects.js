@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 78,
+        name: 'Pirouette',
+        subtitle: '각운동량 보존 (팔을 당기면 빨라진다)',
+        description: '돌아가는 질량을 축으로 당기면 ω가 튀고 L은 그대로인 회전 보존 실험',
+        link: '/pirouette',
+        active: true,
+        startDate: '2026-08-12',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🌀'
+    },
+    {
         id: 77,
         name: 'Sandpile',
         subtitle: '자기조직화 임계 (모래더미 사태)',
