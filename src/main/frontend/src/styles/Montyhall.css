@@ -1,0 +1,128 @@
+/* MONTY HALL — 세 문의 조건부 확률 게임.
+   LabShell 토큰(--panel/--ink/--frame …) 위에 얹는다.
+   색 배분 60-30-10: 중립 패널(60%) / 스틸 그레이 보조(30%) / 앰버 액센트(10%, 자동차·바꾸기). */
+
+.lab-os .mh-play-win,
+.lab-os .mh-sim-win,
+.lab-os .mh-foot-win {
+  --mh-hot: #d98324;                  /* 앰버 — 자동차·바꾸기 강조, 포인트 10% */
+  --mh-hot-soft: rgba(217,131,36,0.14);
+  --mh-steel: #55617a;                /* 스틸 그레이 — 보조 30% */
+  --mh-steel-soft: rgba(85,97,122,0.14);
+  --mh-lose: #c65f4e;                 /* 꽝(놓침) — 아주 드물게만 */
+}
+.lab-os[data-theme="dark"] .mh-play-win,
+.lab-os[data-theme="dark"] .mh-sim-win,
+.lab-os[data-theme="dark"] .mh-foot-win {
+  --mh-hot: #f0a94a;
+  --mh-hot-soft: rgba(240,169,74,0.18);
+  --mh-steel: #8b96ad;
+  --mh-steel-soft: rgba(139,150,173,0.16);
+  --mh-lose: #e08b7c;
+}
+
+/* ── 손맛 게임 스테이지 ── */
+.mh-stage { padding: 20px 18px 8px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.mh-guide {
+  margin: 0; font-size: 14.5px; color: var(--ink-soft); text-align: center; min-height: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.mh-guide.win { color: var(--mh-hot); font-weight: 600; }
+.mh-guide.lose { color: var(--ink-mute); }
+
+.mh-doors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; max-width: 460px; }
+
+/* 문 카드 — 네오브루탈리즘 아케이드 톤: 굵은 테두리 + 그림자 */
+.mh-door {
+  position: relative; font: inherit; cursor: pointer;
+  aspect-ratio: 3 / 4; border: 2px solid var(--frame-strong); background: var(--panel-2);
+  box-shadow: 4px 4px 0 var(--frame-strong);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  transition: transform 0.1s, box-shadow 0.1s, border-color 0.14s, background 0.14s;
+}
+.mh-door:not(:disabled):hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--mh-hot); border-color: var(--mh-hot); }
+.mh-door:disabled { cursor: default; }
+.mh-door-no {
+  position: absolute; top: 8px; left: 10px; font-size: 13px; color: var(--ink-mute);
+  border: 1px solid var(--frame); padding: 0 6px; line-height: 18px;
+}
+.mh-door-face { font-size: 40px; line-height: 1; }
+.mh-door-tag {
+  position: absolute; bottom: 8px; font-size: 10px; color: var(--desk); background: var(--mh-hot);
+  padding: 2px 8px; letter-spacing: 0.02em;
+}
+
+/* 상태: 선택 / 진행자가 연 문 / 정답 / 최종 / 놓침 */
+.mh-door.picked { border-color: var(--mh-hot); box-shadow: 4px 4px 0 var(--mh-hot); }
+.mh-door.opened { background: var(--mh-steel-soft); box-shadow: 4px 4px 0 var(--frame); opacity: 0.7; }
+.mh-door.car { background: var(--mh-hot-soft); border-color: var(--mh-hot); }
+.mh-door.final { box-shadow: 6px 6px 0 var(--mh-hot); }
+.mh-door.final.miss { border-color: var(--mh-lose); box-shadow: 6px 6px 0 var(--mh-lose); }
+
+.mh-actions { display: flex; align-items: center; gap: 12px; min-height: 44px; flex-wrap: wrap; justify-content: center; }
+.mh-hint { font-size: 12px; color: var(--ink-mute); }
+
+/* ── 버튼 공용 ── */
+.mh-btn {
+  font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  padding: 11px 20px; border: 2px solid var(--frame-strong); background: transparent; color: var(--ink);
+  box-shadow: 3px 3px 0 var(--frame-strong); transition: transform 0.1s, box-shadow 0.1s, background 0.14s, color 0.14s;
+}
+.mh-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--frame-strong); }
+.mh-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--frame-strong); }
+.mh-btn-hot { background: var(--mh-hot); border-color: var(--mh-hot); color: #2a1602; font-weight: 700; box-shadow: 3px 3px 0 var(--frame-strong); }
+.mh-btn-ghost:hover { background: var(--ink); color: var(--desk); }
+
+/* ── 손맛 집계 ── */
+.mh-tally {
+  padding: 16px 18px; border-top: 1px solid var(--line); background: var(--panel-2);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.mh-tally-row { display: grid; grid-template-columns: 88px 1fr auto; align-items: center; gap: 12px; }
+.mh-tally-lab { font-size: 12.5px; color: var(--ink-soft); }
+.mh-tally-num { font-size: 12.5px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mh-tally-pct { color: var(--ink-mute); }
+.mh-bar { height: 10px; background: var(--row-alt); border: 1px solid var(--frame); overflow: hidden; }
+.mh-bar-fill { height: 100%; transition: width 0.3s ease; }
+.mh-bar-fill.steel { background: var(--mh-steel); }
+.mh-bar-fill.hot { background: var(--mh-hot); }
+.mh-reset {
+  align-self: flex-start; font: inherit; font-family: var(--font-mono); font-size: 11px; cursor: pointer;
+  padding: 4px 10px; border: 1px solid var(--frame); background: transparent; color: var(--ink-mute);
+}
+.mh-reset:hover { border-color: var(--mh-hot); color: var(--ink); }
+
+/* ── 시뮬레이션 ── */
+.mh-sim { padding: 18px; display: flex; flex-direction: column; gap: 20px; }
+.mh-sim-ctrl { display: flex; flex-direction: column; gap: 10px; }
+.mh-lab { font-size: 12px; color: var(--ink-soft); }
+.mh-lab b { color: var(--ink); font-variant-numeric: tabular-nums; font-size: 14px; }
+.mh-range { width: 100%; accent-color: var(--mh-hot); cursor: pointer; }
+.mh-sim-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.mh-sim-count { font-size: 12px; color: var(--ink-mute); }
+
+.mh-sim-bars { display: flex; flex-direction: column; gap: 16px; }
+.mh-sbar { display: flex; flex-direction: column; gap: 6px; }
+.mh-sbar-head { display: flex; justify-content: space-between; align-items: baseline; }
+.mh-sbar-lab { font-size: 13px; color: var(--ink-soft); }
+.mh-sbar-num { font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mh-sbar-num.hot { color: var(--mh-hot); }
+.mh-track { position: relative; height: 22px; background: var(--row-alt); border: 1px solid var(--frame); overflow: hidden; }
+.mh-track-fill { height: 100%; transition: width 0.4s ease; }
+.mh-track-fill.steel { background: var(--mh-steel); }
+.mh-track-fill.hot { background: var(--mh-hot); }
+.mh-track-th { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: 0.55; }
+.mh-sbar-th { font-size: 11px; color: var(--ink-mute); }
+.mh-sim-note { font-size: 11.5px; color: var(--ink-mute); }
+
+/* ── 해설 ── */
+.mh-foot { padding: 18px; display: flex; flex-direction: column; gap: 13px; }
+.mh-foot p { margin: 0; font-size: 14px; line-height: 1.72; color: var(--ink-soft); }
+.mh-foot b { color: var(--ink); font-weight: 600; }
+.mh-disclaimer { font-size: 12px !important; color: var(--ink-mute) !important; border-top: 1px dashed var(--frame); padding-top: 12px; }
+
+@media (max-width: 480px) {
+  .mh-doors { gap: 10px; }
+  .mh-door-face { font-size: 32px; }
+  .mh-tally-row { grid-template-columns: 74px 1fr auto; gap: 8px; }
+}

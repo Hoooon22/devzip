@@ -92,6 +92,8 @@ import Drydown from './pages/experiments/Drydown';
 import Wildcard from './pages/experiments/Wildcard';
 import Sandpile from './pages/experiments/Sandpile';
 import Pirouette from './pages/experiments/Pirouette';
+import Steganos from './pages/experiments/Steganos';
+import Montyhall from './pages/experiments/Montyhall';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -305,6 +307,8 @@ function App() {
         <Route path="/wildcard" element={<Wildcard />} />
         <Route path="/sandpile" element={<Sandpile />} />
         <Route path="/pirouette" element={<Pirouette />} />
+        <Route path="/steganos" element={<Steganos />} />
+        <Route path="/montyhall" element={<Montyhall />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

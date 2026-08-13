@@ -1,5 +1,31 @@
 const projects = [
     {
+        id: 80,
+        name: 'Monty Hall',
+        subtitle: '문 바꾸기의 확률 (조건부 확률의 반직관)',
+        description: '진행자가 꽝 문을 열어 준 뒤 바꾸면 2/3로 이기는 세 문의 확률 게임',
+        link: '/montyhall',
+        active: true,
+        startDate: '2026-08-14',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🚪'
+    },
+    {
+        id: 79,
+        name: 'Steganos',
+        subtitle: '픽셀에 숨긴 메시지 (LSB 스테가노그래피)',
+        description: '똑같아 보이는 사진 속 최하위 비트에 문장을 숨기고 되읽는 은닉 실험',
+        link: '/steganos',
+        active: true,
+        startDate: '2026-08-13',
+        endDate: '',
+        category: '실험/그래픽스',
+        isProduction: false, // 실험용
+        thumbnail: '🫥'
+    },
+    {
         id: 78,
         name: 'Pirouette',
         subtitle: '각운동량 보존 (팔을 당기면 빨라진다)',
