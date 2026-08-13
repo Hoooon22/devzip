@@ -1,0 +1,115 @@
+/* STEGANOS — LSB 이미지 스테가노그래피.
+   LabShell 토큰(--panel/--ink/--frame …) 위에 얹는다.
+   색 배분 60-30-10: 중립 패널(60%) / 스틸 그레이 보조(30%) / 시그널 틸 액센트(10%). */
+
+.lab-os .sg-ctrl-win,
+.lab-os .sg-stage-win,
+.lab-os .sg-ex-win,
+.lab-os .sg-stat-win,
+.lab-os .sg-foot-win {
+  --sg-hot: #12b886;                  /* 은닉/추출 강조 — 틸, 포인트 10% */
+  --sg-hot-soft: rgba(18,184,134,0.12);
+  --sg-steel: #55617a;                /* 스틸 그레이 — 보조 30% */
+  --sg-steel-soft: rgba(85,97,122,0.14);
+}
+.lab-os[data-theme="dark"] .sg-ctrl-win,
+.lab-os[data-theme="dark"] .sg-stage-win,
+.lab-os[data-theme="dark"] .sg-ex-win,
+.lab-os[data-theme="dark"] .sg-stat-win,
+.lab-os[data-theme="dark"] .sg-foot-win {
+  --sg-hot: #4adea8;
+  --sg-hot-soft: rgba(74,222,168,0.16);
+  --sg-steel: #8b96ad;
+  --sg-steel-soft: rgba(139,150,173,0.16);
+}
+
+/* ── 컨트롤 ── */
+.sg-ctrl { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; padding: 18px; }
+.sg-ctrl-block { display: flex; flex-direction: column; gap: 9px; }
+.sg-grow { flex: 1 1 320px; min-width: 260px; }
+.sg-lab { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+.sg-lab b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.sg-input {
+  font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical;
+  padding: 11px 13px; border: 1px solid var(--frame-strong); background: var(--panel-2); color: var(--ink);
+  width: 100%; min-height: 62px;
+}
+.sg-input:focus { outline: none; border-color: var(--sg-hot); }
+
+.sg-samples { display: flex; flex-wrap: wrap; gap: 7px; }
+.sg-chip {
+  font: inherit; font-family: var(--font-mono); font-size: 11px; cursor: pointer;
+  padding: 4px 10px; border: 1px solid var(--frame); background: var(--row-alt); color: var(--ink-soft);
+}
+.sg-chip:hover { border-color: var(--sg-hot); color: var(--ink); }
+
+.sg-seg { display: inline-flex; border: 1px solid var(--frame-strong); }
+.sg-seg-btn {
+  font: inherit; font-size: 13px; cursor: pointer; padding: 9px 15px;
+  background: var(--panel-2); color: var(--ink-soft); border: none; border-right: 1px solid var(--frame);
+}
+.sg-seg-btn:last-child { border-right: none; }
+.sg-seg-btn.on { background: var(--ink); color: var(--desk); font-weight: 600; }
+
+.sg-range { width: 100%; min-width: 160px; accent-color: var(--sg-hot); cursor: pointer; }
+
+/* ── 버튼 공용 ── */
+.sg-btn {
+  font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  padding: 11px 16px; border: 1px solid var(--frame-strong); background: transparent; color: var(--ink);
+  transition: transform 0.12s, background 0.14s, color 0.14s, border-color 0.14s;
+}
+.sg-btn:hover { transform: translateY(-1px); }
+.sg-btn-hot { background: var(--sg-hot); border-color: var(--sg-hot); color: #06231a; font-weight: 600; }
+.sg-btn-ghost:hover { background: var(--ink); color: var(--desk); }
+
+/* ── 스테이지: 원본 vs 은닉 ── */
+.sg-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--frame); }
+@media (max-width: 560px) { .sg-stage { grid-template-columns: 1fr; } }
+.sg-fig { margin: 0; background: var(--panel); padding: 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.sg-canvas {
+  width: 100%; max-width: 320px; aspect-ratio: 1 / 1; display: block;
+  border: 1px solid var(--frame-strong); background: var(--panel-2); image-rendering: pixelated;
+}
+.sg-cap { font-size: 11.5px; color: var(--ink-mute); text-align: center; }
+
+.sg-stage-foot {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 16px; border-top: 1px solid var(--line); background: var(--panel-2);
+}
+.sg-note { font-size: 11.5px; color: var(--ink-mute); }
+
+/* ── 추출 ── */
+.sg-ex { display: flex; flex-wrap: wrap; gap: 16px; padding: 18px; align-items: stretch; }
+.sg-ex-btns { display: flex; flex-direction: column; gap: 10px; flex: 0 0 auto; }
+.sg-out {
+  flex: 1 1 300px; min-width: 240px; padding: 14px 16px;
+  border: 1px solid var(--frame); background: var(--panel-2); display: flex; flex-direction: column; gap: 8px;
+}
+.sg-out.ok { border-color: var(--sg-hot); background: var(--sg-hot-soft); }
+.sg-out.bad { border-color: var(--sg-steel); background: var(--sg-steel-soft); }
+.sg-out-ph { font-size: 12px; color: var(--ink-mute); }
+.sg-out-tag { font-size: 11.5px; color: var(--sg-hot); }
+.sg-out-tag.bad { color: var(--sg-steel); }
+.sg-out-text { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); word-break: break-word; }
+.sg-out-text.mute { font-size: 13px; color: var(--ink-soft); }
+
+/* ── 지표 ── */
+.sg-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--frame); }
+.sg-metric { display: flex; flex-direction: column; gap: 7px; padding: 16px; background: var(--panel); }
+.sg-metric-num { font-size: clamp(1.4rem, 3.2vw, 1.9rem); font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+.sg-unit { font-size: 0.6em; font-weight: 500; color: var(--ink-mute); letter-spacing: 0; }
+.sg-metric-lab { font-size: 12px; color: var(--ink); font-weight: 500; }
+.sg-metric-sub { font-size: 10.5px; color: var(--ink-mute); }
+.sg-bar { height: 7px; background: var(--row-alt); border: 1px solid var(--frame); }
+.sg-bar-fill { height: 100%; background: var(--sg-steel); transition: width 0.15s linear; }
+.sg-bar-fill.hot { background: var(--sg-hot); }
+
+@media (max-width: 620px) { .sg-metrics { grid-template-columns: repeat(2, 1fr); } }
+
+/* ── 해설 ── */
+.sg-foot { padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; font-size: 14.5px; line-height: 1.72; color: var(--ink-soft); }
+.sg-foot p { margin: 0; }
+.sg-foot b { color: var(--ink); font-weight: 600; }
+.sg-foot .sg-disclaimer { font-size: 12px; color: var(--ink-mute); border-top: 1px solid var(--line); padding-top: 12px; line-height: 1.6; }
