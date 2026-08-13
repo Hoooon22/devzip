@@ -1,0 +1,323 @@
+/* CARDINAL — 빈티지 지형도/해도 톤. 크림 종이 · 잉크 틸 · 버밀리언 강조.
+   60(종이 크림) / 30(틸 라인·테두리) / 10(버밀리언 강조). 사이트 다크토글과 무관하게
+   패널은 늘 "종이 지도"라서, 자기 색을 고정해 두어 다크모드 텍스트 소실을 피한다. */
+
+.cd-wrap {
+    --paper: #f2e8d0;
+    --paper-2: #eaddbf;
+    --ink: #1b332c;
+    --ink-soft: #3d5b50;
+    --teal: #2e5a4e;
+    --teal-soft: #7aa394;
+    --vermillion: #c0472b;
+    --vermillion-soft: #d98a6a;
+    --line: rgba(46, 90, 78, 0.28);
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0.5rem 0 1rem;
+}
+
+/* 종이 패널 — 은은한 그래티큘(경위선) 배경 */
+.cd-panel {
+    position: relative;
+    background:
+        repeating-linear-gradient(0deg, transparent 0 27px, var(--line) 27px 28px),
+        repeating-linear-gradient(90deg, transparent 0 27px, var(--line) 27px 28px),
+        var(--paper);
+    background-blend-mode: normal;
+    border: 2px solid var(--teal);
+    border-radius: 6px;
+    box-shadow: 0 2px 0 rgba(27, 51, 44, 0.18), inset 0 0 0 4px var(--paper);
+    padding: 1.1rem 1.1rem 0.9rem;
+    color: var(--ink);
+    overflow: hidden;
+}
+
+/* ── 나침반 게이지 ── */
+.cd-gauge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+}
+.cd-compass { width: 220px; height: 132px; }
+.cd-arc { fill: none; stroke: var(--teal-soft); stroke-width: 2; }
+.cd-tick { stroke: var(--teal-soft); stroke-width: 1.5; }
+.cd-needle-g { transition: transform 0.55s cubic-bezier(0.34, 1.28, 0.4, 1); }
+.cd-needle { stroke: var(--vermillion); stroke-width: 3.5; stroke-linecap: round; }
+.cd-needle-tip { fill: var(--vermillion); }
+.cd-pivot { fill: var(--ink); }
+.cd-pole {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    fill: var(--ink-soft);
+}
+.cd-pole.left { text-anchor: start; }
+.cd-pole.right { text-anchor: end; }
+
+/* ── 본문 ── */
+.cd-body {
+    min-height: 232px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity 0.22s ease;
+}
+.cd-body.is-locked { opacity: 0.35; }
+
+.cd-kicker {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+    margin: 0 0 0.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+.cd-lead {
+    text-align: center;
+    max-width: 34ch;
+    margin: 0 auto 1.2rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    font-size: 1rem;
+}
+
+/* 시작/다시 버튼 */
+.cd-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    align-self: center;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease;
+}
+.cd-start:hover { background: var(--vermillion); }
+.cd-start:active { transform: translateY(1px); }
+.cd-key {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    background: var(--vermillion);
+    color: #fff;
+    padding: 0.12rem 0.42rem;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+}
+
+/* 질문 */
+.cd-quiz { animation: cdFade 0.34s ease; }
+.cd-count {
+    text-align: center;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.8rem;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    margin: 0 0 0.5rem;
+}
+.cd-q {
+    text-align: center;
+    font-size: 1.22rem;
+    line-height: 1.5;
+    margin: 0 auto 1.1rem;
+    max-width: 26ch;
+    color: var(--ink);
+    font-weight: 700;
+}
+.cd-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+.cd-choice {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+    background: var(--paper-2);
+    border: 2px solid var(--teal-soft);
+    border-radius: 5px;
+    padding: 0.9rem 0.85rem 0.75rem;
+    color: var(--ink);
+    font-size: 0.98rem;
+    line-height: 1.45;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+.cd-choice:hover:not(:disabled) {
+    border-color: var(--vermillion);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 0 rgba(192, 71, 43, 0.25);
+}
+.cd-choice:disabled { cursor: default; }
+.cd-arrow {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--vermillion);
+    line-height: 1;
+}
+.cd-choice-tx { flex: 1; }
+.cd-choice-tag {
+    align-self: flex-end;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: 700;
+}
+
+/* 결과 */
+.cd-result { animation: cdFade 0.4s ease; text-align: center; }
+.cd-type {
+    font-size: 1.9rem;
+    margin: 0.1rem 0 0.1rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+.cd-type-en {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+    margin: 0 0 0.5rem;
+}
+.cd-tally {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin: 0 0 0.9rem;
+}
+.cd-tally b { color: var(--vermillion); font-size: 1.05rem; }
+.cd-mind {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    margin: 0 auto 0.9rem;
+    display: block;
+    border: 1.5px solid var(--teal-soft);
+    border-radius: 4px;
+}
+.cd-line {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    max-width: 40ch;
+    margin: 0 auto 0.6rem;
+    line-height: 1.55;
+}
+.cd-desc {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    max-width: 44ch;
+    margin: 0 auto 1.1rem;
+    line-height: 1.7;
+    text-align: left;
+}
+
+/* ── 머릿속 지도 SVG 요소 ── */
+.cd-mind-bg { fill: var(--paper); }
+.cd-grid { stroke: var(--teal-soft); stroke-width: 0.8; opacity: 0.5; }
+.cd-grid.faint { opacity: 0.25; }
+.cd-block { fill: none; stroke: var(--ink-soft); stroke-width: 1.4; }
+.cd-route { fill: none; stroke: var(--vermillion); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.cd-route.thin { stroke-width: 1.6; opacity: 0.55; }
+.cd-route.route {
+    stroke-dasharray: 480;
+    stroke-dashoffset: 480;
+    animation: cdDraw 1.1s ease forwards 0.2s;
+}
+.cd-route.survey {
+    stroke-dasharray: 360;
+    stroke-dashoffset: 360;
+    animation: cdDraw 1s ease forwards 0.2s;
+}
+.cd-rose-ring { fill: var(--paper); stroke: var(--teal); stroke-width: 1.4; }
+.cd-rose-n { fill: var(--vermillion); }
+.cd-rose-s { fill: var(--ink-soft); }
+.cd-rose-lbl { fill: var(--ink); font-size: 9px; font-weight: 700; text-anchor: middle; }
+.cd-rose-lbl.sm { font-size: 7px; }
+.cd-lm-lbl { fill: var(--ink-soft); font-size: 9px; text-anchor: middle; font-weight: 600; }
+.cd-lm-start { fill: var(--ink); }
+.cd-lm-bldg { fill: var(--teal); }
+.cd-lm-tree { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1; }
+.cd-lm-sign { fill: none; stroke: var(--ink-soft); stroke-width: 1.6; stroke-linejoin: round; }
+.cd-lm-goal { fill: var(--vermillion); }
+
+/* ── 진행 경로 + 힌트 ── */
+.cd-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.8rem;
+    padding-top: 0.7rem;
+    border-top: 1px dashed var(--line);
+}
+.cd-trail { width: 260px; height: 48px; }
+.cd-seg { stroke: var(--teal-soft); stroke-width: 1.6; opacity: 0.4; stroke-dasharray: 3 3; }
+.cd-seg.done { stroke: var(--vermillion); opacity: 1; stroke-dasharray: none; transition: stroke 0.4s ease; }
+.cd-node { fill: var(--paper); stroke: var(--teal-soft); stroke-width: 1.6; }
+.cd-node.done { fill: var(--vermillion); stroke: var(--vermillion); }
+.cd-node.here { stroke: var(--ink); stroke-width: 2; animation: cdPulse 1.1s ease-in-out infinite; }
+.cd-hint {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--teal);
+}
+
+/* ── 해설 ── */
+.cd-read {
+    padding: 0 0.4rem;
+    line-height: 1.75;
+    color: #33413c;
+}
+.cd-read h3 {
+    font-size: 1.2rem;
+    margin: 0 0 0.7rem;
+    color: #1b332c;
+}
+.cd-read p { margin: 0 0 0.9rem; }
+.cd-read b { color: #1b332c; }
+.cd-disc {
+    font-size: 0.85rem;
+    color: #6a756f;
+    border-left: 3px solid var(--teal-soft);
+    padding-left: 0.8rem;
+}
+
+@keyframes cdFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cdDraw {
+    to { stroke-dashoffset: 0; }
+}
+@keyframes cdPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+/* 사이트 다크 토글이 켜져도 종이 패널 안 텍스트는 그대로 읽히게 (해설부만 살짝 보정) */
+.lab-os[data-theme='dark'] .cd-read { color: #c9d6cf; }
+.lab-os[data-theme='dark'] .cd-read h3,
+.lab-os[data-theme='dark'] .cd-read b { color: #eaf1ec; }
+.lab-os[data-theme='dark'] .cd-disc { color: #9fb0a8; }
+
+@media (max-width: 560px) {
+    .cd-choices { grid-template-columns: 1fr; }
+    .cd-q { font-size: 1.08rem; }
+    .cd-type { font-size: 1.55rem; }
+    .cd-desc { text-align: left; }
+    .cd-trail { width: 220px; }
+}

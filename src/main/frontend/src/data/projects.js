@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 82,
+        name: 'Cardinal',
+        subtitle: '길찾기 성향 (지도파 vs 랜드마크파)',
+        description: '여섯 갈림길에서 방향을 골라 나침반 바늘을 기울이는 키보드 성향 테스트',
+        link: '/cardinal',
+        active: true,
+        startDate: '2026-08-16',
+        endDate: '',
+        category: '실험/인지',
+        isProduction: false, // 실험용
+        thumbnail: '🧭'
+    },
+    {
         id: 81,
         name: 'Myriad',
         subtitle: '십의 거듭제곱을 손으로 켜기 (감이 안 오는 큰 수)',
