@@ -1,0 +1,139 @@
+/* MYRIAD — 십의 거듭제곱 아트 토이.
+   스테이지는 두 테마 모두에서 깊은 공허(void)로 고정 — "밤하늘 속 숫자" 톤.
+   색 배분 60-30-10: 보이드/스틸(60) · 패널·눈금(30) · 호박빛 액센트(10, 큰 수에선 청록으로 이동). */
+
+.my-wrap {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  margin: 4px 0 22px;
+}
+
+/* ── 왼쪽 눈금 레일 (비언어적: 세로 = 크기) ── */
+.my-rail {
+  position: relative;
+  width: 26px;
+  flex: 0 0 26px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+}
+.my-tick {
+  display: block;
+  width: 100%;
+  background: var(--ink-soft);
+  opacity: 0.5;
+  border-radius: 2px;
+}
+.my-knob {
+  position: absolute;
+  left: 0;
+  width: 26px;
+  height: 3px;
+  margin-top: -1.5px;
+  background: #ffc45c;
+  box-shadow: 0 0 10px rgba(255, 196, 92, 0.9);
+  transition: top 0.06s linear;
+}
+
+/* ── 놀이 스테이지 ── */
+.my-stage {
+  position: relative;
+  flex: 1 1 auto;
+  height: 62vh;
+  min-height: 400px;
+  max-height: 660px;
+  background:
+    radial-gradient(120% 90% at 50% 8%, #0d1220 0%, #070910 60%, #05060c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+}
+.my-stage.is-live { border-color: rgba(255, 196, 92, 0.45); }
+
+.my-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* 배경 유령 숫자 — 자릿수를 숫자로도 보여주되, 크기는 와닿지 않음을 드러낸다 */
+.my-numeral {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8%;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: clamp(20px, 6vw, 62px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(255, 210, 140, 0.16);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+/* 첫 접촉 전 안내 링 (문장 없이 "만져 봐"를 뜻함) */
+.my-invite {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.my-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 2px solid rgba(255, 196, 92, 0.7);
+  border-radius: 50%;
+  animation: my-pulse 2.1s ease-out infinite;
+}
+.my-ring.d2 { animation-delay: 1.05s; }
+@keyframes my-pulse {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+/* ── 해설 ── */
+.my-read {
+  border-top: 1px solid var(--frame);
+  padding: 20px 4px 8px;
+  max-width: 760px;
+}
+.my-read h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.my-read p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  margin: 0 0 13px;
+}
+.my-read b { color: var(--ink); font-weight: 600; }
+.my-disc {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  opacity: 0.72;
+  border-left: 2px solid var(--frame-strong);
+  padding-left: 10px;
+}
+
+@media (max-width: 560px) {
+  .my-stage { height: 56vh; min-height: 340px; }
+  .my-rail { width: 18px; flex-basis: 18px; }
+  .my-knob { width: 18px; }
+}

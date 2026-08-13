@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 81,
+        name: 'Myriad',
+        subtitle: '십의 거듭제곱을 손으로 켜기 (감이 안 오는 큰 수)',
+        description: '위아래로 끌면 자릿수가 오르내리며 소리와 알갱이 무리로 큰 수를 느끼는 아트 토이',
+        link: '/myriad',
+        active: true,
+        startDate: '2026-08-15',
+        endDate: '',
+        category: '실험/사운드',
+        isProduction: false, // 실험용
+        thumbnail: '🔟'
+    },
+    {
         id: 80,
         name: 'Monty Hall',
         subtitle: '문 바꾸기의 확률 (조건부 확률의 반직관)',
