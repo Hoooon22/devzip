@@ -94,7 +94,6 @@ const Throttle = () => {
         >
             <section className="k-win tb-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/proc/</span>rate-limiter</span>
                     <span className="meta k-mono">token bucket</span>
                 </div>
@@ -203,7 +202,6 @@ const Throttle = () => {
 
             <section className="k-win tb-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="tb-foot">

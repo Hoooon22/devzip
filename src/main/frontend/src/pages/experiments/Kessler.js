@@ -311,7 +311,6 @@ const Kessler = () => {
         >
             <section className="k-win ks-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/orbit/</span>LEO</span>
                     <span className="meta k-mono">충돌 → 파편 F개 → 새 충돌원 (자기지속 연쇄)</span>
                 </div>
@@ -394,7 +393,6 @@ const Kessler = () => {
 
             <section className="k-win ks-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="ks-foot">

@@ -240,7 +240,6 @@ const Drydown = () => {
         >
             <section className="k-win dd-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/scent/</span>drydown</span>
                     <span className="meta k-mono">f(t) = a·k·e^(−k·t) · 휘발이 향을 시간순으로 벗겨낸다</span>
                 </div>
@@ -354,7 +353,6 @@ const Drydown = () => {
 
             <section className="k-win dd-pal-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/scent/</span>palette</span>
                     <span className="meta k-mono">담은 방울 {totalDrops} · 휘발 반감기가 노트를 가른다</span>
                 </div>
@@ -383,7 +381,6 @@ const Drydown = () => {
 
             <section className="k-win dd-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="dd-foot">

@@ -191,7 +191,6 @@ const Bell = () => {
         >
             <section className="k-win bl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/chsh/</span>bell-test</span>
                     <span className="meta k-mono">이기는 조건 · a⊕b = x·y</span>
                 </div>
@@ -376,7 +375,6 @@ const Bell = () => {
 
             <section className="k-win bl-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="bl-foot">

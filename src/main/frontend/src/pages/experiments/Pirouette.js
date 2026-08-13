@@ -272,7 +272,6 @@ const Pirouette = () => {
             {/* 컨트롤 */}
             <section className="k-win pa-ctrl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/spin/</span>controls</span>
                     <span className="meta k-mono">외부 토크 0 → L 보존</span>
                 </div>
@@ -307,7 +306,6 @@ const Pirouette = () => {
             {/* 스테이지 */}
             <section className="k-win pa-stage-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/spin/</span>turntable</span>
                     <span className="meta k-mono">질량을 잡아 축으로 끌어당겨 보라</span>
                 </div>
@@ -360,7 +358,6 @@ const Pirouette = () => {
             {/* 비교 메터 */}
             <section className="k-win pa-meter-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/compare/</span>relative</span>
                     <span className="meta k-mono">팔 폈을 때 대비 배율</span>
                 </div>
@@ -420,7 +417,6 @@ const Pirouette = () => {
             {/* 해설 */}
             <section className="k-win pa-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="pa-foot">

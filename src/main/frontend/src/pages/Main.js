@@ -575,13 +575,12 @@ const Main = () => {
                 {/* ── 히어로 / 부트 매니페스트 ── */}
                 <section className="k-win" aria-label="소개">
                     <div className="k-win-bar">
-                        <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">~/devzip/</span>MOTD.md</span>
                         <span className="meta k-mono">read-only · <LiveClock /></span>
                     </div>
                     <div className="k-hero-bd">
                         <div className="k-hero-main">
-                            <span className="k-eyebrow"><span className="sq"></span>one-person project arcade</span>
+                            <span className="k-eyebrow">one-person project arcade</span>
                             <h1>한 사람이 만드는 <span className="box">제품</span>의 <span className="mk">모든 단계</span>.</h1>
                             <p>아이디어부터 운영까지 — 정식 서비스와 실험실의 프로토타입을 하나의 커널 위에서 관리합니다. {totalCount}개의 프로젝트, {prodCount}개의 운영 서비스가 마운트되어 있습니다.</p>
                             <div className="k-cta">
@@ -621,13 +620,12 @@ const Main = () => {
                 {/* ── 서비스 쇼케이스 (홈의 주인공) ── */}
                 <section id="k-srv" className="k-win k-srv" aria-label="운영 중인 서비스">
                     <div className="k-win-bar">
-                        <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">/srv/</span>services</span>
                         <span className="meta k-mono">{heroStats.production.active} online · {prodCount} mounted</span>
                     </div>
                     <div className="k-srv-hd">
                         <div className="tx">
-                            <span className="k-eyebrow"><span className="sq"></span>production</span>
+                            <span className="k-eyebrow">production</span>
                             <h2>지금 운영 중인 서비스</h2>
                             <p>직접 쓰려고 만들었고, 쓰면서 불편한 곳을 계속 다듬고 있습니다. 편하게 둘러보세요.</p>
                         </div>
@@ -662,7 +660,7 @@ const Main = () => {
                 {/* ── 게이지 (히어로 메타) ── */}
                 <section className="k-gauges">
                     <div className="k-win">
-                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>services</span></div>
+                        <div className="k-win-bar"><span className="path k-mono"><span className="dir">/sys/</span>services</span></div>
                         <div className="k-gauge-bd">
                             <div className="top">
                                 <div><div className="label">운영 중인 서비스</div><div className="sub">{heroStats.production.names.join(' · ') || '준비 중'}</div></div>
@@ -673,7 +671,7 @@ const Main = () => {
                         <div className="k-resize"></div>
                     </div>
                     <div className="k-win">
-                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>lab</span></div>
+                        <div className="k-win-bar"><span className="path k-mono"><span className="dir">/sys/</span>lab</span></div>
                         <div className="k-gauge-bd">
                             <div className="top">
                                 <div><div className="label">실험실 프로젝트</div><div className="sub">{heroStats.experiments.running} running · {heroStats.experiments.archived} archived</div></div>
@@ -685,7 +683,7 @@ const Main = () => {
                     </div>
                     {latestProject && (
                         <a className="k-win k-gauge" href={latestProject.link} onClick={(e) => handleProjectClick(e, latestProject)}>
-                            <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>latest</span></div>
+                            <div className="k-win-bar"><span className="path k-mono"><span className="dir">/sys/</span>latest</span></div>
                             <div className="k-gauge-bd">
                                 <div className="top"><div><div className="label">최근 추가</div><div className="sub">{latestProject.startDate} · {cleanCategory(latestProject.category)}</div></div></div>
                                 <div className="latest"><span className="gl">{latestProject.thumbnail || '📦'}</span>{latestProject.name}<span className="go">→</span></div>
@@ -697,7 +695,6 @@ const Main = () => {
                 {/* ── 프로세스 모니터 ── */}
                 <section id="k-proc" className="k-win">
                     <div className="k-win-bar">
-                        <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">/proc/</span>projects</span>
                         <span className="meta k-mono">{filtered.length} / {totalCount} 표시 중</span>
                     </div>
@@ -751,7 +748,6 @@ const Main = () => {
                             {filtered.map((p) => (
                                 <a key={p.id} href={p.link} className={`k-tile ${isPinned(p) ? 'is-pinned' : ''}`} onClick={(e) => handleProjectClick(e, p)} aria-label={`${p.name} — ${p.description}`}>
                                     <div className="k-tile-bar">
-                                        <div className="k-dots"><i></i><i></i><i></i></div>
                                         <span className="tname">{p.name}</span>
                                         {isAdmin ? (
                                             <button type="button" className={`k-pin-btn ${isPinned(p) ? 'on' : ''}`} title={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-label={isPinned(p) ? '고정 해제' : '맨 위에 고정'} aria-pressed={isPinned(p)} onClick={(e) => handlePinToggle(e, p)}><PinGlyph /></button>
@@ -784,7 +780,7 @@ const Main = () => {
                 {/* ── 도크 위젯 ── */}
                 <section className="k-dock">
                     <div className="k-win k-widget">
-                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono">man cs-tip</span></div>
+                        <div className="k-win-bar"><span className="path k-mono">man cs-tip</span></div>
                         <div className="k-widget-bd">
                             <span className="lbl k-mono">데일리 CS 팁</span>
                             <h4>오늘의 한 줄</h4>
@@ -792,7 +788,7 @@ const Main = () => {
                         </div>
                     </div>
                     <div className="k-win k-widget">
-                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono">fortune</span></div>
+                        <div className="k-win-bar"><span className="path k-mono">fortune</span></div>
                         <div className="k-widget-bd">
                             <span className="lbl k-mono">잠깐 쉬어가기</span>
                             <h4>오늘의 농담</h4>
@@ -813,7 +809,7 @@ const Main = () => {
                         </div>
                     </div>
                     <div className="k-win k-widget">
-                        <div className="k-win-bar"><div className="k-dots"><i></i><i></i><i></i></div><span className="path k-mono"><span className="dir">/sys/</span>status</span></div>
+                        <div className="k-win-bar"><span className="path k-mono"><span className="dir">/sys/</span>status</span></div>
                         <div className="k-widget-bd">
                             <span className="lbl k-mono">시스템 상태</span>
                             <h4>all systems go</h4>
@@ -828,7 +824,7 @@ const Main = () => {
 
                 {/* ── 상태 바 ── */}
                 <footer className="k-statusbar">
-                    <span className="sys"><span className="sq"></span>all systems go</span>
+                    <span className="sys">all systems go</span>
                     <span>© {new Date().getFullYear()} hoooon22 · devzip.site</span>
                     <span className="dir">build f7c4a3b · master</span>
                     <div className="links">

@@ -273,7 +273,6 @@ const Desalinate = () => {
         >
             <section className="k-win de-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/ro/</span>membrane</span>
                     <span className="meta k-mono">π=k·S · J=A·ΔP<sub>net</sub></span>
                 </div>
@@ -413,7 +412,6 @@ const Desalinate = () => {
 
             <section className="k-win de-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="de-foot">

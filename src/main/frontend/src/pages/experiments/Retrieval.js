@@ -137,7 +137,6 @@ const Retrieval = () => {
         >
             <section className="k-win rt-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/index/</span>embedding-space</span>
                     <span className="meta k-mono">k-nearest neighbors</span>
                 </div>
@@ -269,7 +268,6 @@ const Retrieval = () => {
 
             <section className="k-win rt-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="rt-foot">

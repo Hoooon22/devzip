@@ -192,7 +192,6 @@ const ConsistentHash = () => {
         >
             <section className="k-win ch-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/ring/</span>hash-ring</span>
                     <span className="meta k-mono">consistent hashing</span>
                 </div>
@@ -302,7 +301,6 @@ const ConsistentHash = () => {
 
             <section className="k-win ch-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="ch-foot">

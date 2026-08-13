@@ -202,7 +202,6 @@ const SlowLight = () => {
         >
             <section className="k-win sl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/photonics/</span>delay-line</span>
                     <span className="meta k-mono">지연 = Σ n_g·L/c · 느린 빛으로 펄스를 붙잡는다</span>
                 </div>
@@ -293,7 +292,6 @@ const SlowLight = () => {
 
             <section className="k-win sl-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="sl-foot">

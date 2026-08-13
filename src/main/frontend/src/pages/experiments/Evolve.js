@@ -259,7 +259,6 @@ const Evolve = () => {
         >
             <section className="k-win ev-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/proc/</span>evolution</span>
                     <span className="meta k-mono">gen {view.gen}</span>
                 </div>
@@ -391,7 +390,6 @@ const Evolve = () => {
 
             <section className="k-win ev-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="ev-foot">

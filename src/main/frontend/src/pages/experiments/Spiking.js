@@ -314,7 +314,6 @@ const Spiking = () => {
         >
             <section className="k-win sp-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/lif/</span>network</span>
                     <span className="meta k-mono">V += Σw · fire when V ≥ θ · then reset</span>
                 </div>
@@ -406,7 +405,6 @@ const Spiking = () => {
 
             <section className="k-win sp-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="sp-foot">

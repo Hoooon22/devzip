@@ -305,7 +305,6 @@ const Biodegrade = () => {
         >
             <section className="k-win bd-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/reactor/</span>polymer</span>
                     <span className="meta k-mono">엔도(내부 절단) + 엑소(말단 분해) 협업</span>
                 </div>
@@ -404,7 +403,6 @@ const Biodegrade = () => {
 
             <section className="k-win bd-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="bd-foot">

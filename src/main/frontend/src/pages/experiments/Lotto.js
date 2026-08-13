@@ -221,7 +221,6 @@ const Lotto = () => {
             {/* ── 자동 구매 시뮬레이터 ── */}
             <section className="k-win lo-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/lotto/</span>auto-buy</span>
                     <span className="meta k-mono">6 / 45 · 1등 1/{TOTAL.toLocaleString()}</span>
                 </div>
@@ -328,7 +327,6 @@ const Lotto = () => {
             {/* ── 확률 사다리(체감 앵커) ── */}
             <section className="k-win lo-scale-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/lotto/</span>how-rare.md</span>
                     <span className="meta k-mono">1등 = 1/{TOTAL.toLocaleString()}</span>
                 </div>
@@ -369,7 +367,6 @@ const Lotto = () => {
             {/* ── README ── */}
             <section className="k-win lo-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="lo-foot">

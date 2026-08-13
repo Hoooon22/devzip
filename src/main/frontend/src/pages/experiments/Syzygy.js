@@ -248,7 +248,6 @@ const Syzygy = () => {
         >
             <section className="k-win syz-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/sky/</span>eclipse</span>
                     <span className="meta k-mono">개기 ⟺ 금환 : 각지름 = 거리의 문제</span>
                 </div>

@@ -153,7 +153,6 @@ const Deniable = () => {
         >
             <section className="k-win dn-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/survey/</span>randomized-response</span>
                     <span className="meta k-mono">민감 질문 · &quot;당신은 …했습니까?&quot;</span>
                 </div>
@@ -380,7 +379,6 @@ const Deniable = () => {
 
             <section className="k-win dn-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="dn-foot">

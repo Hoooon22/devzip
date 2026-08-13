@@ -61,12 +61,11 @@ const LabShell = ({ title, subtitle, eyebrow, path = 'experiment', children }) =
             <main className="lab-main">
                 <section className="k-win lab-hero" aria-label={title}>
                     <div className="k-win-bar">
-                        <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">~/lab/</span>{path}</span>
                         <span className="meta k-mono">read-only · {time}</span>
                     </div>
                     <div className="lab-hero-bd">
-                        {eyebrow && <span className="k-eyebrow"><span className="sq"></span>{eyebrow}</span>}
+                        {eyebrow && <span className="k-eyebrow">{eyebrow}</span>}
                         <h1>{title}</h1>
                         {subtitle && <p className="lab-sub">{subtitle}</p>}
                     </div>
@@ -76,7 +75,7 @@ const LabShell = ({ title, subtitle, eyebrow, path = 'experiment', children }) =
                 {children}
 
                 <footer className="lab-foot">
-                    <span className="sys"><span className="sq"></span>experiment mounted</span>
+                    <span className="sys">experiment mounted</span>
                     <span>© {new Date().getFullYear()} hoooon22 · devzip.site</span>
                     <div className="links">
                         <Link to="/">홈으로</Link>

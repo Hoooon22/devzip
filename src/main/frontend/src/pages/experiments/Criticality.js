@@ -198,7 +198,6 @@ const Criticality = () => {
         >
             <section className="k-win cr-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/core/</span>point-kinetics</span>
                     <span className="meta k-mono">Λ={LAMBDA_GEN.toExponential(0)}s · β={(BETA * 100).toFixed(2)}%</span>
                 </div>
@@ -354,7 +353,6 @@ const Criticality = () => {
 
             <section className="k-win cr-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="cr-foot">

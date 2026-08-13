@@ -280,7 +280,6 @@ const ReverseSprinkler = () => {
         >
             <section className="k-win rs-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/feynman/</span>sprinkler</span>
                     <span className="meta k-mono">Iω̇ = τ − c·ω · 흡입은 정방향의 반대, ≈1/50 배</span>
                 </div>
@@ -375,7 +374,6 @@ const ReverseSprinkler = () => {
 
             <section className="k-win rs-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="rs-foot">

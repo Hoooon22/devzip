@@ -299,7 +299,6 @@ const Sandpile = () => {
             {/* 컨트롤 */}
             <section className="k-win sp-ctrl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/pile/</span>controls</span>
                     <span className="meta k-mono">81×81 격자 · 무너짐 임계 4알</span>
                 </div>
@@ -349,7 +348,6 @@ const Sandpile = () => {
             {/* 스테이지 */}
             <section className="k-win sp-stage-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/pile/</span>lattice</span>
                     <span className="meta k-mono">격자를 클릭 → 그 자리에 모래 한 알</span>
                 </div>
@@ -404,7 +402,6 @@ const Sandpile = () => {
             {/* 통계 */}
             <section className="k-win sp-stat-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/stats/</span>avalanches</span>
                     <span className="meta k-mono">사태 크기 분포 · 멱법칙</span>
                 </div>
@@ -480,7 +477,6 @@ const Sandpile = () => {
             {/* 해설 */}
             <section className="k-win sp-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="sp-foot">

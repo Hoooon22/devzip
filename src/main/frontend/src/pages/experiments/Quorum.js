@@ -242,7 +242,6 @@ const Quorum = () => {
         >
             <section className="k-win qr-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/cluster/</span>raft</span>
                     <span className="meta k-mono">tick {sim.tick}</span>
                 </div>
@@ -393,7 +392,6 @@ const Quorum = () => {
 
             <section className="k-win qr-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="qr-foot">

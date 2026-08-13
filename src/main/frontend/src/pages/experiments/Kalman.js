@@ -353,7 +353,6 @@ const Kalman = () => {
         >
             <section className="k-win kf-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/percept/</span>estimator</span>
                     <span className="meta k-mono">예측 + 측정 → 가중 융합(칼만 이득)</span>
                 </div>
@@ -463,7 +462,6 @@ const Kalman = () => {
 
             <section className="k-win kf-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="kf-foot">

@@ -116,7 +116,6 @@ const Attention = () => {
         >
             <section className="k-win at-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/model/</span>attention-head</span>
                     <span className="meta k-mono">softmax(QKᵀ/√d)</span>
                 </div>
@@ -258,7 +257,6 @@ const Attention = () => {
 
             <section className="k-win at-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="at-foot">

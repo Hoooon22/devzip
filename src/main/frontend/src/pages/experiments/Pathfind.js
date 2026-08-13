@@ -244,7 +244,6 @@ const Pathfind = () => {
         >
             <section className="k-win pf-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/grid/</span>search</span>
                     <span className="meta k-mono">{MODES.find((m) => m.id === mode).formula}</span>
                 </div>
@@ -363,7 +362,6 @@ const Pathfind = () => {
 
             <section className="k-win pf-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="pf-foot">

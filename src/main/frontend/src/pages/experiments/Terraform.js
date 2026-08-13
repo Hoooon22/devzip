@@ -366,7 +366,6 @@ const Terraform = () => {
         >
             <section className="k-win tf-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/planet/</span>climate</span>
                     <span className="meta k-mono">거울·온실가스·극관 흑화 → CO₂ 되먹임</span>
                 </div>
@@ -481,7 +480,6 @@ const Terraform = () => {
 
             <section className="k-win tf-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="tf-foot">

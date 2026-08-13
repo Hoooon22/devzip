@@ -267,7 +267,6 @@ const Bullwhip = () => {
         >
             <section className="k-win bw-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/chain/</span>orders</span>
                     <span className="meta k-mono">order = 예측 + α·(재고갭) + α·θ·(파이프라인갭)</span>
                 </div>
@@ -374,7 +373,6 @@ const Bullwhip = () => {
 
             <section className="k-win bw-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="bw-foot">

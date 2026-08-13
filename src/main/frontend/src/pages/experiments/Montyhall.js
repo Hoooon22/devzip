@@ -120,7 +120,6 @@ const Montyhall = () => {
             {/* 손맛 게임 */}
             <section className="k-win mh-play-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/play/</span>three-doors</span>
                     <span className="meta k-mono">직접 골라 보기</span>
                 </div>
@@ -196,7 +195,6 @@ const Montyhall = () => {
             {/* 시뮬레이션 */}
             <section className="k-win mh-sim-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/sim/</span>law-of-large-numbers</span>
                     <span className="meta k-mono">{doorNote}</span>
                 </div>
@@ -253,7 +251,6 @@ const Montyhall = () => {
             {/* 해설 */}
             <section className="k-win mh-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="mh-foot">

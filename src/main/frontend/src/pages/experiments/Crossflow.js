@@ -331,7 +331,6 @@ const Crossflow = () => {
         >
             <section className="k-win cf-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/junction/</span>manager</span>
                     <span className="meta k-mono">reserve(cell, [t0, t1]) → grant | deny</span>
                 </div>
@@ -415,7 +414,6 @@ const Crossflow = () => {
 
             <section className="k-win cf-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="cf-foot">

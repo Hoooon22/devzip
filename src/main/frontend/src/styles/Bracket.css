@@ -110,6 +110,8 @@
 .br-team.is-lose { color: var(--ink-mute); }
 .br-team-star { margin-left: auto; color: var(--br-gold); font-size: 0.62rem; }
 .br-team.is-win .br-team-star { color: var(--br-gold-b); }
+/* 다크에서 승자 칩 배경은 밝은 --ink 라 밝은 골드가 묻힌다 → 어두운 골드로 반전 */
+.lab-os[data-theme="dark"] .br-team.is-win .br-team-star { color: #a86800; }
 
 /* 우승 컬럼 */
 .br-round-champ { min-width: 128px; }

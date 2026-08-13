@@ -173,7 +173,6 @@ const Merkle = () => {
         >
             <section className="k-win mk-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/tree/</span>root</span>
                     <span className="meta k-mono">hash(leaf) → hash(pair) → … → root</span>
                 </div>
@@ -338,7 +337,6 @@ const Merkle = () => {
 
             <section className="k-win mk-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="mk-foot">

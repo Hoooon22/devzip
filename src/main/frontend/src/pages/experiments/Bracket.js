@@ -102,7 +102,6 @@ const Bracket = () => {
         >
             <section className="k-win br-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/tourney/</span>knockout</span>
                     <span className="meta k-mono">{size}강 · {Math.log2(size)}라운드</span>
                 </div>
@@ -240,7 +239,6 @@ const Bracket = () => {
 
             <section className="k-win br-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="br-foot">

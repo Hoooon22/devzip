@@ -169,9 +169,6 @@
   border-bottom: 1px solid var(--line); background: var(--panel-2);
   font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);
 }
-.k-dots { display: flex; gap: 5px; flex-shrink: 0; }
-.k-dots i { width: 8px; height: 8px; background: var(--frame); }
-.k-dots i:first-child { background: var(--signal); }
 .k-win-bar .path { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .k-win-bar .path .dir { color: var(--ink-mute); }
 .k-win-bar .meta { margin-left: auto; color: var(--ink-mute); white-space: nowrap; flex-shrink: 0; }
@@ -190,7 +187,6 @@
   color: var(--signal); border: 1px solid var(--signal-soft); background: var(--signal-soft);
   padding: 5px 11px; border-radius: 999px; margin-bottom: 24px;
 }
-.k-eyebrow .sq { width: 6px; height: 6px; background: var(--signal); }
 .k-hero-main h1 { font-size: 60px; line-height: 1.0; letter-spacing: -0.04em; font-weight: 600; margin: 0 0 22px; max-width: 16ch; }
 .k-hero-main h1 .mk { color: var(--signal); }
 .k-hero-main h1 .box { background: var(--ink); color: var(--desk); padding: 0 8px; }
@@ -203,7 +199,6 @@
   padding: 13px 20px; border: 1px solid var(--frame-strong); background: var(--ink); color: var(--desk);
   transition: background 0.14s, color 0.14s, transform 0.14s;
 }
-.k-os[data-theme="dark"] .k-btn { color: var(--desk); }
 .k-btn:hover { background: var(--signal); border-color: var(--signal); color: var(--on-signal); transform: translateY(-1px); }
 .k-btn.ghost { background: transparent; color: var(--ink); }
 .k-btn.ghost:hover { background: var(--ink); color: var(--desk); }
@@ -417,7 +412,6 @@ a.k-gauge:hover .go { color: var(--signal); transform: translateX(3px); }
 /* ── status bar ── */
 .k-statusbar { display: flex; align-items: center; gap: 18px; padding: 14px 18px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); flex-wrap: wrap; }
 .k-statusbar .sys { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-soft); }
-.k-statusbar .sys .sq { width: 7px; height: 7px; background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
 .k-statusbar .links { margin-left: auto; display: flex; gap: 16px; }
 .k-statusbar a { color: var(--ink-soft); text-decoration: none; }
 .k-statusbar a:hover { color: var(--signal); }

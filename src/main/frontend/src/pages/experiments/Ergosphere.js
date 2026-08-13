@@ -132,11 +132,11 @@ const Ergosphere = () => {
         const ctx = cv.getContext('2d');
         const W = cv.width, H = cv.height;
         const css = getComputedStyle(cv);
-        const cErgo = css.getPropertyValue('--er-ergo').trim() || '#1f6f74';
-        const cDrag = css.getPropertyValue('--er-drag').trim() || '#3f6f9c';
-        const cIn = css.getPropertyValue('--er-in').trim() || '#4fd0e0';
-        const cCap = css.getPropertyValue('--er-cap').trim() || '#e0483f';
-        const cOut = css.getPropertyValue('--er-out').trim() || '#f2b134';
+        const cErgo = css.getPropertyValue('--ergo-ergo').trim() || '#1f6f74';
+        const cDrag = css.getPropertyValue('--ergo-drag').trim() || '#3f6f9c';
+        const cIn = css.getPropertyValue('--ergo-in').trim() || '#4fd0e0';
+        const cCap = css.getPropertyValue('--ergo-cap').trim() || '#e0483f';
+        const cOut = css.getPropertyValue('--ergo-out').trim() || '#f2b134';
 
         const M = MRef.current, a = aRef.current;
         const rhU = M + Math.sqrt(Math.max(0, M * M - a * a));
@@ -288,89 +288,88 @@ const Ergosphere = () => {
             subtitle={'// 회전하는 블랙홀의 에르고권에서, 입자를 쪼개 회전 에너지를 뽑아낸다'}
             path="ergosphere.exe"
         >
-            <section className="k-win er-win">
+            <section className="k-win ergo-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/kerr/</span>equatorial</span>
                     <span className="meta k-mono">입자 분할 → 음에너지 조각 포획 → 나머지 조각이 더 큰 에너지로 탈출</span>
                 </div>
 
-                <div className="er-toolbar">
-                    <div className="er-ctrls">
-                        <div className="er-ctrl">
-                            <label className="er-ctrl-label k-mono" htmlFor="er-depth">분할 깊이 <b>{Math.round(depth * 100)}%</b></label>
-                            <input id="er-depth" type="range" min="0" max="1" step="0.01"
+                <div className="ergo-toolbar">
+                    <div className="ergo-ctrls">
+                        <div className="ergo-ctrl">
+                            <label className="ergo-ctrl-label k-mono" htmlFor="ergo-depth">분할 깊이 <b>{Math.round(depth * 100)}%</b></label>
+                            <input id="ergo-depth" type="range" min="0" max="1" step="0.01"
                                 value={depth} onChange={(e) => onDepth(Number(e.target.value))} />
                         </div>
-                        <div className="er-ctrl">
-                            <label className="er-ctrl-label k-mono" htmlFor="er-retro">역행 던지기 <b>{Math.round(retro * 100)}%</b></label>
-                            <input id="er-retro" type="range" min="0" max="1" step="0.01"
+                        <div className="ergo-ctrl">
+                            <label className="ergo-ctrl-label k-mono" htmlFor="ergo-retro">역행 던지기 <b>{Math.round(retro * 100)}%</b></label>
+                            <input id="ergo-retro" type="range" min="0" max="1" step="0.01"
                                 value={retro} onChange={(e) => onRetro(Number(e.target.value))} />
                         </div>
-                        <div className="er-ctrl">
-                            <label className="er-ctrl-label k-mono" htmlFor="er-a0">초기 스핀 a₀ <b>{a0.toFixed(2)}</b></label>
-                            <input id="er-a0" type="range" min="0.2" max="1" step="0.01"
+                        <div className="ergo-ctrl">
+                            <label className="ergo-ctrl-label k-mono" htmlFor="ergo-a0">초기 스핀 a₀ <b>{a0.toFixed(2)}</b></label>
+                            <input id="ergo-a0" type="range" min="0.2" max="1" step="0.01"
                                 value={a0} onChange={(e) => onA0(Number(e.target.value))} />
                         </div>
                     </div>
-                    <div className="er-actions">
-                        <button type="button" className="er-btn er-btn-hot" onClick={drop} disabled={hud.a <= 0.02}>
+                    <div className="ergo-actions">
+                        <button type="button" className="ergo-btn ergo-btn-hot" onClick={drop} disabled={hud.a <= 0.02}>
                             ⚡ 입자 투입
                         </button>
-                        <button type="button" className="er-btn er-btn-ghost" onClick={onReset}>↻ 리셋</button>
+                        <button type="button" className="ergo-btn ergo-btn-ghost" onClick={onReset}>↻ 리셋</button>
                     </div>
                 </div>
 
-                <div className="er-stage">
-                    <div className="er-view-col">
-                        <div className="er-screen">
-                            <canvas ref={canvasRef} className="er-canvas" />
+                <div className="ergo-stage">
+                    <div className="ergo-view-col">
+                        <div className="ergo-screen">
+                            <canvas ref={canvasRef} className="ergo-canvas" />
                         </div>
-                        <div className="er-legend k-mono">
-                            <span><i className="er-key er-key-in" /> 투입 입자</span>
-                            <span><i className="er-key er-key-cap" /> 음에너지 조각(포획)</span>
-                            <span><i className="er-key er-key-out" /> 탈출 조각(에너지↑)</span>
+                        <div className="ergo-legend k-mono">
+                            <span><i className="ergo-key ergo-key-in" /> 투입 입자</span>
+                            <span><i className="ergo-key ergo-key-cap" /> 음에너지 조각(포획)</span>
+                            <span><i className="ergo-key ergo-key-out" /> 탈출 조각(에너지↑)</span>
                         </div>
-                        <p className="er-view-foot k-mono">
+                        <p className="ergo-view-foot k-mono">
                             점선이 <b>정적 한계</b>(에르고권 바깥 경계), 칠흑 원이 <b>사건의 지평선</b>. 그 사이 껍질 안에서는
                             시공간이 <b>회전 방향으로 끌린다</b> · <b>역행 던지기</b>를 키우고 <b>깊이</b>를 지평선 쪽으로 밀수록 더 많이 뽑힌다
                         </p>
                     </div>
 
-                    <div className="er-right">
-                        <div className={`er-amp er-${band}`}>
-                            <span className="er-amp-lab k-mono">회전 에너지 저수지</span>
-                            <span className="er-amp-num">{bandLabel}</span>
-                            <span className="er-amp-sub k-mono">스핀 a = {hud.a.toFixed(3)} · 질량 M = {hud.M.toFixed(3)}</span>
+                    <div className="ergo-right">
+                        <div className={`ergo-amp ergo-${band}`}>
+                            <span className="ergo-amp-lab k-mono">회전 에너지 저수지</span>
+                            <span className="ergo-amp-num">{bandLabel}</span>
+                            <span className="ergo-amp-sub k-mono">스핀 a = {hud.a.toFixed(3)} · 질량 M = {hud.M.toFixed(3)}</span>
                         </div>
 
-                        <div className="er-battery-wrap">
-                            <span className="er-battery-lab k-mono">추출 진행 (이론 상한 대비)</span>
-                            <div className="er-battery">
-                                <div className="er-battery-fill" style={{ width: `${Math.min(100, hud.pct)}%` }} />
+                        <div className="ergo-battery-wrap">
+                            <span className="ergo-battery-lab k-mono">추출 진행 (이론 상한 대비)</span>
+                            <div className="ergo-battery">
+                                <div className="ergo-battery-fill" style={{ width: `${Math.min(100, hud.pct)}%` }} />
                             </div>
-                            <span className="er-battery-sub k-mono">
+                            <span className="ergo-battery-sub k-mono">
                                 뽑아낸 에너지 {(hud.harvest * 100).toFixed(1)}% · 상한 {(maxHarvestRef.current * 100).toFixed(1)}%
                             </span>
                         </div>
 
-                        <div className="er-stats">
-                            <div className="er-stat">
-                                <span className="er-stat-lab k-mono">마지막 탈출 에너지</span>
-                                <span className="er-stat-num k-mono">{hud.eOut.toFixed(3)}</span>
-                                <span className="er-stat-foot k-mono">투입 1.000 기준</span>
+                        <div className="ergo-stats">
+                            <div className="ergo-stat">
+                                <span className="ergo-stat-lab k-mono">마지막 탈출 에너지</span>
+                                <span className="ergo-stat-num k-mono">{hud.eOut.toFixed(3)}</span>
+                                <span className="ergo-stat-foot k-mono">투입 1.000 기준</span>
                             </div>
-                            <div className="er-stat">
-                                <span className="er-stat-lab k-mono">이번 이득</span>
-                                <span className="er-stat-num k-mono" style={{ color: hud.lastGain > 1e-4 ? 'var(--er-out)' : 'var(--ink-mute)' }}>
+                            <div className="ergo-stat">
+                                <span className="ergo-stat-lab k-mono">이번 이득</span>
+                                <span className="ergo-stat-num k-mono" style={{ color: hud.lastGain > 1e-4 ? 'var(--ergo-out)' : 'var(--ink-mute)' }}>
                                     {hud.lastGain > 1e-4 ? '+' : ''}{(hud.lastGain * 100).toFixed(1)}%
                                 </span>
-                                <span className="er-stat-foot k-mono">불가역 질량 {hud.Mirr.toFixed(3)}</span>
+                                <span className="ergo-stat-foot k-mono">불가역 질량 {hud.Mirr.toFixed(3)}</span>
                             </div>
                         </div>
 
-                        <div className={`er-verdict er-${band}`}>
-                            <p className="er-verdict-txt">
+                        <div className={`ergo-verdict ergo-${band}`}>
+                            <p className="ergo-verdict-txt">
                                 {hud.lastGain <= 1e-4 && hud.harvest <= 1e-4
                                     ? <><b>입자 투입</b>을 눌러 보라. 에르고권 안에서 입자가 쪼개지고, 한 조각이 지평선으로 빨려 들어가면 나머지가 더 큰 에너지로 튀어나온다.</>
                                     : band === 'spent'
@@ -386,12 +385,11 @@ const Ergosphere = () => {
                 <div className="k-resize"></div>
             </section>
 
-            <section className="k-win er-foot-win">
+            <section className="k-win ergo-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
-                <footer className="er-foot">
+                <footer className="ergo-foot">
                     <p>
                         {'회전하지 않는 블랙홀은 사건의 지평선 하나뿐이지만, '}<b>{'회전하는 블랙홀'}</b>{'(커 블랙홀)에는 지평선 '}
                         {'바깥에 '}<b>{'에르고권'}</b>{'이라는 껍질이 하나 더 있다. 이 껍질 안에서는 블랙홀의 회전이 시공간 자체를 '}
@@ -419,7 +417,7 @@ const Ergosphere = () => {
                         {'거대한 회전 배터리'}</b>{'로 볼 수 있다는 점이다. 같은 구조는 회전하는 블랙홀 주변의 자기장이 에너지를 '}
                         {'뽑아내 강력한 제트를 쏘아 올리는 천체물리 현상(블랜드퍼드-즈나옉 과정)과도 맞닿아 있다.'}
                     </p>
-                    <p className="er-disclaimer">
+                    <p className="ergo-disclaimer">
                         {'* 적도면 2D·가역(이상) 과정 근사로 펜로즈 과정의 핵심(에르고권·관성계 끌림·회전 에너지 추출과 그 상한)만 '}
                         {'남긴 개념 데모입니다. 실제 커 측지선, 음에너지 궤도의 정확한 조건, 조석·복사 손실 등은 생략했으며 수치는 예시입니다.'}
                     </p>

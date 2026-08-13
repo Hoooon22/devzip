@@ -169,7 +169,6 @@ const Arago = () => {
         >
             <section className="k-win ar-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/optics/</span>disc-shadow</span>
                     <span className="meta k-mono">원반 가장자리 회절파가 축에서 보강간섭 → 그림자 중심이 밝다</span>
                 </div>
@@ -267,7 +266,6 @@ const Arago = () => {
 
             <section className="k-win ar-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="ar-foot">

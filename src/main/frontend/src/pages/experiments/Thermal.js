@@ -270,7 +270,6 @@ const Thermal = () => {
         >
             <section className="k-win th-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/field/</span>heat</span>
                     <span className="meta k-mono">T ← T + rate·Σ kEff·ΔT</span>
                 </div>
@@ -386,7 +385,6 @@ const Thermal = () => {
 
             <section className="k-win th-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="th-foot">

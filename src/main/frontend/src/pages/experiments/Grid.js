@@ -316,7 +316,6 @@ const Grid = () => {
         >
             <section className="k-win gr-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/dispatch/</span>control</span>
                     <span className="meta k-mono">df/dt = (P_gen − P_load − D·Δf) / 2HS</span>
                 </div>
@@ -462,7 +461,6 @@ const Grid = () => {
 
             <section className="k-win gr-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="gr-foot">

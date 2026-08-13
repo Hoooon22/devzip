@@ -165,7 +165,6 @@ const Wildcard = () => {
             {/* 컨트롤 */}
             <section className="k-win wc-ctrl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/draw/</span>controls</span>
                     <span className="meta k-mono">48팀 · 12조 · 각 조 1·2위 직행 + 3위 중 상위 8팀</span>
                 </div>
@@ -213,7 +212,6 @@ const Wildcard = () => {
             {/* 요약 계기판 */}
             <section className="k-win wc-metric-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/result/</span>summary</span>
                     <span className="meta k-mono">진출 32 · 탈락 16</span>
                 </div>
@@ -244,7 +242,6 @@ const Wildcard = () => {
             {/* 12개 조 */}
             <section className="k-win wc-groups-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/groups/</span>A–L</span>
                     <span className="meta k-mono">
                         <i className="wc-key wc-key-q" /> 직행
@@ -285,7 +282,6 @@ const Wildcard = () => {
             {/* 와일드카드 리더보드 (3위 12팀 줄 세우기) */}
             <section className="k-win wc-lead-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/wildcard/</span>3rd-placed</span>
                     <span className="meta k-mono">12개 조 3위를 승점·골득실로 한 줄 세워 상위 8팀만 진출</span>
                 </div>
@@ -314,7 +310,6 @@ const Wildcard = () => {
             {mc && (
                 <section className="k-win wc-mc-win">
                     <div className="k-win-bar">
-                        <div className="k-dots"><i></i><i></i><i></i></div>
                         <span className="path k-mono"><span className="dir">/montecarlo/</span>{mc.K}runs</span>
                         <span className="meta k-mono">현재 설정으로 {mc.K}판을 돌린 통계</span>
                     </div>
@@ -353,7 +348,6 @@ const Wildcard = () => {
             {/* 해설 */}
             <section className="k-win wc-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="wc-foot">

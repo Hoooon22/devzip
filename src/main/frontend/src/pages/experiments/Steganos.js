@@ -241,7 +241,6 @@ const Steganos = () => {
             {/* 컨트롤 */}
             <section className="k-win sg-ctrl-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/hide/</span>controls</span>
                     <span className="meta k-mono">200×200 · RGB 하위 {bits}비트</span>
                 </div>
@@ -301,7 +300,6 @@ const Steganos = () => {
             {/* 스테이지: 원본 vs 은닉 결과 */}
             <section className="k-win sg-stage-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/hide/</span>compare</span>
                     <span className="meta k-mono">눈으로는 구별되지 않는다</span>
                 </div>
@@ -336,7 +334,6 @@ const Steganos = () => {
             {/* 추출(되읽기) */}
             <section className="k-win sg-ex-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/read/</span>extract</span>
                     <span className="meta k-mono">받는 쪽은 하위 비트 수를 알아야 한다</span>
                 </div>
@@ -376,7 +373,6 @@ const Steganos = () => {
             {/* 지표 */}
             <section className="k-win sg-stat-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/stats/</span>capacity</span>
                     <span className="meta k-mono">용량 ↔ 은밀성의 거래</span>
                 </div>
@@ -411,7 +407,6 @@ const Steganos = () => {
             {/* 해설 */}
             <section className="k-win sg-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="sg-foot">

@@ -317,7 +317,6 @@ const Radiant = () => {
         >
             <section className="k-win rad-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/sky/</span>perseids</span>
                     <span className="meta k-mono">관측률 ≈ ZHR · sin(h)</span>
                 </div>

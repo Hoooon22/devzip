@@ -104,9 +104,6 @@
   border-bottom: 1px solid var(--line); background: var(--panel-2);
   font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);
 }
-.lab-os .k-dots { display: flex; gap: 5px; flex-shrink: 0; }
-.lab-os .k-dots i { width: 8px; height: 8px; background: var(--frame); }
-.lab-os .k-dots i:first-child { background: var(--signal); }
 .lab-os .k-win-bar .path { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lab-os .k-win-bar .path .dir { color: var(--ink-mute); }
 .lab-os .k-win-bar .meta { margin-left: auto; color: var(--ink-mute); white-space: nowrap; flex-shrink: 0; }
@@ -139,14 +136,12 @@
   color: var(--signal); border: 1px solid var(--signal-soft); background: var(--signal-soft);
   padding: 5px 11px; border-radius: 999px; margin-bottom: 20px;
 }
-.lab-os .k-eyebrow .sq { width: 6px; height: 6px; background: var(--signal); }
 .lab-hero-bd h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.0; letter-spacing: -0.04em; font-weight: 600; margin: 0; }
 .lab-sub { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6; color: var(--signal); margin: 14px 0 0; }
 
 /* ── status bar (mirror .k-statusbar) ── */
 .lab-foot { display: flex; align-items: center; gap: 18px; padding: 14px 4px 4px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); flex-wrap: wrap; }
 .lab-foot .sys { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-soft); }
-.lab-foot .sys .sq { width: 7px; height: 7px; background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
 .lab-foot .links { margin-left: auto; display: flex; gap: 16px; }
 .lab-foot a { color: var(--ink-soft); text-decoration: none; }
 .lab-foot a:hover { color: var(--signal); }

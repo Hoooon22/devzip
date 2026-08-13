@@ -201,86 +201,85 @@ const Sync = () => {
             subtitle={'// 아무도 지휘하지 않는데 반딧불 무리가 스스로 한 박자로 맞춰지는 순간'}
             path="sync.exe"
         >
-            <section className="k-win sy-win">
+            <section className="k-win snc-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/kuramoto/</span>fireflies</span>
                     <span className="meta k-mono">θ̇ᵢ = ωᵢ + K·r·sin(ψ−θᵢ) · 결합이 무질서를 이긴다</span>
                 </div>
 
-                <div className="sy-stage">
-                    <div className="sy-view-col">
-                        <div className="sy-screen">
-                            <canvas ref={swarmRef} className="sy-canvas" />
+                <div className="snc-stage">
+                    <div className="snc-view-col">
+                        <div className="snc-screen">
+                            <canvas ref={swarmRef} className="snc-canvas" />
                         </div>
 
-                        <div className="sy-sliders">
-                            <label className="sy-slider">
-                                <span className="sy-slider-lab k-mono">결합 세기 K <b>{k.toFixed(2)}</b></span>
+                        <div className="snc-sliders">
+                            <label className="snc-slider">
+                                <span className="snc-slider-lab k-mono">결합 세기 K <b>{k.toFixed(2)}</b></span>
                                 <input type="range" min="0" max="3" step="0.02" value={k}
                                     onChange={(e) => setK(parseFloat(e.target.value))} />
-                                <span className="sy-slider-foot k-mono">서로의 박자에 얼마나 끌리는가</span>
+                                <span className="snc-slider-foot k-mono">서로의 박자에 얼마나 끌리는가</span>
                             </label>
-                            <label className="sy-slider">
-                                <span className="sy-slider-lab k-mono">진동수 스프레드 Δω <b>{spread.toFixed(2)}</b></span>
+                            <label className="snc-slider">
+                                <span className="snc-slider-lab k-mono">진동수 스프레드 Δω <b>{spread.toFixed(2)}</b></span>
                                 <input type="range" min="0" max="1.8" step="0.02" value={spread}
                                     onChange={(e) => setSpread(parseFloat(e.target.value))} />
-                                <span className="sy-slider-foot k-mono">타고난 박자의 제각각 정도(무질서)</span>
+                                <span className="snc-slider-foot k-mono">타고난 박자의 제각각 정도(무질서)</span>
                             </label>
-                            <label className="sy-slider">
-                                <span className="sy-slider-lab k-mono">반딧불 수 N <b>{n}</b></span>
+                            <label className="snc-slider">
+                                <span className="snc-slider-lab k-mono">반딧불 수 N <b>{n}</b></span>
                                 <input type="range" min="12" max="64" step="1" value={n}
                                     onChange={(e) => setN(parseInt(e.target.value, 10))} />
-                                <span className="sy-slider-foot k-mono">무리 크기(바꾸면 새 무리)</span>
+                                <span className="snc-slider-foot k-mono">무리 크기(바꾸면 새 무리)</span>
                             </label>
                         </div>
 
-                        <p className="sy-view-foot k-mono">
+                        <p className="snc-view-foot k-mono">
                             <b>K</b>를 올려 결합을 키우면 흩어져 깜빡이던 무리가 어느 순간 <b>한 박자</b>로 잠긴다 ·
                             <b> Δω</b>를 키우면 타고난 박자가 제각각이라 동기화가 <b>더 어려워진다</b>
                         </p>
                     </div>
 
-                    <div className="sy-right">
-                        <div className={`sy-ring sy-${phase}`}>
-                            <canvas ref={ringRef} className="sy-ring-canvas" />
+                    <div className="snc-right">
+                        <div className={`snc-ring snc-${phase}`}>
+                            <canvas ref={ringRef} className="snc-ring-canvas" />
                         </div>
 
-                        <div className={`sy-amp sy-${phase}`}>
-                            <span className="sy-amp-lab k-mono">질서변수 r = |⟨e^{'{iθ}'}⟩|</span>
-                            <span className="sy-amp-num">{rDisp.toFixed(2)}</span>
-                            <span className="sy-amp-sub k-mono">0 흩어짐 · 1 완전 동기</span>
+                        <div className={`snc-amp snc-${phase}`}>
+                            <span className="snc-amp-lab k-mono">질서변수 r = |⟨e^{'{iθ}'}⟩|</span>
+                            <span className="snc-amp-num">{rDisp.toFixed(2)}</span>
+                            <span className="snc-amp-sub k-mono">0 흩어짐 · 1 완전 동기</span>
                         </div>
 
-                        <div className="sy-meter">
-                            <div className="sy-meter-track">
-                                <div className="sy-meter-fill" style={{ width: `${rDisp * 100}%` }} />
+                        <div className="snc-meter">
+                            <div className="snc-meter-track">
+                                <div className="snc-meter-fill" style={{ width: `${rDisp * 100}%` }} />
                             </div>
                         </div>
 
-                        <div className="sy-stats">
-                            <div className="sy-stat">
-                                <span className="sy-stat-lab k-mono">결합 K</span>
-                                <span className="sy-stat-num k-mono">{k.toFixed(2)}</span>
-                                <span className="sy-stat-foot k-mono">끌어당김</span>
+                        <div className="snc-stats">
+                            <div className="snc-stat">
+                                <span className="snc-stat-lab k-mono">결합 K</span>
+                                <span className="snc-stat-num k-mono">{k.toFixed(2)}</span>
+                                <span className="snc-stat-foot k-mono">끌어당김</span>
                             </div>
-                            <div className="sy-stat">
-                                <span className="sy-stat-lab k-mono">임계 K_c ≈ Δω</span>
-                                <span className="sy-stat-num k-mono">{kc.toFixed(2)}</span>
-                                <span className="sy-stat-foot k-mono">{k >= kc ? 'K ≥ K_c' : 'K < K_c'}</span>
+                            <div className="snc-stat">
+                                <span className="snc-stat-lab k-mono">임계 K_c ≈ Δω</span>
+                                <span className="snc-stat-num k-mono">{kc.toFixed(2)}</span>
+                                <span className="snc-stat-foot k-mono">{k >= kc ? 'K ≥ K_c' : 'K < K_c'}</span>
                             </div>
                         </div>
 
-                        <div className={`sy-verdict sy-${phase}`}>
-                            <p className="sy-verdict-txt">{PHASE_LABEL[phase]}</p>
+                        <div className={`snc-verdict snc-${phase}`}>
+                            <p className="snc-verdict-txt">{PHASE_LABEL[phase]}</p>
                         </div>
 
-                        <div className="sy-actions">
-                            <button type="button" className="sy-btn sy-btn-hot" onClick={() => setPlaying((p) => !p)}>
+                        <div className="snc-actions">
+                            <button type="button" className="snc-btn snc-btn-hot" onClick={() => setPlaying((p) => !p)}>
                                 {playing ? '⏸ 정지' : '▶ 재생'}
                             </button>
-                            <button type="button" className="sy-btn sy-btn-ghost" onClick={() => seed(n)}>↻ 새 무리</button>
-                            <button type="button" className="sy-btn sy-btn-ghost" onClick={() => { setK(0); }}>K=0 풀기</button>
+                            <button type="button" className="snc-btn snc-btn-ghost" onClick={() => seed(n)}>↻ 새 무리</button>
+                            <button type="button" className="snc-btn snc-btn-ghost" onClick={() => { setK(0); }}>K=0 풀기</button>
                         </div>
                     </div>
                 </div>
@@ -288,12 +287,11 @@ const Sync = () => {
                 <div className="k-resize"></div>
             </section>
 
-            <section className="k-win sy-foot-win">
+            <section className="k-win snc-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
-                <footer className="sy-foot">
+                <footer className="snc-foot">
                     <p>
                         {'동남아 강가에서 수천 마리의 반딧불이 지휘자도 없이 '}<b>{'일제히'}</b>{' 깜빡이는 장면은 오래도록 '}
                         {'수수께끼였다. 최근에도 반딧불 무리가 어떻게 스스로 박자를 맞추는지 — 개체가 옆의 불빛을 보고 제 '}
@@ -322,7 +320,7 @@ const Sync = () => {
                         {'0으로 풀면 왜 무리가 서서히 흩어지는지를 보라. 심장 박동세포·박수치는 관객·전력망의 발전기·뇌의 신경 '}
                         {'진동까지, 제각각인 것들이 스스로 발맞추는 그 원형이 여기 있다.'}
                     </p>
-                    <p className="sy-disclaimer">
+                    <p className="snc-disclaimer">
                         {'* 평균장 쿠라모토 모형만 남긴 개념 데모입니다. 임계 결합 K_c 는 진동수 분포에 따라 정확한 값이 달라지며 '}
                         {'(여기선 K_c≈Δω 로 단순화), 유한한 무리에서는 r 이 0으로 완전히 떨어지지 않고 요동칩니다. 공간 구조·시간 '}
                         {'지연·잡음 등은 생략했습니다.'}

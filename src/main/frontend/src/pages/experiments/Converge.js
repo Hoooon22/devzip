@@ -240,7 +240,6 @@ const Converge = () => {
         >
             <section className="k-win cv-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">/proc/</span>replication</span>
                     <span className="meta k-mono">crdt playground</span>
                 </div>
@@ -333,7 +332,6 @@ const Converge = () => {
 
             <section className="k-win cv-foot-win">
                 <div className="k-win-bar">
-                    <div className="k-dots"><i></i><i></i><i></i></div>
                     <span className="path k-mono"><span className="dir">~/lab/</span>README.md</span>
                 </div>
                 <footer className="cv-foot">
