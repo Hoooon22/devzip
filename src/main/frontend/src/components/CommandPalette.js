@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import projects from '../data/projects';
+import ProjectIcon, { Icon } from './ProjectIcon';
+import useSiteTheme from '../hooks/useSiteTheme';
 import './CommandPalette.css';
 
 // 프로젝트 목록 + 고정 목적지를 하나의 커맨드 목록으로 합친다.
 const STATIC_COMMANDS = [
-    { id: 'nav-home', name: '홈', description: '메인 프로젝트 허브로 이동', to: '/', icon: '🏠', group: '이동' },
-    { id: 'nav-latency', name: '레이턴시 아레나', description: '엔드포인트 응답 속도를 측정·비교하는 실험', to: '/latency-arena', icon: '📡', group: '이동' },
-    { id: 'ext-github', name: 'GitHub', description: 'hoooon22의 GitHub 프로필', href: 'https://github.com/Hoooon22', icon: '🐙', group: '외부' },
+    { id: 'nav-home', name: '홈', description: '메인 프로젝트 허브로 이동', to: '/', iconName: 'home', group: '이동' },
+    { id: 'nav-latency', name: '레이턴시 아레나', description: '엔드포인트 응답 속도를 측정·비교하는 실험', to: '/latency-arena', iconName: 'network', group: '이동' },
+    { id: 'ext-github', name: 'GitHub', description: 'hoooon22의 GitHub 프로필', href: 'https://github.com/Hoooon22', iconName: 'globe', group: '외부' },
 ];
 
 const buildCommands = () => {
@@ -17,7 +19,8 @@ const buildCommands = () => {
             id: `proj-${p.id}`,
             name: p.name,
             description: p.description,
-            icon: p.thumbnail || '📦',
+            pLink: p.link,
+            pCategory: p.category,
             group: p.isProduction ? '운영 중' : '실험실',
             keywords: [p.category, p.isProduction ? 'production live 운영' : 'experiment lab 실험']
                 .filter(Boolean)
@@ -45,6 +48,9 @@ const scoreMatch = (query, text) => {
 
 const CommandPalette = () => {
     const navigate = useNavigate();
+    // 팔레트는 페이지 루트 밖(전역)에 렌더되므로 테마 토큰을 스스로 주입한다.
+    const [dark] = useSiteTheme();
+    const theme = dark ? 'dark' : 'light';
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [active, setActive] = useState(0);
@@ -129,6 +135,7 @@ const CommandPalette = () => {
             <button
                 type="button"
                 className="cmdk-launcher"
+                data-theme={theme}
                 onClick={() => setOpen(true)}
                 aria-label="명령 팔레트 열기"
                 title="명령 팔레트 (⌘K / Ctrl+K)"
@@ -138,7 +145,7 @@ const CommandPalette = () => {
             </button>
 
             {open && (
-                <div className="cmdk-overlay">
+                <div className="cmdk-overlay" data-theme={theme}>
                     <button
                         type="button"
                         className="cmdk-backdrop"
@@ -179,7 +186,11 @@ const CommandPalette = () => {
                                         onMouseEnter={() => setActive(i)}
                                         onClick={() => run(cmd)}
                                     >
-                                        <span className="cmdk-item-icn" aria-hidden="true">{cmd.icon}</span>
+                                        <span className="cmdk-item-icn" aria-hidden="true">
+                                            {cmd.iconName
+                                                ? <Icon name={cmd.iconName} size={18} />
+                                                : <ProjectIcon link={cmd.pLink} category={cmd.pCategory} size={18} />}
+                                        </span>
                                         <span className="cmdk-item-body">
                                             <span className="cmdk-item-name">{cmd.name}</span>
                                             <span className="cmdk-item-desc">{cmd.description}</span>

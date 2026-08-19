@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import labOrigins, { originAnchorId } from '../data/labOrigins';
+import SiteHeader from '../components/SiteHeader';
+import Footer from '../components/Footer';
+import ProjectIcon from '../components/ProjectIcon';
+import useSiteTheme from '../hooks/useSiteTheme';
 import '../styles/LabOrigins.css';
 
 // 실험 계기 연대기 — 각 실험실 페이지가 "어떤 사건/이슈에서 출발했는지"를
@@ -11,6 +15,7 @@ import '../styles/LabOrigins.css';
 const ALL = '전체';
 
 const LabOrigins = () => {
+    const [dark, toggleDark] = useSiteTheme();
     const [cat, setCat] = useState(ALL);
     const location = useLocation();
     const [targetId, setTargetId] = useState('');
@@ -55,17 +60,17 @@ const LabOrigins = () => {
     }, [cat]);
 
     return (
-        <div className="origins-page">
+        <div className="origins-page" data-theme={dark ? 'dark' : 'light'}>
             <Helmet>
                 <title>실험 계기 연대기 | DevZip 자료실</title>
                 <meta name="description" content="DevZip 실험실 페이지들이 어떤 사건과 이슈에서 출발했는지 시간·프로젝트별로 정리한 연대기." />
             </Helmet>
 
+            <SiteHeader active="origins" dark={dark} onToggleTheme={toggleDark} />
+
             <div className="origins-wrap">
                 <header className="origins-head">
-                    <Link className="back-link" to="/library">← 자료실</Link>
-                    <Link className="back-link" to="/">홈</Link>
-                    <span className="eyebrow">★ lab origins</span>
+                    <span className="eyebrow k-mono">lab origins</span>
                     <h1>실험 계기 연대기</h1>
                     <p>
                         실험실 페이지 하나하나가 어떤 사건·이슈·궁금증에서 출발했는지 기록한 정리본입니다.
@@ -98,7 +103,7 @@ const LabOrigins = () => {
                                     className={`origin-card ${targetId === originAnchorId(o.link) ? 'is-target' : ''}`}
                                 >
                                     <div className="origin-top">
-                                        <span className="origin-icon" aria-hidden="true">{o.icon}</span>
+                                        <span className="origin-icon" aria-hidden="true"><ProjectIcon link={o.link} category={o.category} size={18} /></span>
                                         <h3>{o.name}</h3>
                                         {o.subtitle && <span className="origin-sub">{o.subtitle}</span>}
                                         <span className="origin-cat">{o.category}</span>
@@ -119,6 +124,8 @@ const LabOrigins = () => {
                     </section>
                 ))}
             </div>
+
+            <Footer />
         </div>
     );
 };

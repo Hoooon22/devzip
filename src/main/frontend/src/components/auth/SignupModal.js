@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import authService from '../../services/AuthService';
-import { useGame } from '../../contexts/GameContext';
 import './LoginModal.scss';
 
 const STORAGE_KEY_DARK = 'devzip.mono.dark';
@@ -17,7 +16,6 @@ const readDark = () => {
 };
 
 const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
-  const { award } = useGame();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -106,7 +104,6 @@ const SignupModal = ({ isOpen, onClose, onSignupSuccess }) => {
 
       if (result.success) {
         setSuccess(result.message);
-        award(100, '계정 생성 완료! 환영해요 🎊', { once: true, key: 'signup', icon: '🎊' });
         setFormData({ username: '', email: '', password: '', confirmPassword: '' });
 
         setTimeout(() => {

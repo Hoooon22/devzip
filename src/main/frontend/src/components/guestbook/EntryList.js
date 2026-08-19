@@ -64,14 +64,14 @@ const EntryList = ({ entries, onDeleteEntry }) => {
             {sortedEntries.map(entry => (
                 <li key={entry.id} className="post-item">
                     <div className="post-header">
-                        <span className="name" style={{ color: entry.color }}>{entry.name}</span>
+                        <span className="name">{entry.name}</span>
                         <button 
                             className="delete-button"
                             onClick={() => handleDelete(entry.id)}
                             disabled={deletingIds.has(entry.id)}
                             title="내가 작성한 글만 삭제할 수 있습니다"
                         >
-                            {deletingIds.has(entry.id) ? '삭제 중...' : '🗑️'}
+                            {deletingIds.has(entry.id) ? '삭제 중...' : '✕'}
                         </button>
                     </div>
                     <p className="createDate">{formatDate(entry.createDate)}</p>

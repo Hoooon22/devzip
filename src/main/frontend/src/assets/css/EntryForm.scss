@@ -1,37 +1,61 @@
+/* 방명록 입력 폼 — 흑백 미니멀 (토큰: styles/base.css) */
+
 .entry-form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 20px auto;
-    max-width: 600px;
+    margin: 0 0 28px;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: var(--panel);
+    border: 1px solid var(--line);
+}
+
+.entry-form .error-message {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    padding: 8px 12px;
 }
 
 .entry-form-input,
 .entry-form-textarea {
     width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
 }
+
+.entry-form-input::placeholder,
+.entry-form-textarea::placeholder { color: var(--ink-mute); }
+
+.entry-form-input:focus,
+.entry-form-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.entry-form-textarea { min-height: 90px; resize: vertical; }
 
 .entry-form-button {
+    align-self: flex-end;
     padding: 10px 20px;
-    font-size: 1em;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--on-ink);
+    background: var(--ink);
+    border: 1px solid var(--ink);
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-.entry-form-button:hover {
-    background-color: #0056b3;
+.entry-form-button:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
 }
+
+.entry-form-button:disabled { opacity: 0.5; cursor: default; }

@@ -1,49 +1,40 @@
-/* COMMAND PALETTE — 네오브루탈 아케이드
-   두꺼운 잉크 보더 · 하드 섀도우 · 모노스페이스 · 그라데이션 없음 */
+/* COMMAND PALETTE — 흑백 미니멀. 토큰은 styles/base.css 의 [data-theme] 에서 온다.
+   팔레트는 페이지 루트 밖(전역)에 렌더되므로 런처/오버레이가 data-theme 을 직접 단다. */
 
 .cmdk-launcher {
-    --ink: #16120b;
-    --paper: #fffdf6;
-    --accent: #ff4b1f;
     position: fixed;
     left: 20px;
     bottom: 20px;
     z-index: 2000;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 8px 12px;
-    font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
-    font-weight: 800;
-    font-size: 0.95rem;
-    color: var(--ink);
-    background: var(--paper);
-    border: 3px solid var(--ink);
-    box-shadow: 4px 4px 0 var(--ink);
+    gap: 5px;
+    padding: 7px 11px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: 1px solid var(--line);
     cursor: pointer;
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .cmdk-launcher:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--ink);
-    background: var(--accent);
-    color: var(--paper);
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 .cmdk-launcher-key {
-    border: 2px solid currentColor;
-    border-radius: 3px;
+    border: 1px solid currentColor;
     padding: 0 5px;
-    font-size: 0.8rem;
-    line-height: 1.3;
+    font-size: 10.5px;
+    line-height: 1.4;
 }
 
 .cmdk-overlay {
     position: fixed;
     inset: 0;
     z-index: 2100;
-    background: rgba(22, 18, 11, 0.45);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -64,17 +55,11 @@
 .cmdk-modal {
     position: relative;
     z-index: 1;
-    --ink: #16120b;
-    --paper: #fffdf6;
-    --panel: #f1e9d6;
-    --accent: #ff4b1f;
-    --muted: #8a8068;
     width: 100%;
     max-width: 620px;
-    background: var(--paper);
-    border: 4px solid var(--ink);
-    box-shadow: 8px 8px 0 var(--ink);
-    font-family: 'Pretendard', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
+    font-family: var(--font-ui);
     color: var(--ink);
     display: flex;
     flex-direction: column;
@@ -85,16 +70,14 @@
 .cmdk-input-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 14px 16px;
-    border-bottom: 3px solid var(--ink);
-    background: var(--panel);
+    border-bottom: 1px solid var(--line);
 }
 
 .cmdk-prompt {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 900;
-    font-size: 1.3rem;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
     color: var(--accent);
     line-height: 1;
 }
@@ -104,21 +87,18 @@
     border: none;
     background: transparent;
     outline: none;
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 1rem;
     color: var(--ink);
 }
 
-.cmdk-input::placeholder { color: var(--muted); }
+.cmdk-input::placeholder { color: var(--ink-mute); }
 
 .cmdk-esc {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--muted);
-    border: 2px solid var(--muted);
-    border-radius: 3px;
-    padding: 1px 5px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--ink-mute);
+    border: 1px solid var(--line);
+    padding: 2px 6px;
 }
 
 .cmdk-list {
@@ -133,23 +113,25 @@
     width: 100%;
     text-align: left;
     padding: 10px 12px;
-    border: 2px solid transparent;
+    border: 0;
     background: transparent;
     cursor: pointer;
     color: inherit;
+    font: inherit;
 }
 
 .cmdk-item.on {
-    border-color: var(--ink);
-    background: var(--panel);
-    box-shadow: 3px 3px 0 var(--ink);
+    background: var(--hover);
+    box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .cmdk-item-icn {
-    font-size: 1.4rem;
-    width: 1.8rem;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
     flex-shrink: 0;
+    color: var(--ink-soft);
 }
 
 .cmdk-item-body {
@@ -160,16 +142,17 @@
 }
 
 .cmdk-item-name {
-    font-weight: 800;
-    font-size: 0.98rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .cmdk-item-desc {
-    font-size: 0.8rem;
-    color: var(--muted);
+    font-size: 0.78rem;
+    color: var(--ink-mute);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -177,28 +160,23 @@
 
 .cmdk-item-group {
     flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
     letter-spacing: 0.04em;
-    color: var(--ink);
-    background: var(--paper);
-    border: 2px solid var(--ink);
+    color: var(--ink-mute);
+    border: 1px solid var(--line);
     padding: 2px 6px;
 }
 
 .cmdk-item-ext {
     flex-shrink: 0;
-    font-weight: 900;
-    color: var(--accent);
+    color: var(--ink-mute);
 }
 
 .cmdk-empty {
     padding: 28px 12px;
     text-align: center;
-    font-weight: 700;
-    color: var(--muted);
+    color: var(--ink-mute);
 }
 
 .cmdk-foot {
@@ -206,26 +184,23 @@
     align-items: center;
     gap: 14px;
     padding: 8px 14px;
-    border-top: 3px solid var(--ink);
-    background: var(--panel);
+    border-top: 1px solid var(--line);
     font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--muted);
+    color: var(--ink-mute);
 }
 
 .cmdk-foot kbd {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    border: 1.5px solid var(--muted);
-    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    border: 1px solid var(--line);
     padding: 0 4px;
     margin-right: 2px;
-    color: var(--ink);
+    color: var(--ink-soft);
 }
 
 .cmdk-foot-count {
     margin-left: auto;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
 }
 
 @media (max-width: 600px) {

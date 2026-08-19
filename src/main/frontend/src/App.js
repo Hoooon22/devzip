@@ -100,8 +100,6 @@ import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import { GameProvider } from './contexts/GameContext';
-import GameHud from './components/game/GameHud';
 import CommandPalette from './components/CommandPalette';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { initTracker } from './services/traceboard/tracker';
@@ -125,7 +123,6 @@ function App() {
 
   return (
     <HelmetProvider>
-      <GameProvider>
       <BrowserRouter>
         {/* 반응형 뷰포트 설정 컴포넌트 */}
         <ViewportMeta />
@@ -326,13 +323,9 @@ function App() {
 
         </Routes>
 
-        {/* 사이트 전역 게이미피케이션 HUD */}
-        <GameHud />
-
         {/* 전역 명령 팔레트 (Cmd/Ctrl+K) */}
         <CommandPalette />
       </BrowserRouter>
-      </GameProvider>
     </HelmetProvider>
   );
 }

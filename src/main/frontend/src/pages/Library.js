@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import SiteHeader from '../components/SiteHeader';
+import Footer from '../components/Footer';
+import { Icon } from '../components/ProjectIcon';
+import useSiteTheme from '../hooks/useSiteTheme';
 import '../styles/Library.css';
 
 // 자료실에 게시하는 학습 자료/문서 목록.
@@ -12,7 +16,7 @@ const docs = [
         description:
             '문제 지문의 신호어(signal word)를 보면 GCP 서비스가 바로 떠오르도록 정리한 매핑 지도 — 함정 닮은꼴·케이스 스터디 포함.',
         href: '/docs/gcp-signal-map.html',
-        icon: '🗺️',
+        icon: 'route',
         category: '클라우드 자격증',
         date: '2026.07.05~',
         tags: ['GCP', 'PCA', '신호어'],
@@ -23,7 +27,7 @@ const docs = [
             '실험실 페이지들이 어떤 사건·이슈·궁금증에서 출발했는지 시간·프로젝트별로 정리한 연대기.',
         href: '/lab-origins',
         internal: true,
-        icon: '🧭',
+        icon: 'book',
         category: '실험 아카이브',
         date: '2026.06.11~',
         tags: ['실험실', '연대기', '계기'],
@@ -33,7 +37,7 @@ const docs = [
         description:
             'Professional Cloud Architect 시험 대비 — 신호어·결정 트리·함정·셀프 퀴즈를 한 곳에 압축한 인터랙티브 학습 자료.',
         href: '/docs/gcp-pca.html',
-        icon: '☁️',
+        icon: 'cloud',
         category: '클라우드 자격증',
         date: '2025.10.30~',
         tags: ['GCP', 'PCA', '시험 대비'],
@@ -44,7 +48,7 @@ const docs = [
 const renderDocCardBody = (doc) => (
     <>
         <div className="doc-top">
-            <span className="doc-icon" aria-hidden="true">{doc.icon}</span>
+            <span className="doc-icon" aria-hidden="true"><Icon name={doc.icon} size={22} /></span>
             <span className="doc-cat">{doc.category}</span>
         </div>
         <h2>{doc.title}</h2>
@@ -62,17 +66,20 @@ const renderDocCardBody = (doc) => (
 );
 
 const Library = () => {
+    const [dark, toggleDark] = useSiteTheme();
+
     return (
-        <div className="library-page">
+        <div className="library-page" data-theme={dark ? 'dark' : 'light'}>
             <Helmet>
                 <title>자료실 | DevZip</title>
                 <meta name="description" content="DevZip 자료실 — 공부하며 정리한 학습 자료와 요약 문서를 모아두는 공간." />
             </Helmet>
 
+            <SiteHeader active="library" dark={dark} onToggleTheme={toggleDark} />
+
             <div className="library-wrap">
                 <header className="library-head">
-                    <Link className="back-link" to="/">← 홈으로</Link>
-                    <span className="eyebrow">★ study archive</span>
+                    <span className="eyebrow k-mono">study archive</span>
                     <h1>자료실</h1>
                     <p>공부하며 정리한 학습 자료와 요약 문서를 모아두는 공간입니다.</p>
                 </header>
@@ -97,6 +104,8 @@ const Library = () => {
                     ))}
                 </div>
             </div>
+
+            <Footer />
         </div>
     );
 };

@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import projects from '../data/projects';
 import labOrigins from '../data/labOrigins';
 import viewService from '../services/viewService';
-import { useGame } from '../contexts/GameContext';
+import SiteHeader from '../components/SiteHeader';
+import Footer from '../components/Footer';
+import ProjectIcon from '../components/ProjectIcon';
+import useSiteTheme from '../hooks/useSiteTheme';
 import '../styles/Constellation.css';
 
 /* 실험 별자리 맵 — 사이트의 모든 프로젝트/실험을 밤하늘의 별로 놓고,
@@ -16,10 +19,12 @@ const W = 1280;
 const H = 860;
 const PAD = 95;
 
-// 별빛 팔레트 — 카테고리 등장 순서대로 배정.
-const CATEGORY_COLORS = [
-    '#7EA8FF', '#FFD23F', '#7CE38B', '#FF8FA3', '#C9A7FF',
-    '#5FD4D0', '#FFB86B', '#8FBCBB', '#F2A6FF', '#A3BE8C',
+// 흑백 별빛 — 카테고리는 색 대신 밝기(불투명도)와 채움/링 형태로 구분한다.
+const CATEGORY_STYLES = [
+    { op: 1, ring: false }, { op: 0.75, ring: false }, { op: 0.55, ring: false },
+    { op: 0.4, ring: false }, { op: 0.28, ring: false },
+    { op: 1, ring: true }, { op: 0.75, ring: true }, { op: 0.55, ring: true },
+    { op: 0.4, ring: true }, { op: 0.28, ring: true },
 ];
 
 const cleanCategory = (raw) => {
@@ -109,8 +114,8 @@ const buildGraph = () => {
     });
 
     const categories = [...byCat.keys()];
-    const catColor = new Map(categories.map((c, i) => [c, CATEGORY_COLORS[i % CATEGORY_COLORS.length]]));
-    return { nodes, edges: [...edgeMap.values()], categories, catColor };
+    const catStyle = new Map(categories.map((c, i) => [c, CATEGORY_STYLES[i % CATEGORY_STYLES.length]]));
+    return { nodes, edges: [...edgeMap.values()], categories, catStyle };
 };
 
 // Fruchterman–Reingold 힘 기반 배치. 카테고리 중심 주변에서 출발시켜
@@ -189,15 +194,11 @@ const shortLabel = (name) => (name.length > 14 ? `${name.slice(0, 13)}…` : nam
 
 const Constellation = () => {
     const navigate = useNavigate();
-    const { award } = useGame();
+    const [dark, toggleDark] = useSiteTheme();
     const [views, setViews] = useState({});
     const [hover, setHover] = useState(null);       // link | null
     const [selected, setSelected] = useState(null); // link | null
     const [activeCat, setActiveCat] = useState(null);
-
-    useEffect(() => {
-        award(20, '별자리 맵 발견!', { once: true, key: 'constellation', icon: '🌌' });
-    }, [award]);
 
     useEffect(() => {
         let cancelled = false;
@@ -242,24 +243,22 @@ const Constellation = () => {
     };
 
     return (
-        <div className="const-page">
+        <div className="const-page" data-theme={dark ? 'dark' : 'light'}>
             <Helmet>
                 <title>실험 별자리 맵 | DevZip</title>
                 <meta name="description" content="DevZip의 모든 프로젝트와 실험을 태그·카테고리·계보로 이어 별자리처럼 그린 인터랙티브 지도." />
             </Helmet>
 
+            <SiteHeader active="map" dark={dark} onToggleTheme={toggleDark} />
+
             <div className="const-wrap">
                 <header className="const-head">
-                    <div className="const-links">
-                        <Link className="back-link" to="/">← 홈</Link>
-                        <Link className="back-link" to="/lab-origins">실험 계기 연대기</Link>
-                    </div>
-                    <span className="eyebrow">✦ constellation</span>
+                    <span className="eyebrow k-mono">constellation</span>
                     <h1>실험 별자리 맵</h1>
                     <p>
-                        {GRAPH.nodes.length}개의 프로젝트를 밤하늘에 올렸습니다. 같은 키워드에서 출발한
-                        실험은 밝은 선으로, 같은 계열의 시간순 계보는 어두운 선으로 이어집니다.
-                        별을 클릭하면 상세와 이웃 별로 이동할 수 있습니다. 조회수가 많은 별일수록 크게 빛납니다.
+                        {GRAPH.nodes.length}개의 프로젝트를 하늘에 올렸습니다. 같은 키워드에서 출발한
+                        실험은 진한 선으로, 같은 계열의 시간순 계보는 옅은 선으로 이어집니다.
+                        별을 클릭하면 상세와 이웃 별로 이동할 수 있습니다. 조회수가 많은 별일수록 큽니다.
                     </p>
                     <div className="const-stats k-mono">
                         <span>{GRAPH.nodes.length} stars</span>
@@ -269,18 +268,21 @@ const Constellation = () => {
                 </header>
 
                 <div className="const-legend" role="group" aria-label="카테고리 필터">
-                    {GRAPH.categories.map((c) => (
-                        <button
-                            key={c}
-                            type="button"
-                            className={activeCat === c ? 'on' : ''}
-                            aria-pressed={activeCat === c}
-                            style={{ '--c': GRAPH.catColor.get(c) }}
-                            onClick={() => setActiveCat((prev) => (prev === c ? null : c))}
-                        >
-                            <span className="sw" />{c}
-                        </button>
-                    ))}
+                    {GRAPH.categories.map((c) => {
+                        const st = GRAPH.catStyle.get(c);
+                        return (
+                            <button
+                                key={c}
+                                type="button"
+                                className={`${activeCat === c ? 'on' : ''} ${st.ring ? 'ring' : ''}`}
+                                aria-pressed={activeCat === c}
+                                style={{ '--op': st.op }}
+                                onClick={() => setActiveCat((prev) => (prev === c ? null : c))}
+                            >
+                                <span className="sw" />{c}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <div className="const-canvas">
@@ -302,11 +304,12 @@ const Constellation = () => {
                         {GRAPH.nodes.map((n) => {
                             const p = POS.get(n.link);
                             const r = radiusFor(n.link);
-                            const color = GRAPH.catColor.get(n.cat);
+                            const st = GRAPH.catStyle.get(n.cat);
                             return (
                                 <g
                                     key={n.link}
-                                    className={`cn ${isNodeDim(n) ? 'dim' : ''} ${selected === n.link ? 'sel' : ''}`}
+                                    className={`cn ${st.ring ? 'ring' : ''} ${isNodeDim(n) ? 'dim' : ''} ${selected === n.link ? 'sel' : ''}`}
+                                    style={{ '--op': st.op }}
                                     transform={`translate(${p.x}, ${p.y})`}
                                     role="button"
                                     tabIndex={0}
@@ -318,9 +321,8 @@ const Constellation = () => {
                                     onClick={() => setSelected(n.link)}
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(n.link); } }}
                                 >
-                                    <circle className="halo" r={r * 2.4} style={{ fill: color }} />
-                                    <circle className="core" r={r} style={{ fill: color }} />
-                                    <text className="glyph" y={-r - 8} textAnchor="middle">{n.thumbnail || '📦'}</text>
+                                    <circle className="halo" r={r * 2.4} />
+                                    <circle className="core" r={r} />
                                     <text className="lbl" y={r + 14} textAnchor="middle">{shortLabel(n.name)}</text>
                                 </g>
                             );
@@ -331,7 +333,7 @@ const Constellation = () => {
                 {selectedNode && (
                     <section className="const-panel" aria-label="선택한 프로젝트 상세">
                         <div className="panel-top">
-                            <span className="p-icon" aria-hidden="true">{selectedNode.thumbnail || '📦'}</span>
+                            <span className="p-icon" aria-hidden="true"><ProjectIcon link={selectedNode.link} category={selectedNode.category} size={24} /></span>
                             <div className="p-title">
                                 <h2>{selectedNode.name}</h2>
                                 {selectedNode.subtitle && <span className="p-sub">{selectedNode.subtitle}</span>}
@@ -339,9 +341,9 @@ const Constellation = () => {
                             <button type="button" className="p-close" onClick={() => setSelected(null)} aria-label="상세 닫기">✕</button>
                         </div>
                         <div className="p-meta k-mono">
-                            <span className="chip" style={{ '--c': GRAPH.catColor.get(selectedNode.cat) }}>{selectedNode.cat}</span>
+                            <span className="chip">{selectedNode.cat}</span>
                             {selectedNode.startDate && <span className="date">{selectedNode.startDate}</span>}
-                            <span className="views">👁 {(views[selectedNode.link] || 0).toLocaleString()}</span>
+                            <span className="views">{(views[selectedNode.link] || 0).toLocaleString()} views</span>
                         </div>
                         <p className="p-desc">{selectedNode.description}</p>
                         {selectedNode.origin && <p className="p-origin"><b>계기 — </b>{selectedNode.origin.origin}</p>}
@@ -352,7 +354,7 @@ const Constellation = () => {
                                     const node = NODE_BY_LINK.get(nb.link);
                                     return (
                                         <button key={nb.link} type="button" className="nb" onClick={() => setSelected(nb.link)}>
-                                            {node.thumbnail} {node.name}
+                                            <ProjectIcon link={node.link} category={node.category} size={14} /> {node.name}
                                             <span className="via">{nb.type === 'tag' ? `#${nb.label}` : '같은 계열'}</span>
                                         </button>
                                     );
@@ -366,9 +368,11 @@ const Constellation = () => {
                 )}
 
                 <footer className="const-foot k-mono">
-                    <span>{'// 밝은 선 = 공유 태그, 어두운 선 = 같은 계열의 시간순 계보'}</span>
+                    <span>{'// 진한 선 = 공유 태그, 옅은 선 = 같은 계열의 시간순 계보'}</span>
                 </footer>
             </div>
+
+            <Footer />
         </div>
     );
 };

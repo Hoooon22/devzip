@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import EntryForm from '../components/guestbook/EntryForm';
 import EntryList from '../components/guestbook/EntryList';
+import SiteHeader from '../components/SiteHeader';
+import Footer from '../components/Footer';
+import useSiteTheme from '../hooks/useSiteTheme';
 import axios from '../utils/axiosConfig'; // axiosConfig에서 설정된 axios 사용
 import '../assets/css/Guestbook.scss';
 
 const Guestbook = () => {
+    const [dark, toggleDark] = useSiteTheme();
     const [entries, setEntries] = useState([]);
 
     // API에서 guestbook 엔트리 목록을 가져오는 함수 (GET)
@@ -42,10 +47,25 @@ const Guestbook = () => {
     }, []);
 
     return (
-        <div className="guestbook-container">
-            <h1>Guestbook</h1>
-            <EntryForm addEntry={addEntry} />
-            <EntryList entries={entries} onDeleteEntry={deleteEntry} />
+        <div className="guestbook-page" data-theme={dark ? 'dark' : 'light'}>
+            <Helmet>
+                <title>방명록 | DevZip</title>
+                <meta name="description" content="DevZip 방명록 — 다녀간 흔적을 남기는 공간." />
+            </Helmet>
+
+            <SiteHeader active="guestbook" dark={dark} onToggleTheme={toggleDark} />
+
+            <div className="guestbook-wrap">
+                <header className="guestbook-head">
+                    <span className="eyebrow k-mono">guestbook</span>
+                    <h1>방명록</h1>
+                    <p>다녀간 흔적을 자유롭게 남겨주세요.</p>
+                </header>
+                <EntryForm addEntry={addEntry} />
+                <EntryList entries={entries} onDeleteEntry={deleteEntry} />
+            </div>
+
+            <Footer />
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import ProjectIcon from './ProjectIcon';
 
 /* DevZip // Kernel — 히어로(MOTD.md) 오른쪽 부트 로그를 클릭하면 열리는 검색 터미널.
    프로젝트 이름·부제·설명·카테고리·스택을 대상으로 검색해 매칭 페이지로 점프한다. */
@@ -73,7 +74,7 @@ const HeroTerminal = ({ projects, username, onOpen, onClose }) => {
                   onMouseEnter={() => setSel(i)}
                   onClick={(e) => { e.preventDefault(); onOpen(p); }}
                 >
-                  <span className="gl">{p.thumbnail || '📦'}</span>
+                  <span className="gl"><ProjectIcon link={p.link} category={p.category} size={14} /></span>
                   <span className="nm">{p.name}</span>
                   {p.subtitle && <span className="sub">{p.subtitle}</span>}
                   <span className="go">→</span>
@@ -96,7 +97,7 @@ HeroTerminal.propTypes = {
     name: PropTypes.string.isRequired,
     link: PropTypes.string.isRequired,
     subtitle: PropTypes.string,
-    thumbnail: PropTypes.string,
+    category: PropTypes.string,
   })).isRequired,
   username: PropTypes.string.isRequired,
   onOpen: PropTypes.func.isRequired,
