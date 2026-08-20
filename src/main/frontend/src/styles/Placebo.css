@@ -1,0 +1,271 @@
+/* PLACEBO — 산업용 엘리베이터 패널 톤. 차콜 강판 · 스틸 · 앰버 경보등.
+   60(차콜 패널) / 30(스틸 문짝·테두리) / 10(앰버 강조·닫힘 발광).
+   사이트 다크토글과 무관하게 늘 어두운 "승강기 안"이라, 자기 색을 고정한다. */
+
+.pl-wrap {
+    --char: #14161a;
+    --char-2: #1b1f26;
+    --steel: #333a45;
+    --steel-2: #444d5b;
+    --steel-lo: #262b33;
+    --line: rgba(255, 255, 255, 0.10);
+    --tx: #e7e9ee;
+    --tx-soft: #98a1b1;
+    --amber: #ffb02e;
+    --amber-lo: #b9791a;
+    --dead: #6b7280;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0.5rem 0 1rem;
+}
+
+.pl-panel {
+    background:
+        linear-gradient(180deg, var(--char-2), var(--char));
+    border: 2px solid var(--steel);
+    border-radius: 10px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 3px rgba(255, 255, 255, 0.03);
+    padding: 1.1rem 1.1rem 1.2rem;
+    color: var(--tx);
+}
+
+/* 점수 LED 라인 */
+.pl-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--amber);
+    margin-bottom: 0.9rem;
+}
+.pl-led b { font-size: 1.05rem; }
+.pl-led.dim { color: var(--tx-soft); }
+
+/* 대결 무대 */
+.pl-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+}
+.pl-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1 1 220px;
+    max-width: 300px;
+}
+.pl-tag {
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tx-soft);
+}
+.pl-unit.you .pl-tag { color: var(--amber); }
+
+.pl-vs {
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--steel-2);
+    align-self: center;
+    flex: 0 0 auto;
+}
+
+/* 문 — 두 짝이 가운데서 만난다 */
+.pl-door {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 300px;
+    background: var(--steel-lo);
+    border: 2px solid var(--steel);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.pl-unit.auto .pl-door { cursor: default; }
+.pl-door:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+/* 어두운 승강로(문 열리면 보이는 틈) */
+.pl-shaft {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(90deg, #0a0b0e 0 10px, #101217 10px 11px);
+}
+
+/* 문짝 */
+.pl-leaf {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(180deg, var(--steel-2), var(--steel));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: transform 0.09s linear;
+    will-change: transform;
+}
+.pl-leaf.left {
+    left: 0;
+    justify-content: flex-end;
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
+    background-image: linear-gradient(180deg, var(--steel-2), var(--steel)),
+        repeating-linear-gradient(0deg, transparent 0 22px, rgba(0, 0, 0, 0.14) 22px 23px);
+}
+.pl-leaf.right {
+    right: 0;
+    justify-content: flex-start;
+    border-left: 1px solid rgba(0, 0, 0, 0.5);
+    background-image: linear-gradient(180deg, var(--steel-2), var(--steel)),
+        repeating-linear-gradient(0deg, transparent 0 22px, rgba(0, 0, 0, 0.14) 22px 23px);
+}
+
+/* 문짝이 실어 나르는 글자 — 만나면 "닫힘" 완성 */
+.pl-glyph {
+    font-size: clamp(2.4rem, 12vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--tx-soft);
+    padding: 0 0.06em;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+.pl-leaf.is-shut .pl-glyph {
+    color: var(--amber);
+    text-shadow: 0 0 14px rgba(255, 176, 46, 0.7);
+}
+
+/* 가운데 이음새 */
+.pl-seam {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-1px);
+    background: rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+}
+
+/* 연타 타격감 */
+.pl-unit.pl-hit .pl-door {
+    animation: pl-shake 0.09s ease-out;
+}
+@keyframes pl-shake {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(1.5px); }
+    100% { transform: translateY(0); }
+}
+
+/* 판정 */
+.pl-verdict {
+    min-height: 3.4rem;
+    margin: 1rem 0 0.4rem;
+    text-align: center;
+}
+.pl-vidle { color: var(--tx-soft); font-size: 0.9rem; margin: 0.7rem 0; }
+.pl-vhead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0 0 0.25rem;
+}
+.pl-vres { font-size: 1.35rem; font-weight: 800; letter-spacing: 0.04em; }
+.pl-verdict.win .pl-vres { color: var(--amber); }
+.pl-verdict.lose .pl-vres { color: var(--dead); }
+.pl-vtag {
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+}
+.pl-vtag.real { color: var(--amber); }
+.pl-vtag.placebo { color: var(--dead); animation: pl-flick 0.5s steps(2) 2; }
+@keyframes pl-flick { 50% { opacity: 0.4; } }
+.pl-vline { color: var(--tx-soft); font-size: 0.92rem; margin: 0; }
+
+/* CTA 버튼 */
+.pl-cta {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.8rem 1rem;
+    background: var(--amber);
+    color: #191100;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--amber-lo);
+    transition: transform 0.05s, box-shadow 0.05s;
+}
+.pl-cta:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--amber-lo); }
+.pl-key {
+    display: inline-block;
+    margin-right: 0.5rem;
+    padding: 0.05rem 0.4rem;
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 4px;
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-size: 0.8rem;
+}
+
+.pl-hint {
+    text-align: center;
+    color: var(--tx-soft);
+    font-size: 0.76rem;
+    letter-spacing: 0.05em;
+    margin: 0.6rem 0 0;
+}
+.pl-note {
+    text-align: center;
+    color: var(--amber);
+    font-size: 0.84rem;
+    margin: 0.7rem 0 0;
+}
+
+/* 회고 읽을거리 */
+.pl-read {
+    color: var(--tx);
+    line-height: 1.75;
+    font-size: 0.95rem;
+}
+.pl-read h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.7rem;
+    color: var(--tx);
+}
+.pl-read p { margin: 0 0 0.85rem; color: #c7ccd6; }
+.pl-read b { color: var(--tx); font-weight: 700; }
+.pl-read .pl-disc {
+    font-size: 0.82rem;
+    color: var(--tx-soft);
+    border-top: 1px solid var(--line);
+    padding-top: 0.7rem;
+}
+
+@media (max-width: 560px) {
+    .pl-stage { gap: 0.6rem; }
+    .pl-vs { flex-basis: 100%; order: 0; }
+    .pl-unit { flex-basis: 100%; max-width: 340px; }
+}

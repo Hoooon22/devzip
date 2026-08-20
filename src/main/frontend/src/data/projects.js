@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 83,
+        name: 'Placebo',
+        subtitle: '닫힘 버튼의 진실 (플라시보 버튼)',
+        description: '연타로 자동 닫힘을 이기는 대결 — 매 판 진짜 버튼일지 가짜일지 눌러 봐야 안다',
+        link: '/placebo',
+        active: true,
+        startDate: '2026-08-20',
+        endDate: '',
+        category: '실험/인지',
+        isProduction: false, // 실험용
+        thumbnail: '🛗'
+    },
+    {
         id: 82,
         name: 'Cardinal',
         subtitle: '길찾기 성향 (지도파 vs 랜드마크파)',

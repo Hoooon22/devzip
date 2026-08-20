@@ -96,6 +96,7 @@ import Steganos from './pages/experiments/Steganos';
 import Montyhall from './pages/experiments/Montyhall';
 import Myriad from './pages/experiments/Myriad';
 import Cardinal from './pages/experiments/Cardinal';
+import Placebo from './pages/experiments/Placebo';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -310,6 +311,7 @@ function App() {
         <Route path="/montyhall" element={<Montyhall />} />
         <Route path="/myriad" element={<Myriad />} />
         <Route path="/cardinal" element={<Cardinal />} />
+        <Route path="/placebo" element={<Placebo />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
