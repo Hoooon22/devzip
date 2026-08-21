@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 84,
+        name: 'Blindtime',
+        subtitle: '눈금 없이 시간 맞히기 (체내 시계)',
+        description: '목표 노광 시간을 몸으로 재현하는 암실 챌린지 — 짧으면 허옇게, 길면 새카맣게 현상된다',
+        link: '/blindtime',
+        active: true,
+        startDate: '2026-08-21',
+        endDate: '',
+        category: '실험/인지',
+        isProduction: false, // 실험용
+        thumbnail: '🎞'
+    },
+    {
         id: 83,
         name: 'Placebo',
         subtitle: '닫힘 버튼의 진실 (플라시보 버튼)',

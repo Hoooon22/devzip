@@ -1,0 +1,268 @@
+/* BLINDTIME — 암실(darkroom) 톤. 근흑 패널 · 감광지 본 · 세이프라이트 레드.
+   60(근흑 암실) / 30(감광지 본·그레이) / 10(세이프라이트 레드 강조).
+   사이트 다크토글과 무관하게 늘 어두운 "암실 안"이라, 자기 색을 고정한다. */
+
+.bt-wrap {
+    --ink: #0d0c0e;
+    --ink-2: #16141a;
+    --panel: #1a171d;
+    --edge: rgba(255, 255, 255, 0.08);
+    --bone: #e9e3d6;
+    --bone-soft: #a49c8c;
+    --safe: #ff3b30;
+    --safe-lo: #b02a24;
+    --ok: #7ad0a0;
+    --over: #ff5a4d;
+    --under: #d9d2c2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0.5rem 0 1rem;
+}
+
+.bt-console {
+    background:
+        radial-gradient(120% 90% at 50% -10%, rgba(255, 59, 48, 0.10), transparent 60%),
+        linear-gradient(180deg, var(--panel), var(--ink));
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 59, 48, 0.05);
+    padding: 1.1rem 1.1rem 1.25rem;
+    color: var(--bone);
+}
+
+/* 상단 라인 */
+.bt-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+}
+.bt-roundno {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--safe);
+}
+.bt-target {
+    font-size: 0.86rem;
+    color: var(--bone-soft);
+}
+.bt-target b {
+    font-size: 1.35rem;
+    color: var(--bone);
+    margin: 0 0.12em 0 0.3em;
+}
+.bt-target .u { font-size: 0.78rem; }
+
+/* 현상 트레이 */
+.bt-tray {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #08070a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+}
+/* 세이프라이트 비네트 — 늘 은은한 붉은 기운 */
+.bt-tray::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(130% 100% at 50% 0%, rgba(255, 59, 48, 0.16), transparent 55%),
+        radial-gradient(100% 100% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 60%);
+    mix-blend-mode: screen;
+}
+.bt-tray.ph-ready::after,
+.bt-tray.ph-holding::after { opacity: 0.9; }
+
+.bt-print {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    filter: sepia(0.55) hue-rotate(-8deg) brightness(2.2) contrast(0.28);
+    will-change: filter, opacity;
+}
+.bt-photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* 노광 중 표시 */
+.bt-exposing {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--safe);
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--safe-lo);
+    border-radius: 999px;
+    background: rgba(255, 59, 48, 0.08);
+    animation: bt-breathe 1.4s ease-in-out infinite;
+    z-index: 3;
+}
+@keyframes bt-breathe {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
+/* 판정 오버레이 */
+.bt-verdict {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75));
+    z-index: 3;
+}
+.bt-vlabel { font-size: 0.86rem; font-weight: 700; letter-spacing: 0.02em; }
+.bt-verr { font-size: 0.92rem; color: var(--bone-soft); }
+.bt-verdict.tone-ok .bt-vlabel { color: var(--ok); }
+.bt-verdict.tone-over .bt-vlabel { color: var(--over); }
+.bt-verdict.tone-under .bt-vlabel { color: var(--under); }
+
+/* 노광 패드 */
+.bt-pad {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 59, 48, 0.28);
+    background: linear-gradient(180deg, #201b20, #141116);
+    color: var(--bone);
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition: transform 0.05s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.bt-pad:hover { border-color: rgba(255, 59, 48, 0.5); }
+.bt-pad:active { transform: translateY(1px); }
+.bt-pad:disabled { opacity: 0.45; cursor: default; }
+.bt-pad.is-on {
+    border-color: var(--safe);
+    box-shadow: 0 0 0 1px var(--safe), 0 0 34px rgba(255, 59, 48, 0.4);
+    background: linear-gradient(180deg, #2a1113, #1a0d10);
+}
+.bt-lamp {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #3a2a2b;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    flex: 0 0 auto;
+}
+.bt-pad.is-on .bt-lamp {
+    background: var(--safe);
+    box-shadow: 0 0 14px 4px rgba(255, 59, 48, 0.8);
+}
+.bt-padtxt { font-weight: 600; }
+
+/* 진행 도트 */
+.bt-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0 0.4rem;
+}
+.bt-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #2c2830;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.bt-dot.cur { transform: scale(1.35); box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.25); }
+.bt-dot.done.tone-ok { background: var(--ok); }
+.bt-dot.done.tone-over { background: var(--over); }
+.bt-dot.done.tone-under { background: var(--under); }
+
+/* 안내 · 버튼 */
+.bt-hint {
+    margin: 0.9rem 0 0;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--bone-soft);
+    letter-spacing: 0.02em;
+}
+.bt-next {
+    margin: 0.9rem auto 0;
+    display: block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    border: 1px solid var(--safe-lo);
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--bone);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.bt-next:hover { background: rgba(255, 59, 48, 0.2); border-color: var(--safe); }
+
+/* 요약 */
+.bt-summary { text-align: center; margin-top: 1rem; }
+.bt-grade {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--bone);
+    margin: 0 0 0.3rem;
+}
+.bt-drift { font-size: 0.92rem; color: var(--bone); margin: 0 0 0.5rem; }
+.bt-stat { font-size: 0.8rem; color: var(--bone-soft); margin: 0; }
+
+/* 회고 */
+.bt-read {
+    color: var(--bone);
+    background: linear-gradient(180deg, #141216, #100e12);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    padding: 1.2rem 1.3rem 1.4rem;
+    line-height: 1.75;
+}
+.bt-read h3 {
+    margin: 0 0 0.7rem;
+    font-size: 1.05rem;
+    color: var(--safe);
+    letter-spacing: 0.01em;
+}
+.bt-read p { margin: 0 0 0.85rem; font-size: 0.92rem; color: #cfc8ba; }
+.bt-read p:last-child { margin-bottom: 0; }
+.bt-read b { color: var(--bone); font-weight: 700; }
+.bt-disc {
+    font-size: 0.8rem !important;
+    color: var(--bone-soft) !important;
+    border-top: 1px solid var(--edge);
+    padding-top: 0.8rem;
+}
+
+@media (max-width: 560px) {
+    .bt-target b { font-size: 1.15rem; }
+    .bt-grade { font-size: 1.25rem; }
+    .bt-pad { padding: 1rem; font-size: 0.95rem; }
+}
