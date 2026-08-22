@@ -11,6 +11,20 @@
 
 ---
 
+## 2026-08-22 / Airlock (`/airlock`)
+
+- **선정 주제**: 자율 에이전트의 신뢰 경계. 언어모델의 컨텍스트에는 "주인의 지시"와 "바깥에서 읽어온 자료"를 나누는 구조가 없어 외부 문서 속 한 줄이 명령으로 승격될 수 있다. 다만 피해는 한 실행 안에서 ① 비신뢰 입력 ② 비밀 접근 ③ 외부 통신 세 다리가 모두 겹칠 때만 성립한다("삼중 위험"). 실행을 단계(요청→수집→해석→도구→에어록→결과)별로 따라가며 삼중 위험 성립 여부와 에어록 판정을 보고, 다섯 가지 방어(출처 태깅·컨텍스트 격벽·비밀 격리·전송 허용목록·사람 확인)를 켜고 끄면 즉시 200회 배치가 다시 돌아 유출률과 작업 완료율이 함께 움직인다.
+- **선정 이유**: 2026년 에이전트형 AI가 메일·문서·웹을 직접 읽고 도구를 호출하게 되면서 간접 프롬프트 인젝션과 데이터 유출이 반복 화제가 된 흐름을, 특정 제품·업체의 취약점 사건을 겨냥하지 않고 '읽기·비밀·내보내기가 겹칠 때만 경로가 열린다'는 보편 구조로 변환. 토글·슬라이더·단계 애니메이션·200셀 배치 그리드로 인터랙티브하게 풀기 적합하고, 기존 실험 중 보안 계열인 Eavesdrop(BB84 양자 키 분배, 물리 계층 도청 탐지)과 층위가 명확히 다름. 핵심 인사이트는 "완벽한 탐지"가 아니라 세 다리 중 하나를 확실히 빼는 설계이며, 조일수록 완료율이 함께 떨어지는 맞교환. 디자인은 셸 팔레트 위 60-30-10(중립 패널/잉크·프레임 라인/유출 레드 강조)의 네오브루탈 콘솔.
+- **기반 자료**:
+  - [AI Security in 2026: Prompt Injection, the Lethal Trifecta, and How to Defend — Airia](https://airia.com/blog/ai-security-in-2026-prompt-injection-the-lethal-trifecta-and-how-to-defend/)
+  - [The AI Agent Lethal Trifecta — Cloud Security Alliance Research Note](https://labs.cloudsecurityalliance.org/research/csa-research-note-ai-agent-lethal-trifecta-capability-securi/)
+  - [AI Agent Security: The Lethal Trifecta Risk Explained — Kiteworks](https://www.kiteworks.com/cybersecurity-risk-management/ai-agent-security-lethal-trifecta/)
+  - [The Comprehensive Guide to Prompt Injection Attacks in 2026 — Sysdig](https://www.sysdig.com/learn-cloud-native/prompt-injection)
+  - [Hacker News Front Page Roundup — August 2026](https://duklee.net/blog/2026-08-01-hn-front-page-roundup/) — 에이전트 컨텍스트 경유 데이터 유출·공급망 침해가 반복 상단 노출
+  - 표준 개념: lethal trifecta(private data / untrusted content / external communication), 간접 프롬프트 인젝션, 최소 권한, egress allowlist, human-in-the-loop 승인 피로
+
+---
+
 ## 2026-07-04 / Quorum (`/quorum`)
 
 - **선정 주제**: 분산 합의(consensus) — Raft의 리더 선출·정족수 투표·로그 복제/커밋. 5개 노드가 원형 클러스터를 이루고, 리더의 하트비트가 끊기면 팔로워의 선거 타이머가 만료되어 후보로 출마, 과반(N/2+1=3표)을 얻으면 새 임기(term)의 리더가 된다. 노드를 클릭해 장애/복구를 오가며(특히 리더를 죽여) 재선거가 도는 과정을 보고, "+ 기록 제안"으로 넣은 엔트리가 과반에 복제된 순간에만 확정(commit)되는 것을 로그 매트릭스로 체험한다.

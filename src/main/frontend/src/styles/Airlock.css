@@ -1,0 +1,331 @@
+/* AIRLOCK — 에이전트 신뢰 경계 실험
+   공용 커널 셸(.lab-os)의 흑백 미니멀 팔레트·모노 폰트를 그대로 소비한다.
+   60-30-10: 중립 패널/여백(주조 60) · 잉크와 하어라인(보조 30) · 유출 레드(강조 10).
+   안전/차단은 셸의 터미널 그린(--signal)과 잉크로만 표시해 색을 늘리지 않는다. */
+
+.lab-os {
+    --al-leak: #c1292e;              /* 유일한 hero 액센트 — 유출 */
+    --al-leak-soft: rgba(193, 41, 46, 0.10);
+    --al-safe: var(--signal);        /* 봉인·완료 — 셸의 터미널 그린 */
+    --al-safe-soft: var(--signal-soft);
+    --al-block: var(--ink);          /* 방어가 개입한 지점 — 중립 강조 */
+}
+.lab-os[data-theme="dark"] {
+    --al-leak: #ff5d5d;
+    --al-leak-soft: rgba(255, 93, 93, 0.14);
+}
+
+/* ---- 툴바 ---- */
+.al-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+}
+.al-stat { display: inline-flex; flex-direction: column; gap: 2px; }
+.al-stat-k { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--ink-mute); }
+.al-stat-v { font-size: 1.02rem; font-weight: 700; color: var(--ink); }
+.al-stat-v.is-leak { color: var(--al-leak); }
+.al-stat-v.is-safe { color: var(--al-safe); }
+
+.al-slider { display: inline-flex; flex-direction: column; gap: 6px; min-width: 210px; }
+.al-slider input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--frame);
+    border: 0;
+    cursor: pointer;
+}
+.al-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: var(--al-leak);
+    border: 1px solid var(--frame-strong);
+    cursor: pointer;
+}
+.al-slider input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: var(--al-leak);
+    border: 1px solid var(--frame-strong);
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.al-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 0.5rem; }
+.al-btn {
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--panel);
+    background: var(--ink);
+    border: 1px solid var(--frame-strong);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+.al-btn:hover { background: var(--al-leak); color: #fff; border-color: var(--al-leak); }
+.al-btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--frame); }
+.al-btn-ghost:hover { background: var(--ink); color: var(--panel); }
+
+/* ---- 무대 ---- */
+.al-stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 18px;
+}
+@media (min-width: 940px) {
+    .al-stage { grid-template-columns: minmax(320px, 1.05fr) minmax(320px, 1fr); }
+}
+
+/* ---- 실행 패널 ---- */
+.al-run { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.al-task {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--frame);
+    background: var(--panel-2);
+}
+.al-task-k { font-size: 0.6rem; letter-spacing: 0.14em; color: var(--ink-mute); }
+.al-task-v { font-size: 0.9rem; color: var(--ink); font-family: var(--font-ui); }
+
+/* 단계 레일 */
+.al-rail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.al-rail-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    color: var(--ink-mute);
+}
+.al-rail-item::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: -50%;
+    width: 100%;
+    height: 1px;
+    background: var(--frame);
+}
+.al-rail-item:first-child::before { display: none; }
+.al-rail-dot {
+    width: 11px;
+    height: 11px;
+    border: 1px solid var(--frame-strong);
+    background: var(--panel);
+    position: relative;
+    z-index: 1;
+}
+.al-rail-k { font-size: 0.6rem; letter-spacing: 0.06em; }
+.al-rail-item.is-past .al-rail-dot { background: var(--ink); }
+.al-rail-item.is-past { color: var(--ink-soft); }
+.al-rail-item.is-now .al-rail-dot { background: var(--al-leak); border-color: var(--al-leak); animation: al-pulse 1s ease-in-out infinite; }
+.al-rail-item.is-now { color: var(--ink); font-weight: 700; }
+@keyframes al-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--al-leak-soft); }
+    50% { box-shadow: 0 0 0 5px var(--al-leak-soft); }
+}
+
+/* 삼중 위험 */
+.al-tri { border: 1px solid var(--frame); background: var(--panel-2); }
+.al-tri.is-armed { border-color: var(--al-leak); background: var(--al-leak-soft); }
+.al-tri-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+}
+.al-tri-head .is-armed-tag { color: var(--al-leak); font-weight: 700; }
+.al-tri-legs { display: grid; grid-template-columns: repeat(3, 1fr); }
+.al-leg {
+    padding: 10px 12px;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0.45;
+}
+.al-leg:last-child { border-right: 0; }
+.al-leg.is-on { opacity: 1; }
+.al-leg-k { font-size: 0.8rem; font-weight: 700; color: var(--ink); }
+.al-leg.is-on .al-leg-k { color: var(--al-leak); }
+.al-leg-h { font-size: 0.66rem; color: var(--ink-mute); line-height: 1.35; }
+
+/* 에어록 게이트 */
+.al-gate {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--frame-strong);
+    background: var(--panel-2);
+}
+.al-gate-k { font-size: 0.62rem; letter-spacing: 0.16em; color: var(--ink-mute); }
+.al-gate-v { font-size: 1rem; font-weight: 700; color: var(--ink-soft); }
+.al-gate.is-sealed { border-color: var(--al-safe); background: var(--al-safe-soft); }
+.al-gate.is-sealed .al-gate-v { color: var(--al-safe); }
+.al-gate.is-breach { border-color: var(--al-leak); background: var(--al-leak-soft); }
+.al-gate.is-breach .al-gate-v { color: var(--al-leak); }
+
+/* 실행 로그 */
+.al-log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--frame);
+    background: var(--panel);
+    max-height: 268px;
+    overflow-y: auto;
+}
+.al-log li {
+    display: flex;
+    gap: 10px;
+    padding: 7px 11px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+}
+.al-log li:last-child { border-bottom: 0; }
+.al-log li.is-new { background: var(--row-alt); }
+.al-log-s {
+    flex: none;
+    width: 3.4em;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-mute);
+    padding-top: 2px;
+}
+.al-log li.is-bad .al-log-t { color: var(--al-leak); }
+.al-log li.is-block .al-log-t { color: var(--al-block); }
+.al-log li.is-ok .al-log-t { color: var(--al-safe); }
+
+/* ---- 방어 패널 ---- */
+.al-panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.al-panel-head {
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+.al-defs { display: flex; flex-direction: column; gap: 8px; }
+.al-def {
+    display: flex;
+    gap: 11px;
+    text-align: left;
+    padding: 11px 12px;
+    border: 1px solid var(--frame);
+    background: var(--panel-2);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    transition: border-color 0.14s, background 0.14s;
+}
+.al-def:hover { border-color: var(--frame-strong); background: var(--hover); }
+.al-def.is-on { border-color: var(--frame-strong); background: var(--panel); }
+.al-def-sw {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    margin-top: 3px;
+    border: 1px solid var(--frame-strong);
+    background: transparent;
+}
+.al-def.is-on .al-def-sw { background: var(--al-safe); border-color: var(--al-safe); }
+.al-def-bd { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.al-def-n { font-size: 0.86rem; font-weight: 700; color: var(--ink); display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
+.al-def-n em { font-style: normal; font-size: 0.6rem; letter-spacing: 0.06em; color: var(--ink-mute); }
+.al-def-d { font-size: 0.74rem; line-height: 1.45; color: var(--ink-soft); }
+.al-def-c { font-size: 0.63rem; color: var(--ink-mute); }
+.al-def.is-on .al-def-c { color: var(--al-leak); }
+
+/* ---- 배치 결과 ---- */
+.al-batch { border: 1px solid var(--frame); background: var(--panel-2); }
+.al-batch-head {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+}
+.al-legend { display: inline-flex; align-items: center; gap: 10px; }
+.al-legend .dot { width: 8px; height: 8px; display: inline-block; margin-right: 4px; border: 1px solid var(--frame); }
+.al-legend .dot.is-done { background: var(--al-safe); }
+.al-legend .dot.is-miss { background: var(--frame); }
+.al-legend .dot.is-leak { background: var(--al-leak); }
+
+.al-grid {
+    display: grid;
+    grid-template-columns: repeat(25, 1fr);
+    gap: 2px;
+    padding: 12px;
+}
+.al-cell { aspect-ratio: 1 / 1; border: 1px solid transparent; }
+.al-cell.is-done { background: var(--al-safe-soft); border-color: var(--al-safe); }
+.al-cell.is-miss { background: var(--row-alt); border-color: var(--line); }
+.al-cell.is-leak { background: var(--al-leak); border-color: var(--al-leak); }
+
+.al-bars { display: flex; flex-direction: column; gap: 7px; padding: 0 12px 13px; }
+.al-bar { display: grid; grid-template-columns: 3em 1fr 2.6em; align-items: center; gap: 9px; }
+.al-bar-k { font-size: 0.63rem; color: var(--ink-mute); }
+.al-bar-t { height: 9px; background: var(--row-alt); border: 1px solid var(--line); display: block; }
+.al-bar-t i { display: block; height: 100%; transition: width 0.3s ease; }
+.al-bar-t i.is-leak { background: var(--al-leak); }
+.al-bar-t i.is-done { background: var(--al-safe); }
+.al-bar-v { font-size: 0.72rem; text-align: right; color: var(--ink); font-weight: 700; }
+
+/* ---- 힌트 / README ---- */
+.al-hint {
+    margin: 0;
+    padding: 0 18px 18px;
+    font-size: 0.79rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+}
+.al-hint b { color: var(--ink); }
+
+.al-foot { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.al-foot p { margin: 0; font-size: 0.85rem; line-height: 1.72; color: var(--ink-soft); }
+.al-foot b { color: var(--ink); }
+.al-disclaimer { font-size: 0.72rem !important; color: var(--ink-mute) !important; }
+
+@media (max-width: 640px) {
+    .al-actions { margin-left: 0; width: 100%; }
+    .al-btn { flex: 1; min-height: 44px; }
+    .al-tri-legs { grid-template-columns: 1fr; }
+    .al-leg { border-right: 0; border-bottom: 1px solid var(--line); }
+    .al-leg:last-child { border-bottom: 0; }
+    .al-grid { grid-template-columns: repeat(20, 1fr); }
+    .al-rail-k { font-size: 0.55rem; }
+    .al-def { min-height: 44px; }
+}

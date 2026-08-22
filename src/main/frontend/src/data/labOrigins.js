@@ -3,6 +3,16 @@
 // name/subtitle/link/date/category/icon 은 data/projects.js 의 해당 카드와 값을 맞춘다.
 const labOrigins = [
     {
+        name: 'Airlock',
+        subtitle: '에이전트 신뢰 경계',
+        link: '/airlock',
+        date: '2026-08-22',
+        category: '실험/보안',
+        icon: '🛡️',
+        origin: '2026년 들어 자율 에이전트가 메일·문서·웹을 직접 읽고 도구를 호출하게 되면서, 바깥에서 읽어온 한 줄이 그대로 명령으로 읽히는 간접 프롬프트 인젝션이 반복해서 화제가 된 것이 계기. 특정 제품의 취약점 사건을 다루는 대신 그 이면의 보편 구조 — 비신뢰 입력·비밀 접근·외부 통신이 한 실행에서 겹칠 때만 유출이 성립한다는 "삼중 위험" — 을 직접 켜고 끄며, 방어를 조일수록 에이전트가 할 수 있는 일도 함께 줄어드는 맞교환을 눈으로 보고 싶었다.',
+        tags: ['프롬프트 인젝션', '삼중 위험', '최소 권한'],
+    },
+    {
         name: 'Blindtime',
         subtitle: '눈금 없이 시간 맞히기 (체내 시계)',
         link: '/blindtime',

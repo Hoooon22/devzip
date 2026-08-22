@@ -98,6 +98,7 @@ import Myriad from './pages/experiments/Myriad';
 import Cardinal from './pages/experiments/Cardinal';
 import Placebo from './pages/experiments/Placebo';
 import Blindtime from './pages/experiments/Blindtime';
+import Airlock from './pages/experiments/Airlock';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -314,6 +315,7 @@ function App() {
         <Route path="/cardinal" element={<Cardinal />} />
         <Route path="/placebo" element={<Placebo />} />
         <Route path="/blindtime" element={<Blindtime />} />
+        <Route path="/airlock" element={<Airlock />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

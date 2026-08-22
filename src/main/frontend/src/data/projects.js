@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 85,
+        name: 'Airlock',
+        subtitle: '에이전트 신뢰 경계',
+        description: '비신뢰 입력·비밀·외부 통신이 겹칠 때 새는 에이전트 경계 실험',
+        link: '/airlock',
+        active: true,
+        startDate: '2026-08-22',
+        endDate: '',
+        category: '실험/보안',
+        isProduction: false, // 실험용
+        thumbnail: '🛡️'
+    },
+    {
         id: 84,
         name: 'Blindtime',
         subtitle: '눈금 없이 시간 맞히기 (체내 시계)',
