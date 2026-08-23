@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 86,
+        name: 'Stampede',
+        subtitle: '재시도 폭주 (백오프·지터)',
+        description: '원인이 사라져도 재시도가 스스로 붙잡는 준안정 실패 실험',
+        link: '/stampede',
+        active: true,
+        startDate: '2026-08-23',
+        endDate: '',
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '🐘'
+    },
+    {
         id: 85,
         name: 'Airlock',
         subtitle: '에이전트 신뢰 경계',

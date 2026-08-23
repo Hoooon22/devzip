@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-08-23 / Stampede (`/stampede`)
+
+- **선정 주제**: 재시도 폭주(retry storm)와 준안정 실패(metastable failure) — 실패가 재시도를 낳고 재시도가 다시 실패를 낳아, 처음의 원인이 사라진 뒤에도 장애가 스스로를 지탱하는 상태. 장애를 직접 주입하고 재시도 정책(즉시/고정/지수 백오프/지수+지터)·서킷 브레이커·재시도 예산·최대 재시도 횟수를 바꿔 가며 회복 여부를 관찰한다.
+- **선정 이유**: 2026년 8월 대형 개발 플랫폼의 반복 장애(한 달 십여 건, 7시간 이상 지속)와 에이전트 팬아웃이 만드는 기계 속도의 동기화 재시도가 화제가 된 것을 특정 서비스·사건을 지목하지 않고 '재시도 동역학'이라는 보편 개념으로 변환. 정책 선택·토글·슬라이더·실시간 막대 타임라인이라는 인터랙티브 요소로 풀기 적합하고, 기존 Throttle(서버 측 토큰 버킷 속도 제한)·Fan-Out(작업 DAG 병렬화 한계)과 다루는 층이 달라 겹치지 않음. 디자인은 셸의 흑백 미니멀 팔레트 위 60-30-10(중립 패널 60 / 잉크·하어라인·신규 트래픽 30 / 재시도 앰버 10).
+- **기반 자료**:
+  - [Exponential Backoff With Jitter: Retry Storms Explained — Webalert](https://web-alert.io/blog/retry-storms-exponential-backoff-jitter-explained) — 백오프는 빈도를, 지터는 동기화를 푼다
+  - [The Thundering Herd Problem in Agentic AI — Cockroach Labs](https://www.cockroachlabs.com/blog/agentic-ai-thundering-herd-problem/) — 에이전트 팬아웃이 만드는 내부 동기화
+  - [Retry Storm Anti-Pattern: Avoid Thundering Herd — Layrs](https://v0.layrs.me/course/hld/10-performance-monitoring/retry-storm) — 스스로 끝나지 않는 장애
+  - [Retries, Backoff and Jitter — CodeReliant](https://www.codereliant.io/p/retries-backoff-jitter) — 재시도 예산·서킷 브레이커
+  - [Top Tech News Today, August 21, 2026 — Tech Startups](https://techstartups.com/2026/08/21/top-tech-news-today-august-21-2026-anthropic-apple-broadcom-google-nvidia-openai-tesla-more/) — 8월 개발 플랫폼 장애 반복 보도
+
+---
+
 ## 2026-08-22 / Airlock (`/airlock`)
 
 - **선정 주제**: 자율 에이전트의 신뢰 경계. 언어모델의 컨텍스트에는 "주인의 지시"와 "바깥에서 읽어온 자료"를 나누는 구조가 없어 외부 문서 속 한 줄이 명령으로 승격될 수 있다. 다만 피해는 한 실행 안에서 ① 비신뢰 입력 ② 비밀 접근 ③ 외부 통신 세 다리가 모두 겹칠 때만 성립한다("삼중 위험"). 실행을 단계(요청→수집→해석→도구→에어록→결과)별로 따라가며 삼중 위험 성립 여부와 에어록 판정을 보고, 다섯 가지 방어(출처 태깅·컨텍스트 격벽·비밀 격리·전송 허용목록·사람 확인)를 켜고 끄면 즉시 200회 배치가 다시 돌아 유출률과 작업 완료율이 함께 움직인다.
