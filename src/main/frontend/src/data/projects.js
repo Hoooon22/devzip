@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 87,
+        name: 'Swelter',
+        subtitle: '잠 못 드는 열대야 (밤더위 뽑기)',
+        description: '입추 지나도 안 식는 열대야 — 스윙 손잡이를 놓아 못 밭에 토큰을 떨어뜨려 오늘 밤 처방을 뽑는 파친코 생성기',
+        link: '/swelter',
+        active: true,
+        startDate: '2026-08-24',
+        endDate: '',
+        category: '실험/게임',
+        isProduction: false, // 실험용
+        thumbnail: '🌃'
+    },
+    {
         id: 86,
         name: 'Stampede',
         subtitle: '재시도 폭주 (백오프·지터)',

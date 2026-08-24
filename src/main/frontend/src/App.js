@@ -100,6 +100,7 @@ import Placebo from './pages/experiments/Placebo';
 import Blindtime from './pages/experiments/Blindtime';
 import Airlock from './pages/experiments/Airlock';
 import Stampede from './pages/experiments/Stampede';
+import Swelter from './pages/experiments/Swelter';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -318,6 +319,7 @@ function App() {
         <Route path="/blindtime" element={<Blindtime />} />
         <Route path="/airlock" element={<Airlock />} />
         <Route path="/stampede" element={<Stampede />} />
+        <Route path="/swelter" element={<Swelter />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
