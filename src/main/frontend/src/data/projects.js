@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 88,
+        name: 'Scotoma',
+        subtitle: '눈 속의 맹점 찾기',
+        description: '한쪽 눈을 가리고 점을 끌다 사라지는 순간 — 당신 눈에 뚫린 구멍을 손으로 찾는다',
+        link: '/scotoma',
+        active: true,
+        startDate: '2026-08-25',
+        endDate: '',
+        category: '실험/인지',
+        isProduction: false, // 실험용
+        thumbnail: '👁'
+    },
+    {
         id: 87,
         name: 'Swelter',
         subtitle: '잠 못 드는 열대야 (밤더위 뽑기)',

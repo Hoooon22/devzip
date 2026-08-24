@@ -1,0 +1,378 @@
+/* SCOTOMA — 눈 속의 맹점 찾기. 검안 차트/인화지 톤.
+   60-30-10: 인화지 오프화이트(주조) · 잉크 차콜(보조) · 시그널 레드(강조).
+   검사장은 균일한 면이어야 착시가 성립하므로 사이트 테마와 무관하게 항상 인화지색으로 고정. */
+
+.sc-wrap {
+    --sc-paper: #efe9db;
+    --sc-paper-2: #e6dfcd;
+    --sc-ink: #1d1b17;
+    --sc-ink-soft: #4a463d;
+    --sc-line: rgba(29, 27, 23, 0.16);
+    --sc-red: #c8322a;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 18px 16px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    color: var(--sc-ink);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ── 안내(도형) ── */
+.sc-guide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    background: var(--sc-paper);
+    border: 1px solid var(--sc-line);
+    border-radius: 10px;
+    color: var(--sc-ink);
+}
+
+.sc-eye {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.sc-eye em,
+.sc-arrow em {
+    font-style: normal;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    color: var(--sc-ink-soft);
+}
+
+.sc-eye--cover { color: var(--sc-ink-soft); opacity: 0.85; }
+.sc-eye--open { color: var(--sc-ink); }
+
+.sc-arrow {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--sc-red);
+}
+
+/* ── 검사장 ── */
+.sc-stage {
+    position: relative;
+    width: 100%;
+    background: var(--sc-paper);
+    background-image:
+        repeating-linear-gradient(0deg, transparent 0 23px, rgba(29, 27, 23, 0.03) 23px 24px),
+        repeating-linear-gradient(90deg, transparent 0 23px, rgba(29, 27, 23, 0.03) 23px 24px);
+    border: 1px solid var(--sc-line);
+    border-radius: 12px;
+    overflow: hidden;
+    touch-action: none;             /* 드래그 중 스크롤 방지 */
+    user-select: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* 모서리 등록 마크(검안 차트 느낌) */
+.sc-stage::before,
+.sc-stage::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--sc-line);
+    pointer-events: none;
+}
+.sc-stage::before { left: 8px; top: 8px; border-right: 0; border-bottom: 0; }
+.sc-stage::after { right: 8px; bottom: 8px; border-left: 0; border-top: 0; }
+
+.sc-track {
+    position: absolute;
+    left: 3%;
+    right: 3%;
+    height: 0;
+    border-top: 1px dashed rgba(29, 27, 23, 0.22);
+    transform: translateY(-0.5px);
+    pointer-events: none;
+}
+
+.sc-cross {
+    position: absolute;
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+.sc-cross-h,
+.sc-cross-v {
+    position: absolute;
+    background: var(--sc-ink);
+}
+.sc-cross-h {
+    width: 30px;
+    height: 4px;
+    left: -15px;
+    top: -2px;
+}
+.sc-cross-v {
+    width: 4px;
+    height: 30px;
+    left: -2px;
+    top: -15px;
+}
+
+.sc-dot {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border-radius: 50%;
+    background: var(--sc-ink);
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 0 2px 6px rgba(29, 27, 23, 0.28);
+}
+.sc-dot:active { cursor: grabbing; }
+.sc-dot:focus-visible { outline: 3px solid var(--sc-red); outline-offset: 3px; }
+.sc-dot.is-found { background: var(--sc-red); }
+
+.sc-mark {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px;
+    border-radius: 50%;
+    border: 2px dashed var(--sc-red);
+    pointer-events: none;
+    animation: sc-pop 0.4s ease-out;
+}
+@keyframes sc-pop {
+    from { transform: scale(0.4); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.sc-stage-hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    text-align: center;
+    margin: 0;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    color: var(--sc-ink-soft);
+    pointer-events: none;
+}
+
+/* ── 조작 ── */
+.sc-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sc-eyeswitch {
+    display: inline-flex;
+    border: 1px solid var(--sc-ink);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.sc-eyeswitch button {
+    position: relative;
+    padding: 9px 16px;
+    border: 0;
+    background: var(--sc-paper);
+    color: var(--sc-ink);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+.sc-eyeswitch button + button { border-left: 1px solid var(--sc-ink); }
+.sc-eyeswitch button.on { background: var(--sc-ink); color: var(--sc-paper); }
+.sc-done {
+    font-style: normal;
+    color: var(--sc-red);
+    font-size: 0.6rem;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.sc-eyeswitch button.on .sc-done { color: #ff8a80; }
+
+.sc-retry {
+    padding: 9px 16px;
+    border: 1px solid var(--sc-ink);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--sc-ink);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+.sc-retry:hover { background: var(--sc-paper-2); }
+
+/* ── 결과 ── */
+.sc-result {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    background: var(--sc-paper);
+    border: 1px solid var(--sc-line);
+    border-radius: 12px;
+}
+.sc-reveal p {
+    margin: 0;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--sc-ink);
+}
+.sc-reveal b { color: var(--sc-red); }
+
+.sc-mapwrap {
+    display: flex;
+    justify-content: center;
+}
+.sc-map {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    background:
+        radial-gradient(circle at 50% 50%, #f6f1e4 0%, #e6dfcd 78%);
+    border-radius: 50%;
+    border: 1px solid var(--sc-line);
+}
+.sc-field { fill: none; stroke: var(--sc-ink); stroke-width: 1.5; }
+.sc-ring { fill: none; stroke: var(--sc-line); stroke-width: 1; }
+.sc-axis { stroke: rgba(29, 27, 23, 0.25); stroke-width: 1; }
+.sc-fovea { stroke: var(--sc-ink); stroke-width: 2.4; }
+.sc-hole {
+    fill: var(--sc-red);
+    fill-opacity: 0.9;
+    stroke: #7d1712;
+    stroke-width: 1.2;
+}
+.sc-deg {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    fill: var(--sc-ink-soft);
+    text-anchor: middle;
+}
+
+/* 만질 수 있는 데이터 — 거리 스크럽 */
+.sc-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.sc-degbig {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.sc-num {
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--sc-ink);
+}
+.sc-verdict {
+    font-size: 0.74rem;
+    color: var(--sc-ink-soft);
+}
+.sc-verdict.ok { color: var(--sc-red); font-weight: 700; }
+
+.sc-scrub {
+    position: relative;
+    height: 30px;
+    margin: 4px 0 2px;
+    border-radius: 15px;
+    background: var(--sc-paper-2);
+    border: 1px solid var(--sc-line);
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+}
+.sc-scrub:focus-visible { outline: 2px solid var(--sc-red); outline-offset: 2px; }
+.sc-scrub-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 15px 0 0 15px;
+    background: rgba(200, 50, 42, 0.16);
+    pointer-events: none;
+}
+.sc-scrub-knob {
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border-radius: 50%;
+    background: var(--sc-red);
+    box-shadow: 0 1px 4px rgba(29, 27, 23, 0.3);
+    pointer-events: none;
+}
+.sc-scrub-cap {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.6rem;
+    color: var(--sc-ink-soft);
+    pointer-events: none;
+}
+.sc-scrub-cap--l { left: 10px; }
+.sc-scrub-cap--r { right: 10px; }
+.sc-scrub-now {
+    margin: 0;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--sc-ink-soft);
+}
+.sc-scrub-now b { color: var(--sc-ink); }
+
+/* ── 읽을거리 ── */
+.sc-read {
+    margin-top: 4px;
+    padding: 18px 18px 20px;
+    background: var(--sc-paper);
+    border: 1px solid var(--sc-line);
+    border-radius: 12px;
+}
+.sc-read h3 {
+    margin: 0 0 10px;
+    font-size: 1.02rem;
+    letter-spacing: 0.02em;
+    color: var(--sc-ink);
+}
+.sc-read p {
+    margin: 0 0 12px;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.96rem;
+    line-height: 1.72;
+    color: var(--sc-ink-soft);
+}
+.sc-read p:last-child { margin-bottom: 0; }
+.sc-read b { color: var(--sc-ink); }
+.sc-disc {
+    font-size: 0.82rem !important;
+    color: var(--sc-ink-soft);
+    border-top: 1px solid var(--sc-line);
+    padding-top: 10px;
+}
+
+@media (max-width: 560px) {
+    .sc-num { font-size: 1.7rem; }
+    .sc-guide { gap: 14px; }
+}
