@@ -13,6 +13,19 @@ const projects = [
         thumbnail: '👁'
     },
     {
+        id: 89,
+        name: 'Confound',
+        subtitle: '상관과 인과 (교란·매개·충돌 변수)',
+        description: '같은 산점도가 숨은 변수의 자리에 따라 다른 진실이 되는 실험',
+        link: '/confound',
+        active: true,
+        startDate: '2026-08-24',
+        endDate: '',
+        category: '실험/통계',
+        isProduction: false, // 실험용
+        thumbnail: '🔀'
+    },
+    {
         id: 87,
         name: 'Swelter',
         subtitle: '잠 못 드는 열대야 (밤더위 뽑기)',
