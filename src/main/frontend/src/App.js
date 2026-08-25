@@ -103,6 +103,7 @@ import Stampede from './pages/experiments/Stampede';
 import Swelter from './pages/experiments/Swelter';
 import Scotoma from './pages/experiments/Scotoma';
 import Confound from './pages/experiments/Confound';
+import Crossbar from './pages/experiments/Crossbar';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -324,6 +325,7 @@ function App() {
         <Route path="/swelter" element={<Swelter />} />
         <Route path="/scotoma" element={<Scotoma />} />
         <Route path="/confound" element={<Confound />} />
+        <Route path="/crossbar" element={<Crossbar />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

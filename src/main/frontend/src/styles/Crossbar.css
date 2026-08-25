@@ -1,0 +1,156 @@
+/* CROSSBAR — 사다리타기 키보드 배정 도구.
+   셸(LabShell)은 흑백 미니멀이지만, 판(board)만은 회로기판 톤으로 고정한다.
+   60-30-10: 딥 회로 그린 60 / 구리·베이지 트레이스 30 / 신호 앰버 10. */
+
+.cb-wrap {
+    display: grid;
+    gap: 16px;
+}
+
+/* ── 판(회로기판) ─────────────────────────── */
+.cb-board {
+    position: relative;
+    width: 100%;
+    height: clamp(340px, 56vw, 470px);
+    border: 1px solid #0a201d;
+    background: #0c2b28;
+    box-shadow: inset 0 0 0 3px rgba(205, 180, 137, 0.14);
+    touch-action: none;
+    overflow: hidden;
+}
+
+.cb-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+.cb-status {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #cdb489;
+    background: rgba(6, 24, 22, 0.72);
+    border: 1px solid rgba(205, 180, 137, 0.28);
+    padding: 4px 9px;
+    pointer-events: none;
+}
+
+.cb-status.is-run {
+    color: #f5d98a;
+    border-color: rgba(245, 217, 138, 0.5);
+}
+
+/* ── 조작계(키캡) ─────────────────────────── */
+.cb-under {
+    display: grid;
+    gap: 14px;
+}
+
+.cb-keys {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--line, #dbdbdb);
+    background: var(--panel-2, #f6f6f6);
+}
+
+.cb-kgroup {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cb-kgroup em {
+    font-style: normal;
+    font-size: 11.5px;
+    color: var(--ink-soft, #555);
+    margin-left: 4px;
+}
+
+.cb-keys kbd {
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+    line-height: 1;
+    min-width: 22px;
+    height: 24px;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink, #111);
+    background: var(--panel, #fff);
+    border: 1px solid var(--ink, #111);
+    border-bottom-width: 3px;
+    border-radius: 4px;
+}
+
+.cb-keys kbd.wide {
+    min-width: 52px;
+    letter-spacing: 0.03em;
+}
+
+.cb-keys kbd.accent {
+    color: #0c2b28;
+    background: #f5a623;
+    border-color: #7a5410;
+}
+
+/* ── 힌트 / 결과 ──────────────────────────── */
+.cb-hint,
+.cb-note {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-soft, #555);
+}
+
+.cb-result {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--line, #dbdbdb);
+    background: var(--panel, #fff);
+}
+
+.cb-pairs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+}
+
+.cb-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.cb-cap {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.cb-arrow {
+    font-family: var(--font-mono, monospace);
+    color: var(--ink-mute, #8a8a8a);
+    font-size: 13px;
+}
+
+.cb-out {
+    font-size: 21px;
+    line-height: 1;
+}
+
+@media (max-width: 560px) {
+    .cb-keys { gap: 12px; }
+    .cb-kgroup em { display: none; }
+    .cb-board { box-shadow: inset 0 0 0 2px rgba(205, 180, 137, 0.14); }
+}

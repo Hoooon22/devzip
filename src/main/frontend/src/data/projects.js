@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 90,
+        name: 'Crossbar',
+        subtitle: '키보드로 놓는 사다리타기',
+        description: '가로대를 키보드로 얹고 신호를 흘려 색 키캡마다 다른 칸에 배정하는 사다리타기 도구',
+        link: '/crossbar',
+        active: true,
+        startDate: '2026-08-25',
+        endDate: '',
+        category: '실험/게임',
+        isProduction: false, // 실험용
+        thumbnail: '🪜'
+    },
+    {
         id: 88,
         name: 'Scotoma',
         subtitle: '눈 속의 맹점 찾기',
