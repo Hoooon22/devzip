@@ -503,8 +503,8 @@ const Crossbar = () => {
                     {result ? (
                         <div className="cb-result" aria-label="배정 결과">
                             <div className="cb-pairs">
-                                {result.map((r, i) => (
-                                    <span className="cb-pair" key={`${r.color}-${r.outcome}-${i}`}>
+                                {result.map((r) => (
+                                    <span className="cb-pair" key={`${r.color}-${r.outcome}`}>
                                         <span className="cb-cap" style={{ background: r.color }} />
                                         <span className="cb-arrow">→</span>
                                         <span className="cb-out">{r.outcome}</span>
