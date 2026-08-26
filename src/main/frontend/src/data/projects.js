@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 91,
+        name: 'Coincide',
+        subtitle: '생일이 겹치는 방 (생일 역설)',
+        description: '방에 한 명씩 들일수록 같은 날 태어난 두 사람이 스물 몇 명에서 벌써 반반으로 나오는 아트 토이',
+        link: '/coincide',
+        active: true,
+        startDate: '2026-08-26',
+        endDate: '',
+        category: '실험/확률',
+        isProduction: false, // 실험용
+        thumbnail: '🎂'
+    },
+    {
         id: 90,
         name: 'Crossbar',
         subtitle: '키보드로 놓는 사다리타기',

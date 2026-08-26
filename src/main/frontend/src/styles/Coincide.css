@@ -1,0 +1,228 @@
+/* COINCIDE — 생일이 겹치는 방.
+   톤: 낡은 등사 명부(mimeograph roster) — 갱지·먹 잉크 흑백에서,
+   같은 날이 겹치는 순간만 형광펜으로 그어진다.
+   색: 갱지/먹(주조 60·보조 30) + 형광 옐로그린(강조 10). 색은 오직 '겹침'에만. */
+
+.coin-wrap {
+    --paper: #E8E0CC;
+    --paper-edge: #DED4BB;
+    --ink: #26241C;
+    --ink-soft: #6E6957;
+    --tick: #BEB498;
+    --tick-major: #8B826A;
+    --dot: #59533f;
+    --hl: #C6F02A;          /* 형광펜 */
+    --hl-deep: #9BC000;
+    --hl-glow: rgba(198, 240, 42, 0.55);
+
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 8px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+[data-theme='dark'] .coin-wrap {
+    --paper: #16150F;
+    --paper-edge: #100F0A;
+    --ink: #D8CFB2;
+    --ink-soft: #8C846B;
+    --tick: #423E30;
+    --tick-major: #6A6247;
+    --dot: #9a916f;
+    --hl: #D6FF3A;
+    --hl-deep: #AEE000;
+    --hl-glow: rgba(214, 255, 58, 0.5);
+}
+
+/* ── 무대(방) ─────────────────────────────── */
+.coin-stage {
+    width: min(86vw, 560px);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 42%, var(--paper) 0%, var(--paper-edge) 78%);
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+        0 10px 34px rgba(0, 0, 0, 0.14);
+    /* 갱지 질감 — 미세한 얼룩 */
+    position: relative;
+    /* 첫 화면은 흑백: 깨어나기 전엔 채도·대비를 죽인다 */
+    filter: grayscale(1) contrast(0.82) brightness(0.98);
+    transition: filter 620ms ease;
+}
+.coin-stage.is-awake { filter: grayscale(0) contrast(1) brightness(1); }
+
+.coin-wheelbtn {
+    all: unset;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: none;
+    position: relative;
+}
+.coin-wheel { width: 100%; height: 100%; display: block; }
+
+/* ── 확률 호(바깥 테) ─────────────────────── */
+.coin-arc-track {
+    fill: none;
+    stroke: var(--tick);
+    stroke-width: 6;
+    opacity: 0.5;
+}
+.coin-arc-fill {
+    fill: none;
+    stroke: var(--hl-deep);
+    stroke-width: 6;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px var(--hl-glow));
+    transition: stroke-dashoffset 420ms cubic-bezier(0.22, 1, 0.36, 1), stroke 300ms ease;
+}
+.coin-arc-fill.past-half {
+    stroke: var(--hl);
+    stroke-width: 8;
+}
+
+/* ── 1년 눈금(흑백) ───────────────────────── */
+.coin-tick { stroke: var(--tick); stroke-width: 2; stroke-linecap: round; }
+.coin-tick.major { stroke: var(--tick-major); stroke-width: 3.4; }
+
+.coin-hub { fill: var(--ink-soft); }
+
+/* ── 사람(점) ─────────────────────────────── */
+.coin-dot {
+    fill: var(--dot);
+    transition: fill 320ms ease, filter 320ms ease;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: coin-pop 440ms cubic-bezier(0.22, 1.4, 0.4, 1) both;
+}
+/* 같은 날 겹침 = 형광(색). 오직 이때만 색이 생긴다. */
+.coin-dot.is-match {
+    fill: var(--hl);
+    filter: drop-shadow(0 0 6px var(--hl-glow));
+}
+/* 겹치며 방금 내려앉은 점은 한 번 크게 발화 */
+.coin-dot.is-match.is-new {
+    animation: coin-flare 620ms cubic-bezier(0.2, 1, 0.3, 1) both;
+}
+
+@keyframes coin-pop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.35); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes coin-flare {
+    0% { transform: scale(0); }
+    35% { transform: scale(2.1); filter: drop-shadow(0 0 14px var(--hl-glow)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 6px var(--hl-glow)); }
+}
+
+/* ── 최초 안내(탭 유도) ───────────────────── */
+.coin-cue {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+}
+.coin-cue em { font-style: normal; }
+.coin-cue-ring {
+    width: 46px; height: 46px;
+    border: 2px solid var(--ink-soft);
+    border-radius: 50%;
+    animation: coin-cuepulse 1.8s ease-in-out infinite;
+}
+@keyframes coin-cuepulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.18); opacity: 0.95; }
+}
+
+/* ── 계기판(최소) ─────────────────────────── */
+.coin-hud {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.coin-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    color: var(--ink-soft);
+}
+.coin-chip b {
+    font-size: 20px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    min-width: 1ch;
+    text-align: right;
+}
+.coin-chip i { font-style: normal; font-size: 11.5px; }
+.coin-chip.hot { border-color: var(--hl-deep); }
+.coin-chip.hot b { color: var(--hl-deep); }
+
+.coin-flash {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink);
+    text-align: center;
+}
+.coin-flash b { color: var(--hl-deep); font-variant-numeric: tabular-nums; }
+.coin-flash.mute { color: var(--ink-mute); }
+
+/* ── 조작 ─────────────────────────────────── */
+.coin-controls { display: flex; gap: 10px; }
+.coin-btn {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 9px 16px;
+    border: 1px solid var(--line-strong);
+    background: var(--ink);
+    color: var(--on-ink);
+    cursor: pointer;
+    border-radius: 2px;
+}
+.coin-btn:hover:not(:disabled) { filter: brightness(1.12); }
+.coin-btn.ghost { background: transparent; color: var(--ink); }
+.coin-btn.ghost:hover:not(:disabled) { background: var(--hover); }
+.coin-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ── 읽을거리 ─────────────────────────────── */
+.coin-read {
+    max-width: 640px;
+    margin-top: 8px;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    color: var(--ink-soft);
+}
+.coin-read h3 {
+    margin: 0 0 12px;
+    font-size: 17px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+.coin-read p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.72; }
+.coin-read b { color: var(--ink); font-weight: 600; }
+.coin-read .coin-disc { font-size: 12.5px; color: var(--ink-mute); }
+
+@media (max-width: 520px) {
+    .coin-chip b { font-size: 17px; }
+    .coin-read p { font-size: 14px; }
+}
