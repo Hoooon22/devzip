@@ -105,6 +105,7 @@ import Scotoma from './pages/experiments/Scotoma';
 import Confound from './pages/experiments/Confound';
 import Crossbar from './pages/experiments/Crossbar';
 import Coincide from './pages/experiments/Coincide';
+import Slowlane from './pages/experiments/Slowlane';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -328,6 +329,7 @@ function App() {
         <Route path="/confound" element={<Confound />} />
         <Route path="/crossbar" element={<Crossbar />} />
         <Route path="/coincide" element={<Coincide />} />
+        <Route path="/slowlane" element={<Slowlane />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

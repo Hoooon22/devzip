@@ -1,0 +1,219 @@
+/* SLOWLANE — 계산대 줄 고르기.
+   톤: 네오브루탈 마트 사이니지 — 두꺼운 먹 테두리와 하드 섀도, 납작한 면.
+   색은 3개까지만: 갱지 크림(주조 60) · 먹(보조 30) · 코발트(강조 10).
+   코발트는 오직 '내 선택'과 '먼저 끝난 줄'에만 쓴다. */
+
+.sl-wrap {
+    --paper: #ECE3CE;
+    --paper-2: #E1D6BB;
+    --ink: #191A17;
+    --ink-line: rgba(25, 26, 23, 0.18);
+    --ink-shadow: rgba(25, 26, 23, 0.9);
+    --pick: #2B49F5;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 10px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .sl-wrap {
+    --paper: #16150E;
+    --paper-2: #1F1D12;
+    --ink: #ECE4CD;
+    --ink-line: rgba(236, 228, 205, 0.22);
+    --ink-shadow: rgba(0, 0, 0, 0.85);
+    --pick: #5E79FF;
+}
+
+/* ── 상단: 라운드 점 + 안내 ─────────────── */
+.sl-top {
+    width: min(92vw, 640px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 2.5px solid var(--ink);
+    padding-bottom: 10px;
+}
+.sl-dots { display: flex; gap: 7px; }
+.sl-dot {
+    width: 12px; height: 12px;
+    border: 2px solid var(--ink);
+    background: transparent;
+}
+.sl-dot.past { background: var(--ink); }
+.sl-dot.now { background: var(--pick); border-color: var(--pick); }
+.sl-hint {
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-align: right;
+    min-height: 1.1em;
+}
+
+/* ── 계산대 바닥: 세 줄 ─────────────────── */
+.sl-floor {
+    width: min(92vw, 640px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.sl-lane {
+    all: unset;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 320px;
+    padding: 10px 10px 0;
+    background: var(--paper-2);
+    border: 2.5px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink-shadow);
+    cursor: default;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 200ms ease;
+}
+.sl-lane.is-live { cursor: pointer; }
+.sl-lane.is-live:hover,
+.sl-lane.is-live:focus-visible {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--pick);
+    background: var(--paper);
+}
+.sl-lane.is-pick { box-shadow: 5px 5px 0 var(--pick); border-color: var(--pick); }
+.sl-lane.is-win { background: var(--paper); box-shadow: 8px 8px 0 var(--pick); border-color: var(--pick); }
+
+/* 컨베이어 벨트 라인 */
+.sl-rail {
+    position: absolute;
+    left: 8px; right: 8px; bottom: 6px;
+    height: 5px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 9px, transparent 9px 16px);
+    opacity: 0.55;
+}
+
+/* 카트 더미 — 아래(줄 앞)부터 순서대로 빠진다 */
+.sl-carts {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    gap: 4px;
+    padding-bottom: 12px;
+}
+.sl-cart {
+    position: relative;
+    width: 100%;
+    height: var(--h);
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    overflow: hidden;
+    flex: none;
+}
+/* hazard 카트 — 사선 빗금(숨은 지연) */
+.sl-cart.hz {
+    background:
+        repeating-linear-gradient(45deg, var(--ink) 0 6px, var(--paper-2) 6px 10px);
+}
+.sl-flag {
+    position: absolute;
+    top: 3px; left: 50%;
+    transform: translateX(-50%);
+    width: 16px; height: 16px;
+    display: grid; place-items: center;
+    background: var(--pick);
+    color: var(--paper);
+    font-style: normal;
+    font-weight: 800;
+    font-size: 0.72rem;
+    line-height: 1;
+    border-radius: 50%;
+}
+
+/* 빠지는 애니메이션 — 시드가 정한 delay/dur로 카트 높이가 0으로 */
+.sl-cart.drain {
+    height: 0;
+    transition: height var(--dur) linear var(--dly);
+}
+
+/* 줄머리 마크(✓ 먼저 끝남 / ✕ 내가 고른 늦은 줄) */
+.sl-head {
+    position: absolute;
+    top: -16px; left: 50%;
+    transform: translateX(-50%);
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    font-weight: 800;
+    font-size: 1rem;
+}
+.sl-lane.is-win .sl-head { color: var(--pick); }
+
+/* ── 컨트롤 ──────────────────────────────── */
+.sl-controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.sl-btn {
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 11px 20px;
+    background: var(--pick);
+    color: #fff;
+    border: 2.5px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink-shadow);
+    cursor: pointer;
+    transition: transform 100ms ease, box-shadow 100ms ease;
+}
+.sl-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink-shadow); }
+.sl-btn:active { transform: translate(0, 0); box-shadow: 2px 2px 0 var(--ink-shadow); }
+.sl-btn.ghost { background: var(--paper); color: var(--ink); }
+
+/* ── 종료 화면 ──────────────────────────── */
+.sl-end {
+    width: min(92vw, 560px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 30px 20px;
+    background: var(--paper-2);
+    border: 2.5px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink-shadow);
+}
+.sl-tally { display: flex; gap: 8px; }
+.sl-pip {
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border: 2.5px solid var(--ink);
+    font-weight: 800;
+    background: transparent;
+}
+.sl-pip.hit { background: var(--pick); color: #fff; border-color: var(--pick); }
+.sl-score { font-size: 2.6rem; margin: 4px 0 0; font-weight: 800; }
+.sl-score b { color: var(--pick); }
+.sl-grade { margin: 0; font-size: 1rem; font-weight: 600; }
+.sl-seed { font-size: 0.76rem; opacity: 0.7; margin-top: 4px; }
+
+/* ── 본문 읽을거리 ──────────────────────── */
+.sl-read {
+    width: min(92vw, 640px);
+    border-top: 2.5px solid var(--ink);
+    padding-top: 18px;
+    line-height: 1.72;
+    font-size: 0.95rem;
+}
+.sl-read h3 { margin: 0 0 12px; font-size: 1.12rem; font-weight: 800; }
+.sl-read p { margin: 0 0 12px; }
+.sl-read b { font-weight: 700; }
+.sl-disc { font-size: 0.84rem; opacity: 0.72; }
+
+/* ── 반응형 ─────────────────────────────── */
+@media (max-width: 520px) {
+    .sl-lane { height: 260px; }
+    .sl-floor { gap: 10px; }
+    .sl-hint { font-size: 0.72rem; }
+}

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 92,
+        name: 'Slowlane',
+        subtitle: '계산대 줄 고르기 (옆줄의 법칙)',
+        description: '세 계산대 줄 중 먼저 끝날 줄을 고르는 오늘의 시드 미니게임 — 숨은 지연은 고른 뒤에야 튀어나온다',
+        link: '/slowlane',
+        active: true,
+        startDate: '2026-08-27',
+        endDate: '',
+        category: '실험/일상',
+        isProduction: false, // 실험용
+        thumbnail: '🛒'
+    },
+    {
         id: 91,
         name: 'Coincide',
         subtitle: '생일이 겹치는 방 (생일 역설)',
