@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 93,
+        name: 'Timbre',
+        subtitle: '소리를 만지는 감각 유형',
+        description: '실시간 합성한 여섯 음색을 듣고 둥글다·따뜻하다를 고르면 나오는 공감각 유형 테스트',
+        link: '/timbre',
+        active: true,
+        startDate: '2026-08-28',
+        endDate: '',
+        category: '실험/감각',
+        isProduction: false, // 실험용
+        thumbnail: '🔊'
+    },
+    {
         id: 92,
         name: 'Slowlane',
         subtitle: '계산대 줄 고르기 (옆줄의 법칙)',
