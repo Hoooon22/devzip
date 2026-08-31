@@ -108,6 +108,7 @@ import Coincide from './pages/experiments/Coincide';
 import Slowlane from './pages/experiments/Slowlane';
 import Timbre from './pages/experiments/Timbre';
 import Cairn from './pages/experiments/Cairn';
+import Standoff from './pages/experiments/Standoff';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -334,6 +335,7 @@ function App() {
         <Route path="/slowlane" element={<Slowlane />} />
         <Route path="/timbre" element={<Timbre />} />
         <Route path="/cairn" element={<Cairn />} />
+        <Route path="/standoff" element={<Standoff />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

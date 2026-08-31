@@ -1,0 +1,234 @@
+/* STANDOFF — 반응속도 서부 결투.
+   톤: 스파게티 웨스턴 하이눈 — 모래빛 사막 지평선, 도형 실루엣 결투자, 선홍 신호.
+   색 배분 60-30-10: 모래 배경(주조) · 세피아/먹 실루엣·구조(보조) · 선홍 레드(강조). */
+
+.sf-wrap {
+    --sand: #e7d6ac;
+    --sand-lo: #dcc796;
+    --ink: #2c2015;
+    --ink-soft: rgba(44, 32, 21, 0.5);
+    --line: rgba(44, 32, 21, 0.16);
+    --sun: #e9b23c;
+    --accent: #d21f28;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .sf-wrap {
+    --sand: #171a24;
+    --sand-lo: #10121a;
+    --ink: #e7dcc4;
+    --ink-soft: rgba(231, 220, 196, 0.5);
+    --line: rgba(231, 220, 196, 0.18);
+    --sun: #d9902a;
+    --accent: #ff3a44;
+}
+
+/* ── 무대 ─────────────────────────────── */
+.sf-stage {
+    position: relative;
+    width: min(94vw, 680px);
+    aspect-ratio: 680 / 400;
+    border: 3px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--line);
+    background:
+        linear-gradient(var(--sand-lo) 0 42%, var(--sand) 42% 100%);
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    outline: none;
+}
+.sf-stage:focus-visible { box-shadow: 7px 7px 0 var(--line), 0 0 0 3px var(--accent); }
+
+/* 승수 눈금 — 상단 도형 점 */
+.sf-scorebar {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 4;
+}
+.sf-pips { display: flex; gap: 7px; }
+.sf-pips.mine { flex-direction: row-reverse; }
+.sf-pip {
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+.sf-pips.mine .sf-pip.on { background: var(--accent); border-color: var(--accent); transform: scale(1.12); }
+.sf-pips:not(.mine) .sf-pip.on { background: var(--ink); }
+.sf-vs {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+}
+
+/* 무대 장면(SVG) */
+.sf-scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.sf-sun {
+    fill: var(--sun);
+    opacity: 0.9;
+    transform-origin: 200px 66px;
+    animation: sf-throb 3.4s ease-in-out infinite;
+}
+@keyframes sf-throb { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.sf-ground { stroke: var(--ink); stroke-width: 2; opacity: 0.4; }
+
+/* 결투자 실루엣 */
+.sf-fig { transform-origin: 50px 128px; transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.sf-fig.fall { transform: rotate(74deg) translate(6px, 18px); }
+.sf-poncho, .sf-chest, .sf-crown, .sf-head, .sf-leg, .sf-arm, .sf-barrel { fill: var(--ink); }
+.sf-brim { fill: var(--ink); }
+.sf-chest { fill: var(--sand-lo); }
+.sf-flash {
+    fill: var(--accent);
+    transform-origin: 96px 72px;
+    animation: sf-flash 0.4s ease-out both;
+}
+@keyframes sf-flash {
+    0% { transform: scale(0.2); opacity: 0; }
+    30% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.85; }
+}
+
+/* ── 중앙 신호/판정 존 ─────────────────── */
+.sf-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 46%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* 대기 점 세 개 */
+.sf-cue.wait { display: flex; gap: 9px; }
+.sf-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.35;
+    animation: sf-blink 1.05s ease-in-out infinite;
+}
+.sf-dot:nth-child(2) { animation-delay: 0.18s; }
+.sf-dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes sf-blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.8; } }
+
+/* 신호 낱말 — 트리거. 슬램인. */
+.sf-signal {
+    font-family: var(--font-display, 'Archivo Black', system-ui, sans-serif);
+    font-weight: 900;
+    font-size: clamp(3.4rem, 15vw, 6.5rem);
+    line-height: 0.8;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    text-shadow: 4px 4px 0 var(--ink);
+    animation: sf-slam 0.14s cubic-bezier(0.2, 1.8, 0.4, 1) both;
+}
+@keyframes sf-slam {
+    0% { transform: scale(2.4) rotate(-8deg); opacity: 0; }
+    100% { transform: scale(1) rotate(-4deg); opacity: 1; }
+}
+
+/* 판정 낱말 + 파편 */
+.sf-verdict { position: relative; display: flex; align-items: center; justify-content: center; }
+.sf-word {
+    font-family: var(--font-display, 'Archivo Black', system-ui, sans-serif);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 6.5vw, 2.8rem);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    animation: sf-pop 0.28s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.sf-verdict[data-res='win'] .sf-word { color: var(--accent); }
+.sf-verdict[data-res='false'] .sf-word {
+    color: var(--ink);
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 4px;
+}
+@keyframes sf-pop {
+    0% { transform: scale(0.6) translateY(6px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 신호가 부서지며 튀는 파편(도형) */
+.sf-burst {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.sf-shard {
+    position: absolute;
+    background: var(--accent);
+    animation: sf-scatter 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.sf-shard:nth-child(odd) { background: var(--ink); border-radius: 50%; }
+@keyframes sf-scatter {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+
+/* ── 반응시간 판독 ─────────────────────── */
+.sf-read {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 5;
+    pointer-events: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+.sf-rt.mine { color: var(--accent); }
+.sf-rt.cpu { color: var(--ink-soft); }
+
+/* ── 안내 ─────────────────────────────── */
+.sf-hint {
+    margin: 0;
+    min-height: 1.2em;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-align: center;
+}
+.sf-wrap[data-phase='fire'] .sf-hint { color: var(--accent); font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) {
+    .sf-sun, .sf-signal, .sf-word, .sf-shard, .sf-flash, .sf-dot { animation-duration: 0.01ms; }
+}

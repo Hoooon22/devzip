@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 95,
+        name: 'Standoff',
+        subtitle: '반응속도 서부 결투',
+        description: '신호가 뜨면 먼저 뽑는 사람 vs 기계 반응속도 대결 — 먼저 움직이면 부정출발',
+        link: '/standoff',
+        active: true,
+        startDate: '2026-08-31',
+        endDate: '',
+        category: '실험/몸',
+        isProduction: false, // 실험용
+        thumbnail: '🤠'
+    },
+    {
         id: 94,
         name: 'Cairn',
         subtitle: '등고선 지형 종주 (오리엔티어링)',
