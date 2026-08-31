@@ -1,0 +1,148 @@
+/* CAIRN — 등고선 지형 종주.
+   톤: 지형도/오리엔티어링 맵 — 갈색 등고선이 그어진 크림빛 지도지,
+       control(돌탑)·주자·시간막대만 오리엔티어링 마젠타.
+   색 배분 60-30-10: 지도지 크림(주조) · 등고선 갈색+글자(보조) · 마젠타(강조). */
+
+.cairn-wrap {
+    --paper: #e9dfc7;
+    --ink: #3a2e1c;
+    --ink-soft: rgba(58, 46, 28, 0.62);
+    --line: rgba(58, 46, 28, 0.18);
+    --accent: #e01e5a;
+    --frame: #2d2415;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .cairn-wrap {
+    --paper: #16150e;
+    --ink: #e9dfc7;
+    --ink-soft: rgba(233, 223, 199, 0.62);
+    --line: rgba(233, 223, 199, 0.2);
+    --accent: #ff5c86;
+    --frame: #cdbd9a;
+}
+
+/* ── 무대: 캔버스 + 종료 오버레이 ─────────── */
+.cairn-stage {
+    position: relative;
+    width: min(94vw, 680px);
+    aspect-ratio: 680 / 440;
+    border: 3px solid var(--frame);
+    box-shadow: 6px 6px 0 var(--line);
+    background: var(--paper);
+    overflow: hidden;
+}
+
+.cairn-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* 종료 오버레이 */
+.cairn-over {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: blur(1.5px);
+    animation: cairn-fade 0.25s ease both;
+}
+@keyframes cairn-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.cairn-k {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.cairn-score {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+.cairn-score b {
+    font-size: 2.9rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+}
+.cairn-grade {
+    margin: 2px 0 0;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.cairn-best {
+    margin: 0;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+}
+.cairn-btn {
+    margin-top: 12px;
+    padding: 9px 20px;
+    border: 2.5px solid var(--frame);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--frame);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+[data-theme='dark'] .cairn-btn { color: #16150e; }
+.cairn-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--frame); }
+.cairn-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--frame); }
+
+/* ── 조작 안내 ─────────────────────────────── */
+.cairn-legend {
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── 본문 ──────────────────────────────────── */
+.cairn-read {
+    max-width: 640px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 2px solid var(--line);
+    line-height: 1.72;
+    font-size: 0.95rem;
+    color: var(--ink);
+}
+.cairn-read h3 {
+    margin: 0 0 12px;
+    font-size: 1.06rem;
+    font-weight: 700;
+}
+.cairn-read p { margin: 0 0 13px; }
+.cairn-read b { color: var(--accent); font-weight: 700; }
+[data-theme='dark'] .cairn-read b { color: var(--accent); }
+.cairn-disc {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+}
+.cairn-disc b { color: inherit; }
+
+@media (max-width: 520px) {
+    .cairn-score b { font-size: 2.3rem; }
+    .cairn-legend { font-size: 0.68rem; }
+    .cairn-read { font-size: 0.9rem; }
+}

@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 94,
+        name: 'Cairn',
+        subtitle: '등고선 지형 종주 (오리엔티어링)',
+        description: '등고선을 읽어 돌탑을 30초 안에 잇는 시간 챌린지 — 언덕이 촘촘할수록 발이 느려진다',
+        link: '/cairn',
+        active: true,
+        startDate: '2026-08-31',
+        endDate: '',
+        category: '실험/공간',
+        isProduction: false, // 실험용
+        thumbnail: '🧭'
+    },
+    {
         id: 93,
         name: 'Timbre',
         subtitle: '소리를 만지는 감각 유형',
