@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 96,
+        name: 'Overrun',
+        subtitle: '과잉생산과 재고 폐기',
+        description: '생산을 수요에 못 맞추면 안 팔린 재고가 폐기더미로 쏟아지는 시뮬레이터',
+        link: '/overrun',
+        active: true,
+        startDate: '2026-09-01',
+        endDate: '',
+        category: '실험/트렌드',
+        isProduction: false, // 실험용
+        thumbnail: '🏭'
+    },
+    {
         id: 95,
         name: 'Standoff',
         subtitle: '반응속도 서부 결투',

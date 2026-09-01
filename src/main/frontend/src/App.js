@@ -109,6 +109,7 @@ import Slowlane from './pages/experiments/Slowlane';
 import Timbre from './pages/experiments/Timbre';
 import Cairn from './pages/experiments/Cairn';
 import Standoff from './pages/experiments/Standoff';
+import Overrun from './pages/experiments/Overrun';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -336,6 +337,7 @@ function App() {
         <Route path="/timbre" element={<Timbre />} />
         <Route path="/cairn" element={<Cairn />} />
         <Route path="/standoff" element={<Standoff />} />
+        <Route path="/overrun" element={<Overrun />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

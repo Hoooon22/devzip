@@ -1,0 +1,85 @@
+/* OVERRUN — 과잉생산과 재고 폐기 흐름 (뉴스·트렌드 × 시뮬레이터 × Canvas 2D × 설명 없이 만지면 알게).
+   톤: 공장 바닥/산업 경고 — 콘크리트 바닥(주조) · 강철 벨트+먹 부품(보조) · 위험 주황 폐기물(강조).
+   색 배분 60-30-10: 콘크리트 60 / 강철·먹 30 / hazard 주황 10. */
+
+.ovr-wrap {
+    --floor: #cbc4b3;
+    --ink: #2a2723;
+    --frame: #211e1a;
+    --line: rgba(33, 30, 26, 0.2);
+    --hazard: #e6531d;
+
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .ovr-wrap {
+    --floor: #14120f;
+    --ink: #d8d1c0;
+    --frame: #cdbd9a;
+    --line: rgba(216, 209, 192, 0.18);
+    --hazard: #ff6a34;
+}
+
+/* ── 무대: 공장 라인 캔버스 ─────────── */
+.ovr-stage {
+    position: relative;
+    width: min(94vw, 720px);
+    aspect-ratio: 720 / 470;
+    border: 3px solid var(--frame);
+    box-shadow: 7px 7px 0 var(--line);
+    background: var(--floor);
+    overflow: hidden;
+    touch-action: none;
+}
+
+.ovr-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: grab;
+}
+
+.ovr-canvas:active {
+    cursor: grabbing;
+}
+
+/* ── 본문 에세이 ─────────── */
+.ovr-read {
+    max-width: 680px;
+    margin: 4px auto 0;
+    line-height: 1.72;
+    font-size: 0.98rem;
+}
+
+.ovr-read h3 {
+    font-size: 1.12rem;
+    margin: 22px 0 8px;
+    letter-spacing: -0.01em;
+}
+
+.ovr-read p {
+    margin: 0 0 12px;
+    color: var(--ink);
+}
+
+.ovr-read b {
+    font-weight: 700;
+    border-bottom: 2px solid var(--hazard);
+    padding-bottom: 1px;
+}
+
+.ovr-read .ovr-tail {
+    font-size: 0.86rem;
+    opacity: 0.66;
+    border-top: 1px dashed var(--line);
+    padding-top: 12px;
+    margin-top: 18px;
+}
