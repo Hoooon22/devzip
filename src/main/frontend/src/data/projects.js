@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 97,
+        name: 'Zero Click',
+        subtitle: '답만 받고 떠나는 웹 (제로 클릭)',
+        description: '요약이 방문을 삼킬수록 그 답의 재료가 마르는 되먹임 실험',
+        link: '/zero-click',
+        active: true,
+        startDate: '2026-09-01',
+        endDate: '',
+        category: '실험/시뮬레이션',
+        isProduction: false, // 실험용
+        thumbnail: '🔗'
+    },
+    {
         id: 96,
         name: 'Overrun',
         subtitle: '과잉생산과 재고 폐기',
