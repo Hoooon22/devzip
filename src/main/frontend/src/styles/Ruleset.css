@@ -1,0 +1,210 @@
+/* RULESET — 미리 적어 둔 몇 줄로만 거를 때
+   공용 커널 셸(.lab-os)의 흑백 미니멀 팔레트·모노 폰트를 그대로 소비한다.
+   60-30-10: 중립 패널·여백(주조 60) · 잉크와 하어라인·레인·표(보조 30) · 누출과 파손의 크림슨(강조 10).
+   통과한 정상 요청만 셸의 터미널 그린(--signal)으로 표시해 색 수를 늘리지 않는다. */
+
+.lab-os {
+    --rs-loss: #b02a1f;                  /* 유일한 hero 액센트 — 새어 나간 추적, 잘못 막힌 정상 */
+    --rs-ok: var(--signal);
+}
+.lab-os[data-theme="dark"] {
+    --rs-loss: #ff6b57;
+}
+
+/* ---- 툴바 ---- */
+.rs-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--row-alt);
+}
+.rs-stat { display: inline-flex; flex-direction: column; gap: 2px; }
+.rs-stat-k { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--ink-mute); }
+.rs-stat-v {
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+.rs-stat-v i { font-style: normal; font-size: 0.82rem; font-weight: 500; color: var(--ink-mute); }
+.rs-stat-s { font-size: 0.66rem; color: var(--ink-mute); }
+.rs-stat-v.is-bad { color: var(--rs-loss); }
+.rs-stat-v.is-ok { color: var(--rs-ok); }
+.rs-stat-edge { padding-left: 22px; border-left: 1px dashed var(--frame); }
+
+/* ---- 흐름 캔버스 ---- */
+.rs-canvas {
+    display: block;
+    width: 100%;
+    height: 232px;
+    border-bottom: 1px solid var(--line);
+}
+.rs-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 9px 18px;
+    font-size: 0.66rem;
+    color: var(--ink-mute);
+    border-bottom: 1px solid var(--line);
+}
+.rs-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.rs-legend .sw { width: 9px; height: 9px; display: inline-block; }
+.rs-legend .sw.is-pass { background: var(--rs-ok); }
+.rs-legend .sw.is-mute { background: var(--ink-mute); }
+.rs-legend .sw.is-warn { background: var(--rs-loss); }
+.rs-legend-note { margin-left: auto; }
+
+/* ---- 컨트롤 ---- */
+.rs-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+}
+.rs-ctl { display: inline-flex; flex-direction: column; gap: 6px; min-width: 224px; }
+.rs-ctl-k { font-size: 0.68rem; letter-spacing: 0.06em; color: var(--ink-soft); }
+.rs-ctl-k b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.rs-ctl-s { font-size: 0.66rem; color: var(--ink-mute); }
+.rs-ctl input[type="range"] { width: 100%; accent-color: var(--ink); }
+.rs-ctl-switch { min-width: 300px; }
+.rs-toggle {
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+    text-align: left;
+    padding: 7px 11px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame-strong);
+    cursor: pointer;
+}
+.rs-toggle.is-on {
+    color: var(--panel);
+    background: var(--rs-loss);
+    border-color: var(--rs-loss);
+}
+
+/* ---- 규칙 팔레트 ---- */
+.rs-palette { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.rs-palette.is-off { opacity: 0.42; }
+.rs-sec-k {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 9px;
+}
+.rs-rules {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+    gap: 7px;
+}
+.rs-rule {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    text-align: left;
+    font-family: var(--font-ui);
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    cursor: pointer;
+}
+.rs-rule code { font-size: 0.72rem; color: var(--ink); white-space: nowrap; }
+.rs-rule-note { font-size: 0.64rem; color: var(--ink-mute); margin-left: auto; white-space: nowrap; }
+.rs-rule.is-on { border-color: var(--frame-strong); background: var(--row-alt); }
+.rs-rule.is-on code { font-weight: 600; }
+.rs-rule.is-full { opacity: 0.4; cursor: not-allowed; }
+.rs-rule:disabled { cursor: not-allowed; }
+.rs-rule-hit {
+    margin-left: auto;
+    font-size: 0.66rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.rs-rule-hit b { color: var(--rs-ok); font-weight: 700; }
+.rs-rule-hit em { font-style: normal; color: var(--rs-loss); margin-left: 5px; font-weight: 700; }
+.rs-rule.is-on .rs-rule-note { display: none; }
+.rs-palette-cap { margin: 10px 0 0; font-size: 0.66rem; color: var(--ink-mute); line-height: 1.6; }
+
+/* ---- 시나리오 ---- */
+.rs-presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+}
+.rs-presets .rs-sec-k { margin-bottom: 0; margin-right: 4px; }
+.rs-chip {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    cursor: pointer;
+}
+.rs-chip:hover { background: var(--hover); border-color: var(--frame-strong); }
+
+/* ---- 판정 표 ---- */
+.rs-table-wrap { overflow-x: auto; }
+.rs-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+.rs-table th,
+.rs-table td {
+    padding: 7px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+.rs-table th {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    font-weight: 500;
+    background: var(--row-alt);
+}
+.rs-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.rs-table tr.is-tracker td:first-child { color: var(--ink-soft); }
+.rs-url { color: var(--ink-soft); font-size: 0.7rem; }
+.rs-url span { color: var(--ink-mute); }
+.rs-verdict.is-ok { color: var(--ink-soft); }
+.rs-verdict.is-bad { color: var(--rs-loss); font-weight: 600; }
+.rs-verdict code {
+    margin-left: 8px;
+    font-size: 0.66rem;
+    padding: 1px 5px;
+    color: var(--ink-mute);
+    background: var(--row-alt);
+    border: 1px solid var(--line);
+    font-weight: 400;
+}
+
+/* ---- 해설 ---- */
+.rs-foot-win { margin-top: 18px; }
+.rs-foot { padding: 18px; }
+.rs-foot p { margin: 0 0 12px; font-size: 0.82rem; line-height: 1.85; color: var(--ink-soft); }
+.rs-foot p:last-child { margin-bottom: 0; }
+.rs-foot b { color: var(--ink); font-weight: 600; }
+.rs-disclaimer { font-size: 0.7rem !important; color: var(--ink-mute) !important; }
+
+@media (max-width: 720px) {
+    .rs-toolbar { gap: 16px; }
+    .rs-stat-edge { padding-left: 0; border-left: none; }
+    .rs-canvas { height: 190px; }
+    .rs-controls { gap: 18px; }
+    .rs-ctl, .rs-ctl-switch { min-width: 100%; }
+    .rs-legend-note { margin-left: 0; }
+}

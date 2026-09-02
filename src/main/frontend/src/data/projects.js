@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 99,
+        name: 'Ruleset',
+        subtitle: '선언적 차단 규칙 (규칙 예산)',
+        description: '몇 줄 안 되는 규칙으로 추적만 걸러내는 필터 예산 실험',
+        link: '/ruleset',
+        active: true,
+        startDate: '2026-09-02',
+        endDate: '',
+        category: '실험/네트워크',
+        isProduction: false, // 실험용
+        thumbnail: '🛂'
+    },
+    {
         id: 98,
         name: 'Tally',
         subtitle: '큰 수를 세는 시간으로',
