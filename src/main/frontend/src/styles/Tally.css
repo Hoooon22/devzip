@@ -1,0 +1,267 @@
+/* TALLY — 큰 수를 세는 시간으로.
+   톤: 기계식 계수기(오도미터/검침 미터) — 따뜻한 아이보리 패널(주조 60)에
+       흑연빛 먹 프레임·숫자 휠(보조 30), 신호는 오직 계수 램프·시간값·지나온 눈금에만
+       한 가지 붉은색(강조 10). 60-30-10, 보라 그라데이션 없음. */
+
+.tally-wrap {
+    --paper: #EDE6D6;
+    --paper-2: #E4DBC6;
+    --metal: #D3CAB2;
+    --metal-2: #C4BA9F;
+    --ink: #211E17;
+    --ink-soft: #58513F;
+    --ink-dim: #9A9078;
+    --frame: #26211680;
+    --frame-strong: #241F16;
+    --accent: #C4362B;
+    --accent-2: #A62A21;
+    --accent-soft: rgba(196, 54, 43, 0.14);
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 6px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(18px, 4vh, 34px);
+}
+
+[data-theme='dark'] .tally-wrap {
+    --paper: #15130D;
+    --paper-2: #1C1912;
+    --metal: #23201A;
+    --metal-2: #2C281F;
+    --ink: #E9E1CD;
+    --ink-soft: #ACA286;
+    --ink-dim: #6B6552;
+    --frame: #E9E1CD40;
+    --frame-strong: #E9E1CD;
+    --accent: #E4574B;
+    --accent-2: #F06B5F;
+    --accent-soft: rgba(228, 87, 75, 0.16);
+}
+
+/* ── 패널(계수기 + 시간 판독) ───────────────────────── */
+.tally-panel {
+    width: 100%;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 6px, rgba(0, 0, 0, 0.014) 6px 7px),
+        var(--paper);
+    border: 2px solid var(--frame-strong);
+    border-radius: 4px;
+    box-shadow: 0 2px 0 var(--frame-strong), inset 0 0 0 1px var(--paper-2);
+    padding: clamp(18px, 4vw, 30px) clamp(16px, 4vw, 34px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 3.5vh, 28px);
+}
+
+/* ── 오도미터(숫자 휠) ───────────────────────── */
+.odo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    width: 100%;
+}
+
+.odo-lamp {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    animation: odo-blink 1.6s steps(1, end) infinite;
+}
+@keyframes odo-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.25; } }
+
+.odo-wheels {
+    display: flex;
+    gap: 2px;
+    padding: 8px;
+    background: var(--frame-strong);
+    border-radius: 5px;
+    max-width: 100%;
+}
+
+.wheel {
+    flex: 0 0 auto;
+    width: clamp(15px, 4.4vw, 30px);
+    height: clamp(30px, 8.5vw, 54px);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: clamp(16px, 4.6vw, 30px);
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--metal-2), var(--metal) 22%, var(--metal) 78%, var(--metal-2));
+    border-radius: 2px;
+    box-shadow:
+        inset 0 6px 6px -6px rgba(0, 0, 0, 0.6),
+        inset 0 -6px 6px -6px rgba(0, 0, 0, 0.6);
+    position: relative;
+}
+.wheel::after { /* 휠 이음새 */
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.35);
+    transform: translateY(-0.5px);
+}
+.wheel.off { color: var(--ink-dim); opacity: 0.4; }
+.wheel.grp { margin-right: 7px; }
+
+.odo-read {
+    font-family: var(--font-mono);
+    font-size: clamp(15px, 4vw, 22px);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+}
+.odo-read-u { color: var(--ink-soft); font-size: 0.72em; margin-left: 3px; }
+
+/* ── 시간 판독 ───────────────────────── */
+.dur {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+}
+.dur-k { font-size: 12px; color: var(--ink-soft); letter-spacing: 0.14em; }
+.dur-v {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    font-size: clamp(40px, 12vw, 78px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+.dur-u { color: var(--accent); margin-left: 0.12em; }
+.dur-s { font-size: 11px; color: var(--ink-dim); letter-spacing: 0.1em; margin-top: 2px; }
+
+/* ── 레버(레인지) ───────────────────────── */
+.rail {
+    position: relative;
+    width: 100%;
+    height: 64px;
+    margin-top: 2px;
+}
+
+.rail-track {
+    position: absolute;
+    left: 0; right: 0; top: 19px;
+    height: 14px;
+    background: var(--paper-2);
+    border: 2px solid var(--frame-strong);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.rail-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: calc(var(--t) * 1%);
+    background:
+        repeating-linear-gradient(45deg, var(--accent) 0 7px, var(--accent-2) 7px 14px);
+}
+.tick {
+    position: absolute;
+    top: 2px; bottom: 2px;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--frame-strong);
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+}
+[data-theme='dark'] .tick { mix-blend-mode: screen; }
+
+/* 실제 조작·접근성은 네이티브 range 가 맡되, 트랙 위 손잡이만 보이게 스타일 */
+.rail-input {
+    position: absolute;
+    left: -2px; right: -2px; top: 0;
+    width: calc(100% + 4px);
+    height: 40px;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: grab;
+}
+.rail-input:active { cursor: grabbing; }
+.rail-input:focus-visible { outline: none; }
+.rail-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 40px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--metal), var(--metal-2));
+    border: 2px solid var(--frame-strong);
+    box-shadow: 0 2px 0 var(--frame-strong);
+    cursor: grab;
+    animation: nudge 2.4s ease-in-out infinite;
+}
+.rail-input::-moz-range-thumb {
+    width: 22px;
+    height: 40px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--metal), var(--metal-2));
+    border: 2px solid var(--frame-strong);
+    box-shadow: 0 2px 0 var(--frame-strong);
+    cursor: grab;
+}
+.rail-input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--accent-soft), 0 2px 0 var(--frame-strong); }
+.rail-input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--accent-soft); }
+.rail-input:active::-webkit-slider-thumb,
+.rail-input:hover::-webkit-slider-thumb { animation: none; }
+@keyframes nudge {
+    0%, 88%, 100% { transform: translateX(0); }
+    92% { transform: translateX(-5px); }
+    96% { transform: translateX(5px); }
+}
+
+.rail-marks {
+    position: absolute;
+    left: 0; right: 0; top: 40px;
+    height: 22px;
+}
+.mk {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    /* --t 를 상속받아, 레버(--t)가 이 눈금(--p)을 지나면 붉게 점등 */
+    --lit: clamp(0, calc((var(--t) - var(--p)) * 1000), 1);
+    color: color-mix(in srgb, var(--ink-dim), var(--accent) calc(var(--lit) * 100%));
+    opacity: calc(0.55 + var(--lit) * 0.45);
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+}
+.hint .chev { color: var(--accent); animation: hint-fade 2s ease-in-out infinite; }
+@keyframes hint-fade { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+@media (max-width: 480px) {
+    .odo-wheels { gap: 1px; padding: 6px; }
+    .wheel.grp { margin-right: 4px; }
+    .rail-marks .mk:nth-child(even) { display: none; } /* 좁은 화면: 눈금 라벨 솎아내기 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .odo-lamp, .hint .chev, .rail-input::-webkit-slider-thumb { animation: none; }
+}

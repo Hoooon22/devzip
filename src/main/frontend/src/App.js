@@ -111,6 +111,7 @@ import Cairn from './pages/experiments/Cairn';
 import Standoff from './pages/experiments/Standoff';
 import Overrun from './pages/experiments/Overrun';
 import ZeroClick from './pages/experiments/ZeroClick';
+import Tally from './pages/experiments/Tally';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -340,6 +341,7 @@ function App() {
         <Route path="/standoff" element={<Standoff />} />
         <Route path="/overrun" element={<Overrun />} />
         <Route path="/zero-click" element={<ZeroClick />} />
+        <Route path="/tally" element={<Tally />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

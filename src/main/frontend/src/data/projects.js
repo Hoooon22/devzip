@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 98,
+        name: 'Tally',
+        subtitle: '큰 수를 세는 시간으로',
+        description: '레버를 밀면 계수기가 돌며, 그 수를 초당 하나씩 세는 데 걸리는 시간이 부푼다',
+        link: '/tally',
+        active: true,
+        startDate: '2026-09-02',
+        endDate: '',
+        category: '실험/숫자',
+        isProduction: false, // 실험용
+        thumbnail: '🔢'
+    },
+    {
         id: 97,
         name: 'Zero Click',
         subtitle: '답만 받고 떠나는 웹 (제로 클릭)',
