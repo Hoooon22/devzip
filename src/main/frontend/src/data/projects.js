@@ -1,5 +1,17 @@
 const projects = [
     {
+        id: 100,
+        name: '말끝',
+        description: '답장 말풍선을 끄는 방향이 말투가 되어, 대화가 갈라지는 분기 서사',
+        link: '/malkkeut',
+        active: true,
+        startDate: '2026-09-03',
+        endDate: '',
+        category: '실험/말',
+        isProduction: false, // 실험용
+        thumbnail: '💬'
+    },
+    {
         id: 99,
         name: 'Ruleset',
         subtitle: '선언적 차단 규칙 (규칙 예산)',

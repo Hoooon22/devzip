@@ -1,0 +1,280 @@
+/* 말끝 — 말투로 갈라지는 문자 대화.
+   톤: 한지 서신 + 온도 잉크 — 따뜻한 종이 크림(주조 60)에 먹빛 잉크 말풍선(보조 30),
+       강조(10)는 오직 말투의 온도색: 다정=앰버, 차갑게=청록. 60-30-10, 보라 그라데이션 없음. */
+
+.mk-wrap {
+    --paper: #ECE3CF;
+    --paper-2: #E3D8BF;
+    --card: #F3ECDA;
+    --ink: #272219;
+    --ink-soft: #6A6250;
+    --ink-dim: #A79B80;
+    --line: #2b241733;
+    --line-strong: #2b2417;
+    --warm: #C1712A;
+    --warm-soft: rgba(193, 113, 42, 0.16);
+    --cold: #2F857E;
+    --cold-soft: rgba(47, 133, 126, 0.16);
+
+    /* 지금까지 쌓인 말투 온도가 화면 전체의 은은한 강조색이 된다 */
+    --amb: var(--ink-dim);
+    --amb-soft: transparent;
+
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 6px 14px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.mk-wrap.amb-warm { --amb: var(--warm); --amb-soft: var(--warm-soft); }
+.mk-wrap.amb-cold { --amb: var(--cold); --amb-soft: var(--cold-soft); }
+
+[data-theme='dark'] .mk-wrap {
+    --paper: #14120C;
+    --paper-2: #1B1810;
+    --card: #201C13;
+    --ink: #ECE3CD;
+    --ink-soft: #ACA286;
+    --ink-dim: #6B6552;
+    --line: #ece3cd2e;
+    --line-strong: #ece3cd;
+    --warm: #E19A4E;
+    --warm-soft: rgba(225, 154, 78, 0.18);
+    --cold: #55B3AA;
+    --cold-soft: rgba(85, 179, 170, 0.18);
+}
+
+/* ── 문자창(종이 카드) ─────────────────────────── */
+.mk-phone {
+    width: 100%;
+    background:
+        repeating-linear-gradient(0deg, transparent 0 25px, rgba(0, 0, 0, 0.016) 25px 26px),
+        var(--paper);
+    border: 2px solid var(--line-strong);
+    border-radius: 6px;
+    box-shadow: 0 3px 0 var(--line-strong), 0 0 0 6px var(--amb-soft);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.4s ease;
+}
+
+.mk-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 16px;
+    border-bottom: 1.5px solid var(--line);
+    background: var(--paper-2);
+}
+.mk-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--amb);
+    box-shadow: 0 0 0 3px var(--amb-soft);
+    transition: background 0.4s ease;
+}
+.mk-name { font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+.mk-sub { margin-left: auto; font-size: 0.72rem; color: var(--ink-dim); }
+
+/* ── 대화 타래 ─────────────────────────── */
+.mk-thread {
+    padding: 16px 15px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 232px;
+    max-height: 42vh;
+    overflow-y: auto;
+}
+.mk-row { display: flex; }
+.mk-row.them { justify-content: flex-start; }
+.mk-row.me { justify-content: flex-end; }
+
+.mk-bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    border-radius: 15px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1.5px solid var(--line-strong);
+    animation: mk-pop 0.24s cubic-bezier(0.2, 1.3, 0.5, 1) both;
+    word-break: keep-all;
+}
+.mk-bubble.them {
+    background: var(--card);
+    color: var(--ink);
+    border-bottom-left-radius: 5px;
+}
+.mk-bubble.me {
+    background: var(--ink);
+    color: var(--paper);
+    border-bottom-right-radius: 5px;
+    box-shadow: 3px 3px 0 var(--line-strong);
+}
+/* 보낸 말풍선에도 말투 온도가 물든다 */
+.mk-bubble.me.t-warm { background: var(--warm); border-color: var(--warm); color: #1c140a; }
+.mk-bubble.me.t-cold { background: var(--cold); border-color: var(--cold); color: #06120f; }
+
+@keyframes mk-pop {
+    from { opacity: 0; transform: translateY(7px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+}
+
+/* 입력 중 점 */
+.mk-typing { display: inline-flex; gap: 5px; align-items: center; padding: 13px 15px; }
+.mk-typing span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-dim);
+    animation: mk-blink 1s infinite ease-in-out;
+}
+.mk-typing span:nth-child(2) { animation-delay: 0.16s; }
+.mk-typing span:nth-child(3) { animation-delay: 0.32s; }
+@keyframes mk-blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+/* ── 답장 도크 ─────────────────────────── */
+.mk-dock {
+    border-top: 2px dashed var(--line);
+    padding: 14px 15px 16px;
+    background: var(--paper-2);
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 말투 눈금(다정↕차갑게) */
+.mk-dial {
+    position: relative;
+    flex: 0 0 22px;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+}
+.mk-dial::before {
+    content: '';
+    position: absolute;
+    top: 6px; bottom: 6px; left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(var(--warm), var(--ink-dim) 50%, var(--cold));
+    border-radius: 2px;
+    opacity: 0.5;
+}
+.mk-dial .dl {
+    position: relative;
+    writing-mode: vertical-rl;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-dim);
+    font-weight: 700;
+}
+.mk-dial .dl.warm { color: var(--warm); }
+.mk-dial .dl.cold { color: var(--cold); }
+.dl-mark {
+    position: absolute;
+    left: 50%;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--paper-2);
+    transform: translate(-50%, -50%);
+    transition: top 0.14s ease, background 0.14s ease;
+}
+.dl-mark.m-warm { top: 12%; background: var(--warm); }
+.dl-mark.m-neutral { top: 50%; }
+.dl-mark.m-cold { top: 88%; background: var(--cold); }
+
+/* 끌어서 보내는 답장 말풍선 */
+.mk-draft {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    padding: 13px 15px;
+    border-radius: 15px;
+    border: 2px solid var(--line-strong);
+    border-bottom-right-radius: 5px;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 3px 3px 0 var(--line-strong);
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.12s ease;
+    will-change: transform;
+}
+.mk-draft:active { cursor: grabbing; }
+.mk-draft.t-warm { background: var(--warm); border-color: var(--warm); color: #1c140a; box-shadow: 3px 3px 0 #00000030; }
+.mk-draft.t-cold { background: var(--cold); border-color: var(--cold); color: #06120f; box-shadow: 3px 3px 0 #00000030; }
+.mk-draft:focus-visible { outline: 3px solid var(--amb); outline-offset: 3px; }
+
+.mk-grip { font-size: 1.1rem; opacity: 0.55; flex: 0 0 auto; }
+.mk-draft-text { flex: 1; word-break: keep-all; }
+.mk-tonetag {
+    flex: 0 0 auto;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1.5px solid currentColor;
+    opacity: 0.75;
+}
+
+/* ── 결말 ─────────────────────────── */
+.mk-end {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 6px;
+    border-left: 4px solid var(--amb);
+    padding-left: 14px;
+    animation: mk-pop 0.3s cubic-bezier(0.2, 1.2, 0.5, 1) both;
+}
+.mk-end-k { font-size: 0.66rem; color: var(--ink-dim); letter-spacing: 0.1em; }
+.mk-end-t { font-size: 1.15rem; color: var(--ink); letter-spacing: -0.01em; }
+.mk-end.e-warm { --amb: var(--warm); }
+.mk-end.e-cold { --amb: var(--cold); }
+.mk-end.e-polite { --amb: var(--ink-soft); }
+.mk-end-l { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.55; word-break: keep-all; margin: 0; }
+.mk-again {
+    align-self: flex-start;
+    margin-top: 6px;
+    padding: 7px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.76rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--line-strong);
+}
+.mk-again:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--line-strong); }
+.mk-again:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--line-strong); }
+
+.mk-wait { flex: 1; text-align: center; color: var(--ink-dim); font-size: 1.4rem; letter-spacing: 0.3em; }
+
+.mk-hint {
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    text-align: center;
+    letter-spacing: 0.01em;
+    word-break: keep-all;
+}
+
+@media (max-width: 480px) {
+    .mk-bubble, .mk-draft { font-size: 0.9rem; }
+    .mk-thread { min-height: 200px; }
+}

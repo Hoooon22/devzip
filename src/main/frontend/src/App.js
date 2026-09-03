@@ -113,6 +113,7 @@ import Overrun from './pages/experiments/Overrun';
 import ZeroClick from './pages/experiments/ZeroClick';
 import Tally from './pages/experiments/Tally';
 import Ruleset from './pages/experiments/Ruleset';
+import Malkkeut from './pages/experiments/Malkkeut';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -344,6 +345,7 @@ function App() {
         <Route path="/zero-click" element={<ZeroClick />} />
         <Route path="/tally" element={<Tally />} />
         <Route path="/ruleset" element={<Ruleset />} />
+        <Route path="/malkkeut" element={<Malkkeut />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
