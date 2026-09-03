@@ -1,0 +1,234 @@
+/* DENOMINATOR — 정의가 바꾸는 지표
+   공용 커널 셸(.lab-os)의 흑백 미니멀 팔레트·모노 폰트를 그대로 소비한다.
+   60-30-10: 중립 패널과 여백(주조 60) · 잉크와 하어라인·표·격자 점(보조 30) ·
+   "분자로 세어진 사람"에만 쓰는 잉크 블루(강조 10). 강조색은 이 하나뿐이다. */
+
+.lab-os {
+    --dn-accent: #1f4fd8;              /* 유일한 액센트 — 지금 분자로 세어진 사람 */
+    --dn-accent-soft: rgba(31, 79, 216, 0.1);
+}
+.lab-os[data-theme="dark"] {
+    --dn-accent: #6f9bff;
+    --dn-accent-soft: rgba(111, 155, 255, 0.14);
+}
+
+/* ---- 헤드라인 ---- */
+.dn-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 28px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--row-alt);
+}
+.dn-big, .dn-cmp { display: inline-flex; flex-direction: column; gap: 2px; }
+.dn-big-k, .dn-cmp-k { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--ink-mute); }
+.dn-big-v {
+    font-size: 2.7rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--dn-accent);
+    font-variant-numeric: tabular-nums;
+}
+.dn-big-v i { font-style: normal; font-size: 1.1rem; font-weight: 600; margin-left: 2px; }
+.dn-cmp-v {
+    font-size: 1.34rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+.dn-cmp-v i { font-style: normal; font-size: 0.8rem; font-weight: 500; color: var(--ink-mute); margin-left: 2px; }
+.dn-cmp-v.is-accent { color: var(--dn-accent); }
+.dn-big-s, .dn-cmp-s { font-size: 0.66rem; color: var(--ink-mute); }
+.dn-cmp-gap { padding-left: 24px; border-left: 1px dashed var(--frame); }
+
+/* ---- 인구 격자 ---- */
+.dn-grid {
+    display: block;
+    width: 100%;
+    height: 210px;
+    border-bottom: 1px solid var(--line);
+}
+.dn-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 9px 18px;
+    font-size: 0.66rem;
+    color: var(--ink-mute);
+    border-bottom: 1px solid var(--line);
+}
+.dn-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dn-legend .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dn-legend .sw.is-num { background: var(--dn-accent); }
+.dn-legend .sw.is-den { background: var(--ink); opacity: 0.34; }
+.dn-legend .sw.is-out { border: 1px solid var(--ink-mute); opacity: 0.5; }
+
+/* ---- 컨트롤 ---- */
+.dn-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+}
+.dn-ctl { display: inline-flex; flex-direction: column; gap: 7px; min-width: 260px; flex: 1 1 300px; }
+.dn-ctl-k { font-size: 0.68rem; letter-spacing: 0.06em; color: var(--ink-soft); }
+.dn-ctl-k b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.dn-ctl-s { font-size: 0.66rem; color: var(--ink-mute); line-height: 1.55; }
+.dn-ctl input[type="range"] { width: 100%; accent-color: var(--dn-accent); }
+.dn-seg { display: inline-flex; border: 1px solid var(--frame); width: fit-content; }
+.dn-seg-b {
+    font-family: var(--font-ui);
+    font-size: 0.74rem;
+    padding: 6px 12px;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: none;
+    cursor: pointer;
+}
+.dn-seg-b + .dn-seg-b { border-left: 1px solid var(--frame); }
+.dn-seg-b:hover { background: var(--hover); }
+.dn-seg-b.is-on { background: var(--dn-accent); color: #fff; font-weight: 600; }
+
+/* ---- 분자 팔레트 ---- */
+.dn-palette { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.dn-sec-k {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 9px;
+}
+.dn-adds {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 7px;
+}
+.dn-add {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 11px;
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    cursor: pointer;
+}
+.dn-add b { font-weight: 600; white-space: nowrap; }
+.dn-add-note { font-size: 0.64rem; color: var(--ink-mute); }
+.dn-add-n {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+}
+.dn-add:hover { border-color: var(--frame-strong); }
+.dn-add.is-on { border-color: var(--dn-accent); background: var(--dn-accent-soft); }
+.dn-add.is-on .dn-add-n { color: var(--dn-accent); font-weight: 700; }
+.dn-add.is-on .dn-add-note { display: none; }
+.dn-add.is-fixed { cursor: default; border-style: dashed; }
+.dn-add.is-fixed b { color: var(--ink-soft); }
+
+/* ---- 셈법 프리셋 ---- */
+.dn-presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+}
+.dn-presets .dn-sec-k { margin-bottom: 0; margin-right: 4px; }
+.dn-chip {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--frame);
+    cursor: pointer;
+}
+.dn-chip:hover { background: var(--hover); border-color: var(--frame-strong); }
+
+/* ---- 추이 ---- */
+.dn-chart-wrap { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.dn-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.dn-verdict { margin-left: auto; font-size: 0.7rem; color: var(--ink-mute); }
+.dn-verdict.is-split { color: var(--dn-accent); font-weight: 600; }
+.dn-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.dn-ax { stroke: var(--line); stroke-width: 1; }
+.dn-tick { fill: var(--ink-mute); font-size: 9px; font-family: var(--font-mono); }
+.dn-cursor { stroke: var(--frame); stroke-width: 1; stroke-dasharray: 3 3; }
+.dn-line { fill: none; stroke-width: 1.8; vector-effect: non-scaling-stroke; }
+.dn-line.is-narrow { stroke: var(--ink-mute); stroke-dasharray: 5 4; }
+.dn-line.is-current { stroke: var(--dn-accent); }
+.dn-dot.is-narrow { fill: var(--ink-mute); }
+.dn-dot.is-current { fill: var(--dn-accent); }
+.dn-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 0.66rem;
+    color: var(--ink-mute);
+}
+.dn-chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dn-chart-legend .ln { width: 16px; height: 0; border-top: 2px solid var(--ink-mute); display: inline-block; }
+.dn-chart-legend .ln.is-narrow { border-top-style: dashed; }
+.dn-chart-legend .ln.is-current { border-top-color: var(--dn-accent); }
+.dn-chart-note { margin-left: auto; }
+
+/* ---- 집단 표 ---- */
+.dn-table-wrap { overflow-x: auto; }
+.dn-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+.dn-table th,
+.dn-table td {
+    padding: 7px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+.dn-table th {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    font-weight: 500;
+    background: var(--row-alt);
+}
+.dn-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.dn-table .dn-note { color: var(--ink-mute); font-size: 0.7rem; }
+.dn-table tr.is-num td:first-child { font-weight: 600; }
+.dn-role { color: var(--ink-soft); }
+.dn-role.is-num { color: var(--dn-accent); font-weight: 600; }
+.dn-role.is-out { color: var(--ink-mute); }
+
+/* ---- 해설 ---- */
+.dn-foot-win { margin-top: 18px; }
+.dn-foot { padding: 18px; }
+.dn-foot p { margin: 0 0 12px; font-size: 0.82rem; line-height: 1.85; color: var(--ink-soft); }
+.dn-foot p:last-child { margin-bottom: 0; }
+.dn-foot b { color: var(--ink); font-weight: 600; }
+.dn-disclaimer { font-size: 0.7rem !important; color: var(--ink-mute) !important; }
+
+@media (max-width: 720px) {
+    .dn-head { gap: 18px; }
+    .dn-big-v { font-size: 2.2rem; }
+    .dn-cmp-gap { padding-left: 0; border-left: none; }
+    .dn-grid { height: 170px; }
+    .dn-controls { gap: 18px; }
+    .dn-ctl { min-width: 100%; }
+    .dn-chart-note { margin-left: 0; }
+    .dn-verdict { margin-left: 0; }
+}

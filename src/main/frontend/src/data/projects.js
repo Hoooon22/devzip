@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 101,
+        name: 'Denominator',
+        subtitle: '정의가 바꾸는 지표 (분자와 분모)',
+        description: '같은 인구를 놓고 분자와 분모만 고쳐 써 보는 지표 정의 실험',
+        link: '/denominator',
+        active: true,
+        startDate: '2026-09-03',
+        endDate: '',
+        category: '실험/통계',
+        isProduction: false, // 실험용
+        thumbnail: '📐'
+    },
+    {
         id: 100,
         name: '말끝',
         description: '답장 말풍선을 끄는 방향이 말투가 되어, 대화가 갈라지는 분기 서사',
