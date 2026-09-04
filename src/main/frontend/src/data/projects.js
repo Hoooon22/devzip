@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 102,
+        name: 'Matchstick',
+        subtitle: '심지뽑기 (짧은 성냥)',
+        description: '키보드로 성냥을 뽑아 짧은 심지를 뽑은 사람을 가리는 공정한 뽑기',
+        link: '/matchstick',
+        active: true,
+        startDate: '2026-09-04',
+        endDate: '',
+        category: '실험/규칙',
+        isProduction: false, // 실험용
+        thumbnail: '🔥'
+    },
+    {
         id: 101,
         name: 'Denominator',
         subtitle: '정의가 바꾸는 지표 (분자와 분모)',

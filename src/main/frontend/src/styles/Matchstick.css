@@ -1,0 +1,266 @@
+/* MATCHSTICK — 심지뽑기. 성냥통 톤(어두운 마찰면 60 · 나무 성냥 30 · 발화 앰버 10).
+   무대는 라이트/다크 상관없이 어두운 성냥통으로 고정(성냥갑 자체가 어둡다). */
+
+.mx-wrap {
+    --mx-box: #1b1712;        /* 성냥갑 마찰면 — 주조 60 */
+    --mx-box-2: #241d15;      /* 서랍 앞판 */
+    --mx-wood: #cda05f;       /* 성냥 몸통 나무 — 보조 30 */
+    --mx-wood-d: #a97f45;
+    --mx-head: #7a2e22;       /* 인화점(평상시 오배혈색) */
+    --mx-ember: #f4531b;      /* 발화 앰버 — 강조 10 */
+    --mx-ember-2: #ffb24a;    /* 불꽃 심 */
+    --mx-ash: #3a3129;        /* 탄 몸통 */
+    --mx-dim: #6b5c49;        /* 대기 중 점 */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 16px 30px;
+    background: var(--panel);
+    border: 1px solid var(--frame);
+}
+
+.mx-cap {
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+
+/* ---- 인원 점 ---- */
+.mx-people {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    min-height: 26px;
+}
+.mx-dot {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid var(--mx-dim);
+    transition: background .25s, border-color .25s, transform .25s;
+}
+.mx-dot.safe {
+    background: var(--mx-wood-d);
+    border-color: var(--mx-wood-d);
+}
+.mx-dot.active {
+    border-color: var(--mx-ember);
+    box-shadow: 0 0 0 4px rgba(244, 83, 27, 0.16);
+    animation: mx-pulse 1.1s ease-in-out infinite;
+}
+.mx-dot.burned {
+    background: var(--mx-ember);
+    border-color: var(--mx-ember);
+    box-shadow: 0 0 14px 2px rgba(244, 83, 27, 0.6);
+    transform: scale(1.15);
+}
+.mx-dot-spark {
+    position: absolute;
+    left: 50%;
+    top: -12px;
+    width: 8px;
+    height: 12px;
+    margin-left: -4px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(ellipse at 50% 70%, var(--mx-ember-2), var(--mx-ember) 60%, transparent 72%);
+    opacity: 0;
+    transform: scale(0.4);
+}
+.mx-dot.burned .mx-dot-spark {
+    opacity: 1;
+    animation: mx-flicker .18s ease-in-out infinite alternate;
+}
+@keyframes mx-pulse {
+    50% { box-shadow: 0 0 0 7px rgba(244, 83, 27, 0.05); }
+}
+
+/* ---- 무대 ---- */
+.mx-stage {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 360px;
+    background:
+        radial-gradient(120% 80% at 50% 108%, #2a2119 0%, var(--mx-box) 60%, #14110c 100%);
+    border: 1px solid #0d0b08;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* 성냥 한 개비 — 통 안에 top:170 로 꽂혀 머리만 나온다.
+   .pulled 로 몸통 길이(--len)만큼 솟아올라 바닥이 서랍턱에 걸리며 길이가 드러난다. */
+.mx-stick {
+    position: absolute;
+    top: 170px;
+    width: 16px;
+    margin-left: -8px;                 /* left(%) 기준 중앙 정렬 */
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(0);
+    transition: transform .55s cubic-bezier(.18, .72, .18, 1), left .28s ease;
+    z-index: 2;
+}
+.mx-stick.pulled { transform: translateY(calc(-1 * var(--len))); z-index: 4; }
+.mx-stick.hot { z-index: 3; }
+
+.mx-head {
+    width: 15px;
+    height: 17px;
+    border-radius: 7px 7px 6px 6px;
+    background: radial-gradient(ellipse at 50% 32%, #9a3b2a, var(--mx-head) 65%, #571d15);
+    box-shadow: inset 0 -3px 3px rgba(0, 0, 0, 0.35);
+    flex: 0 0 auto;
+}
+.mx-body {
+    width: 8px;
+    height: var(--len);
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--mx-wood-d), var(--mx-wood) 45%, #e6c48c 55%, var(--mx-wood-d));
+    box-shadow: inset -1px 0 1px rgba(0, 0, 0, 0.25);
+    flex: 0 0 auto;
+}
+
+/* 고르개가 겨눈 성냥 — 머리가 살짝 달아오른다 */
+.mx-stick.hot .mx-head {
+    background: radial-gradient(ellipse at 50% 30%, #c85536, #93382a 65%, #5f231a);
+    box-shadow: 0 0 10px 1px rgba(244, 83, 27, 0.45), inset 0 -3px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 걸린 성냥 — 몸통이 짧고 타들어가며 머리에 불이 붙는다 */
+.mx-stick.burned .mx-head {
+    background: radial-gradient(ellipse at 50% 40%, #ffd27a, var(--mx-ember) 55%, #b3300c);
+    box-shadow: 0 0 22px 6px rgba(244, 83, 27, 0.75);
+}
+.mx-stick.burned .mx-body {
+    background: linear-gradient(180deg, var(--mx-ash), #4a3f34 40%, var(--mx-wood-d));
+}
+
+/* 불꽃 — 걸린 성냥 뽑힐 때만 켜진다 */
+.mx-flame {
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    width: 22px;
+    height: 30px;
+    margin-left: -11px;
+    border-radius: 50% 50% 50% 50% / 62% 62% 40% 40%;
+    background: radial-gradient(ellipse at 50% 74%, var(--mx-ember-2) 0%, var(--mx-ember) 46%, rgba(244, 83, 27, 0.25) 72%, transparent 80%);
+    opacity: 0;
+    transform: scale(0.3);
+    transform-origin: 50% 100%;
+    pointer-events: none;
+}
+.mx-flame-core {
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 8px;
+    height: 14px;
+    margin-left: -4px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 42% 42%;
+    background: radial-gradient(ellipse at 50% 80%, #fff2c4, var(--mx-ember-2) 70%, transparent 82%);
+}
+.mx-stick.burned .mx-flame {
+    opacity: 1;
+    transition: opacity .2s .35s;
+    animation: mx-flicker .16s ease-in-out infinite alternate;
+}
+@keyframes mx-flicker {
+    from { transform: scale(0.86) translateX(-0.5px) rotate(-2deg); opacity: 0.82; }
+    to   { transform: scale(1.06) translateX(0.5px) rotate(2deg); opacity: 1; }
+}
+
+/* 서랍 앞판 — 꽂힌 몸통(top 170 아래)을 가려 길이를 숨긴다 */
+.mx-drawer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 192px;
+    bottom: 0;
+    background:
+        linear-gradient(180deg, var(--mx-box-2), #17120c);
+    border-top: 2px solid #0c0a07;
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.45);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mx-strike {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10px;
+    height: 20px;
+    background:
+        repeating-linear-gradient(90deg, #4a3d2f 0 3px, #2f271d 3px 6px);
+    opacity: 0.55;
+}
+.mx-label {
+    color: var(--mx-wood-d);
+    font-size: 22px;
+    opacity: 0.5;
+    transform: translateY(10px);
+    letter-spacing: 0.3em;
+}
+
+/* 고르개 불씨 — 서랍턱 위, 겨눈 성냥 아래 */
+.mx-cursor {
+    position: absolute;
+    top: 176px;
+    width: 0;
+    height: 0;
+    margin-left: -7px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 11px solid var(--mx-ember);
+    filter: drop-shadow(0 0 6px rgba(244, 83, 27, 0.8));
+    z-index: 5;
+    transition: left .18s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* 판정 낱말 */
+.mx-verdict {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+    text-align: center;
+    z-index: 6;
+    font-family: var(--font-ui);
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--mx-ember-2);
+    text-shadow: 0 0 18px rgba(244, 83, 27, 0.7);
+    animation: mx-rise .4s ease-out both;
+}
+@keyframes mx-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.mx-hint {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-mute);
+    text-align: center;
+}
+
+@media (max-width: 560px) {
+    .mx-stage { height: 320px; }
+    .mx-stick { top: 150px; }
+    .mx-drawer { top: 172px; }
+    .mx-cursor { top: 156px; }
+}
