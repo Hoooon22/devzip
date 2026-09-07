@@ -1,0 +1,262 @@
+/* MIXTAPE — 카세트로 나오는 청취 성향.
+   톤: 90년대 워크맨 카세트 — 페트롤 플라스틱 셸(주조 60) · 크림 라벨/은색 트림(보조 30) · 오렌지 REC(강조 10).
+   카세트 자체가 진한 플라스틱이라 라이트/다크 무관하게 고정. */
+
+.mtx-wrap {
+    --mtx-teal: #123f3d;      /* 셸 플라스틱 — 주조 60 */
+    --mtx-teal-2: #0d302f;    /* 셸 안쪽 그늘 */
+    --mtx-teal-lo: #0a2726;   /* 릴 창 */
+    --mtx-cream: #efe6cf;     /* 라벨 종이 — 보조 30 */
+    --mtx-cream-2: #e2d6b6;
+    --mtx-silver: #9fb0ad;    /* 은색 트림 */
+    --mtx-tape: #2a201a;      /* 자기 테이프 갈색 */
+    --mtx-ink: #23302f;       /* 라벨 위 글씨 */
+    --mtx-orange: #ff6a2b;    /* REC/활성 — 강조 10 */
+    --mtx-orange-2: #ff8a45;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 26px 16px 34px;
+    background: var(--panel);
+    border: 1px solid var(--frame);
+}
+
+/* ---------- 카세트 (SVG + 라벨 오버레이) ---------- */
+.mtx-deck {
+    position: relative;
+    width: min(420px, 92%);
+    filter: drop-shadow(0 14px 26px rgba(9, 24, 23, 0.28));
+}
+.mtx-svg { display: block; width: 100%; height: auto; }
+
+.mtx-shell { fill: var(--mtx-teal); stroke: #061a19; stroke-width: 2; }
+.mtx-shell-in { fill: none; stroke: rgba(255, 255, 255, 0.06); stroke-width: 2; }
+.mtx-labelplate { fill: var(--mtx-cream); stroke: var(--mtx-cream-2); stroke-width: 2; }
+
+.mtx-window { fill: var(--mtx-teal-lo); stroke: #061a19; stroke-width: 2; }
+.mtx-ring {
+    fill: none;
+    stroke: var(--mtx-tape);
+    transition: stroke-width .7s cubic-bezier(.4, 0, .2, 1);
+}
+.mtx-hub { fill: #cdd6d3; stroke: #7d8b88; stroke-width: 1.5; }
+.mtx-spoke { fill: var(--mtx-teal-lo); }
+.mtx-hole { fill: var(--mtx-teal-lo); }
+
+.mtx-reel {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mtx-spin var(--rev, 2.7s) linear infinite;
+}
+.mtx-wrap.ph-intro .mtx-reel { animation-play-state: paused; }
+.mtx-wrap.is-wind .mtx-reel { --rev: 0.5s; }
+@keyframes mtx-spin { to { transform: rotate(360deg); } }
+
+.mtx-tape { fill: none; stroke: var(--mtx-tape); stroke-width: 4; }
+.mtx-guard { fill: var(--mtx-teal-2); stroke: #061a19; stroke-width: 1.5; }
+.mtx-capstan { fill: #cdd6d3; stroke: #6f7d7a; stroke-width: 1.5; }
+.mtx-screw { fill: #0a2726; stroke: rgba(255, 255, 255, 0.12); stroke-width: 1; }
+
+/* 라벨 오버레이 — SVG labelplate 위에 얹는 크림 라벨 */
+.mtx-label {
+    position: absolute;
+    top: 11.3%;
+    left: 11.1%;
+    width: 77.8%;
+    height: 30.4%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6%;
+    box-sizing: border-box;
+}
+.mtx-label-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+.mtx-brand {
+    font-weight: 800;
+    font-size: clamp(15px, 4.4vw, 20px);
+    letter-spacing: 0.14em;
+    color: var(--mtx-ink);
+}
+.mtx-side {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: #fff;
+    background: var(--mtx-orange);
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+.mtx-pips { display: flex; gap: 5px; margin-left: auto; }
+.mtx-pip {
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid #a79a76;
+    border-radius: 2px;
+    background: transparent;
+    transition: background .3s, border-color .3s;
+}
+.mtx-pip.on { background: var(--mtx-orange); border-color: var(--mtx-orange); }
+
+.mtx-label-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    animation: mtx-ink .5s ease both;
+}
+.mtx-hand {
+    font-family: 'Gaegu', 'Nanum Pen Script', 'Comic Sans MS', cursive;
+    font-size: clamp(20px, 6.2vw, 30px);
+    font-weight: 700;
+    color: #1c2a29;
+    line-height: 1;
+    text-align: center;
+}
+.mtx-tag {
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    color: var(--mtx-orange);
+}
+@keyframes mtx-ink { from { opacity: 0; transform: translateY(4px) rotate(-1.2deg); } to { opacity: 1; transform: none; } }
+
+/* ---------- 조작·판독 패널 ---------- */
+.mtx-panel {
+    width: min(520px, 96%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.mtx-lede {
+    margin: 0;
+    text-align: center;
+    font-size: clamp(15px, 2.4vw, 18px);
+    line-height: 1.6;
+    color: var(--ink);
+}
+.mtx-q {
+    margin: 2px 0 0;
+    text-align: center;
+    font-size: clamp(17px, 3vw, 22px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    animation: mtx-q .35s ease both;
+}
+@keyframes mtx-q { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* 트랜스포트 키 3개 = 답 3개 */
+.mtx-keys {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+.mtx-key {
+    flex: 1 1 0;
+    max-width: 172px;
+    min-height: 116px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 14px 10px;
+    background: linear-gradient(#1a4b49, #123f3d);
+    color: var(--mtx-cream);
+    border: 1px solid #061a19;
+    border-bottom-width: 4px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: transform .1s, border-bottom-width .1s, box-shadow .2s, background .2s;
+}
+.mtx-key:hover { box-shadow: 0 0 0 2px rgba(255, 106, 43, 0.4) inset; }
+.mtx-key:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    background: linear-gradient(#164543, #0f3634);
+}
+.mtx-key-g {
+    font-size: 20px;
+    color: var(--mtx-orange-2);
+    letter-spacing: 0.04em;
+}
+.mtx-key-t {
+    font-size: clamp(12px, 2.1vw, 14px);
+    line-height: 1.4;
+    font-weight: 600;
+}
+.mtx-key-n {
+    font-size: 10px;
+    color: var(--mtx-silver);
+    border: 1px solid rgba(159, 176, 173, 0.5);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 재생 / 되감기 버튼 (단일) */
+.mtx-play {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 30px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--mtx-orange);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #c34f1c;
+    transition: transform .1s, box-shadow .1s;
+}
+.mtx-play:active { transform: translateY(4px); box-shadow: 0 2px 0 #c34f1c; }
+.mtx-play .g { font-size: 13px; }
+.mtx-rewind { background: #2b3a39; box-shadow: 0 6px 0 #101c1b; }
+.mtx-rewind:active { box-shadow: 0 2px 0 #101c1b; }
+
+.mtx-hint { margin: 0; font-size: 11px; letter-spacing: 0.06em; color: var(--ink-mute); }
+
+/* 결과 판독 */
+.mtx-r-line {
+    margin: 0;
+    text-align: center;
+    font-size: clamp(15px, 2.5vw, 18px);
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 30ch;
+}
+.mtx-r-b {
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-mute);
+    max-width: 34ch;
+}
+.mtx-bside {
+    color: var(--mtx-orange);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(255, 106, 43, 0.5);
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-right: 4px;
+}
+
+@media (max-width: 420px) {
+    .mtx-key { min-height: 104px; gap: 7px; }
+    .mtx-key-g { font-size: 17px; }
+}

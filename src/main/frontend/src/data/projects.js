@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 103,
+        name: 'Mixtape',
+        subtitle: '카세트로 나오는 청취 성향',
+        description: '워크맨 키 3개로 여섯 질문에 답하면 당신을 한 편의 카세트로 감아내는 성향 테스트',
+        link: '/mixtape',
+        active: true,
+        startDate: '2026-09-07',
+        endDate: '',
+        category: '실험/성향',
+        isProduction: false, // 실험용
+        thumbnail: '📼'
+    },
+    {
         id: 102,
         name: 'Matchstick',
         subtitle: '심지뽑기 (짧은 성냥)',
