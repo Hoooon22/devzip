@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 104,
+        name: 'Fovea',
+        subtitle: '중심시로만 읽는 눈 (중심와)',
+        description: '시선이 닿는 한 점만 글자로 맺히고 나머지는 형태로만 남는 타이포 아트 토이',
+        link: '/fovea',
+        active: true,
+        startDate: '2026-09-08',
+        endDate: '',
+        category: '실험/몸',
+        isProduction: false, // 실험용
+        thumbnail: '👁'
+    },
+    {
         id: 103,
         name: 'Mixtape',
         subtitle: '카세트로 나오는 청취 성향',

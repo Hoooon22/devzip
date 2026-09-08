@@ -1,0 +1,157 @@
+/* FOVEA — 시선이 닿는 곳만 글자가 된다 (중심와/주변시).
+   톤: 신문 조판/활판 — 갱지 크림(주조 60) · 먹 잉크(보조 30) · 교정 붉은펜(강조 10).
+   인쇄지라 라이트/다크 무관하게 종이 톤 고정(펼쳐 든 지면 느낌). */
+
+.fx-wrap {
+    --pa: #ece3d0;      /* 갱지 — 주조 60 */
+    --pa-2: #e3d8bf;    /* 지면 결 */
+    --ink: #211e17;     /* 먹 — 보조 30 */
+    --ink-2: #4a4437;
+    --ink-mid: #7d7566;
+    --ink-soft: #a49b88;
+    --red: #bf3620;     /* 교정 붉은펜 — 강조 10 */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 16px 30px;
+    background: var(--panel);
+    border: 1px solid var(--frame);
+}
+
+/* ---------- 무대(지면) ---------- */
+.fx-stage {
+    position: relative;
+    width: min(940px, 96%);
+    height: min(62vh, 560px);
+    overflow: hidden;
+    cursor: crosshair;
+    background:
+        radial-gradient(120% 120% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 60%),
+        repeating-linear-gradient(90deg, var(--pa) 0 2px, var(--pa-2) 2px 4px),
+        var(--pa);
+    border: 1px solid #b9ac8e;
+    box-shadow:
+        inset 0 0 0 6px rgba(255, 255, 255, 0.18),
+        inset 0 0 40px rgba(120, 104, 70, 0.16),
+        0 10px 28px rgba(60, 50, 25, 0.22);
+    touch-action: none;
+}
+
+.fx-grid {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+/* ---------- 한 칸 ---------- */
+.fx-cell {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+}
+
+.fx-ch {
+    font-family: 'Nanum Myeongjo', 'Batang', 'Noto Serif KR', serif;
+    font-size: 19px;
+    line-height: 1;
+    color: var(--ink-soft);
+    opacity: 0;
+    user-select: none;
+    transition: opacity 0.16s ease, color 0.16s ease;
+}
+
+.fx-blob {
+    position: absolute;
+    background: var(--ink-soft);
+    opacity: 0.5;
+    transition: opacity 0.16s ease;
+}
+.fx-s0 .fx-blob { width: 42%; height: 42%; border-radius: 50%; }         /* 원 */
+.fx-s1 .fx-blob { width: 40%; height: 40%; border-radius: 2px; }         /* 네모 */
+.fx-s2 .fx-blob { width: 58%; height: 15%; border-radius: 2px; }         /* 막대 */
+
+.fx-space .fx-blob,
+.fx-space .fx-ch { opacity: 0 !important; }   /* 공백 칸 = 글자 사이 여백 */
+
+/* 선명도 단계 — 멀수록 도형만, 가까울수록 글자로 맺힌다(crossfade). */
+.fx-l0 .fx-ch { opacity: 0; }
+.fx-l0 .fx-blob { opacity: 0.5; }
+
+.fx-l1 .fx-ch { opacity: 0; }
+.fx-l1 .fx-blob { opacity: 0.48; }
+
+.fx-l2 .fx-ch { opacity: 0.12; color: var(--ink-soft); }
+.fx-l2 .fx-blob { opacity: 0.4; }
+
+.fx-l3 .fx-ch { opacity: 0.32; color: var(--ink-mid); }
+.fx-l3 .fx-blob { opacity: 0.28; }
+
+.fx-l4 .fx-ch { opacity: 0.58; color: var(--ink-2); }
+.fx-l4 .fx-blob { opacity: 0.15; }
+
+.fx-l5 .fx-ch { opacity: 0.84; color: var(--ink); }
+.fx-l5 .fx-blob { opacity: 0.05; }
+
+.fx-l6 .fx-ch { opacity: 1; color: var(--ink); font-weight: 600; }
+.fx-l6 .fx-blob { opacity: 0; }
+
+/* ---------- 시선 표식(교정 붉은펜) ---------- */
+.fx-reticle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    will-change: transform;
+}
+.fx-ring {
+    position: absolute;
+    width: 58px;
+    height: 58px;
+    margin: -29px 0 0 -29px;
+    border: 1.5px solid var(--red);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(191, 54, 32, 0.18);
+}
+.fx-cross {
+    position: absolute;
+    background: var(--red);
+}
+.fx-cross-h { width: 16px; height: 1.5px; margin: -0.75px 0 0 -8px; }
+.fx-cross-v { width: 1.5px; height: 16px; margin: -8px 0 0 -0.75px; }
+
+/* ---------- 힌트 ---------- */
+.fx-hint {
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    font-size: 12px;
+    color: var(--red);
+    background: rgba(236, 227, 208, 0.7);
+    padding: 3px 8px;
+    border-radius: 2px;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+.fx-stage.is-moved .fx-hint { opacity: 0; }
+
+.fx-note {
+    max-width: 640px;
+    margin: 0;
+    text-align: center;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--muted, #6b6b6b);
+}
+
+@media (max-width: 560px) {
+    /* 칸 크기는 JS의 CELL(34px)과 반드시 일치해야 하므로 여기서 바꾸지 않는다. */
+    .fx-stage { height: 66vh; }
+}

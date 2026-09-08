@@ -117,6 +117,7 @@ import Malkkeut from './pages/experiments/Malkkeut';
 import Denominator from './pages/experiments/Denominator';
 import Matchstick from './pages/experiments/Matchstick';
 import Mixtape from './pages/experiments/Mixtape';
+import Fovea from './pages/experiments/Fovea';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -352,6 +353,7 @@ function App() {
         <Route path="/denominator" element={<Denominator />} />
         <Route path="/matchstick" element={<Matchstick />} />
         <Route path="/mixtape" element={<Mixtape />} />
+        <Route path="/fovea" element={<Fovea />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
