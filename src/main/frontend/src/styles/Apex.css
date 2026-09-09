@@ -1,0 +1,197 @@
+/* APEX — 등고선 읽고 정상 찾기 대결.
+   톤: 청사진(blueprint) — 청색 지면에 밝은 시안 등고선. 라이트=중간 청, 다크=심야 네이비.
+       나(깃발/십자선)만 앰버, 컴퓨터·정상·선은 청/백 계열로 두어 "앰버의 나 vs 청색 시스템".
+   색 배분 60-30-10: 청사진 청색(주조) · 시안 등고선+글자(보조) · 앰버(강조=나). */
+
+.apex-wrap {
+    --paper: #0f4c81;
+    --ink: #eaf3ff;
+    --ink-soft: rgba(234, 243, 255, 0.66);
+    --line: rgba(234, 243, 255, 0.18);
+    --accent: #f5a623;           /* 앰버 = 나 */
+    --cpu: #cfe1fb;              /* 컴퓨터 = 옅은 청 */
+    --frame: #0a325a;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .apex-wrap {
+    --paper: #081627;
+    --ink: #dbe9fb;
+    --ink-soft: rgba(219, 233, 251, 0.6);
+    --line: rgba(219, 233, 251, 0.16);
+    --accent: #ffb43d;
+    --cpu: #8fbdec;
+    --frame: #1b3a5c;
+}
+
+/* ── HUD: seed + 전적 ─────────────────────── */
+.apex-hud {
+    width: min(94vw, 680px);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+}
+.apex-seed { color: var(--ink-soft); }
+.apex-tally .you { color: var(--accent); font-weight: 700; }
+.apex-tally .cpu { color: var(--cpu); font-weight: 700; }
+.apex-tally .mid { color: var(--ink-soft); }
+
+/* ── 무대: 캔버스 ─────────────────────────── */
+.apex-stage {
+    position: relative;
+    width: min(94vw, 680px);
+    aspect-ratio: 680 / 440;
+    border: 3px solid var(--frame);
+    box-shadow: 6px 6px 0 var(--line);
+    background: var(--paper);
+    overflow: hidden;
+}
+.apex-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* 겨냥 단계 힌트 — 상단 옅은 띠(지도 가리지 않게) */
+.apex-hint {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--paper) 68%, transparent);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    backdrop-filter: blur(1px);
+    pointer-events: none;
+}
+.apex-hint b { color: var(--accent); }
+
+/* ── 판정 ──────────────────────────────────── */
+.apex-verdict {
+    width: min(94vw, 680px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 16px 16px;
+    border: 2px solid var(--frame);
+    box-shadow: 4px 4px 0 var(--line);
+    background: color-mix(in srgb, var(--paper) 86%, #000 6%);
+    animation: apex-fade 0.22s ease both;
+}
+@keyframes apex-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.apex-vtag {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+.apex-vhead {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+.apex-win .apex-vhead { color: var(--accent); }
+.apex-loss .apex-vhead { color: var(--cpu); }
+
+.apex-bars {
+    width: min(88%, 420px);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 4px;
+}
+.apex-bar { display: flex; align-items: center; gap: 10px; }
+.apex-bar .lbl {
+    flex: 0 0 46px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-align: right;
+}
+.apex-bar .lbl.you { color: var(--accent); }
+.apex-bar .lbl.cpu { color: var(--cpu); }
+.apex-bar .track {
+    flex: 1;
+    height: 10px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.apex-bar .fill {
+    display: block;
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.apex-bar .fill.you { background: var(--accent); }
+.apex-bar .fill.cpu { background: var(--cpu); }
+
+.apex-vsub {
+    margin: 2px 0 0;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+}
+.apex-btn {
+    margin-top: 10px;
+    padding: 9px 20px;
+    border: 2.5px solid var(--frame);
+    background: var(--accent);
+    color: #10233a;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--frame);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.apex-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--frame); }
+.apex-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--frame); }
+
+/* ── 조작 안내 ─────────────────────────────── */
+.apex-legend {
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── 본문 ──────────────────────────────────── */
+.apex-read {
+    max-width: 640px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 2px solid var(--line);
+    line-height: 1.72;
+    font-size: 0.95rem;
+    color: var(--ink);
+}
+.apex-read h3 { margin: 0 0 12px; font-size: 1.06rem; font-weight: 700; }
+.apex-read p { margin: 0 0 13px; }
+.apex-read b { color: var(--accent); font-weight: 700; }
+.apex-disc { font-size: 0.82rem; color: var(--ink-soft); }
+.apex-disc b { color: inherit; }
+
+@media (max-width: 520px) {
+    .apex-vhead { font-size: 1.4rem; }
+    .apex-legend { font-size: 0.66rem; }
+    .apex-read { font-size: 0.9rem; }
+}

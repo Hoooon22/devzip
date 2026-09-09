@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 105,
+        name: 'Apex',
+        subtitle: '등고선 읽고 정상 찾기 (봉우리 대결)',
+        description: '등고선만 보고 진짜 정상을 컴퓨터보다 정확히 찍는 눈대중 대결',
+        link: '/apex',
+        active: true,
+        startDate: '2026-09-09',
+        endDate: '',
+        category: '실험/공간',
+        isProduction: false, // 실험용
+        thumbnail: '🗻'
+    },
+    {
         id: 104,
         name: 'Fovea',
         subtitle: '중심시로만 읽는 눈 (중심와)',
