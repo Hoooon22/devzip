@@ -119,6 +119,7 @@ import Matchstick from './pages/experiments/Matchstick';
 import Mixtape from './pages/experiments/Mixtape';
 import Fovea from './pages/experiments/Fovea';
 import Apex from './pages/experiments/Apex';
+import Grain from './pages/experiments/Grain';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -356,6 +357,7 @@ function App() {
         <Route path="/mixtape" element={<Mixtape />} />
         <Route path="/fovea" element={<Fovea />} />
         <Route path="/apex" element={<Apex />} />
+        <Route path="/grain" element={<Grain />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

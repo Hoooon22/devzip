@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 106,
+        name: 'Grain',
+        subtitle: '쌀알로 재는 큰 수',
+        description: '쌀 한 톨부터 1조 톨까지, 다이얼을 굴려 낟알 더미 부피로 재보는 큰 수',
+        link: '/grain',
+        active: true,
+        startDate: '2026-09-14',
+        endDate: '',
+        category: '실험/숫자',
+        isProduction: false, // 실험용
+        thumbnail: '🌾'
+    },
+    {
         id: 105,
         name: 'Apex',
         subtitle: '등고선 읽고 정상 찾기 (봉우리 대결)',
