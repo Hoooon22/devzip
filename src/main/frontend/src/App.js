@@ -120,6 +120,7 @@ import Mixtape from './pages/experiments/Mixtape';
 import Fovea from './pages/experiments/Fovea';
 import Apex from './pages/experiments/Apex';
 import Grain from './pages/experiments/Grain';
+import Songpyeon from './pages/experiments/Songpyeon';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -358,6 +359,7 @@ function App() {
         <Route path="/fovea" element={<Fovea />} />
         <Route path="/apex" element={<Apex />} />
         <Route path="/grain" element={<Grain />} />
+        <Route path="/songpyeon" element={<Songpyeon />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />

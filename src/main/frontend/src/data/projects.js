@@ -1,5 +1,17 @@
 const projects = [
     {
+        id: 107,
+        name: '송편',
+        description: '소를 넣고 오므리는 손끝 감각만으로 반달을 빚는 추석 미니게임',
+        link: '/songpyeon',
+        active: true,
+        startDate: '2026-09-21',
+        endDate: '',
+        category: '실험/문화',
+        isProduction: false, // 실험용
+        thumbnail: '🥮'
+    },
+    {
         id: 106,
         name: 'Grain',
         subtitle: '쌀알로 재는 큰 수',
