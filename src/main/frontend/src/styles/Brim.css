@@ -1,0 +1,185 @@
+/* BRIM — 물폭탄 돌리기.
+   톤: 수영장 타일/워터파크 — 짙은 타일 지면에 형광 청록 물, 넘치기 직전만 코럴 경고.
+   색 배분 60-30-10: 타일 지면(주조) · 유리+청록 물(보조) · 코럴 경고/물튐(강조). */
+
+.brim-wrap {
+    --tile: #0c1f26;
+    --tile-hi: #123a44;
+    --glass: #bfeaf0;
+    --water: #17c7dd;
+    --water-lo: #0b6a7e;
+    --warn: #ff6a4d;
+    --ink: #e7f7fb;
+    --dim: rgba(191, 234, 240, 0.24);
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+}
+
+/* 라이트 테마 — 밝은 세라믹 타일/도자 물잔 */
+[data-theme='light'] .brim-wrap {
+    --tile: #d6e9ea;
+    --tile-hi: #eef8f9;
+    --glass: #0d5763;
+    --water: #12a5bd;
+    --water-lo: #0a5f70;
+    --warn: #e6482c;
+    --ink: #0d2b31;
+    --dim: rgba(13, 43, 49, 0.22);
+}
+
+.brim-cap {
+    font-size: 0.82rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--water);
+    transition: color 0.2s;
+}
+
+.is-wet .brim-cap { color: var(--warn); }
+
+/* ── 무대 ─────────────────────────────── */
+.brim-stage {
+    position: relative;
+    width: min(94vw, 640px);
+    aspect-ratio: 1 / 1;
+    max-height: 66vh;
+    border: 3px solid var(--tile-hi);
+    border-radius: 14px;
+    background:
+        radial-gradient(120% 120% at 50% 30%, var(--tile-hi) 0%, var(--tile) 60%),
+        var(--tile);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28), inset 0 0 0 1px var(--dim);
+    overflow: hidden;
+    /* 물 타일 격자 무늬 */
+    background-image:
+        radial-gradient(120% 120% at 50% 30%, var(--tile-hi) 0%, var(--tile) 60%),
+        repeating-linear-gradient(0deg, transparent 0 46px, var(--dim) 46px 47px),
+        repeating-linear-gradient(90deg, transparent 0 46px, var(--dim) 46px 47px);
+    transition: box-shadow 0.18s, border-color 0.18s;
+}
+
+.is-wet .brim-stage {
+    border-color: var(--warn);
+    box-shadow: 0 0 0 3px var(--warn), 0 10px 34px rgba(0, 0, 0, 0.28);
+    animation: brim-jolt 0.32s ease;
+}
+
+@keyframes brim-jolt {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-4px, 2px); }
+    50% { transform: translate(3px, -3px); }
+    75% { transform: translate(-2px, 3px); }
+}
+
+.brim-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: manipulation;
+}
+
+/* 진행 중 무대 전체가 "넘기기" 버튼 */
+.brim-tap {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ── 셋업 컨트롤 ─────────────────────── */
+.brim-ctrl {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* aria-hidden 이지만 클릭은 살린다 */
+    pointer-events: auto;
+}
+
+.brim-step {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid var(--glass);
+    background: color-mix(in srgb, var(--tile-hi) 82%, transparent);
+    color: var(--glass);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.12s, background 0.12s;
+}
+
+.brim-step:hover { background: var(--water-lo); transform: translateY(-2px); }
+.brim-step:active { transform: scale(0.94); }
+
+.brim-go {
+    min-width: 88px;
+    height: 46px;
+    padding: 0 20px;
+    border-radius: 24px;
+    border: 2px solid var(--water);
+    background: var(--water);
+    color: var(--tile);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+    box-shadow: 0 6px 0 var(--water-lo);
+}
+
+.brim-go:hover { transform: translateY(-2px); }
+.brim-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--water-lo); }
+
+/* ── 판정 오버레이 ───────────────────── */
+.brim-verdict {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    background: radial-gradient(60% 60% at 50% 45%, transparent, color-mix(in srgb, var(--tile) 68%, transparent));
+    animation: brim-fade 0.4s ease;
+}
+
+.brim-verdict .w {
+    font-size: clamp(1.8rem, 7vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    color: var(--water);
+    text-shadow: 0 0 24px color-mix(in srgb, var(--water) 60%, transparent);
+}
+
+@keyframes brim-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.brim-hint {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink);
+    opacity: 0.66;
+    text-align: center;
+}
+
+@media (max-width: 560px) {
+    .brim-stage { aspect-ratio: 3 / 4; }
+    .brim-step { width: 52px; height: 52px; }
+    .brim-go { height: 52px; }
+}

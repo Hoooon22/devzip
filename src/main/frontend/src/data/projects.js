@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 108,
+        name: 'Brim',
+        subtitle: '물폭탄 돌리기',
+        description: '차오르는 물잔을 넘치기 전에 옆으로 넘기는 실시간 폭탄 돌리기',
+        link: '/brim',
+        active: true,
+        startDate: '2026-09-29',
+        endDate: '',
+        category: '실험/규칙',
+        isProduction: false, // 실험용
+        thumbnail: '💧'
+    },
+    {
         id: 107,
         name: '송편',
         description: '소를 넣고 오므리는 손끝 감각만으로 반달을 빚는 추석 미니게임',
