@@ -1,0 +1,278 @@
+/* WAFT — 연기를 저어 빚는 향.
+   톤: 향방(香房)/묵향 — 짙은 먹흑 옻칠 지면에 피어오르는 회백 연기, 불씨와 향 카드만 앰버.
+   색 배분 60-30-10: 먹흑 지면(주조) · 회백 연기(보조) · 불씨/향 카드 앰버(강조). */
+
+.waft-wrap {
+    --ground: #0d0c0f;
+    --ground-hi: #171419;
+    --smoke: 221, 214, 206;      /* 회백 연기 (rgb, 입자 알파용) */
+    --stick: #342c26;
+    --stick-ash: #4a4038;
+    --ember: #ff8a3c;
+    --ink: #ece7e0;
+    --dim: rgba(236, 231, 224, 0.4);
+
+    --p: 0;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+}
+
+/* 라이트 테마 — 바랜 한지/재 지면, 먹빛 향대 */
+[data-theme='light'] .waft-wrap {
+    --ground: #e9e3d8;
+    --ground-hi: #f4efe6;
+    --smoke: 92, 84, 76;
+    --stick: #6b5b4c;
+    --stick-ash: #9a8b7b;
+    --ember: #d6591f;
+    --ink: #2a241d;
+    --dim: rgba(42, 36, 29, 0.42);
+}
+
+.waft-cap {
+    font-size: 0.82rem;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--ember);
+    transition: color 0.2s;
+}
+
+/* ── 무대 ─────────────────────────────── */
+.waft-stage {
+    position: relative;
+    width: min(94vw, 560px);
+    aspect-ratio: 3 / 4;
+    max-height: 68vh;
+    border: 1px solid var(--ground-hi);
+    border-radius: 14px;
+    overflow: hidden;
+    background:
+        radial-gradient(130% 80% at 50% 108%, var(--ground-hi), transparent 60%),
+        var(--ground);
+    touch-action: none;
+    cursor: crosshair;
+}
+
+/* 향대 — 위 끝에서 밑동으로 타들어간다. --p 가 불씨 위치/남은 길이를 정한다. */
+.waft-stick {
+    position: absolute;
+    left: 50%;
+    top: 13%;
+    bottom: 18%;
+    width: 5px;
+    transform: translateX(-50%);
+    border-radius: 3px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--p) * 100%),
+        var(--stick-ash) calc(var(--p) * 100%),
+        var(--stick-ash) calc(var(--p) * 100% + 3px),
+        var(--stick) calc(var(--p) * 100% + 3px),
+        var(--stick) 100%
+    );
+}
+
+/* 향로 받침 */
+.waft-stick::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 46px;
+    height: 14px;
+    transform: translateX(-50%);
+    border-radius: 0 0 9px 9px;
+    background: var(--stick);
+    opacity: 0.85;
+}
+
+/* 불씨 — 타는 지점에서 은은히 숨 쉰다 */
+.waft-ember {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--p) * 100%);
+    width: 9px;
+    height: 9px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 10px 3px var(--ember), 0 0 22px 8px rgba(255, 138, 60, 0.4);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.ph-burn .waft-ember { opacity: 1; animation: waft-glow 1.3s ease-in-out infinite; }
+
+@keyframes waft-glow {
+    0%, 100% { box-shadow: 0 0 9px 2px var(--ember), 0 0 18px 6px rgba(255, 138, 60, 0.32); }
+    50% { box-shadow: 0 0 13px 4px var(--ember), 0 0 28px 11px rgba(255, 138, 60, 0.5); }
+}
+
+/* 연기 입자 — JS 가 transform/opacity 로 움직인다 */
+.waft-smoke {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.waft-p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--smoke), 0.9) 0%, rgba(var(--smoke), 0) 68%);
+    opacity: 0;
+    will-change: transform, opacity;
+    filter: blur(1px);
+}
+
+/* 불 붙이기 */
+.waft-light {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 12px 26px;
+    min-height: 44px;
+    border: 1px solid var(--ember);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ember);
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+
+.waft-light:hover {
+    background: var(--ember);
+    color: var(--ground);
+    box-shadow: 0 0 20px 2px rgba(255, 138, 60, 0.4);
+}
+
+/* ── 향 카드 ─────────────────────────────── */
+.waft-card {
+    position: absolute;
+    left: 50%;
+    bottom: 6%;
+    transform: translateX(-50%);
+    width: min(84%, 320px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 18px 20px 16px;
+    border: 1px solid hsl(var(--hue, 35) 60% 55% / 0.55);
+    border-radius: 12px;
+    background:
+        linear-gradient(180deg, hsl(var(--hue, 35) 45% 20% / 0.28), transparent),
+        rgba(13, 12, 15, 0.86);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    animation: waft-rise 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+[data-theme='light'] .waft-card {
+    background:
+        linear-gradient(180deg, hsl(var(--hue, 35) 60% 72% / 0.3), transparent),
+        rgba(244, 239, 230, 0.92);
+}
+
+@keyframes waft-rise {
+    from { opacity: 0; transform: translate(-50%, 16px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.wc-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: hsl(var(--hue, 35) 75% 62%);
+}
+
+.wc-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.wc-level {
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: hsl(var(--hue, 35) 75% 62%);
+}
+
+.wc-notes {
+    list-style: none;
+    margin: 6px 0 2px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.wc-notes li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.92rem;
+    border-bottom: 1px dashed var(--dim);
+    padding-bottom: 4px;
+}
+
+.wc-notes li span {
+    flex: 0 0 42px;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    text-transform: uppercase;
+}
+
+.wc-feel {
+    margin: 6px 0 2px;
+    font-size: 0.9rem;
+    color: var(--ink);
+    opacity: 0.84;
+    text-align: center;
+}
+
+.waft-again {
+    margin-top: 4px;
+    padding: 8px 18px;
+    min-height: 40px;
+    border: 1px solid var(--dim);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.84rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: border-color 0.18s, color 0.18s;
+}
+
+.waft-again:hover { border-color: var(--ember); color: var(--ember); }
+
+.waft-hint {
+    max-width: 44ch;
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--dim);
+}
+
+@media (max-width: 520px) {
+    .wc-name { font-size: 1.3rem; }
+    .waft-hint { font-size: 0.8rem; }
+}

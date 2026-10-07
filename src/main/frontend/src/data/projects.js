@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 109,
+        name: 'Waft',
+        subtitle: '연기를 저어 빚는 향',
+        description: '피어오르는 향 연기를 손으로 저어 손짓대로 향 하나를 빚는 후각 생성기',
+        link: '/waft',
+        active: true,
+        startDate: '2026-10-07',
+        endDate: '',
+        category: '실험/감각',
+        isProduction: false, // 실험용
+        thumbnail: '🌫'
+    },
+    {
         id: 108,
         name: 'Brim',
         subtitle: '물폭탄 돌리기',

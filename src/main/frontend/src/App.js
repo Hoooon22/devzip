@@ -122,6 +122,7 @@ import Apex from './pages/experiments/Apex';
 import Grain from './pages/experiments/Grain';
 import Songpyeon from './pages/experiments/Songpyeon';
 import Brim from './pages/experiments/Brim';
+import Waft from './pages/experiments/Waft';
 import ViewportMeta from './components/ViewportMeta';
 import RouteTracker from './components/traceboard/RouteTracker';
 import PresencePing from './components/PresencePing';
@@ -362,6 +363,7 @@ function App() {
         <Route path="/grain" element={<Grain />} />
         <Route path="/songpyeon" element={<Songpyeon />} />
         <Route path="/brim" element={<Brim />} />
+        <Route path="/waft" element={<Waft />} />
 
         {/* 자료실 페이지 */}
         <Route path="/library" element={<Library />} />
