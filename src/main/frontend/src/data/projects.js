@@ -1,5 +1,18 @@
 const projects = [
     {
+        id: 110,
+        name: 'Tell',
+        subtitle: '읽히는 손버릇 (독심 기계)',
+        description: '무작위로 눌러도 다음 수를 먼저 맞히는 기계를 20초간 속이는 독심 챌린지',
+        link: '/tell',
+        active: true,
+        startDate: '2026-10-14',
+        endDate: '',
+        category: '실험/확률',
+        isProduction: false, // 실험용
+        thumbnail: '🔮'
+    },
+    {
         id: 109,
         name: 'Waft',
         subtitle: '연기를 저어 빚는 향',

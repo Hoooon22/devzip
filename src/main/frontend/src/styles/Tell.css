@@ -1,0 +1,170 @@
+/* TELL — 읽히는 손버릇(독심 기계).
+   톤: 거짓말탐지기 띠지 / 폴리그래프 스트립 차트 — 뼈빛 종이에 먹선, 바늘이 흐른다.
+       제약(첫 화면 흑백, 인터랙션 이후에만 색): 바탕과 UI는 전부 흑백(먹/뼈빛)이고,
+       붉은 신호는 오직 "기계가 읽은 순간"에만 번진다. 시작 전 화면엔 색이 없다.
+   색 배분 60-30-10: 뼈빛 종이·먹 바탕(주조) · 먹선 띠지/표적/글자(보조) · 신호 붉은=읽힘(강조). */
+
+.tell-wrap {
+    --paper: #f6f4ef;
+    --ink: #1a1a1a;
+    --ink-soft: rgba(26, 26, 26, 0.56);
+    --line: rgba(26, 26, 26, 0.16);
+    --red: #df2b22;            /* 신호 붉은 = 기계가 읽은 순간에만 */
+    --frame: #1a1a1a;
+
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 8px 16px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+}
+
+[data-theme='dark'] .tell-wrap {
+    --paper: #121212;
+    --ink: #e9e9e9;
+    --ink-soft: rgba(233, 233, 233, 0.56);
+    --line: rgba(233, 233, 233, 0.16);
+    --red: #ff5a4d;
+    --frame: #e9e9e9;
+}
+
+/* ── HUD: 상태 + 읽힘/속임 ───────────────────── */
+.tell-hud {
+    width: min(94vw, 680px);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+}
+.tell-hud .read { color: var(--red); font-weight: 700; }
+.tell-hud .fool { color: var(--ink); font-weight: 700; }
+.tell-hud .mid { color: var(--ink-soft); }
+.tell-hud .rate { color: var(--ink-soft); }
+
+/* ── 무대: 캔버스(폴리그래프 띠지) ──────────── */
+.tell-stage {
+    position: relative;
+    width: min(94vw, 680px);
+    aspect-ratio: 680 / 430;
+    border: 3px solid var(--frame);
+    box-shadow: 6px 6px 0 var(--line);
+    background: var(--paper);
+    overflow: hidden;
+}
+.tell-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* ── 판정 ──────────────────────────────────── */
+.tell-verdict {
+    width: min(94vw, 680px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 16px 16px 18px;
+    border: 2px solid var(--frame);
+    box-shadow: 4px 4px 0 var(--line);
+    background: var(--paper);
+    animation: tell-fade 0.22s ease both;
+}
+@keyframes tell-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.tell-vtag {
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+.tell-vhead {
+    margin: 2px 0 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+.tell-caught .tell-vhead { color: var(--red); }
+
+.tell-vbig {
+    margin: 4px 0 2px;
+    font-size: 0.96rem;
+    color: var(--ink-soft);
+}
+.tell-vbig b {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ink);
+}
+.tell-caught .tell-vbig b { color: var(--red); }
+
+.tell-vrow {
+    display: flex;
+    gap: 16px;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 2px;
+}
+.tell-vrow .read { color: var(--red); font-weight: 700; }
+.tell-vrow .fool { color: var(--ink); font-weight: 700; }
+
+.tell-vnote {
+    margin: 6px 0 0;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    text-align: center;
+    max-width: 440px;
+}
+
+.tell-btn {
+    margin-top: 12px;
+    padding: 9px 22px;
+    border: 2.5px solid var(--frame);
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--line);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.tell-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--line); }
+.tell-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+
+/* ── 조작 안내 ─────────────────────────────── */
+.tell-legend {
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── 본문 ──────────────────────────────────── */
+.tell-read {
+    max-width: 640px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 2px solid var(--line);
+    line-height: 1.72;
+    font-size: 0.95rem;
+    color: var(--ink);
+}
+.tell-read h3 { margin: 0 0 12px; font-size: 1.06rem; font-weight: 700; }
+.tell-read p { margin: 0 0 13px; }
+.tell-read b { color: var(--ink); font-weight: 700; }
+.tell-disc { font-size: 0.82rem; color: var(--ink-soft); }
+.tell-disc b { color: inherit; }
+
+@media (max-width: 520px) {
+    .tell-vhead { font-size: 1.4rem; }
+    .tell-legend { font-size: 0.64rem; }
+    .tell-read { font-size: 0.9rem; }
+}
